@@ -68,11 +68,12 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
     may not be present or may behave differently.
     """
 
-    def __init__(self, max_degree=1, penalty=3.0, max_terms=None,
+    def __init__(self, max_degree: int = 1, penalty: float = 3.0, max_terms: int = None,
                  minspan_alpha: float = 0.0, endspan_alpha: float = 0.0,
-                 allow_linear: bool = True, # From py-earth, controls if linear terms can be added for variables that are not part of hinges
+                 minspan: int = -1, endspan: int = -1, # Direct specification parameters
+                 allow_linear: bool = True,
                  # TODO: Consider other py-earth params like:
-                 # min_search_points, endspan, minspan (direct specification vs alpha based)
+                 # min_search_points,
                  # smooth, use_fast, fast_K, fast_h,
                  # allow_missing, zero_tol, check_every, thresh, verbose
                  ):
@@ -82,7 +83,9 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
         self.max_terms = max_terms
         self.minspan_alpha = minspan_alpha
         self.endspan_alpha = endspan_alpha
-        self.allow_linear = allow_linear # If True, ForwardPasser might try adding pure linear terms
+        self.minspan = minspan # Direct override for minspan_alpha if >= 0
+        self.endspan = endspan # Direct override for endspan_alpha if >= 0
+        self.allow_linear = allow_linear
 
         # Attributes that will be learned during fit
         self.basis_: list = None  # List of selected BasisFunction objects

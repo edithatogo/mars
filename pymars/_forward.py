@@ -274,9 +274,67 @@ class ForwardPasser:
             # For now, let's return all unique values if not the simple additive case above.
             return unique_X_vals
 
-        # If len(unique_X_vals) <= 2, and not the special additive case above,
-        # it implies not enough points to make a meaningful split after considering endspan.
-        return np.array([])
+        # If len(unique_X_vals) <= 2 (after potential endspan_alpha based filtering for additive),
+        # it implies not enough points to make a meaningful split.
+        # The actual min_span logic below will further refine this.
+        # For now, if candidate_knots is empty after this initial filter, return empty.
+
+        # Current simplified logic:
+        if parent_bf is not None and parent_bf.degree() == 0: # Parent is intercept (additive term)
+            # py-earth default: exclude max knot for additive, unless only 2 unique values then allow both for split.
+            # This is a very specific rule from looking at py-earth behavior.
+            if self.model.endspan_alpha > 0: # Only apply this special rule if endspan_alpha is in play
+                if len(unique_X_vals) > 2:
+                    candidate_knots = unique_X_vals[:-1]
+                elif len(unique_X_vals) == 2: # If exactly two unique values, allow splitting between them (use first as knot)
+                    candidate_knots = unique_X_vals[:1]
+                else: # < 2 unique values
+                    candidate_knots = np.array([])
+            else: # endspan_alpha is 0, consider all unique values as potential knots initially
+                candidate_knots = unique_X_vals
+        else: # Interaction term or endspan_alpha = 0 for additive
+            candidate_knots = unique_X_vals
+
+        if len(candidate_knots) == 0:
+            return np.array([])
+
+        # TODO: Implement actual endspan calculation based on self.model.endspan (direct)
+        #       or self.model.endspan_alpha (calculated) and apply it by slicing unique_X_vals.
+        #       e.g. endspan_val = self.model.endspan
+        #            if endspan_val == -1 and self.model.endspan_alpha > 0 and self.n_features > 0:
+        #                val = 3.0 - np.log2(self.model.endspan_alpha / self.n_features)
+        #                endspan_val = int(np.round(val))
+        #                endspan_val = max(0, endspan_val)
+        #                if endspan_val == 0 : endspan_val = 1 # py-earth makes it at least 1 if alpha > 0
+        #            elif endspan_val < 0 : endspan_val = 0 # Default to 0 if not specified or invalid
+        #
+        #            if 2 * endspan_val >= len(unique_X_vals): return np.array([])
+        #            candidate_knots = unique_X_vals[endspan_val : len(unique_X_vals) - endspan_val]
+        #            if parent_bf.degree() == 0 and len(candidate_knots) > 0 : # Additive term special handling
+        #                candidate_knots = candidate_knots[:-1] # Exclude max of remaining candidates
+        #            if len(candidate_knots) == 0: return np.array([])
+
+
+        # TODO: Implement actual min_span calculation and filtering.
+        #       min_span_val = self.model.minspan
+        #       if min_span_val == -1 and self.model.minspan_alpha > 0:
+        #           count_parent_nonzero = np.sum(parent_bf.transform(self.X_train) != 0) if parent_bf.degree() > 0 else self.n_samples
+        #           if count_parent_nonzero > 0 and self.n_features > 0 and 0 < self.model.minspan_alpha < 1:
+        #               # Simplified from py-earth, actual formula is more complex and involves logs
+        #               min_span_val = max(1, int(np.round(self.model.minspan_alpha * count_parent_nonzero / self.n_features)))
+        #           else: min_span_val = 1
+        #       elif min_span_val < 0: min_span_val = 0 # Default to 0 if not specified or invalid (py-earth seems to use 0 as no constraint)
+        #
+        #       if min_span_val > 0:
+        #           valid_knots_after_minspan = []
+        #           X_col_active = X_col[parent_bf.transform(self.X_train) != 0] if parent_bf.degree() > 0 else X_col
+        #           for k_val in candidate_knots:
+        #               if np.sum(X_col_active < k_val) >= min_span_val and \
+        #                  np.sum(X_col_active > k_val) >= min_span_val:
+        #                   valid_knots_after_minspan.append(k_val)
+        #           candidate_knots = np.array(valid_knots_after_minspan)
+
+        return candidate_knots
 
 
     def _generate_candidates(self) -> list[tuple[BasisFunction, BasisFunction]]:

@@ -192,10 +192,8 @@ def test_get_allowable_knot_values(simple_data):
     knots_few = passer._get_allowable_knot_values(X_few_unique[:,0], parent_intercept, 0)
     # Current logic: if parent_bf.degree == 0 and endspan_alpha > 0, and len(unique) > 2
     # If endspan_alpha=0, it returns unique_X_vals if len > 2.
-    # If len(unique_X_vals) is 2 (e.g. [1,2]), current logic returns empty. This needs review.
-    # The `if len(unique_X_vals) > 2:` check at the start of `_get_allowable_knot_values`
-    # means for [1,2] it returns []. For [1,2,3] it returns [1,2,3] (if endspan_alpha=0) or [1,2] (if endspan_alpha > 0 & parent=intercept)
-    assert np.array_equal(knots_few, np.array([]))
+    # If len(unique_X_vals) is 2 (e.g. [1,2]), and endspan_alpha = 0, current logic returns [1.0, 2.0].
+    assert np.array_equal(knots_few, np.array([1.0, 2.0]))
 
     # Test with an interaction parent (degree > 0)
     parent_hinge = HingeBasisFunction(0, 2.0) # Dummy parent
