@@ -236,103 +236,110 @@ class ForwardPasser:
 
         unique_X_vals = np.unique(X_col)
 
-        # Basic endspan: exclude min and max values as knots for splitting a variable for the first time.
-        # If parent_bf is not just the intercept, more complex rules might apply based on parent's knots.
-        # For now, a simple exclusion:
-        if len(unique_X_vals) > 2: # Need at least 3 unique values to pick a knot in between
-            # For interaction terms, py-earth uses all unique values as potential knots.
-            # For additive terms (parent is intercept), it excludes the max value.
-            # This was a simplification. Actual endspan and minspan are more complex.
-
-            # Calculate end_span value based on alpha
-            # endspan is the number of unique X values to prohibit at each end.
-            # If endspan_alpha = 0, endspan = 0 (no prohibition based on alpha).
-            # If endspan_alpha > 0, endspan = floor( (N_unique_X_col * endspan_alpha) / 2 )
-            # py-earth has a hardcoded minimum endspan of 0, even if alpha is negative (which is not typical).
-            # And a minimum of 1 if alpha > 0 and N_unique_X_col * alpha / 2 < 1
-            # Let's use a simpler interpretation: endspan is a count of points.
-            # Default endspan from py-earth is 0 if not specified.
-
-            effective_endspan = 0
-            if self.model.endspan_alpha > 0:
-                # This is a simplified interpretation of py-earth's endspan.
-                # py-earth's `endspan` parameter is derived from `endspan_alpha` if `endspan` itself is not set.
-                # `endspan = max(0, floor(num_unique_values * endspan_alpha / 2))`
-                # `endspan = max(1, endspan)` if endspan_alpha > 0 and endspan was 0.
-                # Let's assume self.model.endspan is the direct count for now, or calculated in Earth class.
-                # For now, a simpler fixed exclusion if parent is intercept:
-                if parent_bf is not None and parent_bf.degree() == 0 : # Parent is intercept
-                    # py-earth default: exclude max knot for additive, unless only 2 unique values then exclude none.
-                    if len(unique_X_vals) > 2:
-                        return unique_X_vals[:-1]
-                    return unique_X_vals # Allow splitting if only two unique values
-
-            # If not additive or specific endspan logic not fully active, return all unique values.
-            # More refined logic would slice unique_X_vals based on calculated end_span count.
-            # e.g., unique_X_vals[calculated_endspan : -calculated_endspan or None]
-            # and then apply min_span between these.
-            # For now, let's return all unique values if not the simple additive case above.
-            return unique_X_vals
-
-        # If len(unique_X_vals) <= 2 (after potential endspan_alpha based filtering for additive),
-        # it implies not enough points to make a meaningful split.
-        # The actual min_span logic below will further refine this.
-        # For now, if candidate_knots is empty after this initial filter, return empty.
-
-        # Current simplified logic:
-        if parent_bf is not None and parent_bf.degree() == 0: # Parent is intercept (additive term)
-            # py-earth default: exclude max knot for additive, unless only 2 unique values then allow both for split.
-            # This is a very specific rule from looking at py-earth behavior.
-            if self.model.endspan_alpha > 0: # Only apply this special rule if endspan_alpha is in play
-                if len(unique_X_vals) > 2:
-                    candidate_knots = unique_X_vals[:-1]
-                elif len(unique_X_vals) == 2: # If exactly two unique values, allow splitting between them (use first as knot)
-                    candidate_knots = unique_X_vals[:1]
-                else: # < 2 unique values
-                    candidate_knots = np.array([])
-            else: # endspan_alpha is 0, consider all unique values as potential knots initially
-                candidate_knots = unique_X_vals
-        else: # Interaction term or endspan_alpha = 0 for additive
-            candidate_knots = unique_X_vals
-
-        if len(candidate_knots) == 0:
+        if not unique_X_vals.size: # No unique values, no knots.
             return np.array([])
 
-        # TODO: Implement actual endspan calculation based on self.model.endspan (direct)
-        #       or self.model.endspan_alpha (calculated) and apply it by slicing unique_X_vals.
-        #       e.g. endspan_val = self.model.endspan
-        #            if endspan_val == -1 and self.model.endspan_alpha > 0 and self.n_features > 0:
-        #                val = 3.0 - np.log2(self.model.endspan_alpha / self.n_features)
-        #                endspan_val = int(np.round(val))
-        #                endspan_val = max(0, endspan_val)
-        #                if endspan_val == 0 : endspan_val = 1 # py-earth makes it at least 1 if alpha > 0
-        #            elif endspan_val < 0 : endspan_val = 0 # Default to 0 if not specified or invalid
-        #
-        #            if 2 * endspan_val >= len(unique_X_vals): return np.array([])
-        #            candidate_knots = unique_X_vals[endspan_val : len(unique_X_vals) - endspan_val]
-        #            if parent_bf.degree() == 0 and len(candidate_knots) > 0 : # Additive term special handling
-        #                candidate_knots = candidate_knots[:-1] # Exclude max of remaining candidates
-        #            if len(candidate_knots) == 0: return np.array([])
+        # Determine endspan_count
+        # print(f"DEBUG: In _get_allowable_knot_values for var_idx {var_idx}: model.endspan={self.model.endspan}, model.endspan_alpha={self.model.endspan_alpha}, n_features={self.n_features}, len(unique_X_vals)={len(unique_X_vals)}")
+        endspan_count = 0
+        if self.model.endspan >= 0: # Direct value provided
+            endspan_count = self.model.endspan
+            # print(f"DEBUG: Using direct endspan: {endspan_count}")
+        elif self.model.endspan_alpha > 0: # Calculate from alpha
+            if self.n_features > 0:
+                # Handle potential log(0) or negative if endspan_alpha is not in (0,1), though it should be.
+                # Clamp argument to log2 to be positive.
+                log_arg = self.model.endspan_alpha / self.n_features
+                if log_arg <= 0: # Should not happen with valid endspan_alpha and n_features > 0
+                    val = 3.0 # Default to a value that might lead to endspan_count=1 or 0 after rounding
+                else:
+                    val = 3.0 - np.log2(log_arg)
 
+                endspan_count = int(np.round(val))
+                endspan_count = max(0, endspan_count)
+                if endspan_count == 0: # py-earth ensures endspan is at least 1 if endspan_alpha > 0
+                    endspan_count = 1
+            else: # No features, no endspan applicable, though this case should be handled earlier
+                endspan_count = 0
+        # If endspan_alpha <= 0 and self.model.endspan < 0, endspan_count remains 0.
 
-        # TODO: Implement actual min_span calculation and filtering.
-        #       min_span_val = self.model.minspan
-        #       if min_span_val == -1 and self.model.minspan_alpha > 0:
-        #           count_parent_nonzero = np.sum(parent_bf.transform(self.X_train) != 0) if parent_bf.degree() > 0 else self.n_samples
-        #           if count_parent_nonzero > 0 and self.n_features > 0 and 0 < self.model.minspan_alpha < 1:
-        #               # Simplified from py-earth, actual formula is more complex and involves logs
-        #               min_span_val = max(1, int(np.round(self.model.minspan_alpha * count_parent_nonzero / self.n_features)))
-        #           else: min_span_val = 1
-        #       elif min_span_val < 0: min_span_val = 0 # Default to 0 if not specified or invalid (py-earth seems to use 0 as no constraint)
-        #
-        #       if min_span_val > 0:
-        #           valid_knots_after_minspan = []
-        #           X_col_active = X_col[parent_bf.transform(self.X_train) != 0] if parent_bf.degree() > 0 else X_col
-        #           for k_val in candidate_knots:
-        #               if np.sum(X_col_active < k_val) >= min_span_val and \
-        #                  np.sum(X_col_active > k_val) >= min_span_val:
-        #                   valid_knots_after_minspan.append(k_val)
-        #           candidate_knots = np.array(valid_knots_after_minspan)
+        if 2 * endspan_count >= len(unique_X_vals):
+            return np.array([]) # Not enough unique values to satisfy endspan
+
+        candidate_knots = unique_X_vals[endspan_count : len(unique_X_vals) - endspan_count]
+
+        if not candidate_knots.size: # Check if slicing resulted in empty
+             return np.array([])
+
+        # Special handling for additive terms (parent is intercept):
+        # py-earth often excludes the maximum value from the (endspan-filtered) candidate knots
+        # to prevent creating a hinge that's non-zero for only the very last point region.
+        # This is done unless only one candidate knot would remain after this exclusion.
+        if parent_bf is not None and parent_bf.degree() == 0:
+            if len(candidate_knots) > 1:
+                candidate_knots = candidate_knots[:-1] # Exclude the largest remaining knot
+            # If len(candidate_knots) == 1, we keep it. If it was empty already, still empty.
+
+        if not candidate_knots.size:
+            return np.array([])
+
+        # Determine min_span_count
+        min_span_count = 0
+        if self.model.minspan >= 0: # Direct value provided
+            min_span_count = max(0, self.model.minspan)
+        elif self.model.minspan_alpha > 0: # Calculate from alpha
+            # Calculate count_parent_nonzero: samples where parent_bf is non-zero
+            if parent_bf.degree() == 0: # Intercept is always non-zero (value 1) for all samples
+                count_parent_nonzero = self.n_samples
+            else:
+                parent_transform_values = parent_bf.transform(self.X_train)
+                count_parent_nonzero = np.sum(parent_transform_values != 0)
+
+            if count_parent_nonzero > 0 and self.n_features > 0 and \
+               0 < self.model.minspan_alpha < 1: # Valid range for alpha for formula
+                # Formula from py-earth's documentation (simplified for direct calculation)
+                # Original: (int) -log2(-(1.0/(n*count))*log(1.0-minspan_alpha)) / 2.5
+                # This formula is sensitive; direct translation to numpy logs:
+                try:
+                    log_val = np.log(1.0 - self.model.minspan_alpha)
+                    # Ensure argument to outer log2 is positive
+                    inner_term = -(1.0 / (self.n_features * count_parent_nonzero)) * log_val
+                    if inner_term <= 0: # Avoid log of non-positive
+                        min_span_float = 0.0
+                    else:
+                        min_span_float = -np.log2(inner_term) / 2.5
+                    min_span_count = max(1, int(np.round(min_span_float)))
+                except (ValueError, FloatingPointError): # Catch math errors from logs
+                    min_span_count = 1 # Default to 1 if calculation fails
+            elif self.model.minspan_alpha == 0: # No minspan constraint by alpha
+                 min_span_count = 0
+            else: # Default if alpha is invalid or other conditions not met for formula
+                min_span_count = 1
+        # If minspan_alpha <= 0 and self.model.minspan < 0, min_span_count remains 0.
+
+        if min_span_count > 0:
+            valid_knots_after_minspan = []
+            # Determine X_col_active: data points where parent is active
+            if parent_bf.degree() == 0:
+                X_col_active = X_col # All points active for intercept parent
+            else:
+                # This needs X_train, not just X_col, to get parent transform values
+                parent_transform_full = parent_bf.transform(self.X_train)
+                active_indices = parent_transform_full != 0
+                X_col_active = self.X_train[active_indices, var_idx] # Get relevant column for active samples
+
+            if X_col_active.size == 0 and count_parent_nonzero > 0:
+                # This can happen if parent is non-zero but not for this specific var_idx's values.
+                # Or if X_col itself was empty after some upstream filtering (unlikely here).
+                # If no active points for this variable under this parent, no knots possible.
+                return np.array([])
+
+            for knot_val_candidate in candidate_knots:
+                num_left = np.sum(X_col_active < knot_val_candidate)
+                num_right = np.sum(X_col_active > knot_val_candidate)
+                if num_left >= min_span_count and num_right >= min_span_count:
+                    valid_knots_after_minspan.append(knot_val_candidate)
+            candidate_knots = np.array(valid_knots_after_minspan)
 
         return candidate_knots
 

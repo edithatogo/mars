@@ -24,9 +24,13 @@ from pymars._basis import ConstantBasisFunction, HingeBasisFunction
 
 # A simple mock Earth class for testing ForwardPasser in isolation where needed
 class MockEarth(Earth):
-    def __init__(self, max_degree=1, max_terms=10, minspan_alpha=0.0, endspan_alpha=0.0, penalty=3.0):
+    def __init__(self, max_degree=1, max_terms=10,
+                 minspan_alpha=0.0, endspan_alpha=0.0,
+                 minspan=-1, endspan=-1, # Add these
+                 penalty=3.0, allow_linear=True): # allow_linear is also a param of Earth
         super().__init__(max_degree=max_degree, penalty=penalty, max_terms=max_terms,
-                         minspan_alpha=minspan_alpha, endspan_alpha=endspan_alpha)
+                         minspan_alpha=minspan_alpha, endspan_alpha=endspan_alpha,
+                         minspan=minspan, endspan=endspan, allow_linear=allow_linear)
         self.record_ = None # Mock: no recording for these unit tests unless specifically tested
 
 @pytest.fixture
@@ -175,39 +179,105 @@ def test_get_allowable_knot_values(simple_data):
     # If endspan_alpha = 0, it should return all unique values
     # Let's refine the test based on current _get_allowable_knot_values
 
-    # Case 1: endspan_alpha = 0.0 (should return all unique values if >2, else empty)
+    # Case 1: endspan_alpha = 0.0. endspan_count=0. Additive rule applies: unique[:-1]
     knots1 = passer._get_allowable_knot_values(X[:,0], parent_intercept, 0)
-    assert np.array_equal(knots1, np.array([1.,2.,3.,4.,5.]))
+    assert np.array_equal(knots1, np.array([1.,2.,3.,4.]))
 
-    # Case 2: endspan_alpha > 0 (e.g. 0.1, doesn't matter much for current simplified logic)
+    # Case 2: endspan_alpha > 0 (e.g. 0.1 leads to endspan_count=1 for n_features=1 after py-earth rule)
     earth_model_endspan = MockEarth(endspan_alpha=0.1)
     passer_endspan = ForwardPasser(earth_model_endspan)
     passer_endspan.X_train = X
+    passer_endspan.n_features = X.shape[1] # Set n_features on the passer instance
     knots2 = passer_endspan._get_allowable_knot_values(X[:,0], parent_intercept, 0)
-    assert np.array_equal(knots2, np.array([1.,2.,3.,4.])) # Excludes max (5.0)
+    # With endspan_alpha=0.1, n_features=1, endspan_count becomes 6.
+    # For unique_X_vals=[1,2,3,4,5], 2*6 >= 5, so it should return [].
+    assert np.array_equal(knots2, np.array([]))
 
     # Test with too few unique values
     X_few_unique = np.array([[1.0],[1.0],[2.0]])
     passer.X_train = X_few_unique
     knots_few = passer._get_allowable_knot_values(X_few_unique[:,0], parent_intercept, 0)
-    # Current logic: if parent_bf.degree == 0 and endspan_alpha > 0, and len(unique) > 2
-    # If endspan_alpha=0, it returns unique_X_vals if len > 2.
-    # If len(unique_X_vals) is 2 (e.g. [1,2]), and endspan_alpha = 0, current logic returns [1.0, 2.0].
-    assert np.array_equal(knots_few, np.array([1.0, 2.0]))
+    # With endspan_alpha=0, endspan_count=0. unique_X_vals=[1,2].
+    # Additive term rule: len([1,2]) > 1, so [1,2][:-1] = [1.0]
+    assert np.array_equal(knots_few, np.array([1.0]))
 
     # Test with an interaction parent (degree > 0)
-    parent_hinge = HingeBasisFunction(0, 2.0) # Dummy parent
+    parent_hinge = HingeBasisFunction(0, 2.0, variable_name="x0_h2") # Dummy parent
     passer.X_train = X # Reset to original simple_data X
+    passer.n_features = X.shape[1] # Ensure n_features is set for passer
     knots_inter = passer._get_allowable_knot_values(X[:,0], parent_hinge, 0)
     # Should return all unique values as parent is not intercept (for current simplified logic)
+    # and endspan_alpha is 0 for this earth_model instance
     assert np.array_equal(knots_inter, np.array([1.,2.,3.,4.,5.]))
+
+    # Test direct endspan parameter
+    earth_model_direct_endspan = MockEarth(endspan=1) # Exclude 1 from each end of unique_X_vals
+    passer_direct_endspan = ForwardPasser(earth_model_direct_endspan)
+    passer_direct_endspan.X_train = X
+    passer_direct_endspan.n_samples = X.shape[0]
+    passer_direct_endspan.n_features = X.shape[1]
+    # unique_X_vals = [1,2,3,4,5]. endspan=1 -> candidates [2,3,4]. Parent is intercept. Max is excluded -> [2,3]
+    knots_direct_es = passer_direct_endspan._get_allowable_knot_values(X[:,0], parent_intercept, 0)
+    assert np.array_equal(knots_direct_es, np.array([2.0, 3.0]))
+
+    # Test direct minspan parameter (non-recursive check)
+    # Knots from above with endspan=1, parent=intercept are [2.0, 3.0]
+    # X_col = [1,2,3,4,5]. minspan=1.
+    # Knot 2.0: left (<2.0) has [1] (1 point >= minspan=1). right (>2.0) has [3,4,5] (3 points >= minspan=1). OK.
+    # Knot 3.0: left (<3.0) has [1,2] (2 points >= minspan=1). right (>3.0) has [4,5] (2 points >= minspan=1). OK.
+    earth_model_direct_minspan = MockEarth(endspan=1, minspan=1)
+    passer_direct_minspan = ForwardPasser(earth_model_direct_minspan)
+    passer_direct_minspan.X_train = X
+    passer_direct_minspan.n_samples = X.shape[0]
+    passer_direct_minspan.n_features = X.shape[1]
+    knots_direct_ms = passer_direct_minspan._get_allowable_knot_values(X[:,0], parent_intercept, 0)
+    assert np.array_equal(knots_direct_ms, np.array([2.0, 3.0]))
+
+    # Test direct minspan that excludes knots
+    # Knots from endspan=1, parent=intercept are [2.0, 3.0]
+    # X_col = [1,2,3,4,5]. minspan=2.
+    # Knot 2.0: left (<2.0) has [1] (1 point < minspan=2). NOT OK.
+    # Knot 3.0: left (<3.0) has [1,2] (2 points >= minspan=2). right (>3.0) has [4,5] (2 points >= minspan=2). OK.
+    earth_model_direct_minspan_restrict = MockEarth(endspan=1, minspan=2)
+    passer_direct_minspan_restrict = ForwardPasser(earth_model_direct_minspan_restrict)
+    passer_direct_minspan_restrict.X_train = X
+    passer_direct_minspan_restrict.n_samples = X.shape[0]
+    passer_direct_minspan_restrict.n_features = X.shape[1]
+    knots_direct_ms_restrict = passer_direct_minspan_restrict._get_allowable_knot_values(X[:,0], parent_intercept, 0)
+    assert np.array_equal(knots_direct_ms_restrict, np.array([3.0]))
+
+    # Test minspan_alpha calculation (simplified, as full formula is complex and has logs)
+    # For this, we need to ensure count_parent_nonzero is reasonable.
+    # Let parent be intercept, so count_parent_nonzero = n_samples = 5
+    # n_features = 1. If minspan_alpha = 0.5.
+    # min_span_float = -np.log2(-(1.0 / (1 * 5)) * np.log(1.0 - 0.5)) / 2.5
+    # min_span_float = -np.log2(-(0.2) * np.log(0.5)) / 2.5
+    # min_span_float = -np.log2(-(0.2) * -0.6931) / 2.5
+    # min_span_float = -np.log2(0.1386) / 2.5 = -(-2.85) / 2.5 = 1.14. round(1.14)=1. max(1,1)=1. So min_span_count=1.
+    # This should behave same as minspan=1.
+    earth_model_alpha_minspan = MockEarth(endspan=1, minspan_alpha=0.5) # minspan=-1 by default
+    passer_alpha_minspan = ForwardPasser(earth_model_alpha_minspan)
+    passer_alpha_minspan.X_train = X
+    passer_alpha_minspan.n_samples = X.shape[0] # 5
+    passer_alpha_minspan.n_features = X.shape[1] # 1
+    knots_alpha_ms = passer_alpha_minspan._get_allowable_knot_values(X[:,0], parent_intercept, 0)
+    assert np.array_equal(knots_alpha_ms, np.array([2.0, 3.0]))
 
 
 def test_generate_candidates_simple(simple_data):
     X, y = simple_data # X = [[1],[2],[3],[4],[5]]
-    earth_model = MockEarth(max_degree=1, endspan_alpha=0.1) # endspan_alpha > 0 to trigger specific knot logic
+    earth_model = MockEarth(max_degree=1, endspan_alpha=0.0) # Use endspan_alpha=0 to get more knots
     passer = ForwardPasser(earth_model)
-    passer.run(X,y) # This sets up initial intercept model
+    # Manually set up passer state, as run() might consume terms
+    passer.X_train = X
+    passer.y_train = y.ravel()
+    passer.n_samples, passer.n_features = X.shape
+    intercept_bf = ConstantBasisFunction()
+    passer.current_basis_functions = [intercept_bf]
+    passer.current_B_matrix = passer._build_basis_matrix(passer.X_train, passer.current_basis_functions)
+    rss, coeffs = passer._calculate_rss_and_coeffs(passer.current_B_matrix, passer.y_train)
+    passer.current_coefficients = coeffs
+    passer.current_rss = rss
 
     # After run (with intercept), current_basis_functions = [ConstantBasisFunction]
     # We expect candidates generated by splitting on X0 (the only feature)
@@ -239,7 +309,7 @@ def test_generate_candidates_simple(simple_data):
 
 def test_find_best_candidate_pair_simple(simple_data):
     X, y = simple_data # X = [[1],[2],[3],[4],[5]], y = [2,4,5.5,8.5,10]
-    earth_model = MockEarth(max_degree=1, endspan_alpha=0.1, max_terms=10) # Default max_terms
+    earth_model = MockEarth(max_degree=1, endspan_alpha=0.0, max_terms=10) # Use endspan_alpha=0
     passer = ForwardPasser(earth_model)
 
     # Manually set up the state after intercept term is added
@@ -291,7 +361,7 @@ def test_run_main_loop_simple_case(simple_data):
     X, y = simple_data # X = [[1],[2],[3],[4],[5]], y = [2,4,5.5,8.5,10]
 
     # Max_terms = 3 means intercept + one pair of hinges
-    earth_model = MockEarth(max_degree=1, max_terms=3, endspan_alpha=0.1)
+    earth_model = MockEarth(max_degree=1, max_terms=3, endspan_alpha=0.0) # Use endspan_alpha=0
     passer = ForwardPasser(earth_model)
 
     final_bfs, final_coeffs = passer.run(X, y)
