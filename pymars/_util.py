@@ -63,7 +63,7 @@ def check_X_y(X, y, ensure_X_2d=True, allow_X_nd=False, ensure_y_1d=True, allow_
     return X, y
 
 
-def gcv_penalty_ κόστος_ কার্যকর_ παραμέτρων(num_terms, num_samples, penalty_factor, has_intercept=True):
+def gcv_penalty_cost_effective_parameters(num_terms, num_samples, penalty_factor, has_intercept=True):
     """
     Calculate the effective number of parameters C(M) for GCV,
     as defined in Friedman's MARS paper (Section 3.6, equation 55).
@@ -161,7 +161,7 @@ if __name__ == '__main__':
     n_terms_example = 5
     penalty_d_example = 3.0 # Typical penalty for MARS GCV
 
-    effective_params = gcv_penalty_ κόστος_ কার্যকর_ παραμέτρων(n_terms_example, n_samples_example, penalty_d_example, has_intercept=True)
+    effective_params = gcv_penalty_cost_effective_parameters(n_terms_example, n_samples_example, penalty_d_example, has_intercept=True)
     print(f"RSS={rss_example}, N={n_samples_example}, Terms={n_terms_example}, Penalty={penalty_d_example}")
     print(f"Effective parameters (C(M)): {effective_params}")
     gcv_score = calculate_gcv(rss_example, n_samples_example, effective_params)
@@ -169,7 +169,7 @@ if __name__ == '__main__':
 
     # Edge case: more terms than samples (after penalty)
     n_terms_high = 40
-    effective_params_high = gcv_penalty_ κόστος_ কার্যকর_ παραμέτρων(n_terms_high, n_samples_example, penalty_d_example, has_intercept=True)
+    effective_params_high = gcv_penalty_cost_effective_parameters(n_terms_high, n_samples_example, penalty_d_example, has_intercept=True)
     print(f"\nTerms={n_terms_high}, Effective parameters (C(M)): {effective_params_high}")
     gcv_score_high = calculate_gcv(rss_example, n_samples_example, effective_params_high)
     print(f"GCV Score (high terms): {gcv_score_high}")
@@ -186,7 +186,7 @@ if __name__ == '__main__':
     print(f"GCV Score (effective_params == N-1): {gcv_score_just_under_N}")
 
     # Test with no terms
-    effective_params_no_terms = gcv_penalty_ κόστος_ কার্যকর_ παραμέτρων(0, n_samples_example, penalty_d_example)
+    effective_params_no_terms = gcv_penalty_cost_effective_parameters(0, n_samples_example, penalty_d_example)
     print(f"\nTerms=0, Effective parameters (C(M)): {effective_params_no_terms}")
     gcv_score_no_terms = calculate_gcv(0, n_samples_example, effective_params_no_terms) # RSS would be sum((y-mean(y))^2)
     print(f"GCV Score (0 terms, RSS=0 for test): {gcv_score_no_terms}")
