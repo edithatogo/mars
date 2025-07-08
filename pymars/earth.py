@@ -252,30 +252,55 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
         """
         Placeholder for feature importance calculation.
         This will be implemented based on self.feature_importance_type.
-        For 'nb_subsets', it would use self.record_.
+        # For 'nb_subsets', it uses the pruning trace stored in self.record_.
         """
-        # For now, just a placeholder
-        num_features = X_fit.shape[1]
-        if self.feature_importance_type == 'nb_subsets':
-            # This is a simplified placeholder.
-            # Real implementation needs pruning trace from self.record_
-            if self.basis_ and num_features > 0:
-                importances = np.zeros(num_features)
-                for bf in self.basis_:
-                    for var_idx in bf.get_involved_variables():
-                        if var_idx < num_features: # Safety check
-                            importances[var_idx] += 1
-                if np.sum(importances) > 0:
-                    self.feature_importances_ = importances / np.sum(importances)
-                else:
-                    self.feature_importances_ = importances # All zeros
-            else:
-                self.feature_importances_ = np.zeros(num_features)
+        import numpy as np # Ensure numpy is available
+
+        if not hasattr(self.record_, 'n_features'):
+             # Fallback if record somehow doesn't have n_features, though it should.
+             # This might happen if fit failed very early or record not initialized.
+            if hasattr(X_fit, 'shape') and X_fit.ndim == 2:
+                 num_features = X_fit.shape[1]
+            else: # Cannot determine num_features
+                print("Warning: Cannot determine number of features for importance calculation.")
+                self.feature_importances_ = np.array([])
+                return
         else:
-            # Other types not yet implemented
-            self.feature_importances_ = np.zeros(num_features) # Default to zeros
-            if self.feature_importance_type is not None:
-                 print(f"Warning: feature_importance_type '{self.feature_importance_type}' not yet fully implemented. Returning zeros.")
+            num_features = self.record_.n_features
+
+        if self.feature_importance_type == 'nb_subsets':
+            if not (hasattr(self.record_, 'pruning_trace_basis_functions_') and \
+                    self.record_.pruning_trace_basis_functions_):
+                print("Warning: Pruning trace not available in record. "
+                      "Cannot calculate 'nb_subsets' feature importance. Returning zeros.")
+                self.feature_importances_ = np.zeros(num_features)
+                return
+
+            importances = np.zeros(num_features)
+            for basis_set in self.record_.pruning_trace_basis_functions_:
+                # For each model in the pruning sequence
+                model_variables = set()
+                for bf in basis_set:
+                    model_variables.update(bf.get_involved_variables())
+
+                for var_idx in model_variables:
+                    if 0 <= var_idx < num_features: # Ensure var_idx is valid
+                        importances[var_idx] += 1
+
+            if np.sum(importances) > 0:
+                self.feature_importances_ = importances / np.sum(importances)
+            else:
+                # All zeros if no features were ever used or trace was empty in a weird way
+                self.feature_importances_ = importances
+
+        elif self.feature_importance_type is not None:
+            # Placeholder for other types or warning for unknown types
+            print(f"Warning: feature_importance_type '{self.feature_importance_type}' "
+                  "is not yet fully implemented. Returning zeros for importances.")
+            self.feature_importances_ = np.zeros(num_features)
+        else:
+            # feature_importance_type is None, so do nothing, self.feature_importances_ remains None
+            pass
 
 
     def predict(self, X):

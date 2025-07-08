@@ -221,7 +221,9 @@ class PruningPasser:
         self.best_coeffs_so_far = initial_coeffs_refit
         # self.best_B_matrix_so_far could be stored if needed for debugging or other metrics.
 
+        print(f"DEBUG PruningPasser: self.model.record_ is {self.model.record_}") # DEBUG
         if self.model.record_ is not None and hasattr(self.model.record_, 'log_pruning_step'):
+            print(f"DEBUG PruningPasser: Logging initial pruning state. Num BFs: {len(self.best_basis_functions_so_far)}") # DEBUG
             self.model.record_.log_pruning_step(
                 self.best_basis_functions_so_far,
                 self.best_coeffs_so_far,
@@ -306,6 +308,7 @@ class PruningPasser:
                 # Potentially store self.best_B_matrix_so_far if needed later
 
             if self.model.record_ is not None and hasattr(self.model.record_, 'log_pruning_step'):
+                print(f"DEBUG PruningPasser: Logging pruning loop step. Num BFs: {len(active_bfs_for_loop)}") # DEBUG
                 self.model.record_.log_pruning_step(
                     list(active_bfs_for_loop), # Current active set after removal
                     coeffs_after_removal,

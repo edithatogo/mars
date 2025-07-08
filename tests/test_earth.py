@@ -222,7 +222,11 @@ def test_earth_feature_importance_parameter(simple_earth_data):
     assert model.feature_importances_ is not None
     assert isinstance(model.feature_importances_, np.ndarray)
     assert len(model.feature_importances_) == X.shape[1]
-    assert np.isclose(np.sum(model.feature_importances_), 1.0) or np.sum(model.feature_importances_) == 0
+    if X.shape[1] > 0 and len(model.basis_) > 1: # If there are features and model is not just intercept
+        assert np.isclose(np.sum(model.feature_importances_), 1.0)
+    else: # Handles case of no features or only intercept (no variables involved)
+        assert np.sum(model.feature_importances_) == 0
+
 
     # Test with None (default)
     model_no_fi = Earth()
@@ -265,6 +269,59 @@ def test_earth_summary_feature_importances(simple_earth_data, capsys):
     # The summary will still try to print based on self.feature_importances_ (which would be zeros)
     assert "Feature Importances (unknown_type)" in summary_unknown
     assert "x0" in summary_unknown # Will show x0 : 0.0000
+
+def test_earth_nb_subsets_calculation_mocked_record(capsys):
+    """Test nb_subsets calculation with a mocked record pruning trace."""
+    X = np.array([[1,10], [2,20], [3,30]]) # 2 features
+    y = np.array([1,2,3])
+
+    model = Earth(feature_importance_type='nb_subsets')
+
+    # Manually create a mock record with a pruning trace
+    mock_record = EarthRecord(X, y, model) # model instance for params
+
+    # Define some basis functions for the trace
+    bf_const = ConstantBasisFunction()
+    bf_x0 = LinearBasisFunction(variable_idx=0, variable_name="x0")
+    bf_x1 = LinearBasisFunction(variable_idx=1, variable_name="x1")
+    bf_hinge_x0 = HingeBasisFunction(variable_idx=0, knot_val=1.5, variable_name="x0_h")
+
+    # Pruning trace:
+    # Model 1: Intercept, x0, x1, x0_h  (x0 appears twice, x1 once)
+    # Model 2: Intercept, x0, x1       (x0 once, x1 once)
+    # Model 3: Intercept, x0          (x0 once)
+    mock_record.pruning_trace_basis_functions_ = [
+        [bf_const, bf_x0, bf_x1, bf_hinge_x0],
+        [bf_const, bf_x0, bf_x1],
+        [bf_const, bf_x0]
+    ]
+    # Dummy values for other trace attributes, not used by nb_subsets directly
+    mock_record.pruning_trace_coeffs_ = [np.array([]),np.array([]),np.array([])]
+    mock_record.pruning_trace_gcv_ = [0.1, 0.2, 0.3]
+    mock_record.pruning_trace_rss_ = [1,2,3]
+
+    model.record_ = mock_record # Assign the mocked record
+    model.n_features = X.shape[1] # Manually set as fit is not fully run
+
+    # Call the method that calculates importances
+    model._calculate_feature_importances(X) # Pass X for num_features if record_.n_features is not set by mock
+    model.fitted_ = True # Manually set fitted flag for summary method to proceed
+
+    assert model.feature_importances_ is not None
+    # Expected counts:
+    # x0 (var_idx 0): in model1 (twice via bf_x0, bf_hinge_x0), model2 (once), model3 (once) -> total unique presence = 3
+    # x1 (var_idx 1): in model1 (once), model2 (once) -> total unique presence = 2
+    # Total presence counts = 3 + 2 = 5
+    # Expected importances: x0 = 3/5 = 0.6, x1 = 2/5 = 0.4
+    expected_importances = np.array([0.6, 0.4])
+    assert np.allclose(model.feature_importances_, expected_importances)
+
+    # Test summary output
+    summary = model.summary_feature_importances()
+    print(summary) # For manual check during test dev
+    assert "Feature Importances (nb_subsets)" in summary
+    assert "x0          : 0.6000" in summary # Check formatting and values
+    assert "x1          : 0.4000" in summary
 
 
 if __name__ == '__main__':
