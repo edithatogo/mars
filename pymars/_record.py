@@ -1,0 +1,115 @@
+# -*- coding: utf-8 -*-
+
+"""
+Record objects for storing information about the MARS fitting process.
+
+This can include details about the forward pass (terms added, RSS at each step)
+and the pruning pass (terms removed, GCV at each step).
+"""
+
+import numpy as np
+
+class EarthRecord:
+    """
+    Stores information about the fitting process of an Earth model.
+    """
+    def __init__(self, X, y, earth_model_instance):
+        self.model_params = earth_model_instance.__dict__.copy() # Store initial model params
+        self.n_samples = X.shape[0]
+        self.n_features = X.shape[1]
+
+        # Forward pass tracking
+        self.fwd_basis_ = []         # List of lists: basis functions at each step of fwd pass
+        self.fwd_coeffs_ = []        # List of arrays: coefficients at each step
+        self.fwd_rss_ = []           # List of floats: RSS at each step
+
+        # Pruning pass tracking
+        self.bwd_basis_ = []         # List of lists: basis functions at each step of bwd pass
+        self.bwd_coeffs_ = []        # List of arrays: coefficients at each step
+        self.bwd_gcv_ = []           # List of floats: GCV at each step
+        self.bwd_rss_ = []           # List of floats: RSS at each step of pruning
+
+        # Final selected model details (can be set after pruning)
+        self.final_basis_ = None
+        self.final_coeffs_ = None
+        self.final_gcv_ = None
+        self.final_rss_ = None
+        self.final_mse_ = None # MSE of the final model on training data
+
+    def log_forward_pass_step(self, basis_functions, coefficients, rss):
+        """Log a step in the forward pass."""
+        self.fwd_basis_.append(list(basis_functions)) # Store copies
+        self.fwd_coeffs_.append(np.copy(coefficients))
+        self.fwd_rss_.append(rss)
+
+    def log_pruning_pass_step(self, basis_functions, coefficients, gcv, rss):
+        """Log a step in the pruning pass."""
+        self.bwd_basis_.append(list(basis_functions)) # Store copies
+        self.bwd_coeffs_.append(np.copy(coefficients))
+        self.bwd_gcv_.append(gcv)
+        self.bwd_rss_.append(rss)
+
+    def set_final_model(self, basis_functions, coefficients, gcv, rss, mse):
+        """Set the details of the final pruned model."""
+        self.final_basis_ = list(basis_functions)
+        self.final_coeffs_ = np.copy(coefficients)
+        self.final_gcv_ = gcv
+        self.final_rss_ = rss
+        self.final_mse_ = mse
+
+    def __str__(self):
+        summary = ["Earth Model Fit Record"]
+        summary.append("="*len(summary[0]))
+        summary.append(f"Initial Samples: {self.n_samples}, Features: {self.n_features}")
+
+        if self.fwd_rss_:
+            summary.append(f"\nForward Pass completed with {len(self.fwd_basis_[-1])} terms.")
+            summary.append(f"  Final RSS from forward pass: {self.fwd_rss_[-1]:.4f}")
+
+        if self.bwd_gcv_:
+            summary.append(f"\nPruning Pass completed with {len(self.bwd_basis_[-1])} terms.")
+            summary.append(f"  Final GCV from pruning pass: {self.bwd_gcv_[-1]:.4f}")
+            summary.append(f"  Final RSS from pruning pass: {self.bwd_rss_[-1]:.4f}")
+
+        if self.final_basis_ is not None:
+            summary.append(f"\nFinal Selected Model:")
+            summary.append(f"  Number of terms: {len(self.final_basis_)}")
+            summary.append(f"  GCV: {self.final_gcv_:.4f}")
+            summary.append(f"  RSS: {self.final_rss_:.4f}")
+            summary.append(f"  MSE: {self.final_mse_:.4f}")
+
+        return "\n".join(summary)
+
+if __name__ == '__main__':
+    # Example Usage
+    class MockEarthModel:
+        def __init__(self):
+            self.max_degree = 1
+            self.penalty = 3.0
+            # other params
+
+    class MockBasis:
+        def __init__(self, name): self.name = name
+        def __str__(self): return self.name
+        def __repr__(self): return self.name
+
+    X_dummy = np.random.rand(10,2)
+    y_dummy = np.random.rand(10)
+    mock_model_instance = MockEarthModel()
+
+    record = EarthRecord(X_dummy, y_dummy, mock_model_instance)
+
+    # Simulate forward pass logging
+    bf1 = MockBasis("Intercept")
+    bf2 = MockBasis("h(x1-0.5)")
+    record.log_forward_pass_step([bf1], np.array([0.5]), 10.2)
+    record.log_forward_pass_step([bf1, bf2], np.array([0.3, 0.7]), 5.5)
+
+    # Simulate pruning pass logging
+    record.log_pruning_pass_step([bf1, bf2], np.array([0.3, 0.7]), 0.6, 5.5) # Before pruning
+    record.log_pruning_pass_step([bf1], np.array([0.55]), 0.5, 6.0)      # After pruning bf2
+
+    # Set final model
+    record.set_final_model([bf1], np.array([0.55]), 0.5, 6.0, 0.6)
+
+    print(record)
