@@ -25,12 +25,20 @@ class BasisFunction(ABC):
         self._name = name
         # Attributes common to many basis functions, but not all will use them directly.
         # Subclasses will define how these are used.
-        self.variable_idx: int = None # Index of the feature used by this basis function
-        self.knot_val: float = None   # Knot value for hinge functions
+        self.variable_idx: int = None # Index of the feature used by this basis function (if applicable)
+        self.knot_val: float = None   # Knot value for hinge functions (if applicable)
         self.parent1: 'BasisFunction' = None # First parent for interaction terms
-        self.parent2: 'BasisFunction' = None # Second parent for interaction terms
-        self.is_linear_term: bool = False # Indicates if it's a simple linear term x_j
-        self.is_hinge_term: bool = False  # Indicates if it's a hinge max(0, x-k) or max(0, k-x)
+        self.parent2: 'BasisFunction' = None # Second parent for interaction terms (not used in current 1-parent model)
+        self.is_linear_term: bool = False # Indicates if the *newest* component is linear
+        self.is_hinge_term: bool = False  # Indicates if the *newest* component is a hinge
+        self._involved_variables: frozenset[int] = frozenset() # Variables involved in this basis function
+
+    def get_involved_variables(self) -> frozenset[int]:
+        """
+        Returns a frozenset of variable indices involved in this basis function,
+        including those from its parents.
+        """
+        return self._involved_variables
 
     @abstractmethod
     def transform(self, X: np.ndarray) -> np.ndarray:
@@ -83,13 +91,15 @@ class BasisFunction(ABC):
     # Optional: Methods to explicitly set properties if not done in init by subclasses
     def _set_properties(self, variable_idx: int = None, knot_val: float = None,
                         parent1: 'BasisFunction' = None, parent2: 'BasisFunction' = None,
-                        is_linear: bool = False, is_hinge: bool = False):
+                        is_linear: bool = False, is_hinge: bool = False,
+                        involved_variables: frozenset[int] = frozenset()):
         self.variable_idx = variable_idx
         self.knot_val = knot_val
         self.parent1 = parent1
-        self.parent2 = parent2
+        self.parent2 = parent2 # Not currently used for 2nd order interactions via parent2
         self.is_linear_term = is_linear
         self.is_hinge_term = is_hinge
+        self._involved_variables = involved_variables
 
 
 class ConstantBasisFunction(BasisFunction):
@@ -100,8 +110,7 @@ class ConstantBasisFunction(BasisFunction):
     """
     def __init__(self):
         super().__init__(name="Intercept")
-        # Constant basis functions don't use these, but they are part of the base class structure
-        self._set_properties(is_linear=False, is_hinge=False)
+        self._set_properties(is_linear=False, is_hinge=False, involved_variables=frozenset())
 
     def transform(self, X: np.ndarray) -> np.ndarray:
         """
@@ -156,7 +165,14 @@ class HingeBasisFunction(BasisFunction):
 
         super().__init__(name=name_str)
 
-        self._set_properties(variable_idx=variable_idx, knot_val=knot_val, is_hinge=True, parent1=parent_bf)
+        parent_involved_vars = frozenset()
+        if parent_bf:
+            parent_involved_vars = parent_bf.get_involved_variables()
+        current_involved_vars = parent_involved_vars.union({variable_idx})
+
+        self._set_properties(variable_idx=variable_idx, knot_val=knot_val,
+                             is_hinge=True, parent1=parent_bf,
+                             involved_variables=current_involved_vars)
         self.is_right_hinge = is_right_hinge # True for max(0, x-knot), False for max(0, knot-x)
         # self.variable_name is already set above for constructing the name
 
@@ -228,7 +244,14 @@ class LinearBasisFunction(BasisFunction):
         name_str += self.variable_name
 
         super().__init__(name=name_str)
-        self._set_properties(variable_idx=variable_idx, is_linear=True, parent1=parent_bf)
+
+        parent_involved_vars = frozenset()
+        if parent_bf:
+            parent_involved_vars = parent_bf.get_involved_variables()
+        current_involved_vars = parent_involved_vars.union({variable_idx})
+
+        self._set_properties(variable_idx=variable_idx, is_linear=True, parent1=parent_bf,
+                             involved_variables=current_involved_vars)
 
     def transform(self, X: np.ndarray) -> np.ndarray:
         """
