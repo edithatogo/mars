@@ -46,67 +46,56 @@ class PruningPasser:
         self.best_coeffs_so_far: np.ndarray = None
         self.best_B_matrix_so_far: np.ndarray = None # Basis matrix for the best model
 
-    def _calculate_rss_and_coeffs(self, B_matrix: np.ndarray, y: np.ndarray) -> tuple[float, np.ndarray]:
-        """
-        Calculates Residual Sum of Squares and coefficients for a given basis matrix and target y.
-        Returns (rss, coeffs). Returns (np.inf, None) on error.
-        (This can be shared with ForwardPasser, perhaps in _util or a common base)
-        """
+    # These helpers could be moved to _util or a common base class for Forward/Pruning Passer
+    def _calculate_rss_and_coeffs(self, B_matrix: np.ndarray, y_data: np.ndarray) -> tuple[float, np.ndarray]:
         if B_matrix is None or B_matrix.shape[1] == 0:
-            mean_y = np.mean(y)
-            rss = np.sum((y - mean_y)**2)
+            mean_y = np.mean(y_data)
+            rss = np.sum((y_data - mean_y)**2)
             return rss, np.array([mean_y]) if (B_matrix is not None and B_matrix.shape[1] == 0) else None
-
         try:
             if B_matrix.ndim == 1: B_matrix = B_matrix.reshape(-1, 1)
-            coeffs, residuals_sum_sq, rank, s = np.linalg.lstsq(B_matrix, y, rcond=None)
+            coeffs, residuals_sum_sq, rank, s = np.linalg.lstsq(B_matrix, y_data, rcond=None)
             if residuals_sum_sq.size == 0 or rank < B_matrix.shape[1]:
                 y_pred = B_matrix @ coeffs
-                rss = np.sum((y - y_pred)**2)
+                rss = np.sum((y_data - y_pred)**2)
             else:
                 rss = residuals_sum_sq[0]
             return rss, coeffs
         except np.linalg.LinAlgError:
             return np.inf, None
 
-    def _build_basis_matrix(self, X: np.ndarray, basis_functions: list[BasisFunction]) -> np.ndarray:
-        """
-        Constructs the basis matrix B from X and a list of basis functions.
-        (This can be shared with ForwardPasser, perhaps in _util or a common base)
-        """
+    def _build_basis_matrix(self, X_data: np.ndarray, basis_functions: list[BasisFunction]) -> np.ndarray:
         if not basis_functions:
-            return np.empty((X.shape[0], 0))
-        B_list = [bf.transform(X).reshape(-1, 1) for bf in basis_functions]
+            return np.empty((X_data.shape[0], 0))
+        B_list = [bf.transform(X_data).reshape(-1, 1) for bf in basis_functions]
         return np.hstack(B_list)
 
-    def _compute_gcv_for_subset(self, current_basis_subset: list[BasisFunction]) -> tuple[float, float, np.ndarray]:
+    def _compute_gcv_for_subset(self, X_data: np.ndarray, y_data: np.ndarray, n_samples_data: int,
+                                current_basis_subset: list[BasisFunction]) -> tuple[float, float, np.ndarray]:
         """
         Computes GCV, RSS, and coefficients for a given subset of basis functions.
         Returns (gcv, rss, coeffs).
         """
-        if not current_basis_subset: # Should not happen if we protect intercept
+        if not current_basis_subset:
             return np.inf, np.inf, None
 
-        B_current = self._build_basis_matrix(self.X_train, current_basis_subset)
-        if B_current.shape[1] == 0: # No terms, should have at least intercept.
+        B_current = self._build_basis_matrix(X_data, current_basis_subset)
+        if B_current.shape[1] == 0:
              return np.inf, np.inf, None
 
-        rss, coeffs = self._calculate_rss_and_coeffs(B_current, self.y_train)
+        rss, coeffs = self._calculate_rss_and_coeffs(B_current, y_data)
 
-        if coeffs is None: # Error during LSTSQ
-            return np.inf, rss, None # rss might be inf too
+        if coeffs is None:
+            return np.inf, rss, None
 
         num_terms = B_current.shape[1]
-        # Check if intercept is present for penalty calculation
         has_intercept = any(isinstance(bf, ConstantBasisFunction) for bf in current_basis_subset)
 
-        # Effective number of parameters C(M) for GCV
-        # Using the gcv_penalty_cost_effective_parameters from _util, which uses Friedman's formula
         effective_params = gcv_penalty_cost_effective_parameters(
-            num_terms, self.n_samples, self.model.penalty, has_intercept=has_intercept
+            num_terms, n_samples_data, self.model.penalty, has_intercept=has_intercept
         )
 
-        gcv = calculate_gcv(rss, self.n_samples, effective_params)
+        gcv = calculate_gcv(rss, n_samples_data, effective_params)
         return gcv, rss, coeffs
 
     def run(self, X: np.ndarray, y: np.ndarray,
@@ -217,7 +206,9 @@ class PruningPasser:
         # We can use these to calculate initial RSS, or re-calculate.
         # For consistency, let _compute_gcv_for_subset re-calculate coeffs.
 
-        initial_gcv, initial_rss, initial_coeffs_refit = self._compute_gcv_for_subset(current_pruning_sequence_bfs)
+        initial_gcv, initial_rss, initial_coeffs_refit = self._compute_gcv_for_subset(
+            self.X_train, self.y_train, self.n_samples, current_pruning_sequence_bfs
+        )
 
         if initial_coeffs_refit is None: # Should not happen if forward pass produced a valid model
             print("Warning: Could not compute GCV for the initial full model from forward pass.")
@@ -286,8 +277,9 @@ class PruningPasser:
                      gcv_for_removal_candidates.append((np.inf, np.inf, None, i))
                      continue
 
-
-                gcv, rss, coeffs = self._compute_gcv_for_subset(temp_basis_subset)
+                gcv, rss, coeffs = self._compute_gcv_for_subset(
+                    self.X_train, self.y_train, self.n_samples, temp_basis_subset
+                )
                 gcv_for_removal_candidates.append((gcv, rss, coeffs, i))
 
             if not gcv_for_removal_candidates: # No terms were removable or considered
