@@ -326,42 +326,86 @@ def test_run_main_loop_simple_case(simple_data):
 
 # More detailed tests will require simulating the forward pass steps:
 # (Old comment, new tests are more detailed)
-# 1. Candidate generation
-# 2. Best candidate selection
-# 3. Stopping criteria
 
-# def test_forward_pass_run_simple_case():
-#     """Test the run method of ForwardPasser on a simple case."""
-#     # from pymars._forward import ForwardPasser
-#     # from pymars.earth import Earth # Using real Earth for this might be more of an integration test
-#
-#     class MockEarthModel:
-#         def __init__(self, max_degree=1, max_terms=5, penalty=3.0):
-#             self.max_degree = max_degree
-#             self.max_terms = max_terms
-#             self.penalty = penalty
-#             # self.record_ = type('MockRecord', (), {'log_forward_pass_step': lambda *args: None})()
-#             # self._transform_X_to_basis_matrix = lambda X, bfs: np.hstack([bf.transform(X).reshape(-1,1) for bf in bfs]) if bfs else np.empty((X.shape[0],0))
-#
-#
-#     # model = MockEarthModel(max_terms=3) # Limit terms for simplicity
-#     # passer = ForwardPasser(model)
-#
-#     # X_train = np.array([[1], [2], [3], [4], [5]])
-#     # y_train = np.array([2, 4, 6, 8, 10]) # Simple linear y = 2*X
-#
-#     # basis_functions, coefficients = passer.run(X_train, y_train)
-#
-#     # assert len(basis_functions) <= model.max_terms
-#     # assert len(basis_functions) > 0 # Should find at least an intercept or linear term
-#     # assert len(coefficients) == len(basis_functions)
-#
-#     # Further assertions:
-#     # - Check if an intercept was added.
-#     # - Check if a linear term or a very effective hinge was added for X0.
-#     # - Check RSS reduction logic (would need to mock parts of it or have simple data).
-#     print("Placeholder: test_forward_pass_run_simple_case")
-#     pass
+@pytest.fixture
+def interaction_data():
+    # Data where y = x0 * x1
+    X = np.array([[1,1], [1,2], [1,3],
+                  [2,1], [2,2], [2,3],
+                  [3,1], [3,2], [3,3]])
+    y = X[:,0] * X[:,1]
+    return X, y
+
+def test_generate_candidates_for_interaction(interaction_data):
+    X, y = interaction_data
+    # Allow up to degree 2 interactions
+    earth_model = MockEarth(max_degree=2, max_terms=5, endspan_alpha=0.0)
+    passer = ForwardPasser(earth_model)
+
+    # Manually set up a state with one hinge function (degree 1)
+    passer.X_train = X
+    passer.y_train = y
+    passer.n_samples, passer.n_features = X.shape
+
+    # Add an initial intercept and one hinge term: h(x0-1.5)
+    bf_intercept = ConstantBasisFunction()
+    bf_hinge_x0 = HingeBasisFunction(variable_idx=0, knot_val=1.5, is_right_hinge=True, variable_name="x0")
+    passer.current_basis_functions = [bf_intercept, bf_hinge_x0]
+
+    # Generate candidates. Now parent_bf can be bf_hinge_x0 (degree 1).
+    # Candidates should be of the form: bf_hinge_x0 * Hinge(x1, knot)
+    candidates = passer._generate_candidates()
+
+    found_interaction_candidate = False
+    for bf_left, bf_right in candidates:
+        if bf_left.parent1 == bf_hinge_x0 and bf_left.variable_idx == 1: # Interacting with x1
+            assert bf_left.degree() == 2
+            assert bf_right.degree() == 2
+            assert bf_left.get_involved_variables() == {0, 1}
+            assert str(bf_left).startswith(f"({str(bf_hinge_x0)}) * max(0, ")
+            found_interaction_candidate = True
+            break
+    assert found_interaction_candidate, "Should generate degree 2 interaction candidates."
+
+    # Test that no degree 3 candidates are generated if max_degree is 2
+    # Add a degree 2 term manually and try to generate candidates
+    # bf_inter_x0_x1 = HingeBasisFunction(variable_idx=1, knot_val=1.5, is_right_hinge=True, parent_bf=bf_hinge_x0, variable_name="x1")
+    # passer.current_basis_functions = [bf_intercept, bf_hinge_x0, bf_inter_x0_x1] # bf_inter_x0_x1 is degree 2
+    # candidates_deg3_attempt = passer._generate_candidates() # Should only try to split intercept and bf_hinge_x0 further if possible
+
+    # This check is tricky as _generate_candidates iterates through all current_basis_functions.
+    # A simpler check: if a parent is already max_degree, it's skipped.
+    # If a parent is max_degree-1, it can form max_degree interactions.
+
+def test_run_with_interaction(interaction_data):
+    X, y = interaction_data
+    # Expecting a model like: intercept + x0*h1(x1) + x0*h2(x1) or h1(x0)*h1(x1) + ...
+    # Max_terms needs to be sufficient for intercept + at least one interaction pair (3 terms) or two pairs (5 terms)
+    # Increasing max_terms to give more room for interactions.
+    earth_model = MockEarth(max_degree=2, max_terms=7, penalty=0, endspan_alpha=0.0)
+    passer = ForwardPasser(earth_model)
+
+    final_bfs, final_coeffs = passer.run(X,y)
+
+    assert len(final_bfs) > 1 # Should be more than just intercept
+    assert len(final_bfs) <= 7 # Max_terms is 7
+
+    has_interaction_term = any(bf.degree() == 2 for bf in final_bfs)
+    assert has_interaction_term, "Expected at least one interaction term to be selected."
+
+    # Check RSS is very low, as data is perfectly x0*x1
+    # This requires the model to actually find something close to x0*x1
+    # For instance, x0 * (c1*max(0, x1-k) + c2*max(0, k-x1)) can approximate x0*x1
+    # Or (ax0+b)*()*...
+    # A perfect fit might be hard to achieve with limited terms and simple hinge choices.
+    # We just check if RSS is significantly lower than intercept-only RSS
+    rss_intercept_only = np.sum((y - np.mean(y))**2)
+    final_B = passer._build_basis_matrix(X, final_bfs)
+    final_y_pred = final_B @ final_coeffs
+    final_rss = np.sum((y - final_y_pred)**2)
+
+    assert final_rss < rss_intercept_only * 0.1, "Interaction model should significantly reduce RSS."
+
 
 if __name__ == '__main__':
     # pytest.main([__file__])

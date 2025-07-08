@@ -370,10 +370,18 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
         # but our CoreEarth model currently expects numeric y.
         # This might need adjustment if CoreEarth cannot handle non-numeric y in its GCV.
         # For now, assume y will be label encoded or numeric.
-        X_validated, y_validated = check_X_y(X, y, accept_sparse=False, multi_output=False)
+        X_validated, y_original_labels = check_X_y(X, y, accept_sparse=False, multi_output=False)
 
-        self.classes_ = unique_labels(y_validated)
+        self.classes_ = unique_labels(y_original_labels)
         self.n_features_in_ = X_validated.shape[1]
+
+        # CoreEarth.fit expects a numeric y for its internal RSS/GCV calculations.
+        # We use LabelEncoder to convert y to numeric for CoreEarth,
+        # but the final classifier self.classifier_ will be fit on original (or validated) y labels.
+        from sklearn.preprocessing import LabelEncoder
+        self._label_encoder = LabelEncoder()
+        y_numeric_for_earth = self._label_encoder.fit_transform(y_original_labels)
+
         if hasattr(X, 'columns'):
             self.feature_names_in_ = np.array(X.columns, dtype=object)
         else:
@@ -396,7 +404,7 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
         # if MARS had an unsupervised mode).
         # For now, we pass y_validated. If it's label-encoded (0, 1, 2...), it might work for GCV.
         # This is an area that might need refinement based on how well CoreEarth handles categorical-like y.
-        self.earth_.fit(X_validated, y_validated)
+        self.earth_.fit(X_validated, y_numeric_for_earth)
         self.basis_ = self.earth_.basis_
 
         if not self.basis_:
@@ -424,7 +432,7 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
         else: # User provided a classifier instance
             self.classifier_ = clone(self.classifier) # Clone to ensure fresh state
 
-        self.classifier_.fit(X_transformed, y_validated)
+        self.classifier_.fit(X_transformed, y_original_labels) # Fit classifier on original (validated) labels
 
         self.is_fitted_ = True
         return self

@@ -327,7 +327,6 @@ class ForwardPasser:
                     # Example: if knot_val is min or max of X_train[:, var_idx], one of these might be all zeros.
                     # The _get_allowable_knot_values should ideally handle this.
                     # For now, we assume _get_allowable_knot_values provides valid knots.
-
                     candidate_basis_function_pairs.append((bf_left, bf_right))
 
         # TODO: Consider adding LinearBasisFunction candidates if allowed by model config (e.g. self.model.allow_linear)
