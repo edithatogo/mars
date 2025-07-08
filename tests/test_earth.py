@@ -211,6 +211,61 @@ def test_empty_model_after_pruning(simple_earth_data):
     assert model.gcv_ is not None, "GCV should be set"
     assert np.isclose(model.gcv_, expected_gcv_intercept_only), "GCV should be for the intercept-only model"
 
+def test_earth_feature_importance_parameter(simple_earth_data):
+    """Test that feature_importance_type parameter is stored and used."""
+    X, y = simple_earth_data
+    model = Earth(feature_importance_type='nb_subsets')
+    assert model.feature_importance_type == 'nb_subsets'
+
+    model.fit(X,y)
+    assert model.fitted_
+    assert model.feature_importances_ is not None
+    assert isinstance(model.feature_importances_, np.ndarray)
+    assert len(model.feature_importances_) == X.shape[1]
+    assert np.isclose(np.sum(model.feature_importances_), 1.0) or np.sum(model.feature_importances_) == 0
+
+    # Test with None (default)
+    model_no_fi = Earth()
+    model_no_fi.fit(X,y)
+    assert model_no_fi.feature_importance_type is None
+    assert model_no_fi.feature_importances_ is None
+
+def test_earth_summary_feature_importances(simple_earth_data, capsys):
+    """Test the summary_feature_importances method."""
+    X, y = simple_earth_data
+
+    # Test before fit
+    model_unfit = Earth(feature_importance_type='nb_subsets')
+    summary_unfit = model_unfit.summary_feature_importances()
+    assert "Model not yet fitted" in summary_unfit
+
+    # Test after fit, but with feature_importance_type=None
+    model_no_fi = Earth(feature_importance_type=None)
+    model_no_fi.fit(X,y)
+    summary_no_fi = model_no_fi.summary_feature_importances()
+    assert "Feature importances not computed" in summary_no_fi
+
+    # Test after fit with feature_importance_type='nb_subsets'
+    model_fi = Earth(feature_importance_type='nb_subsets', max_terms=3)
+    model_fi.fit(X,y)
+    summary_fi = model_fi.summary_feature_importances()
+    captured = capsys.readouterr() # To clear previous prints by model.summary() if any
+
+    print(f"\nCaptured for summary_feature_importances:\n{summary_fi}") # Print for manual inspection
+    assert "Feature Importances (nb_subsets)" in summary_fi
+    assert "x0" in summary_fi # Assuming x0 is the feature name for single feature data
+    assert ":" in summary_fi # Check for value separator
+
+    # Test with a different type (currently placeholder, should show warning in summary)
+    # The _calculate_feature_importances prints a warning for unknown types.
+    # This test currently checks if the summary method handles it.
+    model_unknown_fi = Earth(feature_importance_type='unknown_type', max_terms=3)
+    model_unknown_fi.fit(X,y)
+    summary_unknown = model_unknown_fi.summary_feature_importances()
+    # The summary will still try to print based on self.feature_importances_ (which would be zeros)
+    assert "Feature Importances (unknown_type)" in summary_unknown
+    assert "x0" in summary_unknown # Will show x0 : 0.0000
+
 
 if __name__ == '__main__':
     pytest.main([__file__])

@@ -70,12 +70,10 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
 
     def __init__(self, max_degree: int = 1, penalty: float = 3.0, max_terms: int = None,
                  minspan_alpha: float = 0.0, endspan_alpha: float = 0.0,
-                 minspan: int = -1, endspan: int = -1, # Direct specification parameters
+                 minspan: int = -1, endspan: int = -1,
                  allow_linear: bool = True,
-                 # TODO: Consider other py-earth params like:
-                 # min_search_points,
-                 # smooth, use_fast, fast_K, fast_h,
-                 # allow_missing, zero_tol, check_every, thresh, verbose
+                 feature_importance_type: str = None
+                 # TODO: Consider other py-earth params
                  ):
         # Core MARS algorithm parameters
         self.max_degree = max_degree
@@ -83,27 +81,23 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
         self.max_terms = max_terms
         self.minspan_alpha = minspan_alpha
         self.endspan_alpha = endspan_alpha
-        self.minspan = minspan # Direct override for minspan_alpha if >= 0
-        self.endspan = endspan # Direct override for endspan_alpha if >= 0
+        self.minspan = minspan
+        self.endspan = endspan
         self.allow_linear = allow_linear
+        self.feature_importance_type = feature_importance_type
 
         # Attributes that will be learned during fit
-        self.basis_: list = None  # List of selected BasisFunction objects
-        self.coef_: np.ndarray = None    # Coefficients for the basis functions
-        self.record_ = None       # EarthRecord object storing fitting history
+        self.basis_: list = None
+        self.coef_: np.ndarray = None
+        self.record_ = None
 
-        self.rss_: float = None          # Residual Sum of Squares on training data
-        self.mse_: float = None          # Mean Squared Error on training data
-        self.gcv_: float = None          # Generalized Cross-Validation score of the final model
+        self.rss_: float = None
+        self.mse_: float = None
+        self.gcv_: float = None
 
-        # py-earth also stores gcv and rss for each model in the pruning sequence.
-        # self.bwd_gcv_seq_ = None # GCV sequence during pruning
-        # self.bwd_rss_seq_ = None # RSS sequence during pruning
-        # self.bwd_basis_counts_ = None # Number of terms at each pruning step
-        # These could be part of a more detailed record_ or stored directly if desired.
-        # For now, just storing the final GCV of the selected model.
+        self.feature_importances_: np.ndarray = None # Or dict if multiple types
 
-        self.fitted_ = False # Flag to indicate if model has been fitted
+        self.fitted_ = False
 
     def _build_basis_matrix(self, X: np.ndarray, basis_functions: list) -> np.ndarray:
         """
@@ -247,9 +241,42 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
             else: # Fallback if method not found (e.g. during testing with mocks)
                  self.gcv_ = np.inf
 
+        # Calculate feature importances if requested
+        if self.feature_importance_type is not None:
+            self._calculate_feature_importances(X) # Pass X for n_features, or store n_features during fit
 
         self.fitted_ = True
         return self
+
+    def _calculate_feature_importances(self, X_fit):
+        """
+        Placeholder for feature importance calculation.
+        This will be implemented based on self.feature_importance_type.
+        For 'nb_subsets', it would use self.record_.
+        """
+        # For now, just a placeholder
+        num_features = X_fit.shape[1]
+        if self.feature_importance_type == 'nb_subsets':
+            # This is a simplified placeholder.
+            # Real implementation needs pruning trace from self.record_
+            if self.basis_ and num_features > 0:
+                importances = np.zeros(num_features)
+                for bf in self.basis_:
+                    for var_idx in bf.get_involved_variables():
+                        if var_idx < num_features: # Safety check
+                            importances[var_idx] += 1
+                if np.sum(importances) > 0:
+                    self.feature_importances_ = importances / np.sum(importances)
+                else:
+                    self.feature_importances_ = importances # All zeros
+            else:
+                self.feature_importances_ = np.zeros(num_features)
+        else:
+            # Other types not yet implemented
+            self.feature_importances_ = np.zeros(num_features) # Default to zeros
+            if self.feature_importance_type is not None:
+                 print(f"Warning: feature_importance_type '{self.feature_importance_type}' not yet fully implemented. Returning zeros.")
+
 
     def predict(self, X):
         """
@@ -388,6 +415,67 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
             print("No basis functions or coefficients available.")
 
         print("==========================")
+
+    def summary_feature_importances(self, sort_by_importance: bool = True) -> str:
+        """
+        Return a string describing the estimated feature importances.
+
+        Parameters
+        ----------
+        sort_by_importance : bool, optional (default=True)
+            If True, the features in the summary will be sorted by their
+            importance values in descending order.
+
+        Returns
+        -------
+        str
+            A summary string of feature importances.
+            Returns a message if importances have not been computed.
+        """
+        if not self.fitted_:
+            return "Model not yet fitted. Feature importances not available."
+        if self.feature_importances_ is None:
+            return (f"Feature importances not computed. "
+                    f"Set `feature_importance_type` (e.g., 'nb_subsets') "
+                    f"during model initialization and call `fit()`.")
+
+        # Assuming self.feature_importances_ is a 1D numpy array of scores
+        # and self.record_ contains feature names if available, or we use generic names.
+
+        num_features = len(self.feature_importances_)
+        if hasattr(self.record_, 'n_features') and self.record_.n_features != num_features:
+            # This case should ideally not happen if X_fit was used correctly
+            feature_names = [f"x{i}" for i in range(num_features)]
+        elif hasattr(self.record_, 'feature_names_in_'): # If sklearn wrapper set this in record
+             feature_names = self.record_.feature_names_in_
+        elif hasattr(self.record_, 'model_params') and \
+             self.record_.model_params.get('feature_names_in_') is not None: # Check if stored from wrapper
+             feature_names = self.record_.model_params['feature_names_in_']
+        else: # Fallback to generic names
+            feature_names = [f"x{i}" for i in range(num_features)]
+
+        if len(feature_names) != num_features: # Fallback if names mismatch
+            feature_names = [f"x{i}" for i in range(num_features)]
+
+        importances = self.feature_importances_
+
+        output = ["Feature Importances ({type})".format(type=self.feature_importance_type if self.feature_importance_type else "N/A")]
+        output.append("-------------------------------------")
+
+        if importances.size == 0:
+            output.append("No features or importances available.")
+            return "\n".join(output)
+
+        indices = np.argsort(importances)[::-1] if sort_by_importance else np.arange(num_features)
+
+        # Determine max length of feature name for alignment
+        max_name_len = max(len(name) for name in feature_names) if feature_names else 10
+
+        for i in indices:
+            output.append(f"  {feature_names[i]:<{max_name_len + 2}} : {importances[i]:.4f}")
+
+        output.append("-------------------------------------")
+        return "\n".join(output)
 
 
 if __name__ == '__main__':
