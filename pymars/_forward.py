@@ -410,32 +410,112 @@ class ForwardPasser:
             else: # Default if alpha is invalid or other conditions not met for formula
                 min_span_count = 1
         # If minspan_alpha <= 0 and self.model.minspan < 0, min_span_count remains 0.
+        # ---- Start of new py-earth aligned implementation ----
 
-        if min_span_count > 0:
-            valid_knots_after_minspan = []
-            # Determine X_col_active: data points where parent is active
-            if parent_bf.degree() == 0:
-                X_col_active = X_col # All points active for intercept parent
-            else:
-                # This needs X_train, not just X_col, to get parent transform values
-                parent_transform_full = parent_bf.transform(self.X_train)
-                active_indices = parent_transform_full != 0
-                X_col_active = self.X_train[active_indices, var_idx] # Get relevant column for active samples
+        # 1. Determine n_vars_for_calc (for alpha calculations)
+        # TODO: Refine n_vars_for_calc for closer py-earth parity.
+        # py-earth uses n_effective_variables for minspan_alpha (n_features for additive,
+        # max(1, n_features - parent.num_variables) for interactions) and
+        # n_selected_variables (unique vars in current model) for endspan_alpha.
+        # Using self.n_features is a simplification for now.
+        n_vars_for_calc = self.n_features
+        if n_vars_for_calc == 0: n_vars_for_calc = 1 # Avoid division by zero if n_features is 0
 
-            if X_col_active.size == 0 and count_parent_nonzero > 0:
-                # This can happen if parent is non-zero but not for this specific var_idx's values.
-                # Or if X_col itself was empty after some upstream filtering (unlikely here).
-                # If no active points for this variable under this parent, no knots possible.
-                return np.array([])
+        # 2. Calculate endspan_abs (integer number of unique points to exclude from each end)
+        endspan_abs = 0
+        if self.model.endspan >= 0:
+            endspan_abs = self.model.endspan
+        elif self.model.endspan_alpha > 0:
+            try:
+                # Ensure argument to log2 is positive
+                log_arg = self.model.endspan_alpha / n_vars_for_calc
+                if log_arg <= 0: # Should not happen with valid endspan_alpha
+                    val = 3.0
+                else:
+                    val = 3.0 - np.log2(log_arg) # Using np.log2
 
-            for knot_val_candidate in candidate_knots:
-                num_left = np.sum(X_col_active < knot_val_candidate)
-                num_right = np.sum(X_col_active > knot_val_candidate)
-                if num_left >= min_span_count and num_right >= min_span_count:
-                    valid_knots_after_minspan.append(knot_val_candidate)
-            candidate_knots = np.array(valid_knots_after_minspan)
+                endspan_abs = int(round(val))
+                endspan_abs = max(0, endspan_abs)
+                if endspan_abs == 0: # py-earth ensures endspan is at least 1 if endspan_alpha > 0
+                    endspan_abs = 1
+            except (ValueError, FloatingPointError): # Catch math errors
+                endspan_abs = 1 # Default if calculation fails
 
-        return candidate_knots
+        # 3. Prepare Active Data for the current variable X_col (original full column)
+        if parent_bf.is_constant():
+            p_parent_active = np.ones(self.n_samples, dtype=bool)
+            count_parent_nonzero = self.n_samples
+        else:
+            parent_transform = parent_bf.transform(self.X_train)
+            p_parent_active = (parent_transform != 0)
+            count_parent_nonzero = np.sum(p_parent_active)
+
+        if count_parent_nonzero == 0:
+            return np.array([]) # No active region from parent
+
+        X_values_for_knots = self.X_train[p_parent_active, var_idx]
+
+        if X_values_for_knots.size == 0:
+            return np.array([])
+
+        # 4. Get unique sorted values from the active region
+        unique_sorted_X_active = np.unique(X_values_for_knots) # Already sorted by np.unique
+
+        # 5. Apply endspan_abs to unique sorted active values
+        num_unique_active = len(unique_sorted_X_active)
+        if 2 * endspan_abs >= num_unique_active:
+            return np.array([])
+
+        potential_knots_after_endspan = unique_sorted_X_active[endspan_abs : num_unique_active - endspan_abs]
+
+        if not potential_knots_after_endspan.size:
+            return np.array([])
+
+        # 6. Special Rule for Additive Terms (parent is Intercept)
+        if parent_bf.is_constant():
+            if len(potential_knots_after_endspan) > 1:
+                potential_knots_after_endspan = potential_knots_after_endspan[:-1] # Remove the largest knot
+
+        if not potential_knots_after_endspan.size:
+            return np.array([])
+
+        # 7. Calculate minspan_abs (integer number of distinct subsequent knots to skip)
+        minspan_abs = 0
+        if self.model.minspan >= 0:
+            minspan_abs = self.model.minspan
+        elif self.model.minspan_alpha > 0:
+            if count_parent_nonzero > 0 and n_vars_for_calc > 0 and \
+               0 < self.model.minspan_alpha < 1:
+                try:
+                    # Formula from py-earth _knot_search.pyx
+                    log_val = np.log(1.0 - self.model.minspan_alpha) # Natural log
+                    inner_term = -(1.0 / (n_vars_for_calc * count_parent_nonzero)) * log_val
+                    if inner_term <= 0:
+                        minspan_float = 0.0
+                    else:
+                        minspan_float = -np.log2(inner_term) / 2.5 # np.log2
+                    minspan_abs = int(round(minspan_float))
+                    minspan_abs = max(0, minspan_abs) # py-earth seems to allow 0 here from formula
+                                                      # but often defaults to 1 if alpha used and calc positive
+                    # py-earth: minspan_ = <int> (...) then if minspan<0 (alpha used), minspan_ can be 0.
+                    # Let's stick to max(0, result_from_formula).
+                except (ValueError, FloatingPointError):
+                    minspan_abs = 1 # Default if calc fails, similar to py-earth implicit behavior
+            # If alpha is 0 or invalid, minspan_abs remains 0 (no constraint)
+
+        # 8. Apply minspan_abs (cooldown logic)
+        final_allowable_knots = []
+        minspan_countdown = 0
+        for knot_candidate_val in potential_knots_after_endspan: # These are already unique and sorted
+            if minspan_countdown > 0:
+                minspan_countdown -= 1
+                continue
+
+            final_allowable_knots.append(knot_candidate_val)
+            minspan_countdown = max(0, minspan_abs - 1) # Skip (minspan_abs - 1) next distinct knots
+
+        return np.array(final_allowable_knots)
+        # ---- End of new py-earth aligned implementation ----
 
 
     def _generate_candidates(self) -> list[tuple[BasisFunction, BasisFunction]]:

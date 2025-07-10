@@ -34,13 +34,36 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
         the forward pass. If None, it's determined by a heuristic based on
         the number of samples.
 
+    minspan : int or float, optional
+        Controls the minimum separation between knots.
+        If `minspan >= 0`, it's the direct minimum number of unique predictor values
+        to skip between chosen knots (a "cooldown" period). `minspan=0` or `minspan=1`
+        typically means no skipping of distinct available knots.
+        If `minspan < 0` (default is -1), `minspan_alpha` is used.
+        This behavior is aligned with `py-earth`.
+
     minspan_alpha : float, optional (default=0.0)
-        Parameter controlling the minimum span of a basis function.
-        Not yet fully implemented in this pure Python version.
+        If `minspan < 0`, this alpha parameter is used to calculate `minspan`.
+        The formula (from `py-earth`) is approximately:
+        `int(round(-log2(-(1/(N_eff * C_parent)) * log(1-alpha)) / 2.5))`
+        where `N_eff` relates to number of features and `C_parent` to active
+        parent samples. A higher alpha leads to a larger `minspan`.
+        If `minspan_alpha <= 0`, `minspan` becomes 0 (no cooldown).
+
+    endspan : int or float, optional
+        Controls how close knots can be to the data boundaries.
+        If `endspan >= 0`, it's the number of unique predictor values to exclude
+        from each end of the sorted unique values (in the active region defined
+        by the parent basis function) when considering knot locations.
+        If `endspan < 0` (default is -1), `endspan_alpha` is used.
 
     endspan_alpha : float, optional (default=0.0)
-        Parameter controlling the end span of a basis function.
-        Not yet fully implemented in this pure Python version.
+        If `endspan < 0`, this alpha parameter is used to calculate `endspan`.
+        The formula (from `py-earth`) is approximately:
+        `int(round(3.0 - log2(alpha / N_eff)))`, then `max(0, val)`, and
+        if result is 0 and alpha > 0, it becomes 1.
+        A higher alpha leads to a larger `endspan`.
+        If `endspan_alpha <= 0`, `endspan` becomes 0.
 
     allow_linear : bool, optional (default=True)
         Whether to allow linear basis functions to be considered.

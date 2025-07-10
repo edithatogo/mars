@@ -10,6 +10,7 @@
     *   Forward pass to select basis functions (hinge functions).
     *   Pruning pass using Generalized Cross-Validation (GCV) to prevent overfitting.
     *   Support for interaction terms.
+    *   Refined `minspan` and `endspan` controls for knot placement, aligning more closely with `py-earth` behavior (e.g., `minspan` as a cooldown period).
 *   **Feature Importance:** Calculation of feature importances using methods like 'nb_subsets' (number of subsets in pruning trace), 'gcv' (GCV improvement), and 'rss' (RSS reduction).
 *   **Regression and Classification:** Provides `EarthRegressor` and `EarthClassifier` classes.
 

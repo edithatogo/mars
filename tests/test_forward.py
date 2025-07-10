@@ -171,6 +171,7 @@ def test_get_allowable_knot_values(simple_data):
     earth_model = MockEarth(endspan_alpha=0.0) # Default endspan behavior
     passer = ForwardPasser(earth_model)
     passer.X_train = X # Initialize X_train for the passer
+    passer.n_samples, passer.n_features = X.shape # CRITICAL: Set these before direct call
 
     parent_intercept = ConstantBasisFunction()
 
@@ -196,19 +197,25 @@ def test_get_allowable_knot_values(simple_data):
     # Test with too few unique values
     X_few_unique = np.array([[1.0],[1.0],[2.0]])
     passer.X_train = X_few_unique
+    passer.n_samples, passer.n_features = X_few_unique.shape # Update passer's n_samples/n_features
     knots_few = passer._get_allowable_knot_values(X_few_unique[:,0], parent_intercept, 0)
-    # With endspan_alpha=0, endspan_count=0. unique_X_vals=[1,2].
-    # Additive term rule: len([1,2]) > 1, so [1,2][:-1] = [1.0]
+    # With endspan_alpha=0 (so endspan_abs=0). unique_X_vals=[1,2].
+    # Additive term rule (parent is intercept): len([1,2]) > 1, so [1,2][:-1] = [1.0]
+    # minspan_abs=0. No filtering.
     assert np.array_equal(knots_few, np.array([1.0]))
 
     # Test with an interaction parent (degree > 0)
-    parent_hinge = HingeBasisFunction(0, 2.0, variable_name="x0_h2") # Dummy parent
-    passer.X_train = X # Reset to original simple_data X
-    passer.n_features = X.shape[1] # Ensure n_features is set for passer
+    parent_hinge = HingeBasisFunction(0, 2.0, variable_name="x0_h2") # max(0, x-2)
+    passer.X_train = X # Reset to original simple_data X = [[1],[2],[3],[4],[5]]
+    passer.n_samples, passer.n_features = X.shape # Update n_samples/n_features
+
     knots_inter = passer._get_allowable_knot_values(X[:,0], parent_hinge, 0)
-    # Should return all unique values as parent is not intercept (for current simplified logic)
-    # and endspan_alpha is 0 for this earth_model instance
-    assert np.array_equal(knots_inter, np.array([1.,2.,3.,4.,5.]))
+    # X = [1,2,3,4,5]. Parent max(0,x-2) is [0,0,1,2,3]. Active X for knots: [3,4,5].
+    # earth_model (used by passer) has endspan_alpha=0.0 -> endspan_abs=0.
+    # Parent is not constant, so additive rule (drop max knot) is skipped.
+    # earth_model has minspan_alpha=0.0, minspan=-1 -> minspan_abs=0. No cooldown.
+    # Expected knots: [3,4,5]
+    assert np.array_equal(knots_inter, np.array([3.,4.,5.]))
 
     # Test direct endspan parameter
     earth_model_direct_endspan = MockEarth(endspan=1) # Exclude 1 from each end of unique_X_vals
@@ -220,9 +227,9 @@ def test_get_allowable_knot_values(simple_data):
     knots_direct_es = passer_direct_endspan._get_allowable_knot_values(X[:,0], parent_intercept, 0)
     assert np.array_equal(knots_direct_es, np.array([2.0, 3.0]))
 
-    # Test direct minspan parameter (non-recursive check)
+    # Test direct minspan parameter
     # Knots from above with endspan=1, parent=intercept are [2.0, 3.0]
-    # X_col = [1,2,3,4,5]. minspan=1.
+    # X_col = [1,2,3,4,5]. minspan=1 (means minspan_abs=1, cooldown=0, no skipping)
     # Knot 2.0: left (<2.0) has [1] (1 point >= minspan=1). right (>2.0) has [3,4,5] (3 points >= minspan=1). OK.
     # Knot 3.0: left (<3.0) has [1,2] (2 points >= minspan=1). right (>3.0) has [4,5] (2 points >= minspan=1). OK.
     earth_model_direct_minspan = MockEarth(endspan=1, minspan=1)
@@ -233,20 +240,20 @@ def test_get_allowable_knot_values(simple_data):
     knots_direct_ms = passer_direct_minspan._get_allowable_knot_values(X[:,0], parent_intercept, 0)
     assert np.array_equal(knots_direct_ms, np.array([2.0, 3.0]))
 
-    # Test direct minspan that excludes knots
+    # Test direct minspan that excludes knots due to cooldown
     # Knots from endspan=1, parent=intercept are [2.0, 3.0]
-    # X_col = [1,2,3,4,5]. minspan=2.
-    # Knot 2.0: left (<2.0) has [1] (1 point < minspan=2). NOT OK.
-    # Knot 3.0: left (<3.0) has [1,2] (2 points >= minspan=2). right (>3.0) has [4,5] (2 points >= minspan=2). OK.
+    # X_col = [1,2,3,4,5]. minspan=2 (means minspan_abs=2, cooldown=1)
+    # Knot 2.0 selected. Cooldown=1.
+    # Knot 3.0 encountered. Cooldown>0. Skip. Cooldown=0.
+    # Expected: [2.0]
     earth_model_direct_minspan_restrict = MockEarth(endspan=1, minspan=2)
     passer_direct_minspan_restrict = ForwardPasser(earth_model_direct_minspan_restrict)
-    passer_direct_minspan_restrict.X_train = X
-    passer_direct_minspan_restrict.n_samples = X.shape[0]
-    passer_direct_minspan_restrict.n_features = X.shape[1]
+    passer_direct_minspan_restrict.X_train = X # X is still simple_data [1,2,3,4,5]
+    passer_direct_minspan_restrict.n_samples, passer_direct_minspan_restrict.n_features = X.shape
     knots_direct_ms_restrict = passer_direct_minspan_restrict._get_allowable_knot_values(X[:,0], parent_intercept, 0)
-    assert np.array_equal(knots_direct_ms_restrict, np.array([3.0]))
+    assert np.array_equal(knots_direct_ms_restrict, np.array([2.0]))
 
-    # Test minspan_alpha calculation (simplified, as full formula is complex and has logs)
+    # Test minspan_alpha calculation
     # For this, we need to ensure count_parent_nonzero is reasonable.
     # Let parent be intercept, so count_parent_nonzero = n_samples = 5
     # n_features = 1. If minspan_alpha = 0.5.
@@ -260,8 +267,65 @@ def test_get_allowable_knot_values(simple_data):
     passer_alpha_minspan.X_train = X
     passer_alpha_minspan.n_samples = X.shape[0] # 5
     passer_alpha_minspan.n_features = X.shape[1] # 1
+    # For minspan_abs=1, cooldown is max(0,1-1)=0. No skipping.
     knots_alpha_ms = passer_alpha_minspan._get_allowable_knot_values(X[:,0], parent_intercept, 0)
-    assert np.array_equal(knots_alpha_ms, np.array([2.0, 3.0]))
+    assert np.array_equal(knots_alpha_ms, np.array([2.0, 3.0])) # Knots [2,3] from endspan=1, additive rule. minspan=1 doesn't filter.
+
+    # Test minspan that actively filters due to cooldown
+    # X = [1,2,3,4,5]. Parent=intercept. endspan=0. Additive rule -> knots [1,2,3,4]
+    # If minspan_abs = 2 (cooldown 1):
+    #   Knot 1 selected. Cooldown = 1.
+    #   Knot 2 encountered. Cooldown > 0. Skip. Cooldown = 0.
+    #   Knot 3 selected. Cooldown = 1.
+    #   Knot 4 encountered. Cooldown > 0. Skip. Cooldown = 0.
+    # Expected: [1,3]
+    earth_model_minspan_cooldown = MockEarth(endspan=0, minspan=2)
+    passer_minspan_cooldown = ForwardPasser(earth_model_minspan_cooldown)
+    passer_minspan_cooldown.X_train = X
+    passer_minspan_cooldown.n_samples = X.shape[0]
+    passer_minspan_cooldown.n_features = X.shape[1]
+    knots_cooldown = passer_minspan_cooldown._get_allowable_knot_values(X[:,0], parent_intercept, 0)
+    assert np.array_equal(knots_cooldown, np.array([1.0, 3.0]))
+
+    # Test with an interaction parent (degree > 0), no additive rule for dropping max knot
+    parent_hinge = HingeBasisFunction(0, 0.5, variable_name="x0_h_dummy") # Degree 1 parent
+    # X = [1,2,3,4,5]. endspan=0. No additive rule. Knots [1,2,3,4,5]
+    # minspan_abs = 2 (cooldown 1):
+    #   Knot 1. Cooldown = 1.
+    #   Knot 2. Skip. Cooldown = 0.
+    #   Knot 3. Cooldown = 1.
+    #   Knot 4. Skip. Cooldown = 0.
+    #   Knot 5. Cooldown = 1.
+    # Expected: [1,3,5]
+    earth_model_inter_minspan = MockEarth(endspan=0, minspan=2)
+    passer_inter_minspan = ForwardPasser(earth_model_inter_minspan)
+    passer_inter_minspan.X_train = X
+    passer_inter_minspan.n_samples = X.shape[0]
+    passer_inter_minspan.n_features = X.shape[1]
+    # Mock parent transform to be all non-zero for simplicity of X_values_for_knots
+    parent_hinge.transform = lambda x_arr: np.ones(x_arr.shape[0])
+    knots_inter_ms = passer_inter_minspan._get_allowable_knot_values(X[:,0], parent_hinge, 0)
+    assert np.array_equal(knots_inter_ms, np.array([1.0, 3.0, 5.0]))
+
+    # Test case: endspan makes all knots invalid
+    earth_model_high_endspan = MockEarth(endspan=3) # X has 5 unique values. 2*3 >= 5
+    passer_high_endspan = ForwardPasser(earth_model_high_endspan)
+    passer_high_endspan.X_train = X
+    passer_high_endspan.n_samples = X.shape[0]
+    passer_high_endspan.n_features = X.shape[1]
+    knots_high_es = passer_high_endspan._get_allowable_knot_values(X[:,0], parent_intercept, 0)
+    assert np.array_equal(knots_high_es, np.array([]))
+
+    # Test case: No active parent samples
+    X_active_test = np.array([[1],[2],[3],[4],[5]])
+    parent_bf_inactive = HingeBasisFunction(0,10.0) # Will be zero for all X_active_test
+    earth_model_inactive_parent = MockEarth()
+    passer_inactive_parent = ForwardPasser(earth_model_inactive_parent)
+    passer_inactive_parent.X_train = X_active_test
+    passer_inactive_parent.n_samples = X_active_test.shape[0]
+    passer_inactive_parent.n_features = X_active_test.shape[1]
+    knots_inactive = passer_inactive_parent._get_allowable_knot_values(X_active_test[:,0], parent_bf_inactive, 0)
+    assert np.array_equal(knots_inactive, np.array([]))
 
 
 def test_generate_candidates_simple(simple_data):
