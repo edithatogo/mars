@@ -10,6 +10,7 @@
     *   Forward pass to select basis functions (hinge functions).
     *   Pruning pass using Generalized Cross-Validation (GCV) to prevent overfitting.
     *   Support for interaction terms.
+*   **Feature Importance:** Calculation of feature importances using methods like 'nb_subsets' (number of subsets in pruning trace), 'gcv' (GCV improvement), and 'rss' (RSS reduction).
 *   **Regression and Classification:** Provides `EarthRegressor` and `EarthClassifier` classes.
 
 ## Project Status
@@ -55,6 +56,12 @@ import pymars as earth # Target import style
 
 # Print model summary (if available)
 # print(model_reg.summary())
+
+# Access feature importances (if calculated)
+# if hasattr(model_reg, 'feature_importances_') and model_reg.feature_importances_ is not None:
+#     print("Feature Importances:", model_reg.feature_importances_)
+#     # Or use the summary method:
+#     # print(model_reg.summary_feature_importances())
 
 
 # --- Classification Example (Conceptual) ---

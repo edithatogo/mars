@@ -320,8 +320,154 @@ def test_earth_nb_subsets_calculation_mocked_record(capsys):
     summary = model.summary_feature_importances()
     print(summary) # For manual check during test dev
     assert "Feature Importances (nb_subsets)" in summary
-    assert "x0          : 0.6000" in summary # Check formatting and values
-    assert "x1          : 0.4000" in summary
+    # For feature names "x0", "x1", max_name_len is 2.
+    # Format is "  {name:<{max_name_len+2}} : {value:.4f}" which is "  {name:<4} : {value:.4f}"
+    # "x0" becomes "x0  ", "x1" becomes "x1  "
+    # Lines are "  x0   : 0.6000" and "  x1   : 0.4000"
+    assert "  x0   : 0.6000" in summary
+    assert "  x1   : 0.4000" in summary
+
+def test_earth_feature_importance_gcv(simple_earth_data, more_complex_earth_data, capsys):
+    """Test GCV-based feature importance calculation."""
+    # Using more_complex_earth_data as it has multiple features
+    X, y = more_complex_earth_data
+
+    # Create a dataset where one feature is clearly more important
+    # y = 2 * X[:,0] + np.sin(np.pi * X[:,1]) - X[:,2]**2 is the setup
+    # Feature 0 (linear) and Feature 1 (sinusoidal) are important. Feature 2 (quadratic) also.
+    # GCV scores can be subtle.
+
+    model = Earth(max_degree=1, max_terms=7, feature_importance_type='gcv', penalty=3.0)
+    model.fit(X, y)
+
+    assert model.feature_importances_ is not None
+    assert model.feature_importances_.shape == (X.shape[1],)
+
+    # Check that importances sum to 1.0 (if any are non-zero) or 0.0 (if all are zero)
+    if np.any(model.feature_importances_ > 0):
+        assert np.isclose(np.sum(model.feature_importances_), 1.0, atol=1e-5)
+    else:
+        # This case (all zero) can happen if no terms had positive gcv_score_
+        assert np.all(model.feature_importances_ == 0.0)
+
+    # Qualitative check: For the more_complex_earth_data, X0, X1, X2 all contribute.
+    # It's hard to give a strict ordering for GCV without running py-earth side-by-side
+    # or doing manual calculations.
+    # For now, just check that some importances are non-zero if the model is not trivial.
+    if len(model.basis_) > 1: # If model is more than just intercept
+        # It's possible all gcv_scores were <=0, leading to zero importances.
+        # This test mostly ensures the calculation runs and format is okay.
+        pass # Specific value assertions are too brittle for GCV feature importance here.
+
+    # Test that the summary can be printed
+    summary_str = model.summary_feature_importances()
+    captured = capsys.readouterr() # Clear previous prints
+    print(f"\nGCV Importance Summary:\n{summary_str}")
+
+    assert isinstance(summary_str, str)
+    assert "Feature Importances (gcv)" in summary_str
+    if X.shape[1] > 0:
+        assert "x0" in summary_str # Generic feature name
+
+    # Test with a dataset where no terms might be selected or GCV scores are zero/negative
+    # Using simple_earth_data which is 1D - results might be all for x0 or zero.
+    X_simple, y_simple = simple_earth_data
+
+    model_simple_signal = Earth(max_degree=1, max_terms=3, feature_importance_type='gcv', penalty=3.0)
+    model_simple_signal.fit(X_simple, y_simple)
+
+    assert model_simple_signal.feature_importances_ is not None
+    assert model_simple_signal.feature_importances_.shape == (X_simple.shape[1],)
+    if np.any(model_simple_signal.feature_importances_ > 0):
+        assert np.isclose(np.sum(model_simple_signal.feature_importances_), 1.0, atol=1e-5)
+    else:
+        assert np.all(model_simple_signal.feature_importances_ == 0.0)
+
+    # If there's only one feature, its importance should be 1.0 if any term involving it was added
+    # with a positive gcv_score. Otherwise, it's 0.0.
+    if X_simple.shape[1] == 1 and np.any(model_simple_signal.feature_importances_ > 0) :
+        assert np.isclose(model_simple_signal.feature_importances_[0], 1.0, atol=1e-5)
+
+def test_earth_feature_importance_rss(simple_earth_data, more_complex_earth_data, capsys):
+    """Test RSS-based feature importance calculation."""
+    X, y = more_complex_earth_data
+
+    model = Earth(max_degree=1, max_terms=7, feature_importance_type='rss', penalty=3.0)
+    model.fit(X, y)
+
+    assert model.feature_importances_ is not None
+    assert model.feature_importances_.shape == (X.shape[1],)
+
+    if np.any(model.feature_importances_ > 0):
+        assert np.isclose(np.sum(model.feature_importances_), 1.0, atol=1e-5)
+    else:
+        assert np.all(model.feature_importances_ == 0.0)
+
+    # Qualitative check: RSS reduction is the primary driver for term selection in forward pass.
+    # Expect features that allow good RSS reduction to have higher scores.
+    if len(model.basis_) > 1: # If model is more than just intercept
+        # For more_complex_data, all features contribute.
+        # We expect non-zero importances if terms were added.
+        # This is more likely to be non-zero than GCV if terms were added, as RSS reduction is direct.
+        # However, if all rss_scores were <=0 (e.g. due to numerical precision with EPSILON checks),
+        # then importances could still be zero.
+        pass # Specific value assertions are too brittle here.
+
+    summary_str = model.summary_feature_importances()
+    captured = capsys.readouterr() # Clear previous prints
+    print(f"\nRSS Importance Summary:\n{summary_str}")
+
+    assert isinstance(summary_str, str)
+    assert "Feature Importances (rss)" in summary_str
+    if X.shape[1] > 0:
+        assert "x0" in summary_str
+
+    # Test with simple_earth_data
+    X_simple, y_simple = simple_earth_data
+    model_simple_signal = Earth(max_degree=1, max_terms=3, feature_importance_type='rss', penalty=3.0)
+    model_simple_signal.fit(X_simple, y_simple)
+
+    assert model_simple_signal.feature_importances_ is not None
+    assert model_simple_signal.feature_importances_.shape == (X_simple.shape[1],)
+    if np.any(model_simple_signal.feature_importances_ > 0):
+        assert np.isclose(np.sum(model_simple_signal.feature_importances_), 1.0, atol=1e-5)
+    else:
+        assert np.all(model_simple_signal.feature_importances_ == 0.0)
+
+    if X_simple.shape[1] == 1 and np.any(model_simple_signal.feature_importances_ > 0):
+        assert np.isclose(model_simple_signal.feature_importances_[0], 1.0, atol=1e-5)
+
+def test_earth_invalid_feature_importance_type(simple_earth_data, capsys):
+    """Test behavior with an invalid feature_importance_type."""
+    X, y = simple_earth_data
+    invalid_type = "this_is_not_a_valid_type"
+    model = Earth(feature_importance_type=invalid_type)
+    model.fit(X, y)
+
+    assert model.fitted_
+    assert model.feature_importances_ is not None
+    assert isinstance(model.feature_importances_, np.ndarray)
+    assert len(model.feature_importances_) == X.shape[1]
+    assert np.all(model.feature_importances_ == 0.0), "Importances should be all zeros for invalid type"
+
+    # Check for the warning message
+    captured = capsys.readouterr()
+    # The warning is printed during _calculate_feature_importances, which is called by fit()
+    # stdout of fit() method is captured here.
+    # print(f"Captured output for invalid type:\nSTDOUT:\n{captured.out}\nSTDERR:\n{captured.err}")
+    assert f"Warning: feature_importance_type '{invalid_type}'" in captured.out
+    assert "is not yet fully implemented. Returning zeros for importances." in captured.out
+
+    # Test summary method for this case
+    summary_str = model.summary_feature_importances()
+    assert f"Feature Importances ({invalid_type})" in summary_str
+    if X.shape[1] > 0:
+        # Default feature name for single feature X is 'x0'
+        # max_name_len will be 2. Formatting is {name:<{max_name_len+2}} which is {name:<4}
+        # So "x0" becomes "x0  "
+        # The line is "  {formatted_name} : {value:.4f}"
+        expected_feature_line = "  x0   : 0.0000" # "x0" + 2 spaces (from padding) + " : 0.0000"
+        assert expected_feature_line in summary_str
 
 
 if __name__ == '__main__':

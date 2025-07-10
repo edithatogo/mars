@@ -11,6 +11,7 @@ import numpy as np
 from ._basis import BasisFunction, HingeBasisFunction, ConstantBasisFunction, LinearBasisFunction
 from ._record import EarthRecord # Assuming EarthRecord is used by Earth model instance
 from .earth import Earth # For type hinting
+from ._util import calculate_gcv, gcv_penalty_cost_effective_parameters # For GCV calculations
 
 # Define a small constant for numerical stability if needed
 EPSILON = np.finfo(float).eps
@@ -213,8 +214,101 @@ class ForwardPasser:
             self._best_new_coeffs = None
             # self._min_candidate_rss is implicitly reset at the start of _find_best_candidate_pair
 
+            # If a best pair was found and it improved RSS
+            if self._best_candidate_pair is not None and self._min_candidate_rss < self.current_rss - EPSILON:
+                bf_left, bf_right = self._best_candidate_pair
+
+                # Calculate GCV reduction for this pair
+                # GCV before adding the pair
+                gcv_before, _ = self._calculate_gcv_for_basis_set(self.current_basis_functions)
+
+                # GCV after adding the pair (using the already computed RSS and coeffs for the new model)
+                # We need effective_num_params for the new model (current + pair)
+                num_terms_with_pair = len(self.current_basis_functions) + 2
+
+                # Use self._best_new_B_matrix which corresponds to model with the pair
+                effective_params_with_pair = gcv_penalty_cost_effective_parameters(
+                    self._best_new_B_matrix.shape[1], self.model.penalty, self.n_samples
+                )
+                gcv_with_pair = calculate_gcv(self._min_candidate_rss, effective_params_with_pair, self.n_samples)
+
+                if gcv_before is not None and gcv_with_pair is not None: # Ensure GCVs were calculable
+                    gcv_reduction = gcv_before - gcv_with_pair
+                    # py-earth assigns this reduction to the basis functions if they are part of the chosen model
+                    # This score is used later if the BFs survive pruning
+                    bf_left.gcv_score_ = gcv_reduction
+                    bf_right.gcv_score_ = gcv_reduction
+
+                # Calculate and store RSS reduction for this pair
+                # self.current_rss is RSS before adding the pair
+                # self._min_candidate_rss is RSS after adding the pair
+                rss_reduction = self.current_rss - self._min_candidate_rss
+                bf_left.rss_score_ = rss_reduction
+                bf_right.rss_score_ = rss_reduction
+
+                # Add the best pair to the model (official update)
+                self.current_basis_functions.extend([bf_left, bf_right])
+                self.current_B_matrix = self._best_new_B_matrix
+                self.current_coefficients = self._best_new_coeffs
+                self.current_rss = self._min_candidate_rss
+
+                # print(f"Added pair: {str(bf_left)} & {str(bf_right)}. New RSS: {self.current_rss:.4f}. GCV reduction: {gcv_reduction if 'gcv_reduction' in locals() else 'N/A'}. Num terms: {len(self.current_basis_functions)}")
+
+                if self.model.record_ is not None and hasattr(self.model.record_, 'log_forward_pass_step'):
+                    self.model.record_.log_forward_pass_step(
+                        self.current_basis_functions, self.current_coefficients, self.current_rss
+                    )
+
+                # Reset for next iteration's search
+                self._best_candidate_pair = None
+                self._best_new_B_matrix = None
+                self._best_new_coeffs = None
+            else:
+                # No improvement or no valid candidates found, stop.
+                # print(f"Stopping: No further RSS improvement or no valid candidates. Current RSS: {self.current_rss:.4f}, Best Candidate RSS: {self._min_candidate_rss:.4f}")
+                break
+
+
         # print(f"Forward pass complete. Final RSS: {self.current_rss:.4f}, Num terms: {len(self.current_basis_functions)}")
         return self.current_basis_functions, self.current_coefficients
+
+    def _calculate_gcv_for_basis_set(self, basis_functions: list[BasisFunction]) -> tuple[float | None, np.ndarray | None]:
+        """
+        Calculates GCV and coefficients for a given set of basis functions.
+        Returns (gcv, coeffs) or (None, None) if GCV cannot be computed.
+        """
+        if not basis_functions: # Should not happen if intercept is always there
+            return np.inf, None
+
+        B_matrix = self._build_basis_matrix(self.X_train, basis_functions)
+        if B_matrix.shape[1] == 0: # No terms in basis matrix
+            # GCV for a model that predicts mean (intercept only, but B_matrix is empty)
+            # This case needs careful handling. If basis_functions = [ConstantBasisFunction()],
+            # B_matrix should be (N,1). If basis_functions is truly empty, it's different.
+            # For now, assume if basis_functions is not empty, B_matrix won't be empty unless error.
+            # If it *is* empty, GCV is essentially for a model predicting the mean.
+            rss = np.sum((self.y_train - np.mean(self.y_train))**2)
+            # Effective parameters for intercept-only model is typically 1.
+            # However, gcv_penalty_cost_effective_parameters expects num_model_params (cols in B)
+            # This path might indicate an issue if basis_functions is not empty but B_matrix is.
+            effective_params = gcv_penalty_cost_effective_parameters(1, self.model.penalty, self.n_samples)
+            gcv = calculate_gcv(rss, effective_params, self.n_samples)
+            return gcv, np.array([np.mean(self.y_train)])
+
+
+        rss, coeffs = self._calculate_rss_and_coeffs(B_matrix, self.y_train)
+
+        if rss == np.inf or coeffs is None:
+            return np.inf, None # Unstable fit or error
+
+        # Calculate effective number of parameters for GCV
+        # num_model_params = B_matrix.shape[1] (number of basis functions in current set)
+        effective_num_params = gcv_penalty_cost_effective_parameters(
+            B_matrix.shape[1], self.model.penalty, self.n_samples
+        )
+
+        gcv_score = calculate_gcv(rss, effective_num_params, self.n_samples)
+        return gcv_score, coeffs
 
     def _get_allowable_knot_values(self, X_col: np.ndarray, parent_bf: BasisFunction, var_idx: int) -> np.ndarray:
         """

@@ -32,6 +32,8 @@ class BasisFunction(ABC):
         self.is_linear_term: bool = False # Indicates if the *newest* component is linear
         self.is_hinge_term: bool = False  # Indicates if the *newest* component is a hinge
         self._involved_variables: frozenset[int] = frozenset() # Variables involved in this basis function
+        self.gcv_score_: float = 0.0 # GCV reduction contribution of this basis function (when added as part of a pair)
+        self.rss_score_: float = 0.0 # RSS reduction contribution of this basis function (when added as part of a pair)
 
     def get_involved_variables(self) -> frozenset[int]:
         """
@@ -101,6 +103,13 @@ class BasisFunction(ABC):
         self.is_hinge_term = is_hinge
         self._involved_variables = involved_variables
 
+    @abstractmethod
+    def is_constant(self) -> bool:
+        """
+        Return True if the basis function is a constant (intercept) term.
+        """
+        pass
+
 
 class ConstantBasisFunction(BasisFunction):
     """
@@ -144,6 +153,9 @@ class ConstantBasisFunction(BasisFunction):
         The degree of a constant basis function is 0.
         """
         return 0
+
+    def is_constant(self) -> bool:
+        return True
 
 
 class HingeBasisFunction(BasisFunction):
@@ -228,6 +240,9 @@ class HingeBasisFunction(BasisFunction):
             return self.parent1.degree() + 1
         return 1
 
+    def is_constant(self) -> bool:
+        return False
+
 
 class LinearBasisFunction(BasisFunction):
     """
@@ -296,6 +311,9 @@ class LinearBasisFunction(BasisFunction):
         if self.parent1:
             return self.parent1.degree() + 1
         return 1
+
+    def is_constant(self) -> bool:
+        return False
 
 
 # TODO: Consider a more generic InteractionBasisFunction(bf1, bf2) if needed,

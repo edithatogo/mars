@@ -42,24 +42,49 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
         Parameter controlling the end span of a basis function.
         Not yet fully implemented in this pure Python version.
 
-    # Add other py-earth parameters as needed
+    allow_linear : bool, optional (default=True)
+        Whether to allow linear basis functions to be considered.
+        Note: Current implementation primarily focuses on hinge functions;
+        full linear term consideration might be limited.
+
+    feature_importance_type : {'nb_subsets', 'gcv', 'rss', None}, optional (default=None)
+        If not None, specifies the method to calculate feature importances,
+        which are then available in the `feature_importances_` attribute.
+        - 'nb_subsets': Importance is the number of times each feature
+          appears in a basis function in the models considered during
+          the pruning pass, normalized.
+        - 'gcv': Importance is based on the sum of GCV improvements
+          when terms involving a feature are added during the forward pass.
+          Only terms that survive pruning contribute. Normalized.
+        - 'rss': Importance is based on the sum of RSS reductions
+          when terms involving a feature are added during the forward pass.
+          Only terms that survive pruning contribute. Normalized.
+        If None, feature importances are not computed.
 
     Attributes
     ----------
     basis_ : list of BasisFunction
         The selected basis functions after the pruning pass.
 
-    coef_ : array of shape (n_basis_functions, n_outputs)
-        The coefficients of the selected basis functions.
+    coef_ : array of shape (n_basis_functions,)
+        The coefficients of the selected basis functions. (Assumes single output target)
 
     record_ : EarthRecord
         An object storing information about the fitting process.
+
+    rss_ : float
+        Residual Sum of Squares of the final model on the training data.
 
     mse_ : float
         Mean Squared Error of the final model on the training data.
 
     gcv_ : float
         Generalized Cross-Validation score of the final model.
+
+    feature_importances_ : numpy.ndarray of shape (n_features,) or None
+        Normalized feature importances if `feature_importance_type` was set.
+        The calculation method depends on the `feature_importance_type` parameter.
+        None if feature importances were not computed.
 
     Notes
     -----
@@ -292,6 +317,65 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
             else:
                 # All zeros if no features were ever used or trace was empty in a weird way
                 self.feature_importances_ = importances
+
+        elif self.feature_importance_type == 'gcv':
+            importances = np.zeros(num_features)
+            if not self.basis_: # No basis functions in the final model
+                self.feature_importances_ = importances
+                return
+
+            for bf in self.basis_:
+                if bf.is_constant(): # Skip intercept
+                    continue
+
+                # gcv_score_ should have been set during the forward pass
+                # for basis functions that were part of a selected pair.
+                score_to_add = getattr(bf, 'gcv_score_', 0.0)
+
+                # py-earth uses max(0, gcv_reduction_score) when summing for feature importance.
+                # This ensures that terms that actually improved GCV (or didn't worsen it)
+                # contribute positively to the importance score.
+                actual_contribution = max(0.0, score_to_add)
+
+                if actual_contribution > 0: # Only add if there's a non-negative contribution
+                    for var_idx in bf.get_involved_variables():
+                        if 0 <= var_idx < num_features:
+                            importances[var_idx] += actual_contribution
+
+            # Normalize importances
+            total_importance = np.sum(importances)
+            if total_importance > 0:
+                self.feature_importances_ = importances / total_importance
+            else:
+                self.feature_importances_ = importances # All zeros if no positive contributions or all contributions were <=0
+
+        elif self.feature_importance_type == 'rss':
+            importances = np.zeros(num_features)
+            if not self.basis_: # No basis functions in the final model
+                self.feature_importances_ = importances
+                return
+
+            for bf in self.basis_:
+                if bf.is_constant(): # Skip intercept
+                    continue
+
+                # rss_score_ should have been set during the forward pass
+                score_to_add = getattr(bf, 'rss_score_', 0.0)
+
+                # py-earth uses max(0, rss_reduction_score) for consistency with GCV logic
+                actual_contribution = max(0.0, score_to_add)
+
+                if actual_contribution > 0:
+                    for var_idx in bf.get_involved_variables():
+                        if 0 <= var_idx < num_features:
+                            importances[var_idx] += actual_contribution
+
+            # Normalize importances
+            total_importance = np.sum(importances)
+            if total_importance > 0:
+                self.feature_importances_ = importances / total_importance
+            else:
+                self.feature_importances_ = importances # All zeros
 
         elif self.feature_importance_type is not None:
             # Placeholder for other types or warning for unknown types
