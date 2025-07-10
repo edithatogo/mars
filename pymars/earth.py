@@ -66,9 +66,9 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
         If `endspan_alpha <= 0`, `endspan` becomes 0.
 
     allow_linear : bool, optional (default=True)
-        Whether to allow linear basis functions to be considered.
-        Note: Current implementation primarily focuses on hinge functions;
-        full linear term consideration might be limited.
+        If True, the forward pass will consider adding linear basis functions
+        (e.g., `x_i` or `ParentBF * x_i`) in addition to hinge functions.
+        If False, only hinge functions will be considered.
 
     feature_importance_type : {'nb_subsets', 'gcv', 'rss', None}, optional (default=None)
         If not None, specifies the method to calculate feature importances,

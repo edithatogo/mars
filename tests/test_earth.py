@@ -121,12 +121,12 @@ def test_earth_fit_predict_more_complex(more_complex_earth_data):
         has_interaction = any(bf.degree() > 1 for bf in model.basis_)
         # This is not a strict guarantee for all data, but for this one it should find some.
         # If not, the test might be too brittle or data not complex enough for this max_terms.
-        # Marking as xfail as interaction selection is complex and data/param dependent.
+        # Even with linear terms, interaction selection can be sensitive to the greedy search.
         if len(model.basis_) > 1 : # If more than just intercept
             if not has_interaction:
                 pytest.xfail("Interaction term not selected for this data/param combination, "
-                             "which can happen with greedy forward pass.")
-            assert has_interaction, "Expected interaction terms with max_degree > 1"
+                             "which can happen with greedy forward pass even with linear terms.")
+            assert has_interaction, "Expected interaction terms with max_degree > 1 for this complex data."
 
 
 def test_earth_summary_method(simple_earth_data, capsys):

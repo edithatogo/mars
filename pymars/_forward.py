@@ -183,25 +183,63 @@ class ForwardPasser:
             # So, if max_terms_for_loop is M, we can have at most M terms.
             # The intercept is 1 term. Each iteration adds 2 terms.
             # If current_basis_functions has L terms, we can add 2 more if L+2 <= M.
-            if len(self.current_basis_functions) + 2 > max_terms_for_loop:
-                # print(f"Stopping: Max terms ({max_terms_for_loop}) would be exceeded.")
-                break
+            # Determine how many terms would be added by the best candidate (1 for linear, 2 for hinge pair)
+            # This is needed for the max_terms check.
+            # We call _find_best_candidate_addition first, then check max_terms.
 
-            self._find_best_candidate_pair()
+            self._find_best_candidate_addition()
 
-            # Check stopping criterion: no improvement found or no valid candidates
-            if self._best_candidate_pair is None or self._min_candidate_rss >= self.current_rss - EPSILON :
+            if self._best_candidate_addition is None or self._min_candidate_rss >= self.current_rss - EPSILON:
                 # print(f"Stopping: No further RSS improvement or no valid candidates. Current RSS: {self.current_rss:.4f}, Best Candidate RSS: {self._min_candidate_rss:.4f}")
                 break
 
-            # Add the best pair to the model
-            bf_left, bf_right = self._best_candidate_pair
-            self.current_basis_functions.extend([bf_left, bf_right])
-            self.current_B_matrix = self._best_new_B_matrix # Or rebuild: self._build_basis_matrix(self.X_train, self.current_basis_functions)
+            # An improvement was found. Now check max_terms.
+            bf1_cand, bf2_cand_or_None = self._best_candidate_addition
+            num_terms_to_add_this_step = 1
+            if bf2_cand_or_None is not None:
+                num_terms_to_add_this_step = 2
+
+            if len(self.current_basis_functions) + num_terms_to_add_this_step > max_terms_for_loop:
+                # print(f"Stopping: Max terms ({max_terms_for_loop}) would be exceeded by adding {num_terms_to_add_this_step} term(s).")
+                break
+
+            # --- Add the best found addition to the model ---
+            # Calculate GCV reduction for this addition
+            gcv_before, _ = self._calculate_gcv_for_basis_set(self.current_basis_functions)
+
+            # GCV after adding the term(s) uses self._min_candidate_rss and self._best_new_B_matrix
+            effective_params_with_addition = gcv_penalty_cost_effective_parameters(
+                self._best_new_B_matrix.shape[1], self.model.penalty, self.n_samples
+            )
+            gcv_with_addition = calculate_gcv(self._min_candidate_rss, effective_params_with_addition, self.n_samples)
+
+            gcv_reduction = None
+            if gcv_before is not None and gcv_with_addition is not None:
+                gcv_reduction = gcv_before - gcv_with_addition
+
+            # Calculate RSS reduction
+            rss_reduction = self.current_rss - self._min_candidate_rss
+
+            # Assign scores to the added basis function(s)
+            bf1_cand.gcv_score_ = gcv_reduction if gcv_reduction is not None else 0.0
+            bf1_cand.rss_score_ = rss_reduction
+            if bf2_cand_or_None is not None:
+                bf2_cand_or_None.gcv_score_ = gcv_reduction if gcv_reduction is not None else 0.0
+                bf2_cand_or_None.rss_score_ = rss_reduction
+
+            # Update model state
+            terms_added_this_iteration = [bf1_cand]
+            if bf2_cand_or_None is not None:
+                terms_added_this_iteration.append(bf2_cand_or_None)
+
+            self.current_basis_functions.extend(terms_added_this_iteration)
+            self.current_B_matrix = self._best_new_B_matrix
             self.current_coefficients = self._best_new_coeffs
             self.current_rss = self._min_candidate_rss
 
-            # print(f"Added pair: {str(bf_left)} & {str(bf_right)}. New RSS: {self.current_rss:.4f}. Num terms: {len(self.current_basis_functions)}")
+            # Logging, etc.
+            # term_names = " & ".join([str(t) for t in terms_added_this_iteration])
+            # print(f"Added: {term_names}. New RSS: {self.current_rss:.4f}. GCV reduction: {gcv_reduction if gcv_reduction is not None else 'N/A'}. Num terms: {len(self.current_basis_functions)}")
 
             if self.model.record_ is not None and hasattr(self.model.record_, 'log_forward_pass_step'):
                 self.model.record_.log_forward_pass_step(
@@ -209,64 +247,10 @@ class ForwardPasser:
                 )
 
             # Reset for next iteration's search
-            self._best_candidate_pair = None
+            self._best_candidate_addition = None
             self._best_new_B_matrix = None
             self._best_new_coeffs = None
-            # self._min_candidate_rss is implicitly reset at the start of _find_best_candidate_pair
-
-            # If a best pair was found and it improved RSS
-            if self._best_candidate_pair is not None and self._min_candidate_rss < self.current_rss - EPSILON:
-                bf_left, bf_right = self._best_candidate_pair
-
-                # Calculate GCV reduction for this pair
-                # GCV before adding the pair
-                gcv_before, _ = self._calculate_gcv_for_basis_set(self.current_basis_functions)
-
-                # GCV after adding the pair (using the already computed RSS and coeffs for the new model)
-                # We need effective_num_params for the new model (current + pair)
-                num_terms_with_pair = len(self.current_basis_functions) + 2
-
-                # Use self._best_new_B_matrix which corresponds to model with the pair
-                effective_params_with_pair = gcv_penalty_cost_effective_parameters(
-                    self._best_new_B_matrix.shape[1], self.model.penalty, self.n_samples
-                )
-                gcv_with_pair = calculate_gcv(self._min_candidate_rss, effective_params_with_pair, self.n_samples)
-
-                if gcv_before is not None and gcv_with_pair is not None: # Ensure GCVs were calculable
-                    gcv_reduction = gcv_before - gcv_with_pair
-                    # py-earth assigns this reduction to the basis functions if they are part of the chosen model
-                    # This score is used later if the BFs survive pruning
-                    bf_left.gcv_score_ = gcv_reduction
-                    bf_right.gcv_score_ = gcv_reduction
-
-                # Calculate and store RSS reduction for this pair
-                # self.current_rss is RSS before adding the pair
-                # self._min_candidate_rss is RSS after adding the pair
-                rss_reduction = self.current_rss - self._min_candidate_rss
-                bf_left.rss_score_ = rss_reduction
-                bf_right.rss_score_ = rss_reduction
-
-                # Add the best pair to the model (official update)
-                self.current_basis_functions.extend([bf_left, bf_right])
-                self.current_B_matrix = self._best_new_B_matrix
-                self.current_coefficients = self._best_new_coeffs
-                self.current_rss = self._min_candidate_rss
-
-                # print(f"Added pair: {str(bf_left)} & {str(bf_right)}. New RSS: {self.current_rss:.4f}. GCV reduction: {gcv_reduction if 'gcv_reduction' in locals() else 'N/A'}. Num terms: {len(self.current_basis_functions)}")
-
-                if self.model.record_ is not None and hasattr(self.model.record_, 'log_forward_pass_step'):
-                    self.model.record_.log_forward_pass_step(
-                        self.current_basis_functions, self.current_coefficients, self.current_rss
-                    )
-
-                # Reset for next iteration's search
-                self._best_candidate_pair = None
-                self._best_new_B_matrix = None
-                self._best_new_coeffs = None
-            else:
-                # No improvement or no valid candidates found, stop.
-                # print(f"Stopping: No further RSS improvement or no valid candidates. Current RSS: {self.current_rss:.4f}, Best Candidate RSS: {self._min_candidate_rss:.4f}")
-                break
+            # _min_candidate_rss is implicitly reset at the start of _find_best_candidate_addition
 
 
         # print(f"Forward pass complete. Final RSS: {self.current_rss:.4f}, Num terms: {len(self.current_basis_functions)}")
@@ -518,110 +502,128 @@ class ForwardPasser:
         # ---- End of new py-earth aligned implementation ----
 
 
-    def _generate_candidates(self) -> list[tuple[BasisFunction, BasisFunction]]:
+    def _generate_candidates(self) -> list[tuple[BasisFunction, BasisFunction | None]]:
         """
-        Generates candidate pairs of basis functions to add to the model.
-        Each candidate is a pair of HingeBasisFunctions (left and right hinge)
-        created by splitting an existing basis function on a new variable and knot.
-        """
-        candidate_basis_function_pairs = []
+        Generates candidate additions to the model.
 
+        Candidate additions can be:
+        1. Single `LinearBasisFunction` terms (if `self.model.allow_linear` is True).
+           These are formed by trying to add a linear effect for each variable,
+           potentially as an interaction with an existing `parent_bf`.
+           Stored as `(linear_bf, None)`.
+        2. Pairs of `HingeBasisFunction` terms. These are formed by splitting
+           an existing `parent_bf` on a new variable and knot.
+           Stored as `(hinge_bf_left, hinge_bf_right)`.
+
+        The generation order is linear candidates first, then hinge candidates.
+        Degree constraints (`self.model.max_degree`) and rules against redundant
+        variable usage are respected.
+
+        Returns
+        -------
+        list[tuple[BasisFunction, BasisFunction | None]]
+            A list of candidate additions.
+        """
+        candidate_additions: list[tuple[BasisFunction, BasisFunction | None]] = []
+
+        # Generate Linear Term Candidates First (if allowed)
+        if self.model.allow_linear:
+            for parent_bf in self.current_basis_functions:
+                # For a new linear term (degree 1 itself), the resulting model term's degree
+                # will be parent_bf.degree() + 1. This must not exceed self.model.max_degree.
+                if parent_bf.degree() + 1 > self.model.max_degree:
+                    continue
+
+                parent_involved_vars = parent_bf.get_involved_variables()
+                for var_idx in range(self.n_features):
+                    if var_idx in parent_involved_vars:
+                        # Avoid using the same variable in an interaction like Parent(X_i) * Linear(X_i)
+                        # if X_i is already part of Parent(X_i)'s definition.
+                        continue
+
+                    linear_candidate = LinearBasisFunction(variable_idx=var_idx, parent_bf=parent_bf)
+                    candidate_additions.append((linear_candidate, None))
+
+        # Generate Hinge Pair Candidates
         for parent_bf in self.current_basis_functions:
-            if parent_bf.degree() >= self.model.max_degree:
-                continue # Cannot increase degree further for this parent
+            # For a new hinge term (degree 1 itself), the resulting model term's degree
+            # will be parent_bf.degree() + 1. This must not exceed self.model.max_degree.
+            if parent_bf.degree() + 1 > self.model.max_degree:
+                continue
 
             parent_involved_vars = parent_bf.get_involved_variables()
 
             for var_idx in range(self.n_features):
                 if var_idx in parent_involved_vars:
-                    continue # Variable already used in this lineage, skip to prevent x_i * x_i type terms
+                    # Cannot create a hinge on a variable already directly in the parent's lineage
+                    # This prevents terms like (x0>1)*(x0>2) being formed from parent (x0>1) in one step.
+                    # Interactions like (x0>1)*(x1>2) are allowed if x1 is not in parent's vars.
+                    continue
 
-                # Get potential knot values for this variable (X_train[:, var_idx])
-                # This needs to respect min_span/end_span constraints.
                 potential_knots = self._get_allowable_knot_values(self.X_train[:, var_idx], parent_bf, var_idx)
 
                 for knot_val in potential_knots:
-                    # Create candidate pair: one right hinge, one left hinge
-                    # Both are children of parent_bf, operating on var_idx at knot_val
-
-                    # Candidate 1: parent_bf * max(0, X_var - knot)
                     bf_right = HingeBasisFunction(
-                        variable_idx=var_idx,
-                        knot_val=knot_val,
-                        is_right_hinge=True,
-                        parent_bf=parent_bf,
-                        # variable_name will be auto-generated if None
+                        variable_idx=var_idx, knot_val=knot_val, is_right_hinge=True, parent_bf=parent_bf
                     )
-
-                    # Candidate 2: parent_bf * max(0, knot - X_var)
                     bf_left = HingeBasisFunction(
-                        variable_idx=var_idx,
-                        knot_val=knot_val,
-                        is_right_hinge=False,
-                        parent_bf=parent_bf,
+                        variable_idx=var_idx, knot_val=knot_val, is_right_hinge=False, parent_bf=parent_bf
                     )
+                    candidate_additions.append((bf_left, bf_right))
 
-                    # TODO: Add more sophisticated min_span check here.
-                    # A simple check: if the knot is at an existing value, ensure the hinge isn't trivial.
-                    # Example: if knot_val is min or max of X_train[:, var_idx], one of these might be all zeros.
-                    # The _get_allowable_knot_values should ideally handle this.
-                    # For now, we assume _get_allowable_knot_values provides valid knots.
-                    candidate_basis_function_pairs.append((bf_left, bf_right))
+        # The Linear Term Candidates are already generated at the beginning of this method.
+        # The duplicated block below was an error and is removed.
 
-        # TODO: Consider adding LinearBasisFunction candidates if allowed by model config (e.g. self.model.allow_linear)
-        # This is usually done if no hinge on a variable provides improvement.
-        # For now, focusing on hinge-based splitting.
+        return candidate_additions
 
-        return candidate_basis_function_pairs
-
-    def _find_best_candidate_pair(self):
+    def _find_best_candidate_addition(self): # Renamed from _find_best_candidate_pair
         """
-        Evaluates all candidate basis function pairs and finds the one that
-        maximally reduces the RSS (Residual Sum of Squares).
+        Evaluates all candidate basis function additions (linear singles or hinge pairs)
+        generated by `_generate_candidates` and identifies the one that results in the
+        greatest reduction in the Residual Sum of Squares (RSS).
 
-        Updates internal attributes like `_best_candidate_pair`, `_min_candidate_rss`,
-        `_best_new_B_matrix`, and `_best_new_coeffs`.
+        This method updates the following internal attributes if a better model is found:
+        - `_best_candidate_addition`: Stores the tuple `(bf1, bf2_or_None)` of the best addition.
+        - `_min_candidate_rss`: The RSS value of the model with the best addition.
+        - `_best_new_B_matrix`: The basis matrix corresponding to the model with the best addition.
+        - `_best_new_coeffs`: The coefficients for the model with the best addition.
+
+        If no candidate addition improves the RSS, `_best_candidate_addition` remains None.
         """
         self._min_candidate_rss = self.current_rss
-        self._best_candidate_pair = None
-        self._best_new_B_matrix = None # Store the B matrix for the best pair
-        self._best_new_coeffs = None   # Store the coeffs for the best pair
+        self._best_candidate_addition = None # Changed: self._best_candidate_pair to self._best_candidate_addition
+        self._best_new_B_matrix = None
+        self._best_new_coeffs = None
 
-        candidate_pairs = self._generate_candidates()
+        candidate_additions = self._generate_candidates()
 
-        if not candidate_pairs:
-            return # No candidates to evaluate
+        if not candidate_additions:
+            return
 
-        for bf_left, bf_right in candidate_pairs:
-            # Create temporary list of basis functions for this candidate pair
-            # The new model will include current functions + bf_left + bf_right
-            temp_basis_list = self.current_basis_functions + [bf_left, bf_right]
+        # This loop needs to be updated in the next step to handle (bf1, None) for linear terms
+        for bf_left, bf_right in candidate_additions: # bf_right will be None for linear terms
+            terms_to_add = [bf_left]
+            if bf_right is not None: # This check handles both pairs and singles
+                terms_to_add.append(bf_right)
 
-            # Build the new basis matrix B_candidate
-            # We need to be careful if current_B_matrix is None (e.g. first step after intercept)
-            # or if it's empty. _build_basis_matrix should handle a list.
+            temp_basis_list = self.current_basis_functions + terms_to_add
+
             B_candidate = self._build_basis_matrix(self.X_train, temp_basis_list)
 
-            if B_candidate.shape[1] == 0 : # Should not happen if we always have intercept
+            if B_candidate.shape[1] == 0 :
                 continue
 
-            # Check for rank deficiency before lstsq if possible, or handle error from it
-            # A simple check: if number of columns > number of samples (after adding 2)
-            if B_candidate.shape[1] >= self.n_samples: # Cannot be solved uniquely or reliably
-                # This might happen with very few samples or many terms.
-                # Pruning pass would typically handle overly complex models.
-                # For forward pass, we might just ignore such candidates.
+            if B_candidate.shape[1] >= self.n_samples:
                 continue
 
             rss_candidate, coeffs_candidate = self._calculate_rss_and_coeffs(B_candidate, self.y_train)
 
-            if coeffs_candidate is None: # LinAlgError or other issue
+            if coeffs_candidate is None:
                 continue
 
-            # Using a small epsilon to ensure actual improvement and handle floating point issues
             if rss_candidate < self._min_candidate_rss - EPSILON:
                 self._min_candidate_rss = rss_candidate
-                self._best_candidate_pair = (bf_left, bf_right)
+                self._best_candidate_addition = (bf_left, bf_right) # Store the selected addition
                 self._best_new_B_matrix = B_candidate
                 self._best_new_coeffs = coeffs_candidate
 
