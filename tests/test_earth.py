@@ -39,9 +39,15 @@ def test_earth_instantiation():
     assert model.minspan_alpha == 0.0
     assert model.endspan_alpha == 0.0
     assert model.allow_linear is True
+    assert model.allow_missing is False # Default
     assert model.basis_ is None
     assert model.coef_ is None
     assert model.fitted_ is False
+
+def test_earth_instantiation_allow_missing_true():
+    """Test instantiation with allow_missing=True."""
+    model = Earth(allow_missing=True)
+    assert model.allow_missing is True
 
 def test_earth_instantiation_custom_params():
     """Test instantiation with custom parameters."""
@@ -269,6 +275,57 @@ def test_earth_summary_feature_importances(simple_earth_data, capsys):
     # The summary will still try to print based on self.feature_importances_ (which would be zeros)
     assert "Feature Importances (unknown_type)" in summary_unknown
     assert "x0" in summary_unknown # Will show x0 : 0.0000
+
+# --- Tests for missing data handling ---
+@pytest.fixture
+def data_with_nans():
+    X = np.array([[1.0, 2.0], [np.nan, 3.0], [3.0, np.nan], [4.0, 5.0]])
+    y = np.array([1.0, 2.0, 3.0, 4.0])
+    return X, y
+
+@pytest.fixture
+def y_with_nans():
+    X = np.array([[1.0, 2.0], [2.0, 3.0], [3.0, 4.0], [4.0, 5.0]])
+    y = np.array([1.0, np.nan, 3.0, 4.0])
+    return X, y
+
+def test_earth_fit_disallow_missing_X_has_nans(data_with_nans):
+    """Test fit errors if allow_missing=False and X has NaNs."""
+    X_nan, y = data_with_nans
+    model = Earth(allow_missing=False) # Or default
+    with pytest.raises(ValueError, match="Input X contains NaN values and allow_missing is False."):
+        model.fit(X_nan, y)
+
+def test_earth_fit_y_has_nans(y_with_nans):
+    """Test fit errors if y has NaNs (regardless of allow_missing)."""
+    X, y_nan = y_with_nans
+    model_allow_true = Earth(allow_missing=True)
+    with pytest.raises(ValueError, match="Target y cannot contain NaN values."):
+        model_allow_true.fit(X, y_nan)
+
+    model_allow_false = Earth(allow_missing=False)
+    with pytest.raises(ValueError, match="Target y cannot contain NaN values."):
+        model_allow_false.fit(X, y_nan)
+
+def test_earth_fit_allow_missing_X_has_nans(data_with_nans):
+    """Test fit runs if allow_missing=True and X has NaNs (y is clean)."""
+    X_nan, y = data_with_nans
+    # To make this testable without full NaN logic in forward/pruning passes yet,
+    # we can use very few max_terms so it might just fit an intercept.
+    # The main point is that _scrub_input_data doesn't fail.
+    model = Earth(allow_missing=True, max_terms=1)
+    try:
+        model.fit(X_nan, y)
+        # If it reaches here, the scrubbing and initial setup worked.
+        # Further checks depend on how ForwardPasser/PruningPasser handle masked data.
+        assert model.fitted_
+        assert model.basis_ is not None
+    except Exception as e:
+        pytest.fail(f"fit with allow_missing=True and NaNs in X failed: {e}")
+
+# TODO: Add tests for predict with missing data once fit is more NaN-aware.
+# TODO: Add tests to check if model actually learns sensibly with NaNs (Phase 1.5/2)
+
 
 def test_earth_nb_subsets_calculation_mocked_record(capsys):
     """Test nb_subsets calculation with a mocked record pruning trace."""

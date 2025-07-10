@@ -43,9 +43,10 @@ class BasisFunction(ABC):
         return self._involved_variables
 
     @abstractmethod
-    def transform(self, X: np.ndarray) -> np.ndarray:
+    def transform(self, X_processed: np.ndarray, missing_mask: np.ndarray) -> np.ndarray:
         """
-        Apply the basis function transformation to the input data X.
+        Apply the basis function transformation to the input data X_processed,
+        considering the missing_mask.
 
         Parameters
         ----------
@@ -121,9 +122,10 @@ class ConstantBasisFunction(BasisFunction):
         super().__init__(name="Intercept")
         self._set_properties(is_linear=False, is_hinge=False, involved_variables=frozenset())
 
-    def transform(self, X: np.ndarray) -> np.ndarray:
+    def transform(self, X_processed: np.ndarray, missing_mask: np.ndarray) -> np.ndarray:
         """
-        Returns an array of ones, with the same number of samples as X.
+        Returns an array of ones, with the same number of samples as X_processed.
+        Missing mask is ignored as this function is data-independent.
 
         Parameters
         ----------
@@ -137,12 +139,14 @@ class ConstantBasisFunction(BasisFunction):
         """
         if not isinstance(X, np.ndarray):
             raise TypeError("Input X must be a numpy array.")
-        if X.ndim == 1: # If X is a 1D array (e.g. single feature, multiple samples)
-            return np.ones(X.shape[0])
-        elif X.ndim == 2: # If X is a 2D array (samples, features)
-            return np.ones(X.shape[0])
+        if not isinstance(X_processed, np.ndarray):
+            raise TypeError("Input X_processed must be a numpy array.")
+        if X_processed.ndim == 1:
+            return np.ones(X_processed.shape[0])
+        elif X_processed.ndim == 2:
+            return np.ones(X_processed.shape[0])
         else:
-            raise ValueError("Input X must be 1D or 2D.")
+            raise ValueError("Input X_processed must be 1D or 2D.")
 
 
     def __str__(self) -> str:
@@ -185,46 +189,43 @@ class HingeBasisFunction(BasisFunction):
         self._set_properties(variable_idx=variable_idx, knot_val=knot_val,
                              is_hinge=True, parent1=parent_bf,
                              involved_variables=current_involved_vars)
-        self.is_right_hinge = is_right_hinge # True for max(0, x-knot), False for max(0, knot-x)
+        self.is_right_hinge = is_right_hinge
         # self.variable_name is already set above for constructing the name
 
-    def transform(self, X: np.ndarray) -> np.ndarray:
+    def transform(self, X_processed: np.ndarray, missing_mask: np.ndarray) -> np.ndarray:
         """
-        Applies the hinge transformation to the specified variable in X.
-
-        Parameters
-        ----------
-        X : numpy.ndarray of shape (n_samples, n_features)
-            The input data.
-
-        Returns
-        -------
-        numpy.ndarray of shape (n_samples,)
-            The transformed values.
+        Applies the hinge transformation. NaNs propagate.
         """
-        if not isinstance(X, np.ndarray):
-            raise TypeError("Input X must be a numpy array.")
-        if X.ndim not in [1, 2]:
-             raise ValueError("Input X must be 1D or 2D.")
-        if X.ndim == 1 and self.variable_idx != 0:
+        if not isinstance(X_processed, np.ndarray):
+            raise TypeError("Input X_processed must be a numpy array.")
+        if X_processed.ndim not in [1, 2]:
+             raise ValueError("Input X_processed must be 1D or 2D.")
+        if X_processed.ndim == 1 and self.variable_idx != 0:
             raise ValueError("For 1D X input, variable_idx must be 0.")
-        if X.ndim == 2 and self.variable_idx >= X.shape[1]:
-            raise IndexError(f"variable_idx {self.variable_idx} is out of bounds for X with {X.shape[1]} features.")
+        if X_processed.ndim == 2 and self.variable_idx >= X_processed.shape[1]:
+            raise IndexError(f"variable_idx {self.variable_idx} is out of bounds for X_processed with {X_processed.shape[1]} features.")
 
-        x_col = X if X.ndim == 1 else X[:, self.variable_idx]
+        x_col = X_processed if X_processed.ndim == 1 else X_processed[:, self.variable_idx]
+
+        # Calculate current hinge term's values (on zero-filled data)
+        if self.is_right_hinge:
+            current_term_values = np.maximum(0, x_col - self.knot_val)
+        else:
+            current_term_values = np.maximum(0, self.knot_val - x_col)
+
+        # Apply NaN where original variable was missing
+        # missing_mask corresponds to original X.
+        # If X_processed is 1D, missing_mask should also be 1D or (N,1)
+        # If X_processed is 2D, missing_mask is (N, n_features)
+        current_var_missing = missing_mask if X_processed.ndim == 1 else missing_mask[:, self.variable_idx]
+        current_term_values[current_var_missing] = np.nan
 
         if self.parent1: # This is an interaction term
-            parent_transformed = self.parent1.transform(X)
-            if self.is_right_hinge:
-                current_hinge = np.maximum(0, x_col - self.knot_val)
-            else:
-                current_hinge = np.maximum(0, self.knot_val - x_col)
-            return parent_transformed * current_hinge
+            parent_transformed = self.parent1.transform(X_processed, missing_mask) # Recursive call
+            # NaN propagation happens if either parent_transformed or current_term_values is NaN
+            return parent_transformed * current_term_values
         else: # This is a simple hinge (degree 1)
-            if self.is_right_hinge:
-                return np.maximum(0, x_col - self.knot_val)
-            else:
-                return np.maximum(0, self.knot_val - x_col)
+            return current_term_values
 
     def __str__(self) -> str:
         # The name is already constructed in __init__ to handle interactions properly.
@@ -268,36 +269,30 @@ class LinearBasisFunction(BasisFunction):
         self._set_properties(variable_idx=variable_idx, is_linear=True, parent1=parent_bf,
                              involved_variables=current_involved_vars)
 
-    def transform(self, X: np.ndarray) -> np.ndarray:
+    def transform(self, X_processed: np.ndarray, missing_mask: np.ndarray) -> np.ndarray:
         """
-        Returns the values of the specified variable in X.
-
-        Parameters
-        ----------
-        X : numpy.ndarray of shape (n_samples, n_features)
-            The input data.
-
-        Returns
-        -------
-        numpy.ndarray of shape (n_samples,)
-            The values of the specified feature.
+        Applies the linear transformation. NaNs propagate.
         """
-        if not isinstance(X, np.ndarray):
-            raise TypeError("Input X must be a numpy array.")
-        if X.ndim not in [1,2]:
-             raise ValueError("Input X must be 1D or 2D.")
-        if X.ndim == 1 and self.variable_idx != 0:
+        if not isinstance(X_processed, np.ndarray):
+            raise TypeError("Input X_processed must be a numpy array.")
+        if X_processed.ndim not in [1,2]:
+             raise ValueError("Input X_processed must be 1D or 2D.")
+        if X_processed.ndim == 1 and self.variable_idx != 0:
             raise ValueError("For 1D X input, variable_idx must be 0.")
-        if X.ndim == 2 and self.variable_idx >= X.shape[1]:
-            raise IndexError(f"variable_idx {self.variable_idx} is out of bounds for X with {X.shape[1]} features.")
+        if X_processed.ndim == 2 and self.variable_idx >= X_processed.shape[1]:
+            raise IndexError(f"variable_idx {self.variable_idx} is out of bounds for X_processed with {X_processed.shape[1]} features.")
 
-        x_col = X if X.ndim == 1 else X[:, self.variable_idx]
+        current_term_values = X_processed if X_processed.ndim == 1 else X_processed[:, self.variable_idx].copy() # Use .copy() to avoid modifying X_processed
+
+        # Apply NaN where original variable was missing
+        current_var_missing = missing_mask if X_processed.ndim == 1 else missing_mask[:, self.variable_idx]
+        current_term_values[current_var_missing] = np.nan
 
         if self.parent1: # This is an interaction term
-            parent_transformed = self.parent1.transform(X)
-            return parent_transformed * x_col
+            parent_transformed = self.parent1.transform(X_processed, missing_mask) # Recursive call
+            return parent_transformed * current_term_values
         else: # This is a simple linear term (degree 1)
-            return x_col
+            return current_term_values
 
     def __str__(self) -> str:
         return self.get_name()

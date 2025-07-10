@@ -120,6 +120,7 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
                  minspan_alpha: float = 0.0, endspan_alpha: float = 0.0,
                  minspan: int = -1, endspan: int = -1,
                  allow_linear: bool = True,
+                 allow_missing: bool = False, # New parameter
                  feature_importance_type: str = None
                  # TODO: Consider other py-earth params
                  ):
@@ -132,6 +133,7 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
         self.minspan = minspan
         self.endspan = endspan
         self.allow_linear = allow_linear
+        self.allow_missing = allow_missing # Store new parameter
         self.feature_importance_type = feature_importance_type
 
         # Attributes that will be learned during fit
@@ -196,23 +198,34 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
         # X_checked, y_checked = check_X_y(X, y, ensure_y_1d=True) # ensure_y_1d for current single output
 
         # Temporary direct conversion and checks (to be replaced by robust validation)
-        if not isinstance(X, np.ndarray): X = np.asarray(X, dtype=float)
-        if not isinstance(y, np.ndarray): y = np.asarray(y, dtype=float)
-        if X.ndim == 1: X = X.reshape(-1,1)
-        if y.ndim > 1 and y.shape[1] == 1: y = y.ravel()
-        if y.ndim > 1 : raise ValueError("Target y must be 1-dimensional.")
-        if X.shape[0] != y.shape[0]: raise ValueError("X and y have inconsistent numbers of samples.")
+        # if not isinstance(X, np.ndarray): X = np.asarray(X, dtype=float)
+        # if not isinstance(y, np.ndarray): y = np.asarray(y, dtype=float)
+        # if X.ndim == 1: X = X.reshape(-1,1)
+        # if y.ndim > 1 and y.shape[1] == 1: y = y.ravel()
+        # if y.ndim > 1 : raise ValueError("Target y must be 1-dimensional.")
+        # if X.shape[0] != y.shape[0]: raise ValueError("X and y have inconsistent numbers of samples.")
+
+        X_processed, missing_mask, y_processed = self._scrub_input_data(X, y)
+        self.X_original_ = X # Keep a reference if needed, or just use processed versions
+        self.missing_mask_ = missing_mask # Store for later use (e.g. in basis.transform)
 
 
         # Initialize record object (optional, depends on verbosity/debugging needs)
         # For now, let's assume self.record_ might be set up if verbose, etc.
         # If EarthRecord is to be used, it should be initialized:
         # self.record_ = EarthRecord(X_checked, y_checked, self)
-        self.record_ = EarthRecord(X, y, self) # Using original X,y for record for now
+        self.record_ = EarthRecord(X_processed, y_processed, self) # Use processed data for record
 
         # Forward Pass
-        forward_passer = ForwardPasser(self)
-        fwd_basis_functions, fwd_coefficients = forward_passer.run(X, y)
+        forward_passer = ForwardPasser(self) # ForwardPasser will need access to missing_mask
+        # Pass original X for knot finding, X_processed for transforms, missing_mask for awareness
+        fwd_basis_functions, fwd_coefficients = forward_passer.run(
+            X_fit_processed=X_processed,
+            y_fit=y_processed,
+            missing_mask=missing_mask,
+            X_fit_original=self.X_original_ # For knot selection on non-missing original values
+        )
+
 
         if not fwd_basis_functions:
             # This might happen if only an intercept was fit and it's deemed invalid,
@@ -249,49 +262,51 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
 
         # Pruning Pass
         pruning_passer = PruningPasser(self)
-        pruned_bfs, pruned_coeffs, best_gcv = pruning_passer.run(X, y,
-                                                                 fwd_basis_functions,
-                                                                 fwd_coefficients)
+        pruned_bfs, pruned_coeffs, best_gcv = pruning_passer.run(
+            X_fit_processed=X_processed,
+            y_fit=y_processed,
+            missing_mask=missing_mask,
+            initial_basis_functions=fwd_basis_functions,
+            initial_coefficients=fwd_coefficients,
+            X_fit_original=self.X_original_
+            )
         self.basis_ = pruned_bfs
         self.coef_ = pruned_coeffs
         self.gcv_ = best_gcv
 
         # Calculate final RSS and MSE on training data using the pruned model
+        # This needs to use X_processed, y_processed, and missing_mask for consistency
         if self.basis_ and self.coef_ is not None:
-            B_final = self._build_basis_matrix(X, self.basis_)
-            if B_final.shape[1] == len(self.coef_): # Ensure dimensions match
-                y_pred_train = B_final @ self.coef_
-                self.rss_ = np.sum((y - y_pred_train)**2)
-                self.mse_ = self.rss_ / len(y)
-            else: # Mismatch, likely means no terms left after pruning or error
-                # This might happen if pruning removes all terms including intercept (if not protected well)
-                # Fallback to mean prediction if all terms pruned
-                self.basis_ = [ConstantBasisFunction()]
-                self.coef_ = np.array([np.mean(y)])
-                B_final = self._build_basis_matrix(X, self.basis_)
-                y_pred_train = B_final @ self.coef_
-                self.rss_ = np.sum((y - y_pred_train)**2)
-                self.mse_ = self.rss_ / len(y)
-                # Use X, y, len(y) from the current fit scope
-                self.gcv_ = pruning_passer._compute_gcv_for_subset(X, y, len(y), self.basis_)[0] if self.basis_ else np.inf
+            B_final = self._build_basis_matrix(X_processed, self.basis_, missing_mask) # Pass missing_mask
 
+            # For RSS/MSE, consider only rows used in the final LSTSQ, or all non-NaN y_pred rows
+            # If lstsq in pruning pass already handled NaNs by using complete cases for GCV,
+            # the final coef_ are based on those complete cases.
+            # For final RSS/MSE, predict on X_processed and calculate based on y_processed.
 
-        else: # No basis functions selected after pruning (should ideally not happen if intercept protected)
-            self.basis_ = [ConstantBasisFunction()] # Default to intercept model
-            self.coef_ = np.array([np.mean(y)])
-            B_final = self._build_basis_matrix(X, self.basis_)
-            y_pred_train = B_final @ self.coef_
-            self.rss_ = np.sum((y - y_pred_train)**2)
-            self.mse_ = self.rss_ / len(y)
-             # Recalculate GCV for intercept-only model
-            if hasattr(pruning_passer, '_compute_gcv_for_subset'): # Check if method exists
-                 self.gcv_ = pruning_passer._compute_gcv_for_subset(X, y, len(y), self.basis_)[0]
-            else: # Fallback if method not found (e.g. during testing with mocks)
-                 self.gcv_ = np.inf
+            if B_final.shape[1] == len(self.coef_):
+                y_pred_train = B_final @ self.coef_
+
+                # Handle NaNs in y_pred_train for RSS/MSE calculation
+                valid_pred_idx = ~np.isnan(y_pred_train)
+                # y_processed should be all finite based on _scrub_y
+
+                self.rss_ = np.sum((y_processed[valid_pred_idx] - y_pred_train[valid_pred_idx])**2)
+                if np.sum(valid_pred_idx) > 0 :
+                    self.mse_ = self.rss_ / np.sum(valid_pred_idx)
+                else: # Should not happen if model is valid and y_processed is not empty
+                    self.mse_ = np.inf
+            else:
+                # Fallback logic (similar to before, but use processed y)
+                self._set_fallback_model(X_processed, y_processed, missing_mask, pruning_passer)
+
+        else:
+            self._set_fallback_model(X_processed, y_processed, missing_mask, pruning_passer)
 
         # Calculate feature importances if requested
         if self.feature_importance_type is not None:
-            self._calculate_feature_importances(X) # Pass X for n_features, or store n_features during fit
+            # Pass original X for consistent feature count if record not fully updated yet
+            self._calculate_feature_importances(self.X_original_)
 
         self.fitted_ = True
         return self
@@ -410,6 +425,83 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
             pass
 
 
+    def _scrub_input_data(self, X, y):
+        """Helper to validate and preprocess X and y."""
+        # Convert X
+        if not isinstance(X, np.ndarray):
+            X_orig = np.asarray(X, dtype=float)
+        else:
+            X_orig = X.astype(float, copy=False) # Ensure float, avoid copy if possible
+
+        if X_orig.ndim == 1:
+            X_orig = X_orig.reshape(-1, 1)
+
+        missing_mask = np.isnan(X_orig)
+
+        if not self.allow_missing and np.any(missing_mask):
+            raise ValueError("Input X contains NaN values and allow_missing is False.")
+
+        X_processed = X_orig.copy() if np.any(missing_mask) else X_orig
+        if np.any(missing_mask): # Only fill if NaNs were present
+            X_processed[missing_mask] = 0.0
+
+        # Convert y
+        if not isinstance(y, np.ndarray):
+            y_processed = np.asarray(y, dtype=float)
+        else:
+            y_processed = y.astype(float, copy=False)
+
+        if y_processed.ndim > 1 and y_processed.shape[1] == 1:
+            y_processed = y_processed.ravel()
+
+        if np.any(np.isnan(y_processed)):
+            raise ValueError("Target y cannot contain NaN values.")
+
+        if y_processed.ndim > 1:
+            raise ValueError("Target y must be 1-dimensional.")
+        if X_processed.shape[0] != y_processed.shape[0]:
+            raise ValueError("X and y have inconsistent numbers of samples.")
+
+        return X_processed, missing_mask, y_processed
+
+    def _set_fallback_model(self, X_processed, y_processed, missing_mask, pruning_passer_instance_for_gcv_calc):
+        """Sets a fallback intercept-only model."""
+        self.basis_ = [ConstantBasisFunction()]
+        self.coef_ = np.array([np.mean(y_processed)]) # Mean of processed (finite) y
+
+        B_final = self._build_basis_matrix(X_processed, self.basis_, missing_mask) # Intercept transform is robust to NaNs
+
+        if B_final.size > 0 : # B_final for intercept is (n_samples, 1)
+            y_pred_train = B_final @ self.coef_
+            self.rss_ = np.sum((y_processed - y_pred_train)**2)
+            self.mse_ = self.rss_ / len(y_processed)
+        else: # Should not happen if y_processed is not empty
+            self.rss_ = np.sum((y_processed - np.mean(y_processed))**2) if len(y_processed) > 0 else 0.0
+            self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
+
+        if hasattr(pruning_passer_instance_for_gcv_calc, '_compute_gcv_for_subset'):
+            # GCV for intercept needs X_processed, y_processed, missing_mask, X_original
+            # The _compute_gcv_for_subset will need to be NaN aware.
+            # For now, this might be inaccurate if not fully NaN aware.
+            # A simple GCV calc for intercept might be:
+            # num_params = 1, N = len(y_processed)
+            # gcv_val = self.rss_ / (N * (1 - num_params/N)**2) if N > num_params else np.inf
+            # This is a placeholder, actual GCV calc needs to be robust.
+            # For now, let PruningPasser's method try, or set to Inf.
+            try:
+                self.gcv_ = pruning_passer_instance_for_gcv_calc._compute_gcv_for_subset(
+                    X_fit_processed=X_processed,
+                    y_fit=y_processed,
+                    missing_mask=missing_mask,
+                    basis_functions_subset=self.basis_,
+                    X_fit_original=self.X_original_ # Pass original X for knot selection consistency if needed by GCV's LSTSQ
+                )[0] # [0] is GCV score
+            except Exception: # Broad catch if GCV calc fails for intercept
+                self.gcv_ = np.inf
+        else:
+            self.gcv_ = np.inf
+
+
     def predict(self, X):
         """
         Predict target values for X.
@@ -421,63 +513,60 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
 
         Returns
         -------
-        y_pred : array of shape (n_samples,) or (n_samples, n_outputs)
-            The predicted values.
+        y_pred : array of shape (n_samples,)
+            The predicted values. (Multi-output not currently supported for predict).
         """
-        # if not self.fitted_:
-        #     raise NotFittedError("This Earth instance is not fitted yet.")
-        # X = check_array_docs(X, allow_missing=self.allow_missing) # Placeholder
         import numpy as np # Local import for predict
-        from ._util import check_array # Basic input validation for X
-        # from sklearn.utils.validation import check_is_fitted # If using sklearn exceptions
+        # from ._util import check_array # Not using this custom one for now
+        # from sklearn.utils.validation import check_is_fitted, check_array # For later
 
-        # Check if fit has been called FIRST
         if not self.fitted_:
-            # TODO: Use sklearn.exceptions.NotFittedError if adopting sklearn base classes
             raise RuntimeError("This Earth instance is not fitted yet. Call 'fit' with "
                                "appropriate arguments before using this estimator.")
 
-        # Then check for consistent state if fitted (these should ideally not be None if fitted_ is True)
-        # This check is important because self.fitted_ could be True but fit() might have failed to set them.
         if self.basis_ is None or self.coef_ is None:
-             # This implies fit might have completed but left an inconsistent state, which is an issue.
             raise ValueError("Model basis or coefficients are not available despite model being marked as fitted.")
 
-        # Input validation for X
-        # TODO: Replace with sklearn.utils.validation.check_array for full compatibility
-        if not isinstance(X, np.ndarray): X_arr = np.asarray(X, dtype=float)
-        else: X_arr = X
-        if X_arr.ndim == 1: X_arr = X_arr.reshape(-1,1)
-        # Add check for number of features matching training if possible (e.g. store self.n_features_in_)
-        # n_features_in_ = self.basis_[0]._involved_variables ... (this is complex if basis is empty)
-        # For now, _build_basis_matrix will rely on basis functions to handle X correctly.
+        # Scrub X for prediction (handles NaNs based on self.allow_missing)
+        if not isinstance(X, np.ndarray):
+            X_predict_orig = np.asarray(X, dtype=float)
+        else:
+            X_predict_orig = X.astype(float, copy=False)
 
-        if not self.basis_: # Should be caught by above, but as a safeguard if only intercept was "pruned" to nothing
-             # Predict mean of y_train if model is empty (or was just an intercept that got removed)
-             # This requires storing y_train_mean or similar during fit.
-             # For now, if this happens, it's an issue. The fit method tries to ensure at least an intercept.
-             # If self.coef_ is just [mean_y], and self.basis_ is [ConstantBasisFunction], it works.
-             # If self.basis_ is truly empty, this is problematic.
-            if hasattr(self, '_y_train_mean'): # Check if mean was stored
-                 return np.full(X_arr.shape[0], self._y_train_mean)
-            else: # Fallback, though ideally fit() ensures a valid model or raises error.
-                 raise ValueError("Predict called on an empty model with no fallback mean.")
+        if X_predict_orig.ndim == 1:
+            X_predict_orig = X_predict_orig.reshape(-1,1)
+
+        # Check feature consistency with training data (e.g. self.n_features_in_ if stored)
+        if hasattr(self.record_, 'n_features') and X_predict_orig.shape[1] != self.record_.n_features:
+             raise ValueError(f"X has {X_predict_orig.shape[1]} features, but Earth model was trained with {self.record_.n_features} features.")
+
+        predict_missing_mask = np.isnan(X_predict_orig)
+        X_predict_processed = X_predict_orig.copy() if np.any(predict_missing_mask) else X_predict_orig
+        if np.any(predict_missing_mask):
+            if not self.allow_missing:
+                raise ValueError("Input X for predict contains NaN values and allow_missing was False during fit.")
+            X_predict_processed[predict_missing_mask] = 0.0 # Zero-fill for basis transform
+
+        if not self.basis_: # Should be caught by above, but as a safeguard
+            # If model is truly empty (e.g. only intercept and it got removed, though fit tries to prevent this)
+            # we need a stored mean from training y.
+            if hasattr(self.record_, 'y_mean_'): # Assuming y_mean_ is stored by EarthRecord or fit
+                 return np.full(X_predict_processed.shape[0], self.record_.y_mean_)
+            else: # Fallback if no mean stored (should not happen in normal operation)
+                 return np.zeros(X_predict_processed.shape[0])
 
 
-        B_pred = self._build_basis_matrix(X_arr, self.basis_)
+        B_pred = self._build_basis_matrix(X_predict_processed, self.basis_, predict_missing_mask)
 
         if B_pred.shape[1] != len(self.coef_):
-            # This indicates a mismatch, possibly an empty B_pred if X was incompatible with basis functions
-            # Or if self.basis_ is empty but coef_ is not (inconsistent state)
-            # If basis_ is empty, B_pred will have 0 columns.
-            # If coef_ is for an intercept, but basis_ somehow became empty.
-            if not self.basis_ and len(self.coef_) == 1: # Intercept only model, but basis list is empty
-                 # This state should be fixed by fit() ensuring self.basis_ has ConstantBasisFunction
-                 # For now, assume coef_[0] is the intercept value
-                 return np.full(X_arr.shape[0], self.coef_[0])
-            raise ValueError(f"Shape mismatch between basis matrix ({B_pred.shape}) and coefficients ({self.coef_.shape}).")
+            # Fallback for intercept-only if dimensions mismatch after transform (e.g. all terms NaN for some reason)
+            if len(self.basis_) == 1 and isinstance(self.basis_[0], ConstantBasisFunction) and len(self.coef_) == 1:
+                 return np.full(X_predict_processed.shape[0], self.coef_[0]) # Predict intercept
+            raise ValueError(f"Shape mismatch between transformed X for predict ({B_pred.shape}) and coefficients ({self.coef_.shape}).")
 
         y_pred = B_pred @ self.coef_
+        # y_pred can contain NaNs if basis functions resulted in NaNs for some rows.
+        # The user of predict() will have to handle these NaNs if they occur.
         return y_pred
 
     # Remove the duplicate _transform_X_to_basis_matrix, as _build_basis_matrix is now the one.

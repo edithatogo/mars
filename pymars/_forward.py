@@ -54,40 +54,56 @@ class ForwardPasser:
         self._best_new_coeffs = None
         self._min_candidate_rss = np.inf # Minimize this value, which is the RSS with candidate
 
-    def _calculate_rss_and_coeffs(self, B_matrix: np.ndarray, y: np.ndarray) -> tuple[float, np.ndarray]:
+        # For missing data handling
+        self.X_fit_original = None
+        self.missing_mask = None
+
+
+    def _calculate_rss_and_coeffs(self, B_matrix: np.ndarray, y: np.ndarray) -> tuple[float, np.ndarray | None, int]:
         """
-        Calculates Residual Sum of Squares and coefficients for a given basis matrix and target y.
-        Returns (rss, coeffs). Returns (np.inf, None) on error.
+        Calculates Residual Sum of Squares, coefficients, and number of valid samples
+        for a given basis matrix and target y, considering NaNs.
+        y is assumed to be finite. B_matrix can contain NaNs.
+        Returns (rss, coeffs, num_valid_rows). Returns (np.inf, None, 0) on error or if no valid rows.
         """
-        if B_matrix is None or B_matrix.shape[1] == 0: # No basis functions
-            # RSS is variance of y * N if no model (or sum of squares of y - mean(y))
-            mean_y = np.mean(y)
+        if B_matrix is None or B_matrix.shape[1] == 0: # No basis functions (e.g. intercept only for GCV of empty model)
+            mean_y = np.mean(y) # y is finite
             rss = np.sum((y - mean_y)**2)
-            # Return coefficients for mean if B_matrix was supposed to be intercept only
-            # For truly empty B_matrix, coeffs concept is ill-defined, return None or mean as a single coeff
-            return rss, np.array([mean_y]) if (B_matrix is not None and B_matrix.shape[1] == 0) else None
+            num_valid_rows = len(y)
+            # Coeff for mean if B_matrix was meant to be intercept; None if B_matrix was truly empty.
+            # For pruning, if basis_subset is empty, it implies intercept.
+            # Let's assume if B_matrix.shape[1]==0, it's an intercept model.
+            coeffs_for_mean = np.array([mean_y]) if (B_matrix is not None and B_matrix.shape[1] == 0) else None
+            # If B_matrix is None (should not happen if called correctly), then perhaps None is better for coeffs.
+            # This case usually means we are evaluating an intercept-only model.
+            return rss, coeffs_for_mean, num_valid_rows
+
+        # Identify rows with no NaNs in B_matrix
+        # y is already asserted to be finite by _scrub_input_data
+        valid_rows_mask = ~np.any(np.isnan(B_matrix), axis=1)
+        num_valid_rows = np.sum(valid_rows_mask)
+
+        if num_valid_rows == 0 or num_valid_rows < B_matrix.shape[1]:
+            # Not enough valid data points to fit the model or completely empty after NaN removal
+            return np.inf, None, 0
+
+        B_complete = B_matrix[valid_rows_mask, :]
+        y_complete = y[valid_rows_mask]
 
         try:
-            # Ensure B_matrix is 2D
-            if B_matrix.ndim == 1:
-                B_matrix = B_matrix.reshape(-1, 1)
+            if B_complete.ndim == 1: # Should not happen if B_matrix.shape[1] > 0
+                B_complete = B_complete.reshape(-1, 1)
 
-            coeffs, residuals_sum_sq, rank, s = np.linalg.lstsq(B_matrix, y, rcond=None)
+            coeffs, residuals_sum_sq, rank, s = np.linalg.lstsq(B_complete, y_complete, rcond=None)
 
-            # If residuals_sum_sq is empty (e.g. perfect fit or underdetermined and m <= n)
-            # residuals_sum_sq is sum of squares of residuals if m > n and B_matrix is full rank (rank == n)
-            # for underdetermined or exact, it's empty or an array of zeros.
-            if residuals_sum_sq.size == 0 or rank < B_matrix.shape[1]:
-                # This means either perfect fit, or an underdetermined system where lstsq found one solution.
-                # For MARS, we usually expect m > n. If rank < n, it's rank-deficient.
-                # We need to calculate RSS manually.
-                y_pred = B_matrix @ coeffs
-                rss = np.sum((y - y_pred)**2)
-            else: # When lstsq returns sum of squares of residuals directly
+            if residuals_sum_sq.size == 0 or rank < B_complete.shape[1]:
+                y_pred_complete = B_complete @ coeffs
+                rss = np.sum((y_complete - y_pred_complete)**2)
+            else:
                 rss = residuals_sum_sq[0]
-            return rss, coeffs
+            return rss, coeffs, num_valid_rows
         except np.linalg.LinAlgError:
-            return np.inf, None # Penalize unstable fits heavily
+            return np.inf, None, num_valid_rows # num_valid_rows might still be >0 but fit failed
 
     def _build_basis_matrix(self, X: np.ndarray, basis_functions: list[BasisFunction]) -> np.ndarray:
         """Constructs the basis matrix B from X and a list of basis functions."""
@@ -97,19 +113,26 @@ class ForwardPasser:
             # For now, let's assume an empty list means an empty matrix for general purpose
             return np.empty((X.shape[0], 0))
 
-        B_list = [bf.transform(X).reshape(-1, 1) for bf in basis_functions]
+        # Basis functions will need to accept missing_mask
+        B_list = [bf.transform(X, missing_mask).reshape(-1, 1) for bf in basis_functions]
         return np.hstack(B_list)
 
-    def run(self, X: np.ndarray, y: np.ndarray) -> tuple[list[BasisFunction], np.ndarray]:
+    def run(self, X_fit_processed: np.ndarray, y_fit: np.ndarray,
+            missing_mask: np.ndarray, X_fit_original: np.ndarray) -> tuple[list[BasisFunction], np.ndarray]:
         """
         Execute the forward pass.
 
         Parameters
         ----------
-        X : numpy.ndarray of shape (n_samples, n_features)
-            Training input data. (Should be validated by Earth model before passing)
-        y : numpy.ndarray of shape (n_samples,) or (n_samples, n_outputs)
-            Training target data. (Should be validated and be 1D for now by Earth model)
+        X_fit_processed : numpy.ndarray
+            Training input data, with NaNs zero-filled.
+        y_fit : numpy.ndarray
+            Training target data (finite).
+        missing_mask : numpy.ndarray
+            Boolean mask indicating original NaN locations in X.
+        X_fit_original : numpy.ndarray
+            Original training input data, before NaNs were zero-filled.
+            Used for knot selection on observed values.
 
         Returns
         -------
@@ -118,15 +141,16 @@ class ForwardPasser:
         current_coefficients : numpy.ndarray
             The coefficients corresponding to the selected basis functions.
         """
-        self.X_train = X
-        self.y_train = y
-        if y.ndim > 1 and y.shape[1] > 1:
-            # TODO: Add support for multi-output targets later if needed.
-            # For now, ForwardPasser assumes y is effectively 1D.
+        self.X_train = X_fit_processed # Use zero-filled X for transformations
+        self.y_train = y_fit           # y_fit is already validated and finite
+        self.missing_mask = missing_mask
+        self.X_fit_original = X_fit_original
+
+        if self.y_train.ndim > 1 and self.y_train.shape[1] > 1:
             raise ValueError("ForwardPasser currently supports only single-output targets (y should be 1D).")
         self.y_train = self.y_train.ravel() # Ensure y is 1D
 
-        self.n_samples, self.n_features = X.shape
+        self.n_samples, self.n_features = self.X_train.shape
 
         # Initialize model with an intercept term
         intercept_bf = ConstantBasisFunction()
@@ -259,39 +283,52 @@ class ForwardPasser:
     def _calculate_gcv_for_basis_set(self, basis_functions: list[BasisFunction]) -> tuple[float | None, np.ndarray | None]:
         """
         Calculates GCV and coefficients for a given set of basis functions.
-        Returns (gcv, coeffs) or (None, None) if GCV cannot be computed.
+        # Returns (gcv, coeffs) or (np.inf, None) if GCV cannot be computed.
         """
-        if not basis_functions: # Should not happen if intercept is always there
-            return np.inf, None
+        if not basis_functions:
+             # This implies an intercept-only model if it's the final state of pruning.
+             # _calculate_rss_and_coeffs handles B_matrix.shape[1]==0 for intercept.
+             # Here, we explicitly handle it for clarity or if basis_functions is truly empty.
+            rss_intercept_only = np.sum((self.y_train - np.mean(self.y_train))**2)
+            # n_samples here is self.n_samples (total, from processed X), not yet effective_N from NaN handling
+            # This will be refined when _calculate_rss_and_coeffs returns effective N.
+            effective_params_intercept = gcv_penalty_cost_effective_parameters(1, self.model.penalty, self.n_samples, has_intercept=True)
+            gcv_intercept = calculate_gcv(rss_intercept_only, effective_params_intercept, self.n_samples)
+            return gcv_intercept, np.array([np.mean(self.y_train)])
 
+        # self.X_train is X_fit_processed, self.missing_mask is the mask for original X
         B_matrix = self._build_basis_matrix(self.X_train, basis_functions)
-        if B_matrix.shape[1] == 0: # No terms in basis matrix
-            # GCV for a model that predicts mean (intercept only, but B_matrix is empty)
-            # This case needs careful handling. If basis_functions = [ConstantBasisFunction()],
-            # B_matrix should be (N,1). If basis_functions is truly empty, it's different.
-            # For now, assume if basis_functions is not empty, B_matrix won't be empty unless error.
-            # If it *is* empty, GCV is essentially for a model predicting the mean.
-            rss = np.sum((self.y_train - np.mean(self.y_train))**2)
-            # Effective parameters for intercept-only model is typically 1.
-            # However, gcv_penalty_cost_effective_parameters expects num_model_params (cols in B)
-            # This path might indicate an issue if basis_functions is not empty but B_matrix is.
-            effective_params = gcv_penalty_cost_effective_parameters(1, self.model.penalty, self.n_samples)
-            gcv = calculate_gcv(rss, effective_params, self.n_samples)
-            return gcv, np.array([np.mean(self.y_train)])
+
+        # _calculate_rss_and_coeffs now returns (rss, coeffs, num_valid_rows)
+        rss, coeffs, num_valid_rows = self._calculate_rss_and_coeffs(B_matrix, self.y_train)
+
+        if rss == np.inf or coeffs is None or num_valid_rows == 0:
+            return np.inf, None # Unstable fit, error, or no valid data
+
+        # Use num_valid_rows for N in GCV calculation
+        # num_model_params = B_matrix.shape[1] (number of terms in B_matrix, which might be 0 if all NaNs after transform)
+        # If B_matrix.shape[1] became 0 due to all NaNs, _calculate_rss_and_coeffs would have handled it.
+        # So here, B_matrix.shape[1] is the number of terms in basis_functions that produced non-all-NaN columns.
+        # This needs to be robust. If B_matrix became all NaNs, num_valid_rows would be 0.
+
+        num_terms_in_b_matrix = B_matrix.shape[1]
+        if num_terms_in_b_matrix == 0 and num_valid_rows > 0: # Should be caught by initial check or earlier B_matrix.shape[1] check in _calc_rss
+            # This case means all basis functions resulted in all-NaN columns, but y data exists.
+            # Effectively an intercept model on y_train[valid_rows_for_y_only]
+            # This path should ideally not be hit if _calc_rss handles B_matrix.shape[1]==0 correctly.
+            # For safety, treat as intercept if B_matrix is empty but y data is valid.
+            rss_intercept_fallback = np.sum((self.y_train - np.mean(self.y_train))**2) # Using full y_train for mean
+            effective_params_intercept = gcv_penalty_cost_effective_parameters(1, self.model.penalty, num_valid_rows, has_intercept=True)
+            gcv_score = calculate_gcv(rss_intercept_fallback, effective_params_intercept, num_valid_rows)
+            return gcv_score, np.array([np.mean(self.y_train)])
 
 
-        rss, coeffs = self._calculate_rss_and_coeffs(B_matrix, self.y_train)
-
-        if rss == np.inf or coeffs is None:
-            return np.inf, None # Unstable fit or error
-
-        # Calculate effective number of parameters for GCV
-        # num_model_params = B_matrix.shape[1] (number of basis functions in current set)
+        has_intercept = any(isinstance(bf, ConstantBasisFunction) for bf in basis_functions)
         effective_num_params = gcv_penalty_cost_effective_parameters(
-            B_matrix.shape[1], self.model.penalty, self.n_samples
+            num_terms_in_b_matrix, self.model.penalty, num_valid_rows, has_intercept=has_intercept
         )
 
-        gcv_score = calculate_gcv(rss, effective_num_params, self.n_samples)
+        gcv_score = calculate_gcv(rss, effective_num_params, num_valid_rows)
         return gcv_score, coeffs
 
     def _get_allowable_knot_values(self, X_col: np.ndarray, parent_bf: BasisFunction, var_idx: int) -> np.ndarray:
@@ -395,6 +432,7 @@ class ForwardPasser:
                 min_span_count = 1
         # If minspan_alpha <= 0 and self.model.minspan < 0, min_span_count remains 0.
         # ---- Start of new py-earth aligned implementation ----
+        # This method now uses self.X_fit_original and self.missing_mask
 
         # 1. Determine n_vars_for_calc (for alpha calculations)
         # TODO: Refine n_vars_for_calc for closer py-earth parity.
@@ -437,7 +475,14 @@ class ForwardPasser:
         if count_parent_nonzero == 0:
             return np.array([]) # No active region from parent
 
-        X_values_for_knots = self.X_train[p_parent_active, var_idx]
+        # Use original X values for knot selection, restricted to active and non-missing points
+        current_var_original_values = self.X_fit_original[:, var_idx]
+        current_var_missing_mask = self.missing_mask[:, var_idx]
+
+        # Combine parent active mask with non-missing mask for the current variable
+        truly_usable_for_knots_mask = p_parent_active & ~current_var_missing_mask
+
+        X_values_for_knots = current_var_original_values[truly_usable_for_knots_mask]
 
         if X_values_for_knots.size == 0:
             return np.array([])
