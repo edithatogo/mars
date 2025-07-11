@@ -149,22 +149,21 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
 
         self.fitted_ = False
 
-    def _build_basis_matrix(self, X: np.ndarray, basis_functions: list) -> np.ndarray:
+    # _build_basis_matrix is defined in Earth class. Its signature was:
+    # def _build_basis_matrix(self, X: np.ndarray, basis_functions: list) -> np.ndarray:
+    # It needs to accept missing_mask.
+    def _build_basis_matrix(self, X_processed: np.ndarray, basis_functions: list, missing_mask: np.ndarray) -> np.ndarray:
         """
-        Constructs the basis matrix B from X and a list of basis functions.
+        Constructs the basis matrix B from X_processed and a list of basis functions,
+        using the provided missing_mask.
         Centralized helper method.
         """
         if not basis_functions:
-            return np.empty((X.shape[0], 0))
+            return np.empty((X_processed.shape[0], 0))
 
-        # Ensure X is a numpy array if it's not already (e.g. list of lists from user)
-        # This basic check might be expanded or rely on sklearn's check_array later
-        if not isinstance(X, np.ndarray):
-            X_arr = np.asarray(X)
-        else:
-            X_arr = X
-
-        B_list = [bf.transform(X_arr).reshape(-1, 1) for bf in basis_functions]
+        # X_processed is already a numpy array.
+        # missing_mask corresponds to the original X for X_processed.
+        B_list = [bf.transform(X_processed, missing_mask).reshape(-1, 1) for bf in basis_functions]
         return np.hstack(B_list)
 
     def fit(self, X, y):
@@ -238,13 +237,16 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
             if not self.basis_ : # if fwd_basis_functions was also empty
                  self.basis_ = [ConstantBasisFunction()] # Ensure at least an intercept for predict
 
-            B_final = self._build_basis_matrix(X, self.basis_)
+            # Use X_processed and missing_mask for this potential build
+            B_final = self._build_basis_matrix(X_processed, self.basis_, missing_mask)
             if B_final.shape[1] > 0:
-                self.coef_, _, _, _ = np.linalg.lstsq(B_final, y, rcond=None)
-            else: # Should not happen if we force intercept
-                self.coef_ = np.array([np.mean(y)])
-                self.basis_ = [ConstantBasisFunction()] # ensure basis list matches coef
-                B_final = self._build_basis_matrix(X,self.basis_)
+                 # lstsq needs to be NaN aware if B_final can have NaNs
+                 # For now, assume if B_final is built, it's on valid data for this very basic model
+                self.coef_, _, _, _ = np.linalg.lstsq(B_final, y_processed, rcond=None)
+            else:
+                self.coef_ = np.array([np.mean(y_processed)])
+                self.basis_ = [ConstantBasisFunction()]
+                B_final = self._build_basis_matrix(X_processed, self.basis_, missing_mask)
 
 
             self.gcv_ = np.inf # Or calculate for intercept only
@@ -276,8 +278,8 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
 
         # Calculate final RSS and MSE on training data using the pruned model
         # This needs to use X_processed, y_processed, and missing_mask for consistency
-        if self.basis_ and self.coef_ is not None:
-            B_final = self._build_basis_matrix(X_processed, self.basis_, missing_mask) # Pass missing_mask
+        if self.basis_ and self.coef_ is not None: # Coef are from pruning pass which was NaN-aware
+            B_final = self._build_basis_matrix(X_processed, self.basis_, missing_mask)
 
             # For RSS/MSE, consider only rows used in the final LSTSQ, or all non-NaN y_pred rows
             # If lstsq in pruning pass already handled NaNs by using complete cases for GCV,

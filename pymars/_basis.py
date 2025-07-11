@@ -129,17 +129,17 @@ class ConstantBasisFunction(BasisFunction):
 
         Parameters
         ----------
-        X : numpy.ndarray of shape (n_samples, n_features)
-            The input data. Only n_samples (X.shape[0]) is used.
+        X_processed : numpy.ndarray of shape (n_samples, n_features)
+            The input data. Only n_samples (X_processed.shape[0]) is used.
+        missing_mask : numpy.ndarray
+            Boolean mask, ignored by this function.
 
         Returns
         -------
         numpy.ndarray of shape (n_samples,)
             An array containing ones.
         """
-        if not isinstance(X, np.ndarray):
-            raise TypeError("Input X must be a numpy array.")
-        if not isinstance(X_processed, np.ndarray):
+        if not isinstance(X_processed, np.ndarray): # Corrected: removed the erroneous check for 'X'
             raise TypeError("Input X_processed must be a numpy array.")
         if X_processed.ndim == 1:
             return np.ones(X_processed.shape[0])
@@ -218,6 +218,8 @@ class HingeBasisFunction(BasisFunction):
         # If X_processed is 1D, missing_mask should also be 1D or (N,1)
         # If X_processed is 2D, missing_mask is (N, n_features)
         current_var_missing = missing_mask if X_processed.ndim == 1 else missing_mask[:, self.variable_idx]
+        if current_term_values.dtype != float: # Ensure float type before assigning NaN
+            current_term_values = current_term_values.astype(float)
         current_term_values[current_var_missing] = np.nan
 
         if self.parent1: # This is an interaction term
@@ -286,6 +288,8 @@ class LinearBasisFunction(BasisFunction):
 
         # Apply NaN where original variable was missing
         current_var_missing = missing_mask if X_processed.ndim == 1 else missing_mask[:, self.variable_idx]
+        if current_term_values.dtype != float: # Ensure float type before assigning NaN
+            current_term_values = current_term_values.astype(float)
         current_term_values[current_var_missing] = np.nan
 
         if self.parent1: # This is an interaction term

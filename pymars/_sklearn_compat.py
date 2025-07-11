@@ -424,7 +424,10 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
                  return self
         else:
             # Transform X using the fitted Earth model's basis functions
-            X_transformed = self.earth_._build_basis_matrix(X_validated, self.basis_)
+            # Since X_validated is assumed to be NaN-free by this point (due to check_X_y),
+            # an all-False missing_mask is appropriate for the core Earth's _build_basis_matrix.
+            missing_mask_for_transform = np.zeros_like(X_validated, dtype=bool)
+            X_transformed = self.earth_._build_basis_matrix(X_validated, self.basis_, missing_mask_for_transform)
 
         # Initialize/Clone and Fit the internal classifier
         if self.classifier is None: # Use default
@@ -471,8 +474,10 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
              print("Warning: EarthClassifier.basis_ is empty. Predictions might be based on original features if fit handled this.")
              return X_validated # Fallback if fit decided to use original X
 
-
-        X_transformed = self.earth_._build_basis_matrix(X_validated, self.basis_)
+        # Since X_validated is assumed to be NaN-free by this point (due to check_array),
+        # an all-False missing_mask is appropriate.
+        missing_mask_for_transform = np.zeros_like(X_validated, dtype=bool)
+        X_transformed = self.earth_._build_basis_matrix(X_validated, self.basis_, missing_mask_for_transform)
 
         # Ensure X_transformed is not empty if basis functions exist, otherwise it's an issue.
         # (e.g. if all basis functions evaluate to constants that get removed, or some error)

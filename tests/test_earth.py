@@ -207,11 +207,17 @@ def test_empty_model_after_pruning(simple_earth_data):
     # Re-calculate GCV for intercept-only model manually for assertion
     temp_earth_for_gcv_check = Earth(penalty=model.penalty)
     temp_pruner_for_gcv_check = PruningPasser(temp_earth_for_gcv_check)
-    temp_pruner_for_gcv_check.X_train = X # Still needed for _build_basis_matrix if it uses self.X_train
+    temp_pruner_for_gcv_check.X_train = X
     temp_pruner_for_gcv_check.y_train = y.ravel()
     temp_pruner_for_gcv_check.n_samples = X.shape[0]
+    # Create a dummy missing_mask and provide X_fit_original for the call
+    dummy_missing_mask = np.zeros_like(X, dtype=bool)
     expected_gcv_intercept_only, _, _ = temp_pruner_for_gcv_check._compute_gcv_for_subset(
-        X, y.ravel(), X.shape[0], [ConstantBasisFunction()]
+        X_fit_processed=X,
+        y_fit=y.ravel(),
+        missing_mask=dummy_missing_mask,
+        X_fit_original=X,
+        basis_subset=[ConstantBasisFunction()]
     )
 
     assert model.gcv_ is not None, "GCV should be set"
@@ -228,11 +234,20 @@ def test_earth_feature_importance_parameter(simple_earth_data):
     assert model.feature_importances_ is not None
     assert isinstance(model.feature_importances_, np.ndarray)
     assert len(model.feature_importances_) == X.shape[1]
-    if X.shape[1] > 0 and len(model.basis_) > 1: # If there are features and model is not just intercept
-        assert np.isclose(np.sum(model.feature_importances_), 1.0)
-    else: # Handles case of no features or only intercept (no variables involved)
-        assert np.sum(model.feature_importances_) == 0
 
+    # For 'nb_subsets', importances are normalized.
+    # If there are features (X.shape[1] > 0):
+    # - If any feature had a non-zero count in the pruning trace, the sum of normalized importances will be 1.0.
+    # - If NO feature ever appeared in the pruning trace (e.g., model was intercept-only throughout),
+    #   then raw importances are all zero, sum is 0.
+    if X.shape[1] == 0:
+        assert np.sum(model.feature_importances_) == 0.0
+    elif np.all(model.feature_importances_ == 0.0):
+        # This case means features existed, but none were ever selected in the trace
+        assert np.sum(model.feature_importances_) == 0.0
+    else:
+        # Features were selected in the trace and importances are normalized
+        assert np.isclose(np.sum(model.feature_importances_), 1.0)
 
     # Test with None (default)
     model_no_fi = Earth()

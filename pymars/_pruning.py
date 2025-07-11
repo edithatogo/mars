@@ -10,7 +10,7 @@ using a criterion like Generalized Cross-Validation (GCV).
 
 import numpy as np
 from .earth import Earth # For type hinting
-from ._basis import BasisFunction, ConstantBasisFunction
+from ._basis import BasisFunction, ConstantBasisFunction, HingeBasisFunction
 from ._util import calculate_gcv, gcv_penalty_cost_effective_parameters
 
 EPSILON = np.finfo(float).eps
@@ -47,17 +47,19 @@ class PruningPasser:
             coeffs_for_mean = np.array([mean_y]) if (B_matrix is not None and B_matrix.shape[1] == 0) else None
             return rss, coeffs_for_mean, num_valid_rows
 
+        # Identify rows with no NaNs in B_matrix (y_data is already finite)
         valid_rows_mask = ~np.any(np.isnan(B_matrix), axis=1)
         num_valid_rows = np.sum(valid_rows_mask)
 
-        if num_valid_rows == 0 or num_valid_rows < B_matrix.shape[1]:
+        if num_valid_rows == 0 or num_valid_rows < B_matrix.shape[1]: # Not enough data or underdetermined
             return np.inf, None, 0
 
         B_complete = B_matrix[valid_rows_mask, :]
-        y_complete = y_data[valid_rows_mask]
+        y_complete = y_data[valid_rows_mask] # y_data is already 1D from PruningPasser.run
 
         try:
-            if B_complete.ndim == 1: B_complete = B_complete.reshape(-1, 1)
+            # B_complete should be 2D here because B_matrix.shape[1] > 0
+            # and num_valid_rows >= B_matrix.shape[1]
             coeffs, residuals_sum_sq, rank, s = np.linalg.lstsq(B_complete, y_complete, rcond=None)
 
             if residuals_sum_sq.size == 0 or rank < B_complete.shape[1]:
@@ -66,11 +68,16 @@ class PruningPasser:
             else:
                 rss = residuals_sum_sq[0]
             return rss, coeffs, num_valid_rows
-        except np.linalg.LinAlgError:
-            return np.inf, None, num_valid_rows # num_valid_rows might still be >0 but fit failed
+        except np.linalg.LinAlgError as e:
+            print(f"LinAlgError in PruningPasser._calculate_rss_and_coeffs: {e}")
+            return np.inf, None, num_valid_rows
 
     def _build_basis_matrix(self, X_data: np.ndarray, basis_functions: list[BasisFunction],
-                            missing_mask: np.ndarray) -> np.ndarray: # Added missing_mask
+                            missing_mask: np.ndarray) -> np.ndarray:
+        """
+        Constructs the basis matrix B from X_data (which is X_processed)
+        and a list of basis functions, using the provided missing_mask.
+        """
         if not basis_functions:
             return np.empty((X_data.shape[0], 0))
         B_list = [bf.transform(X_data, missing_mask).reshape(-1, 1) for bf in basis_functions]
@@ -84,33 +91,54 @@ class PruningPasser:
         Returns (gcv, rss, coeffs).
         """
         if not basis_subset:
-            rss_empty = np.sum((y_fit - np.mean(y_fit))**2)
-            n_valid_rows_for_empty = len(y_fit)
-            effective_params_empty = gcv_penalty_cost_effective_parameters(1, self.model.penalty, n_valid_rows_for_empty, has_intercept=True)
-            gcv_empty = calculate_gcv(rss_empty, effective_params_empty, n_valid_rows_for_empty)
-            return gcv_empty, rss_empty, np.array([np.mean(y_fit)])
+            # This case implies an intercept-only model IF an intercept is implicitly assumed
+            # or if _calculate_rss_and_coeffs handles B_matrix.shape[1] == 0 by returning intercept.
+            # Current _calculate_rss_and_coeffs for empty B_matrix (shape[1]==0) returns mean(y) as coeff.
+            rss_empty, coeffs_empty, n_valid_rows_for_empty = self._calculate_rss_and_coeffs(
+                np.empty((len(y_fit), 0)), y_fit
+            ) # B_matrix with 0 columns
 
+            if coeffs_empty is None: # Should not happen with current _calc_rss_and_coeffs for empty B
+                return np.inf, rss_empty, None
+
+            num_terms_intercept_only = 1 # Intercept
+            num_hinge_terms_intercept_only = 0
+
+            effective_params_empty = gcv_penalty_cost_effective_parameters(
+                num_terms_intercept_only,
+                num_hinge_terms_intercept_only,
+                self.model.penalty,
+                n_valid_rows_for_empty
+            )
+            gcv_empty = calculate_gcv(rss_empty, n_valid_rows_for_empty, effective_params_empty)
+            return gcv_empty, rss_empty, coeffs_empty # coeffs_empty is np.array([np.mean(y_fit)])
+
+        # There is a duplicate line here, removing one instance.
+        # B_subset = self._build_basis_matrix(X_fit_processed, basis_subset, missing_mask)
         B_subset = self._build_basis_matrix(X_fit_processed, basis_subset, missing_mask)
 
-        rss, coeffs, num_valid_rows = self._calculate_rss_and_coeffs(B_subset, y_fit)
+        rss, coeffs, num_valid_rows_for_fit = self._calculate_rss_and_coeffs(B_subset, y_fit)
 
-        if coeffs is None or rss == np.inf or num_valid_rows == 0:
+        if coeffs is None or rss == np.inf or num_valid_rows_for_fit == 0:
             return np.inf, rss if rss is not None else np.inf, None
 
-        num_terms = B_subset.shape[1]
-        if num_terms == 0 and num_valid_rows > 0:
-            rss_intercept_fallback = np.sum((y_fit - np.mean(y_fit))**2)
-            effective_params_intercept = gcv_penalty_cost_effective_parameters(1, self.model.penalty, num_valid_rows, has_intercept=True)
-            gcv_score = calculate_gcv(rss_intercept_fallback, effective_params_intercept, num_valid_rows)
-            return gcv_score, rss_intercept_fallback, np.array([np.mean(y_fit)])
+        num_model_terms = coeffs.shape[0] # Actual number of terms in the fitted model
 
-        has_intercept = any(isinstance(bf, ConstantBasisFunction) for bf in basis_subset)
+        if num_model_terms == 0:
+             # This case implies LSTSQ resulted in an empty coefficient array, which means no model.
+            return np.inf, rss, None
+
+        num_hinge_terms_in_subset = sum(isinstance(bf, HingeBasisFunction) for bf in basis_subset)
 
         effective_params = gcv_penalty_cost_effective_parameters(
-            num_terms, self.model.penalty, num_valid_rows, has_intercept=has_intercept
+            num_model_terms,
+            num_hinge_terms_in_subset,
+            self.model.penalty,
+            num_valid_rows_for_fit  # This is n_samples for the GCV calculation
         )
 
-        gcv_score = calculate_gcv(rss, effective_params, num_valid_rows)
+        # The arguments for calculate_gcv are (rss, num_samples, num_effective_params)
+        gcv_score = calculate_gcv(rss, num_valid_rows_for_fit, effective_params)
         return gcv_score, rss, coeffs
 
     def run(self, X_fit_processed: np.ndarray, y_fit: np.ndarray,
