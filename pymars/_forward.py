@@ -8,7 +8,7 @@ to minimize a criterion (e.g., sum of squared errors).
 """
 
 import numpy as np
-from ._basis import BasisFunction, HingeBasisFunction, ConstantBasisFunction, LinearBasisFunction, MissingnessBasisFunction
+from ._basis import BasisFunction, HingeBasisFunction, ConstantBasisFunction, LinearBasisFunction, MissingnessBasisFunction, CategoricalBasisFunction
 from ._record import EarthRecord # Assuming EarthRecord is used by Earth model instance
 from .earth import Earth # For type hinting
 from ._util import calculate_gcv, gcv_penalty_cost_effective_parameters # For GCV calculations
@@ -36,6 +36,7 @@ class ForwardPasser:
         self._min_candidate_rss = np.inf
         self.X_fit_original = None
         self.missing_mask = None
+        self.categorical_features = self.model.categorical_features
 
     def _calculate_rss_and_coeffs(self, B_matrix: np.ndarray, y: np.ndarray) -> tuple[float, np.ndarray | None, int]:
         if B_matrix is None or B_matrix.shape[1] == 0:
@@ -305,25 +306,30 @@ class ForwardPasser:
 
     def _generate_candidates(self) -> list[tuple[BasisFunction, BasisFunction | None]]:
         candidate_additions: list[tuple[BasisFunction, BasisFunction | None]] = []
-        if self.model.allow_linear:
-            for parent_bf in self.current_basis_functions:
-                if parent_bf.degree() + 1 > self.model.max_degree: continue
-                parent_involved_vars = parent_bf.get_involved_variables()
-                for var_idx in range(self.n_features):
-                    if var_idx in parent_involved_vars: continue
-                    linear_candidate = LinearBasisFunction(variable_idx=var_idx, parent_bf=parent_bf)
-                    candidate_additions.append((linear_candidate, None))
-
         for parent_bf in self.current_basis_functions:
             if parent_bf.degree() + 1 > self.model.max_degree: continue
             parent_involved_vars = parent_bf.get_involved_variables()
             for var_idx in range(self.n_features):
                 if var_idx in parent_involved_vars: continue
-                potential_knots = self._get_allowable_knot_values(self.X_fit_original[:, var_idx], parent_bf, var_idx)
-                for knot_val in potential_knots:
-                    bf_right = HingeBasisFunction(variable_idx=var_idx, knot_val=knot_val, is_right_hinge=True, parent_bf=parent_bf)
-                    bf_left = HingeBasisFunction(variable_idx=var_idx, knot_val=knot_val, is_right_hinge=False, parent_bf=parent_bf)
-                    candidate_additions.append((bf_left, bf_right))
+
+                # Handle continuous features (not in categorical list)
+                if not self.categorical_features or var_idx not in self.categorical_features:
+                    if self.model.allow_linear:
+                        linear_candidate = LinearBasisFunction(variable_idx=var_idx, parent_bf=parent_bf)
+                        candidate_additions.append((linear_candidate, None))
+                    potential_knots = self._get_allowable_knot_values(self.X_fit_original[:, var_idx], parent_bf, var_idx)
+                    for knot_val in potential_knots:
+                        bf_right = HingeBasisFunction(variable_idx=var_idx, knot_val=knot_val, is_right_hinge=True, parent_bf=parent_bf)
+                        bf_left = HingeBasisFunction(variable_idx=var_idx, knot_val=knot_val, is_right_hinge=False, parent_bf=parent_bf)
+                        candidate_additions.append((bf_left, bf_right))
+                # Handle categorical features
+                elif self.categorical_features and var_idx in self.categorical_features:
+                    unique_categories = np.unique(self.X_fit_original[:, var_idx])
+                    for category in unique_categories:
+                        categorical_candidate = CategoricalBasisFunction(
+                            variable_idx=var_idx, category=category, parent_bf=parent_bf
+                        )
+                        candidate_additions.append((categorical_candidate, None))
 
         # Generate MissingnessBasisFunction candidates if allow_missing is True
         if self.model.allow_missing and self.missing_mask is not None:

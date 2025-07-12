@@ -121,7 +121,8 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
                  minspan: int = -1, endspan: int = -1,
                  allow_linear: bool = True,
                  allow_missing: bool = False, # New parameter
-                 feature_importance_type: str = None
+                 feature_importance_type: str = None,
+                 categorical_features: list[int] = None
                  # TODO: Consider other py-earth params
                  ):
         # Core MARS algorithm parameters
@@ -135,6 +136,7 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
         self.allow_linear = allow_linear
         self.allow_missing = allow_missing # Store new parameter
         self.feature_importance_type = feature_importance_type
+        self.categorical_features = categorical_features
 
         # Attributes that will be learned during fit
         self.basis_: list = None

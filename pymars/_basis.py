@@ -247,6 +247,73 @@ class HingeBasisFunction(BasisFunction):
         return False
 
 
+class CategoricalBasisFunction(BasisFunction):
+    """
+    Represents a categorical variable indicator: 1 if variable_idx is a specific category, 0 otherwise.
+    Its degree is 1.
+    """
+    def __init__(self, variable_idx: int, category: any, variable_name: str = None, parent_bf: 'BasisFunction' = None):
+        self.category = category
+        self.variable_name = variable_name if variable_name else f"x{variable_idx}"
+
+        name_str = ""
+        if parent_bf:
+            name_str += f"({str(parent_bf)}) * "
+        name_str += f"{self.variable_name}_is_{self.category}"
+
+        super().__init__(name=name_str)
+
+        parent_involved_vars = frozenset()
+        if parent_bf:
+            parent_involved_vars = parent_bf.get_involved_variables()
+        current_involved_vars = parent_involved_vars.union({variable_idx})
+
+        self._set_properties(variable_idx=variable_idx, is_hinge=False, is_linear=False,
+                             parent1=parent_bf,
+                             involved_variables=current_involved_vars)
+
+    def transform(self, X_processed: np.ndarray, missing_mask: np.ndarray) -> np.ndarray:
+        """
+        Returns 1 if the value for self.variable_idx matches the category, 0 otherwise.
+        NaNs propagate.
+        """
+        if not isinstance(X_processed, np.ndarray):
+            raise TypeError("Input X_processed must be a numpy array.")
+        if X_processed.ndim != 2:
+             raise ValueError("Input X_processed must be 2D (n_samples, n_features).")
+        if self.variable_idx >= X_processed.shape[1]:
+            raise IndexError(f"variable_idx {self.variable_idx} is out of bounds for X_processed with {X_processed.shape[1]} features.")
+
+        x_col = X_processed[:, self.variable_idx]
+        current_term_values = (x_col == self.category).astype(float)
+
+        # Apply NaN where original variable was missing
+        current_var_missing = missing_mask[:, self.variable_idx]
+        current_term_values[current_var_missing] = np.nan
+
+        if self.parent1: # This is an interaction term
+            parent_transformed = self.parent1.transform(X_processed, missing_mask)
+            return parent_transformed * current_term_values
+        else:
+            return current_term_values
+
+    def __str__(self) -> str:
+        return self.get_name()
+
+    def degree(self) -> int:
+        """
+        The degree of a CategoricalBasisFunction.
+        If it's a simple categorical term, degree is 1.
+        If it's an interaction term (has a parent), its degree is parent.degree() + 1.
+        """
+        if self.parent1:
+            return self.parent1.degree() + 1
+        return 1
+
+    def is_constant(self) -> bool:
+        return False
+
+
 class LinearBasisFunction(BasisFunction):
     """
     Represents a linear term: x_i
