@@ -8,7 +8,7 @@ import pytest
 import numpy as np
 from pymars.earth import Earth
 from pymars._forward import ForwardPasser
-from pymars._basis import ConstantBasisFunction, HingeBasisFunction, LinearBasisFunction
+from pymars._basis import ConstantBasisFunction, HingeBasisFunction, LinearBasisFunction, MissingnessBasisFunction
 
 class MockEarth(Earth):
     def __init__(self, max_degree=1, max_terms=10,
@@ -616,3 +616,131 @@ def test_run_adds_linear_interaction_term():
 
 if __name__ == '__main__':
     print("Run tests using 'pytest tests/test_forward.py'")
+
+
+def test_generate_candidates_with_missingness():
+    """Test that MissingnessBasisFunction candidates are generated."""
+    X_orig = np.array([[1.0, np.nan], [2.0, 20.0], [np.nan, 30.0], [4.0, np.nan]])
+    y_dummy = np.array([1,2,3,4])
+
+    # Mock Earth model that allows missing values
+    earth_model_missing = MockEarth(allow_missing=True)
+    # Setup ForwardPasser internal state usually done by run()
+    passer = ForwardPasser(earth_model_missing)
+    passer.X_train = np.nan_to_num(X_orig, nan=0.0) # X_processed
+    passer.missing_mask = np.isnan(X_orig)
+    passer.X_fit_original = X_orig
+    passer.n_samples, passer.n_features = X_orig.shape
+    passer.current_basis_functions = [ConstantBasisFunction()] # Start with intercept
+
+    # Mock record to provide feature names
+    class MockRecord:
+        feature_names_in_ = ["feature0", "feature1"]
+    passer.model.record_ = MockRecord()
+
+
+    candidates = passer._generate_candidates()
+
+    found_missingness_bf_0 = False
+    found_missingness_bf_1 = False
+    num_missingness_candidates = 0
+
+    for bf1, bf2_or_None in candidates:
+        if isinstance(bf1, MissingnessBasisFunction) and bf2_or_None is None:
+            num_missingness_candidates += 1
+            if bf1.variable_idx == 0:
+                assert str(bf1) == "is_missing(feature0)"
+                found_missingness_bf_0 = True
+            elif bf1.variable_idx == 1:
+                assert str(bf1) == "is_missing(feature1)"
+                found_missingness_bf_1 = True
+
+    assert num_missingness_candidates == 2 # Both features have NaNs
+    assert found_missingness_bf_0
+    assert found_missingness_bf_1
+
+    # Test case: only one feature has NaNs
+    X_one_nan = np.array([[1.0, 10.0], [2.0, np.nan], [3.0, 30.0]])
+    passer.missing_mask = np.isnan(X_one_nan)
+    passer.X_fit_original = X_one_nan
+    passer.n_samples, passer.n_features = X_one_nan.shape
+
+    candidates_one_nan = passer._generate_candidates()
+    num_missingness_one_nan = 0
+    found_missingness_bf_1_only = False
+    for bf1, _ in candidates_one_nan:
+        if isinstance(bf1, MissingnessBasisFunction):
+            num_missingness_one_nan +=1
+            if bf1.variable_idx == 1:
+                found_missingness_bf_1_only = True
+    assert num_missingness_one_nan == 1
+    assert found_missingness_bf_1_only
+
+    # Test: no missingness candidates if allow_missing=False
+    earth_model_no_missing = MockEarth(allow_missing=False)
+    passer_no_missing = ForwardPasser(earth_model_no_missing)
+    passer_no_missing.X_train = np.nan_to_num(X_orig, nan=0.0)
+    passer_no_missing.missing_mask = np.isnan(X_orig) # Mask is still there
+    passer_no_missing.X_fit_original = X_orig
+    passer_no_missing.n_samples, passer_no_missing.n_features = X_orig.shape
+    passer_no_missing.current_basis_functions = [ConstantBasisFunction()]
+    passer_no_missing.model.record_ = MockRecord()
+
+    candidates_no_missing = passer_no_missing._generate_candidates()
+    assert not any(isinstance(bf1, MissingnessBasisFunction) for bf1, _ in candidates_no_missing)
+
+
+def test_run_selects_missingness_bf():
+    """Test if ForwardPasser.run can select a MissingnessBasisFunction."""
+    # Create data where missingness in X0 is perfectly correlated with y
+    X_orig = np.array([[np.nan], [1.0], [np.nan], [2.0], [np.nan], [3.0]])
+    y = np.array([10.0, 1.0, 10.0, 2.0, 10.0, 3.0]) # High y when X0 is missing
+
+    earth_model = MockEarth(allow_missing=True, max_terms=2, penalty=0,
+                            allow_linear=False, endspan_alpha=0.0, minspan_alpha=0.0) # No linear/hinge to isolate missingness
+
+    # Mock record for feature names
+    class MockRecord:
+        feature_names_in_ = ["x0"]
+    earth_model.record_ = MockRecord()
+
+    passer = ForwardPasser(earth_model)
+
+    X_processed = np.nan_to_num(X_orig, nan=0.0)
+    missing_mask = np.isnan(X_orig)
+
+    final_bfs, final_coeffs = passer.run(
+        X_fit_processed=X_processed,
+        y_fit=y.ravel(),
+        missing_mask=missing_mask,
+        X_fit_original=X_orig
+    )
+
+    assert len(final_bfs) == 2 # Intercept + MissingnessBF
+    found_missing_bf = False
+    for bf in final_bfs:
+        if isinstance(bf, MissingnessBasisFunction):
+            assert bf.variable_idx == 0
+            found_missing_bf = True
+            break
+    assert found_missing_bf, "MissingnessBasisFunction for x0 should have been selected."
+
+    # Check coefficients roughly - e.g. missingness term should have a positive coeff
+    # B = Intercept | is_missing(x0)
+    # y = c0*1 + c1*is_missing(x0)
+    # When not missing: y_approx = c0. Mean of (1,2,3) is 2. So c0 approx 2.
+    # When missing: y_approx = c0 + c1 = 10. So c1 approx 8.
+    idx_missing_bf = -1
+    for i, bf in enumerate(final_bfs):
+        if isinstance(bf, MissingnessBasisFunction):
+            idx_missing_bf = i
+            break
+
+    if idx_missing_bf != -1 and final_coeffs is not None and len(final_coeffs) == 2:
+        # Coeff for is_missing(x0) should be significantly positive
+        assert final_coeffs[idx_missing_bf] > 5
+        # Coeff for intercept should be around the mean of non-missing y values
+        idx_intercept = 1 - idx_missing_bf # The other index
+        assert np.isclose(final_coeffs[idx_intercept], np.mean(y[~missing_mask[:,0]]), atol=1.0)
+    else:
+        pytest.fail("Could not properly verify coefficients for MissingnessBF.")

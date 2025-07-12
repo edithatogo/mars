@@ -7,7 +7,7 @@ Unit tests for the main Earth class in pymars.earth
 import pytest
 import numpy as np
 from pymars.earth import Earth
-from pymars._basis import ConstantBasisFunction, HingeBasisFunction, LinearBasisFunction
+from pymars._basis import ConstantBasisFunction, HingeBasisFunction, LinearBasisFunction, MissingnessBasisFunction
 from pymars._record import EarthRecord
 
 # Minimal data for testing basic fit and predict
@@ -544,3 +544,90 @@ def test_earth_invalid_feature_importance_type(simple_earth_data, capsys):
 
 if __name__ == '__main__':
     pytest.main([__file__])
+
+def test_earth_fit_with_missingness_terms(data_with_nans):
+    """Test Earth model fit when allow_missing=True and MissingnessBasisFunctions are selected."""
+    X_nan, y = data_with_nans # X_nan is [[1,2], [nan,3], [3,nan], [4,5]]
+                              # y is [1,2,3,4]
+
+    # Craft y such that missingness in X_nan[:,0] is informative
+    # For example, if X_nan[1,0] (NaN) corresponds to a higher y[1] value
+    # y_mod = y.copy()
+    # y_mod[1] = 10 # if x0 is missing, y is high
+    # y_mod[2] = 1  # if x1 is missing, y is low (to differentiate from x0 missingness effect)
+
+    # Let's use a simpler y where missingness in x0 implies a higher value,
+    # and missingness in x1 implies a lower value.
+    # X_nan:
+    # [[ 1.   2. ]
+    #  [ nan  3. ]
+    #  [ 3.   nan]
+    #  [ 4.   5. ]]
+    # y:
+    # y = normal_effect + 100 * is_missing(x0) - 50 * is_missing(x1)
+    # If x0 normal, x1 normal: y ~ 0
+    # If x0 missing, x1 normal: y ~ 100
+    # If x0 normal, x1 missing: y ~ -50
+    # If x0 missing, x1 missing: y ~ 50 (not in this data)
+
+    y_mod = np.array([0.0, 100.0, -50.0, 0.0]) # Corresponds to X_nan rows
+
+    # We want MissingnessBasisFunctions to be selected.
+    # Set penalty low, and max_terms to allow for intercept + 2 missingness terms.
+    # Disable linear and hinge terms for this specific test to isolate missingness terms.
+    model = Earth(allow_missing=True, max_terms=3, penalty=0,
+                  allow_linear=False) # simplify by disallowing other terms initially
+
+    model.fit(X_nan, y_mod)
+
+    assert model.fitted_
+    assert model.basis_ is not None
+
+    found_missing_x0 = False
+    found_missing_x1 = False
+    num_missing_terms = 0
+    for bf in model.basis_:
+        if isinstance(bf, MissingnessBasisFunction):
+            num_missing_terms +=1
+            if bf.variable_idx == 0:
+                found_missing_x0 = True
+            elif bf.variable_idx == 1:
+                found_missing_x1 = True
+
+    # Depending on the data & MARS greedy search, it might pick one, both, or none if not beneficial enough
+    # For this crafted y, both should be very beneficial.
+    assert num_missing_terms > 0, "At least one MissingnessBasisFunction should be selected"
+    assert found_missing_x0, "MissingnessBasisFunction for x0 should be selected"
+    assert found_missing_x1, "MissingnessBasisFunction for x1 should be selected"
+    assert len(model.basis_) == 3 # Intercept + missing_x0 + missing_x1
+
+    # Check coefficients roughly
+    # Model: c0 + c1*is_missing(x0) + c2*is_missing(x1)
+    # Row 0 (no missing): y = 0.  Pred = c0. So c0 ~ 0.
+    # Row 1 (x0 missing): y = 100. Pred = c0 + c1. So c1 ~ 100.
+    # Row 2 (x1 missing): y = -50. Pred = c0 + c2. So c2 ~ -50.
+    # Row 3 (no missing): y = 0. Pred = c0.
+
+    idx_const, idx_m0, idx_m1 = -1,-1,-1
+    for i, bf in enumerate(model.basis_):
+        if isinstance(bf, ConstantBasisFunction): idx_const = i
+        elif isinstance(bf, MissingnessBasisFunction) and bf.variable_idx == 0: idx_m0 = i
+        elif isinstance(bf, MissingnessBasisFunction) and bf.variable_idx == 1: idx_m1 = i
+
+    assert idx_const != -1 and idx_m0 != -1 and idx_m1 != -1 # All terms should be found
+
+    if model.coef_ is not None and len(model.coef_) == 3:
+        c0 = model.coef_[idx_const]
+        c1 = model.coef_[idx_m0]
+        c2 = model.coef_[idx_m1]
+        assert np.isclose(c0, 0.0, atol=1e-3)
+        assert np.isclose(c1, 100.0, atol=1e-3)
+        assert np.isclose(c2, -50.0, atol=1e-3)
+    else:
+        pytest.fail("Coefficients not as expected for missingness terms test.")
+
+    # Test predict
+    predictions = model.predict(X_nan)
+    assert predictions.shape == (y_mod.shape[0],)
+    assert not np.any(np.isnan(predictions)), "Predictions should not be NaN for this setup"
+    assert np.allclose(predictions, y_mod, atol=1e-3)

@@ -178,5 +178,75 @@ def test_linear_basis_function(parent_type):
     if parent_type is None:
         assert not np.isnan(transformed_nan[1])
 
+# --- Test MissingnessBasisFunction ---
+def test_missingness_basis_function():
+    """Test MissingnessBasisFunction."""
+    from pymars._basis import MissingnessBasisFunction # Import locally for this test
+
+    var_idx, var_name = 0, "FeatureA"
+    bf = MissingnessBasisFunction(variable_idx=var_idx, variable_name=var_name)
+
+    assert bf.variable_idx == var_idx
+    assert bf.variable_name == var_name
+    assert str(bf) == f"is_missing({var_name})"
+    assert bf.degree() == 1
+    assert bf.is_constant() is False
+    assert bf.get_involved_variables() == {var_idx}
+    assert bf.is_linear_term is False
+    assert bf.is_hinge_term is False
+    assert bf.knot_val is None
+    assert bf.parent1 is None
+
+    # Test transform method
+    # X_processed is not directly used by transform, but its shape might be checked by other parts if we used a mock X
+    # missing_mask is key
+
+    # Scenario 1: No missing values for the monitored variable
+    X_dummy = np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]) # 3 samples, 2 features
+    missing_mask_none = np.array([
+        [False, False],
+        [False, False],
+        [False, False]
+    ], dtype=bool)
+    transformed_none = bf.transform(X_dummy, missing_mask_none)
+    assert np.array_equal(transformed_none, np.array([0, 0, 0]))
+
+    # Scenario 2: Some missing values for the monitored variable (var_idx=0)
+    missing_mask_some = np.array([
+        [True,  False], # FeatureA missing for sample 0
+        [False, True],  # FeatureB missing for sample 1 (should not affect bf for FeatureA)
+        [True,  False]  # FeatureA missing for sample 2
+    ], dtype=bool)
+    transformed_some = bf.transform(X_dummy, missing_mask_some)
+    assert np.array_equal(transformed_some, np.array([1, 0, 1]))
+
+    # Scenario 3: All missing values for the monitored variable
+    missing_mask_all = np.array([
+        [True, False],
+        [True, False],
+        [True, False]
+    ], dtype=bool)
+    transformed_all = bf.transform(X_dummy, missing_mask_all)
+    assert np.array_equal(transformed_all, np.array([1, 1, 1]))
+
+    # Scenario 4: Different variable index
+    bf_var1 = MissingnessBasisFunction(variable_idx=1, variable_name="FeatureB")
+    transformed_var1 = bf_var1.transform(X_dummy, missing_mask_some) # Using mask where var_idx=1 has a missing value
+    assert np.array_equal(transformed_var1, np.array([0, 1, 0]))
+
+
+    # Test input validation for transform
+    with pytest.raises(TypeError, match="Input missing_mask must be a numpy array."):
+        bf.transform(X_dummy, "not a mask") # type: ignore
+    with pytest.raises(ValueError, match="Input missing_mask must be 2D"):
+        bf.transform(X_dummy, np.array([False, True])) # 1D mask for 2D X
+    with pytest.raises(IndexError, match="variable_idx 0 is out of bounds for missing_mask with 0 features"):
+        bf.transform(X_dummy, np.empty((X_dummy.shape[0],0), dtype=bool) ) # Mask with 0 features
+
+    bf_high_idx = MissingnessBasisFunction(variable_idx=5, variable_name="FeatureF")
+    with pytest.raises(IndexError, match="variable_idx 5 is out of bounds for missing_mask with 2 features"):
+        bf_high_idx.transform(X_dummy, missing_mask_none)
+
+
 if __name__ == '__main__':
     pytest.main()

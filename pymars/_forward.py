@@ -8,7 +8,7 @@ to minimize a criterion (e.g., sum of squared errors).
 """
 
 import numpy as np
-from ._basis import BasisFunction, HingeBasisFunction, ConstantBasisFunction, LinearBasisFunction
+from ._basis import BasisFunction, HingeBasisFunction, ConstantBasisFunction, LinearBasisFunction, MissingnessBasisFunction
 from ._record import EarthRecord # Assuming EarthRecord is used by Earth model instance
 from .earth import Earth # For type hinting
 from ._util import calculate_gcv, gcv_penalty_cost_effective_parameters # For GCV calculations
@@ -324,6 +324,39 @@ class ForwardPasser:
                     bf_right = HingeBasisFunction(variable_idx=var_idx, knot_val=knot_val, is_right_hinge=True, parent_bf=parent_bf)
                     bf_left = HingeBasisFunction(variable_idx=var_idx, knot_val=knot_val, is_right_hinge=False, parent_bf=parent_bf)
                     candidate_additions.append((bf_left, bf_right))
+
+        # Generate MissingnessBasisFunction candidates if allow_missing is True
+        if self.model.allow_missing and self.missing_mask is not None:
+            # Check if any variable is already used by a MissingnessBasisFunction
+            # This is to prevent adding duplicate is_missing(varX) terms.
+            # A MissingnessBasisFunction does not interact with a parent for its base definition.
+            # It's an indicator for a single variable's original missingness.
+            # For it to be part of an interaction, it would become a parent_bf for a subsequent Hinge/Linear.
+
+            current_missingness_vars = set()
+            for bf_existing in self.current_basis_functions:
+                if isinstance(bf_existing, MissingnessBasisFunction):
+                    current_missingness_vars.add(bf_existing.variable_idx)
+
+            for var_idx in range(self.n_features):
+                if var_idx in current_missingness_vars: # Already have an is_missing term for this variable
+                    continue
+
+                if np.any(self.missing_mask[:, var_idx]): # If this feature has any missing values
+                    var_name = None
+                    if self.model.record_ and hasattr(self.model.record_, 'feature_names_in_') and \
+                       self.model.record_.feature_names_in_ is not None and \
+                       var_idx < len(self.model.record_.feature_names_in_):
+                        var_name = self.model.record_.feature_names_in_[var_idx]
+                    else:
+                        var_name = f"x{var_idx}"
+
+                    # Missingness functions are typically added additively initially.
+                    # Their "parent" for generation is effectively the intercept.
+                    # They don't take a parent_bf in their constructor for degree calculation.
+                    missing_bf_candidate = MissingnessBasisFunction(variable_idx=var_idx, variable_name=var_name)
+                    candidate_additions.append((missing_bf_candidate, None))
+
         return candidate_additions
 
     def _find_best_candidate_addition(self):

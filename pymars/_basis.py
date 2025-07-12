@@ -364,3 +364,61 @@ if __name__ == '__main__':
     # print(f"Degree of interaction: {inter_bf.degree()}")
     # print(f"Degree of hinge: {hinge_bf_right.degree()}")
     # print(f"Degree of const: {const_bf.degree()}")
+
+
+class MissingnessBasisFunction(BasisFunction):
+    """
+    Represents a missingness indicator function: 1 if variable_idx was missing, 0 otherwise.
+    Its degree is 1. It does not interact with parent functions for degree calculation.
+    """
+    def __init__(self, variable_idx: int, variable_name: str = None):
+        self.variable_name = variable_name if variable_name else f"x{variable_idx}"
+        name_str = f"is_missing({self.variable_name})"
+
+        super().__init__(name=name_str)
+
+        # Missingness terms are typically not considered "hinges" or "linear" in the MARS sense.
+        # They are indicators.
+        self._set_properties(variable_idx=variable_idx, is_hinge=False, is_linear=False,
+                             parent1=None, # Missingness functions are usually additive or interact differently
+                             involved_variables=frozenset({variable_idx}))
+
+    def transform(self, X_processed: np.ndarray, missing_mask: np.ndarray) -> np.ndarray:
+        """
+        Returns 1 if the original value for self.variable_idx was missing, 0 otherwise.
+
+        Parameters
+        ----------
+        X_processed : numpy.ndarray
+            The processed input data (NaNs typically filled). Not directly used by this function.
+        missing_mask : numpy.ndarray of shape (n_samples, n_features)
+            Boolean mask indicating which original values were NaN.
+
+        Returns
+        -------
+        numpy.ndarray of shape (n_samples,)
+            An array of 0s and 1s.
+        """
+        if not isinstance(missing_mask, np.ndarray):
+            raise TypeError("Input missing_mask must be a numpy array.")
+        if missing_mask.ndim != 2:
+             raise ValueError("Input missing_mask must be 2D (n_samples, n_features).")
+        if self.variable_idx >= missing_mask.shape[1]:
+            raise IndexError(f"variable_idx {self.variable_idx} is out of bounds for missing_mask with {missing_mask.shape[1]} features.")
+
+        # missing_mask[sample_idx, self.variable_idx] is True if original was NaN
+        # So, we directly convert this boolean mask column to int (True->1, False->0)
+        return missing_mask[:, self.variable_idx].astype(int)
+
+    def __str__(self) -> str:
+        return self.get_name()
+
+    def degree(self) -> int:
+        """
+        The degree of a MissingnessBasisFunction is conventionally 1.
+        It represents a condition on a single variable.
+        """
+        return 1
+
+    def is_constant(self) -> bool:
+        return False
