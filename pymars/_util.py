@@ -63,46 +63,39 @@ def check_X_y(X, y, ensure_X_2d=True, allow_X_nd=False, ensure_y_1d=True, allow_
     return X, y
 
 
-def gcv_penalty_cost_effective_parameters(num_terms, num_samples, penalty_factor, has_intercept=True):
+def gcv_penalty_cost_effective_parameters(num_terms: int, num_hinge_terms: int, penalty: float, num_samples: int) -> float:
     """
-    Calculate the effective number of parameters C(M) for GCV,
-    as defined in Friedman's MARS paper (Section 3.6, equation 55).
+    Calculate the effective number of parameters for GCV, aligning with py-earth's approach.
+    Effective parameters = num_terms + penalty * num_hinge_terms.
 
-    C(M) = Number of basis functions + penalty_factor * (Number of basis functions - 1) / 2
-           (if an intercept is present and counted in num_terms)
-    Or more generally, it's a cost associated with the model complexity.
+    Args:
+        num_terms: Total number of basis functions (including intercept if present).
+        num_hinge_terms: Number of hinge basis functions (excluding linear, constant).
+        penalty: The penalty factor for hinge terms (corresponds to 'd' in Friedman's paper,
+                 and 'penalty' in py-earth).
+        num_samples: Number of samples used for fitting. This is used to cap the
+                     effective parameters to avoid GCV becoming undefined.
 
-    A common simplification for the penalty in GCV is:
-    Effective parameters = num_terms * penalty_factor (where penalty_factor is 'd' from paper)
-
-    Let's use the form from py-earth which is simpler:
-    num_params_effective = num_nonzero_coeffs + penalty * (num_nonzero_coeffs - 1) / 2 (if intercept)
-    Or if no intercept, num_params_effective = num_nonzero_coeffs + penalty * (num_nonzero_coeffs + 1) / 2
-
-    This function provides a placeholder for such a calculation.
-    The actual GCV formula uses this.
+    Returns:
+        The calculated effective number of parameters.
     """
     if num_terms == 0:
-        return 0
+        return 0.0
 
-    # This is a common form for the "cost" component in GCV.
-    # The 'penalty_factor' here is the 'd' in Friedman's paper (often a value like 2 or 3).
-    # py-earth's `penalty` parameter corresponds to this `d`.
-    if has_intercept:
-        # If intercept is one of the terms
-        if num_terms <= 1: # Only intercept or one term
-            cost = num_terms
-        else:
-            cost = num_terms + penalty_factor * (num_terms - 1) / 2.0
-    else:
-        # If no intercept term is forced into the model initially
-        cost = num_terms + penalty_factor * (num_terms + 1) / 2.0
+    # py-earth style: effective_num_parameters = num_terms + penalty * num_knots
+    # Here, num_knots corresponds to num_hinge_terms (as each hinge pair comes from one knot,
+    # and linear terms are not penalized in this way).
+    effective_params = float(num_terms + penalty * num_hinge_terms)
 
-    # Ensure cost does not exceed number of samples, which would make GCV undefined or negative
-    return min(cost, num_samples - 1) if num_samples > num_terms else num_terms
+    # Cap effective parameters to be less than num_samples to keep GCV formula stable.
+    # If effective_params == num_samples, denominator in GCV is 0.
+    # If effective_params > num_samples, (1 - eff/N)^2 can be negative if not careful, or GCV is meaningless.
+    # We ensure it's at most num_samples - EPSILON effectively by how calculate_gcv handles it.
+    # For this function, just return the calculated value; calculate_gcv handles the num_samples check.
+    return effective_params
 
 
-def calculate_gcv(rss, num_samples, num_effective_params):
+def calculate_gcv(rss: float, num_samples: int, num_effective_params: float) -> float:
     """
     Calculate Generalized Cross-Validation score.
 

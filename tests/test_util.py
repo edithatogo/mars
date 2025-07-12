@@ -84,17 +84,38 @@ def test_check_X_y_y_column_vector():
 
 # Tests for GCV calculation components
 def test_gcv_penalty_cost():
-    from pymars._util import gcv_penalty_ κόστος_ কার্যকর_ παραμέτρων
-    # Test cases from Friedman's paper logic / py-earth interpretation
-    # C(M) = num_terms + penalty * (num_terms - 1) / 2 (with intercept)
-    assert gcv_penalty_ κόστος_ কার্যকর_ παραμέτρων(num_terms=1, num_samples=10, penalty_factor=3, has_intercept=True) == 1 # Intercept only
-    assert gcv_penalty_ κόστος_ কার্যকর_ παραμέτρων(num_terms=2, num_samples=10, penalty_factor=3, has_intercept=True) == 2 + 3*(1)/2 # 3.5
-    assert gcv_penalty_ κόστος_ কার্যকর_ παραμέτρων(num_terms=5, num_samples=10, penalty_factor=3, has_intercept=True) == 5 + 3*(4)/2 # 11, but capped by N-1
-    assert gcv_penalty_ κόστος_ কার্যকর_ παραμέτρων(num_terms=5, num_samples=10, penalty_factor=3, has_intercept=True) == min(11, 10-1) # 9
+    from pymars._util import gcv_penalty_cost_effective_parameters
+    # Test cases based on the new formula: num_terms + penalty * num_hinge_terms
+    # num_samples is required by signature but not used for capping in this specific function.
 
-    # C(M) = num_terms + penalty * (num_terms + 1) / 2 (no intercept)
-    assert gcv_penalty_ κόστος_ কার্যকর_ παραμέτρων(num_terms=1, num_samples=10, penalty_factor=3, has_intercept=False) == 1 + 3*(2)/2 # 4
-    assert gcv_penalty_ κόστος_ কার্যকর_ παραμέτρων(num_terms=0, num_samples=10, penalty_factor=3, has_intercept=True) == 0
+    # Case 1: Intercept only
+    # num_terms=1 (intercept), num_hinge_terms=0, penalty=3
+    assert gcv_penalty_cost_effective_parameters(num_terms=1, num_hinge_terms=0, penalty=3.0, num_samples=10) == 1.0
+
+    # Case 2: Intercept + 1 linear term
+    # num_terms=2 (intercept, 1 linear), num_hinge_terms=0, penalty=3
+    assert gcv_penalty_cost_effective_parameters(num_terms=2, num_hinge_terms=0, penalty=3.0, num_samples=10) == 2.0
+
+    # Case 3: Intercept + 1 hinge term (or a pair, counted as 1 effective hinge for penalty if it's per knot)
+    # Assuming num_hinge_terms is the count of HingeBasisFunction objects.
+    # If a "knot" implies two HingeBasisFunctions but one penalty unit, the interpretation might differ.
+    # Sticking to "num_hinge_terms is count of HingeBasisFunction objects".
+    # num_terms=2 (intercept, 1 hinge), num_hinge_terms=1, penalty=3
+    assert gcv_penalty_cost_effective_parameters(num_terms=2, num_hinge_terms=1, penalty=3.0, num_samples=10) == (2.0 + 3.0 * 1.0) # 5.0
+
+    # Case 4: Intercept + 2 linear terms + 2 hinge terms
+    # num_terms=5 (1 intercept + 2 linear + 2 hinge), num_hinge_terms=2, penalty=3
+    expected_complex = 5.0 + 3.0 * 2.0 # 11.0
+    assert np.isclose(gcv_penalty_cost_effective_parameters(num_terms=5, num_hinge_terms=2, penalty=3.0, num_samples=20), expected_complex)
+
+    # Case 5: Zero terms
+    # num_terms=0, num_hinge_terms=0, penalty=3
+    assert gcv_penalty_cost_effective_parameters(num_terms=0, num_hinge_terms=0, penalty=3.0, num_samples=10) == 0.0
+
+    # Test with different penalty
+    # num_terms=3 (e.g. intercept, 1 linear, 1 hinge), num_hinge_terms=1, penalty=2
+    expected_penalty_2 = 3.0 + 2.0 * 1.0 # 5.0
+    assert np.isclose(gcv_penalty_cost_effective_parameters(num_terms=3, num_hinge_terms=1, penalty=2.0, num_samples=10), expected_penalty_2)
 
 
 def test_calculate_gcv():

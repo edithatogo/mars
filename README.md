@@ -7,9 +7,11 @@
 *   **Pure Python:** Easy to install and use across different platforms.
 *   **Scikit-learn Compatible:** Integrates with the scikit-learn ecosystem (estimators, pipelines, model selection tools).
 *   **MARS Algorithm:** Implements the core MARS fitting procedure, including:
-    *   Forward pass to select basis functions (hinge functions).
+    *   Forward pass to select basis functions (both hinge and linear terms).
     *   Pruning pass using Generalized Cross-Validation (GCV) to prevent overfitting.
-    *   Support for interaction terms.
+    *   Support for interaction terms (including interactions involving linear terms).
+    *   Refined `minspan` and `endspan` controls for knot placement, aligning more closely with `py-earth` behavior (e.g., `minspan` as a cooldown period).
+*   **Feature Importance:** Calculation of feature importances using methods like 'nb_subsets' (number of subsets in pruning trace), 'gcv' (GCV improvement), and 'rss' (RSS reduction).
 *   **Regression and Classification:** Provides `EarthRegressor` and `EarthClassifier` classes.
 
 ## Project Status
@@ -55,6 +57,12 @@ import pymars as earth # Target import style
 
 # Print model summary (if available)
 # print(model_reg.summary())
+
+# Access feature importances (if calculated)
+# if hasattr(model_reg, 'feature_importances_') and model_reg.feature_importances_ is not None:
+#     print("Feature Importances:", model_reg.feature_importances_)
+#     # Or use the summary method:
+#     # print(model_reg.summary_feature_importances())
 
 
 # --- Classification Example (Conceptual) ---

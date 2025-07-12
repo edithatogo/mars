@@ -3,17 +3,20 @@
 
 __version__ = "0.0.1"
 
-# Alias for py-earth compatibility
-# from .earth import Earth
-# import pymars as earth # This will be enabled once Earth class is defined
+# Alias for py-earth compatibility (user can do this in their own code if they prefer)
+# import pymars as earth
 
-# Other potential top-level imports can go here
-# from ._basis import BasisFunction
-# from ._forward import ForwardPasser
-# from ._pruning import PruningPasser
+# Core Earth model
+from .earth import Earth
 
-# For scikit-learn compatibility
-# from ._sklearn_compat import EarthRegressor, EarthClassifier
+# Scikit-learn compatible estimators
+from ._sklearn_compat import EarthRegressor, EarthClassifier
 
-# TODO: Define what gets imported with `from pymars import *`
-# __all__ = ['Earth', 'EarthRegressor', 'EarthClassifier']
+# TODO: Add other classes/functions to expose at the top level if desired.
+# e.g., from ._basis import BasisFunction (if users need to interact with it directly)
+
+__all__ = [
+    'Earth',
+    'EarthRegressor',
+    'EarthClassifier'
+]
