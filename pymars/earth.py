@@ -548,7 +548,7 @@ class Earth(BaseEstimator, RegressorMixin):
                     X_fit_processed=X_processed,
                     y_fit=y_processed,
                     missing_mask=missing_mask,
-                    X_fit_original=getattr(self, "X_original_", X_processed),
+                    X_fit_original=self.X_original_ if hasattr(self, "X_original_") else X_processed,
                     basis_subset=self.basis_,
                 )
                 if isinstance(gcv_score, (list, tuple, np.ndarray)):
