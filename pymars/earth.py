@@ -3,22 +3,23 @@
 """
 The main Earth class, coordinating the model fitting process.
 """
+import logging
 import numpy as np
+from sklearn.base import BaseEstimator, RegressorMixin
 from ._basis import ConstantBasisFunction  # Used in fallbacks
 from ._util import (
     calculate_gcv,
     gcv_penalty_cost_effective_parameters,
 )
+
+logger = logging.getLogger(__name__)
 # from ._forward import ForwardPasser # Imported locally in fit
 # from ._pruning import PruningPasser # Imported locally in fit
 # from ._record import EarthRecord
 # from ._util import check_X_y_docs # Example, will need proper sklearn later
 
-# For scikit-learn compatibility
-# from sklearn.base import BaseEstimator, RegressorMixin, ClassifierMixin
 
-
-class Earth: # Add (BaseEstimator, RegressorMixin) later
+class Earth(BaseEstimator, RegressorMixin):
     """
     Multivariate Adaptive Regression Splines (MARS) model.
 
@@ -129,6 +130,9 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
                  categorical_features: list[int] = None
                  # TODO: Consider other py-earth params
                  ):
+        super().__init__()
+
+        
         # Core MARS algorithm parameters
         self.max_degree = max_degree
         self.penalty = penalty
@@ -238,7 +242,7 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
             # or if an error occurred. For now, assume forward pass always gives something.
             # If it's just an intercept, pruning might still occur or confirm it.
             # If truly empty (error), we might need to raise an error or set a degenerate model.
-            print("Warning: Forward pass returned no basis functions.")
+            logger.warning("Forward pass returned no basis functions.")
             # Set a model that predicts mean of y, or handle as error
             self.basis_ = [ConstantBasisFunction()] if ConstantBasisFunction not in [type(bf) for bf in fwd_basis_functions] else fwd_basis_functions
             if not self.basis_ : # if fwd_basis_functions was also empty
@@ -334,7 +338,9 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
             if hasattr(X_fit, 'shape') and X_fit.ndim == 2:
                  num_features = X_fit.shape[1]
             else: # Cannot determine num_features
-                print("Warning: Cannot determine number of features for importance calculation.")
+                logger.warning(
+                    "Cannot determine number of features for importance calculation."
+                )
                 self.feature_importances_ = np.array([])
                 return
         else:
@@ -343,8 +349,9 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
         if self.feature_importance_type == 'nb_subsets':
             if not (hasattr(self.record_, 'pruning_trace_basis_functions_') and \
                     self.record_.pruning_trace_basis_functions_):
-                print("Warning: Pruning trace not available in record. "
-                      "Cannot calculate 'nb_subsets' feature importance. Returning zeros.")
+                logger.warning(
+                    "Pruning trace not available in record. Cannot calculate 'nb_subsets' feature importance. Returning zeros."
+                )
                 self.feature_importances_ = np.zeros(num_features)
                 return
 
@@ -426,8 +433,10 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
 
         elif self.feature_importance_type is not None:
             # Placeholder for other types or warning for unknown types
-            print(f"Warning: feature_importance_type '{self.feature_importance_type}' "
-                  "is not yet fully implemented. Returning zeros for importances.")
+            logger.warning(
+                "feature_importance_type '%s' is not yet fully implemented. Returning zeros for importances.",
+                self.feature_importance_type,
+            )
             self.feature_importances_ = np.zeros(num_features)
         else:
             # feature_importance_type is None, so do nothing, self.feature_importances_ remains None
@@ -495,13 +504,21 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
         pruning_passer_instance_for_gcv_calc,
     ):
 
-        """Set an intercept-only model and compute its GCV."""
+        """Set an intercept-only model and compute its RSS, MSE and GCV."""
         from ._util import calculate_gcv, gcv_penalty_cost_effective_parameters
-    
+
+        # Build basis and coefficient for an intercept-only model
         self.basis_ = [ConstantBasisFunction()]
-        self.coef_ = np.array([np.mean(y_processed)])
-    
+        intercept = float(np.mean(y_processed))
+        self.coef_ = np.array([intercept])
+
+        # Compute RSS and MSE using the constant basis
         B_final = self._build_basis_matrix(X_processed, self.basis_, missing_mask)
+        y_pred_train = B_final @ self.coef_ if B_final.size > 0 else np.full_like(y_processed, intercept)
+        self.rss_ = np.sum((y_processed - y_pred_train) ** 2)
+        self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
+
+        # Attempt to compute GCV using PruningPasser logic if available
         if B_final.size > 0:
             y_pred_train = B_final @ self.coef_
             self.rss_ = np.sum((y_processed - y_pred_train) ** 2)
@@ -511,25 +528,37 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
                 if len(y_processed) > 0
                 else 0.0
             )
-            self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
+
+        B_intercept = self._build_basis_matrix(
+            X_processed, self.basis_, missing_mask
+        )
+
+        # Use the fitted intercept basis matrix to recompute RSS/MSE.
+        # `B_final` already represents the intercept-only basis matrix.
+
+        y_pred_train = B_final @ self.coef_
+        self.rss_ = np.sum((y_processed - y_pred_train) ** 2)
+    
+        self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
 
         gcv_score: float | None = None
-
         if hasattr(pruning_passer_instance_for_gcv_calc, "_compute_gcv_for_subset"):
             try:
                 gcv_score, _, _ = pruning_passer_instance_for_gcv_calc._compute_gcv_for_subset(
                     X_fit_processed=X_processed,
                     y_fit=y_processed,
                     missing_mask=missing_mask,
-                    X_fit_original=self.X_original_,
+                    X_fit_original=self.X_original_ if hasattr(self, "X_original_") else X_processed,
                     basis_subset=self.basis_,
                 )
-                gcv_score = gcv_score[0] if isinstance(gcv_score, (list, tuple, np.ndarray)) else gcv_score
+                if isinstance(gcv_score, (list, tuple, np.ndarray)):
+                    gcv_score = gcv_score[0]
             except Exception:
-                    gcv_score = None
-    
+                gcv_score = None
+
+        # Fall back to direct GCV calculation if needed
         if gcv_score is None:
-            eff_params = gcv_penalty_cost_effective_parameters(
+            effective_params = gcv_penalty_cost_effective_parameters(
                 num_terms=1,
                 num_hinge_terms=0,
                 penalty=self.penalty,
@@ -537,7 +566,7 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
             )
             gcv_score = calculate_gcv(self.rss_, len(y_processed), eff_params)
 
-        self.gcv_ = gcv_score
+        self.gcv_ = gcv_score if np.isfinite(gcv_score) else np.inf
 
     def predict(self, X):
         """
@@ -634,11 +663,11 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
 
     def summary(self):
         """
-        Print a summary of the fitted model.
+        Return a summary of the fitted model and log it.
         """
         if self.basis_ is None:
-            print("Model not yet fitted.")
-            return
+            logger.info("Model not yet fitted.")
+            return "Model not yet fitted."
 
         # print("pymars Model Summary")
         # print("--------------------")
@@ -653,22 +682,24 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
         import numpy as np # Local import
 
         if not self.fitted_:
-            print("Model not yet fitted.")
-            return
+            logger.info("Model not yet fitted.")
+            return "Model not yet fitted."
 
-        print("pymars Earth Model Summary")
-        print("==========================")
-        print(f"Number of samples: {self.record_.n_samples if self.record_ else 'N/A'}")
-        print(f"Number of features: {self.record_.n_features if self.record_ else 'N/A'}")
-        print("--------------------------")
-        print(f"Selected Basis Functions: {len(self.basis_)}")
-        print(f"GCV (final model): {self.gcv_:.4f}" if self.gcv_ is not None else "GCV: N/A")
-        print(f"RSS (training): {self.rss_:.4f}" if self.rss_ is not None else "RSS: N/A")
-        print(f"MSE (training): {self.mse_:.4f}" if self.mse_ is not None else "MSE: N/A")
-        print("--------------------------")
+        lines = [
+            "pymars Earth Model Summary",
+            "==========================",
+            f"Number of samples: {self.record_.n_samples if self.record_ else 'N/A'}",
+            f"Number of features: {self.record_.n_features if self.record_ else 'N/A'}",
+            "--------------------------",
+            f"Selected Basis Functions: {len(self.basis_)}",
+            f"GCV (final model): {self.gcv_:.4f}" if self.gcv_ is not None else "GCV: N/A",
+            f"RSS (training): {self.rss_:.4f}" if self.rss_ is not None else "RSS: N/A",
+            f"MSE (training): {self.mse_:.4f}" if self.mse_ is not None else "MSE: N/A",
+            "--------------------------",
+        ]
 
         if self.basis_ and self.coef_ is not None:
-            print("\nBasis Functions and Coefficients:")
+            lines.append("\nBasis Functions and Coefficients:")
             # Determine max length of basis function string for alignment
             max_bf_str_len = 0
             if self.basis_: # Ensure basis_ is not empty
@@ -681,11 +712,14 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
                 if isinstance(coef_val, np.ndarray): # Should not happen with current 1D y
                     coef_str = ", ".join([f"{c:.4f}" for c in coef_val])
 
-                print(f"  {str(bf):<{max_bf_str_len + 2}} Coef: {coef_str}")
+                lines.append(f"  {str(bf):<{max_bf_str_len + 2}} Coef: {coef_str}")
         else:
-            print("No basis functions or coefficients available.")
+            lines.append("No basis functions or coefficients available.")
+        lines.append("==========================")
 
-        print("==========================")
+        summary_str = "\n".join(lines)
+        logger.info("\n%s", summary_str)
+        return summary_str
 
     def summary_feature_importances(self, sort_by_importance: bool = True) -> str:
         """
@@ -747,6 +781,33 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
 
         output.append("-------------------------------------")
         return "\n".join(output)
+
+    # ------------------------------------------------------------------
+    # scikit-learn estimator interface utilities
+    # ------------------------------------------------------------------
+    def get_params(self, deep: bool = True) -> dict:
+        """Return estimator parameters for compatibility with scikit-learn."""
+        return {
+            "max_degree": self.max_degree,
+            "penalty": self.penalty,
+            "max_terms": self.max_terms,
+            "minspan_alpha": self.minspan_alpha,
+            "endspan_alpha": self.endspan_alpha,
+            "minspan": self.minspan,
+            "endspan": self.endspan,
+            "allow_linear": self.allow_linear,
+            "allow_missing": self.allow_missing,
+            "feature_importance_type": self.feature_importance_type,
+            "categorical_features": self.categorical_features,
+        }
+
+    def set_params(self, **params):
+        """Set estimator parameters for compatibility with scikit-learn."""
+        for key, value in params.items():
+            if not hasattr(self, key):
+                raise ValueError(f"Invalid parameter {key} for Earth.")
+            setattr(self, key, value)
+        return self
 
 
 if __name__ == '__main__':
