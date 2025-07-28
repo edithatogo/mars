@@ -12,7 +12,7 @@ Thank you for your interest in contributing to **pymars**! This project aims to 
   model = earth.Earth()
   ```
 - Follow **PEP 8** and use type hints. Document all public classes, functions, and methods with clear docstrings. Comments should explain *why* something is done.
-- Aim for minimal dependencies (NumPy/SciPy). List them in `requirements.txt` and `pyproject.toml`.
+- Aim for minimal dependencies (NumPy/scikit-learn). List them in `requirements.txt` and `pyproject.toml`.
 
 ## Running Tests
 
