@@ -240,6 +240,7 @@ class EarthRegressor(RegressorMixin, BaseEstimator): # Corrected Mixin Order
 
 from sklearn.base import ClassifierMixin
 from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
 # Using LogisticRegression as a default internal classifier for now.
 # Could be made configurable.
 
@@ -554,10 +555,7 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
             Mean accuracy.
         """
         # Relies on ClassifierMixin or implement directly
-        # from sklearn.metrics import accuracy_score
-        # return accuracy_score(y, self.predict(X))
-        print(f"EarthClassifier.score called with X shape {X.shape if hasattr(X, 'shape') else 'unknown'}, y shape {y.shape if hasattr(y, 'shape') else 'unknown'}")
-        return 0.0 # Placeholder
+        return accuracy_score(y, self.predict(X))
 
     # def get_params(self, deep=True):
     #     # From BaseEstimator - should work due to __init__ params being public attributes

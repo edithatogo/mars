@@ -14,13 +14,19 @@
 *   **Feature Importance:** Calculation of feature importances using methods like 'nb_subsets' (number of subsets in pruning trace), 'gcv' (GCV improvement), and 'rss' (RSS reduction).
 *   **Regression and Classification:** Provides `EarthRegressor` and `EarthClassifier` classes.
 
+*   **Planned Enhancements:**
+    * Robust interaction term handling in both the forward pass and pruning.
+    * A `GLMEarth` subclass to fit generalized linear models (e.g., logistic or Poisson).
+    * An `EarthCV` helper for cross‑validation and hyperparameter search.
+    * Basic plotting utilities for model diagnostics using `matplotlib`.
+
 ## Project Status
 
 This project is currently in the initial development phase. The core algorithm and scikit-learn compatibility are being built. See `ROADMAP.md` and `TODO.md` for more details on the development plan and progress.
 
 ## Installation
 
-`pymars` can be installed from PyPI:
+`pymars` can be installed from TestPyPI:
 
 ```bash
 pip install pymars
@@ -38,6 +44,25 @@ After installation you can check the installed version:
 
 ```bash
 pymars --version
+
+## Running Tests
+
+Install the dependencies listed in `requirements.txt` before running the test
+suite. A small helper script is provided:
+
+```bash
+# Option 1: directly with pip
+pip install -r requirements.txt
+
+# Option 2: using the helper script
+bash scripts/setup_tests.sh
+```
+
+After the dependencies are installed, run the tests with:
+
+```bash
+pytest
+
 ```
 
 ## Basic Usage (Planned Example)

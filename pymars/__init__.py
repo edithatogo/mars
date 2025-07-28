@@ -11,6 +11,7 @@ from .earth import Earth
 
 # Scikit-learn compatible estimators
 from ._sklearn_compat import EarthRegressor, EarthClassifier
+from ._categorical import CategoricalImputer
 
 # TODO: Add other classes/functions to expose at the top level if desired.
 # e.g., from ._basis import BasisFunction (if users need to interact with it directly)
@@ -18,5 +19,6 @@ from ._sklearn_compat import EarthRegressor, EarthClassifier
 __all__ = [
     'Earth',
     'EarthRegressor',
-    'EarthClassifier'
+    'EarthClassifier',
+    'CategoricalImputer'
 ]

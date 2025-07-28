@@ -13,17 +13,33 @@ The goal of this phase is to implement the core functionality of the MARS algori
 *   [x] Implement a `scikit-learn` compatible `score` method.
 *   [x] Implement a `scikit-learn` compatible `get_params` and `set_params` methods.
 *   [x] Add support for `sample_weight` in the `fit` method.
-*   **Implement categorical feature support.** This will involve adding a new `CategoricalImputer` class and modifying the `Earth` class to handle categorical features.
-*   **Implement missing value support.** This will involve adding a new `MissingValuesImputer` class and modifying the `Earth` class to handle missing values.
+*   [x] Implement categorical feature support via `CategoricalImputer` and updates to `Earth`.
+*   [x] Implement missing value support including imputation and `MissingnessBasisFunction` handling.
 
 ## Phase 2: Advanced Features
 
 The goal of this phase is to implement advanced features that are available in the R `earth` package.
 
-*   **Implement interaction terms.** This will involve modifying the `Earth` class to handle interaction terms.
-*   **Implement generalized linear models (GLMs).** This will involve adding a new `GLMEarth` class that inherits from the `Earth` class.
-*   **Implement cross-validation.** This will involve adding a new `EarthCV` class that inherits from the `Earth` class.
-*   **Implement plotting.** This will involve adding a new `plot` method to the `Earth` class.
+*   **Interaction terms**
+    - Extend `ForwardPasser` to generate interaction candidates and store them as composite basis functions.
+    - Update pruning logic so interactions are considered when evaluating subsets.
+    - Add dedicated tests to ensure interaction terms are selected and pruned correctly.
+*   **Generalized linear models (GLMs)**
+    - Introduce a `GLMEarth` subclass that reuses the basis function search but fits GLM coefficients.
+    - Initial support will include logistic and Poisson families with their canonical link functions.
+*   **Cross-validation helper**
+    - Provide an `EarthCV` class using scikit‑learn utilities to perform k-fold evaluation and hyperparameter search.
+    - Typical parameters such as `penalty` and `max_degree` should be tunable.
+*   **Plotting utilities**
+    - Add a small plotting module built on `matplotlib` for visualising basis functions and residuals.
+    - Integrate a `plot()` helper on the `Earth` model for quick diagnostics.
+=======
+*   [ ] Implement interaction terms by extending the `Earth` class to handle interactions.
+*   [ ] Implement generalized linear models (GLMs) through a new `GLMEarth` class.
+*   [ ] Implement cross-validation with an `EarthCV` class.
+*   [ ] Implement plotting utilities for model diagnostics.
+
+These items constitute the major goals for Phase&nbsp;2 and will extend `pymars` beyond basic fitting and prediction.
 
 ## Phase 3: Performance and Optimization
 
@@ -46,8 +62,8 @@ The goal of this phase is to improve the performance of `pymars` and optimize th
 | `get_params` | ✔️ | ✔️ | ✔️ |
 | `set_params` | ✔️ | ✔️ | ✔️ |
 | `sample_weight` | ✔️ | ✔️ | ✔️ |
-| Categorical Features | ❌ | ✔️ | ✔️ |
-| Missing Values | ❌ | ✔️ | ✔️ |
+| Categorical Features | ✔️ | ✔️ | ✔️ |
+| Missing Values | ✔️ | ✔️ | ✔️ |
 | **Advanced** | | | |
 | Interaction Terms | ❌ | ✔️ | ✔️ |
 | GLMs | ❌ | ❌ | ✔️ |

@@ -1,6 +1,8 @@
-# Byte-compiled / optimized / DLL files
+# Ignore Python bytecode
 __pycache__/
+**/__pycache__/
 *.py[cod]
+*.pyc
 *$py.class
 
 # C extensions
@@ -116,3 +118,13 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Local bytecode
+pymars/**/__pycache__/
+pymars/**/*.pyc
+tests/**/__pycache__/
+tests/**/*.pyc
+
+# Comparison result artifacts
+comparison_results/*.json
+
