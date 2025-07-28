@@ -46,12 +46,13 @@ class ForwardPasser:
             coeffs_for_mean = np.array([mean_y]) if (B_matrix is not None and B_matrix.shape[1] == 0) else None
             return rss, coeffs_for_mean, num_valid_rows
 
-        # Replace NaNs with zeros so that rows with missing values are retained.
-        # This ensures candidates like MissingnessBasisFunction, which never
-        # produce NaNs, compete fairly against hinge or linear terms that would
-        # otherwise drop rows when NaNs are present.
+        # Drop rows with NaNs so RSS and GCV are based only on rows where all
+        # involved basis functions are defined.  This mirrors the behavior of
+        # the original MARS algorithm when evaluating candidate terms.
         if np.isnan(B_matrix).any():
-            B_complete = np.nan_to_num(B_matrix, nan=0.0)
+            valid_rows_mask = ~np.any(np.isnan(B_matrix), axis=1)
+            B_complete = B_matrix[valid_rows_mask]
+            y = y[valid_rows_mask]
         else:
             B_complete = B_matrix
         num_valid_rows = B_complete.shape[0]
