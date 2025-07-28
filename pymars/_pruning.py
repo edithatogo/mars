@@ -85,8 +85,14 @@ class PruningPasser:
         """
         if not basis_functions:
             return np.empty((X_data.shape[0], 0))
-        B_list = [bf.transform(X_data, missing_mask).reshape(-1, 1) for bf in basis_functions]
-        return np.hstack(B_list)
+
+        # Preallocate to avoid repeated hstack operations which were shown via
+        # profiling to dominate runtime for larger models.
+        n_samples = X_data.shape[0]
+        B_matrix = np.empty((n_samples, len(basis_functions)), dtype=float)
+        for idx, bf in enumerate(basis_functions):
+            B_matrix[:, idx] = bf.transform(X_data, missing_mask)
+        return B_matrix
 
     def _compute_gcv_for_subset(self, X_fit_processed: np.ndarray, y_fit: np.ndarray,
                                 missing_mask: np.ndarray, X_fit_original: np.ndarray,
