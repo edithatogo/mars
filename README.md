@@ -42,7 +42,6 @@ After installation you can check the installed version:
 ```bash
 pymars --version
 ```
-```
 
 ## Running Tests
 
@@ -119,4 +118,3 @@ This project is licensed under the [Apache License 2.0](LICENSE).
 - Based on the work of Jerome H. Friedman on MARS.
 - Inspired by the `py-earth` library (scikit-learn-contrib).
 - Inspired by the R `earth` package.
-
