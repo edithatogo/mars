@@ -503,45 +503,22 @@ class Earth(BaseEstimator, RegressorMixin):
         missing_mask,
         pruning_passer_instance_for_gcv_calc,
     ):
-
         """Set an intercept-only model and compute its RSS, MSE and GCV."""
         from ._util import calculate_gcv, gcv_penalty_cost_effective_parameters
 
-        # Build basis and coefficient for an intercept-only model
+        # Build an intercept-only basis and coefficient
         self.basis_ = [ConstantBasisFunction()]
         intercept = float(np.mean(y_processed))
         self.coef_ = np.array([intercept])
 
-        # Compute RSS and MSE using the constant basis
-        B_final = self._build_basis_matrix(X_processed, self.basis_, missing_mask)
-        y_pred_train = B_final @ self.coef_ if B_final.size > 0 else np.full_like(y_processed, intercept)
-        self.rss_ = np.sum((y_processed - y_pred_train) ** 2)
+        # Compute RSS and MSE
+        B_intercept = self._build_basis_matrix(X_processed, self.basis_, missing_mask)
+        y_pred = B_intercept @ self.coef_
+        self.rss_ = float(np.sum((y_processed - y_pred) ** 2))
         self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
 
-        # Attempt to compute GCV using PruningPasser logic if available
-        if B_final.size > 0:
-            y_pred_train = B_final @ self.coef_
-            self.rss_ = np.sum((y_processed - y_pred_train) ** 2)
-        else:
-            self.rss_ = (
-                np.sum((y_processed - np.mean(y_processed)) ** 2)
-                if len(y_processed) > 0
-                else 0.0
-            )
-
-        B_intercept = self._build_basis_matrix(
-            X_processed, self.basis_, missing_mask
-        )
-
-        # Use the fitted intercept basis matrix to recompute RSS/MSE.
-        # `B_final` already represents the intercept-only basis matrix.
-
-        y_pred_train = B_final @ self.coef_
-        self.rss_ = np.sum((y_processed - y_pred_train) ** 2)
-    
-        self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
-
-        gcv_score: float | None = None
+        # Try pruning passer's GCV calculation for consistency
+        gcv_score = None
         if hasattr(pruning_passer_instance_for_gcv_calc, "_compute_gcv_for_subset"):
             try:
                 gcv_score, _, _ = pruning_passer_instance_for_gcv_calc._compute_gcv_for_subset(
@@ -552,13 +529,14 @@ class Earth(BaseEstimator, RegressorMixin):
                     basis_subset=self.basis_,
                 )
                 if isinstance(gcv_score, (list, tuple, np.ndarray)):
-                    gcv_score = gcv_score[0]
-            except Exception:
+                    gcv_score = float(gcv_score[0])
+            except Exception as exc:  # pragma: no cover - safety net
+                logger.warning("Fallback GCV via pruning passer failed: %s", exc)
                 gcv_score = None
 
-        # Fall back to direct GCV calculation if needed
+        # Fall back to manual GCV calculation
         if gcv_score is None:
-            effective_params = gcv_penalty_cost_effective_parameters(
+            eff_params = gcv_penalty_cost_effective_parameters(
                 num_terms=1,
                 num_hinge_terms=0,
                 penalty=self.penalty,

@@ -207,8 +207,10 @@ if __name__ == '__main__':
 
     # Test with no terms
     effective_params_no_terms = gcv_penalty_cost_effective_parameters(
-        0, 0, penalty_d_example, n_samples_example
-        0, n_samples_example, penalty_d_example
+        num_terms=0,
+        num_hinge_terms=0,
+        penalty=penalty_d_example,
+        num_samples=n_samples_example,
     )
     logger.info(
         "\nTerms=0, Effective parameters (C(M)): %s", effective_params_no_terms
