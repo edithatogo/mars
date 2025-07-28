@@ -220,6 +220,8 @@ def test_empty_model_after_pruning(simple_earth_data):
     expected_gcv_intercept_only = calculate_gcv(rss, len(y), expected_params)
 
     assert model.gcv_ is not None
+    # Validate that the computed GCV for the fallback intercept-only model
+    # matches the expected value within floating point tolerance.
     assert np.isclose(model.gcv_, expected_gcv_intercept_only), (
         f"GCV ({model.gcv_}) should match the expected value ({expected_gcv_intercept_only}) for an intercept-only model"
     )
