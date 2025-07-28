@@ -4,7 +4,7 @@ Welcome to the documentation for `pymars`.
 
 `pymars` is a pure Python implementation of Multivariate Adaptive Regression Splines (MARS), designed to be compatible with scikit-learn.
 
-## Contents (Planned)
+## Contents
 
 *   **Introduction**
     *   What is MARS?
