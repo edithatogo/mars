@@ -95,36 +95,3 @@ class EarthRecord:
 
         return "\n".join(summary)
 
-if __name__ == '__main__':
-    # Example Usage
-    class MockEarthModel:
-        def __init__(self):
-            self.max_degree = 1
-            self.penalty = 3.0
-            # other params
-
-    class MockBasis:
-        def __init__(self, name): self.name = name
-        def __str__(self): return self.name
-        def __repr__(self): return self.name
-
-    X_dummy = np.random.rand(10,2)
-    y_dummy = np.random.rand(10)
-    mock_model_instance = MockEarthModel()
-
-    record = EarthRecord(X_dummy, y_dummy, mock_model_instance)
-
-    # Simulate forward pass logging
-    bf1 = MockBasis("Intercept")
-    bf2 = MockBasis("h(x1-0.5)")
-    record.log_forward_pass_step([bf1], np.array([0.5]), 10.2)
-    record.log_forward_pass_step([bf1, bf2], np.array([0.3, 0.7]), 5.5)
-
-    # Simulate pruning pass logging
-    record.log_pruning_pass_step([bf1, bf2], np.array([0.3, 0.7]), 0.6, 5.5) # Before pruning
-    record.log_pruning_pass_step([bf1], np.array([0.55]), 0.5, 6.0)      # After pruning bf2
-
-    # Set final model
-    record.set_final_model([bf1], np.array([0.55]), 0.5, 6.0, 0.6)
-
-    logger.info("%s", record)

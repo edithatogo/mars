@@ -119,7 +119,6 @@ def calculate_gcv(rss: float, num_samples: int, num_effective_params: float) -> 
     gcv = rss / (num_samples * denominator)
     return gcv
 
-
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
     # Test check_array and check_X_y
