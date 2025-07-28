@@ -8,8 +8,11 @@ used throughout the project, improving readability and maintainability,
 especially when working with complex data structures or for type hinting.
 """
 
+import logging
 from typing import List, Union, Optional, Any, Tuple, Callable
 import numpy as np
+
+logger = logging.getLogger(__name__)
 import numpy.typing as npt
 
 # Generic array types
@@ -56,9 +59,9 @@ if __name__ == '__main__':
         basis_functions: BasisFunctionList = [DummyBasis()]
         coefficients: CoefficientType = np.array([1.0, 2.0])
 
-        print(f"X type: {type(X)}, y type: {type(y)}")
-        print(f"Basis functions: {basis_functions}")
-        print(f"Coefficients: {coefficients}")
+        logger.info("X type: %s, y type: %s", type(X), type(y))
+        logger.info("Basis functions: %s", basis_functions)
+        logger.info("Coefficients: %s", coefficients)
 
         return basis_functions, coefficients
 

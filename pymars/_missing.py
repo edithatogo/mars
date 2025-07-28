@@ -8,7 +8,10 @@ the Missing Data Imputation (MDI) method or treating missing as a distinct value
 This module will house such functionalities.
 """
 
+import logging
 import numpy as np
+
+logger = logging.getLogger(__name__)
 
 def handle_missing_X(X, strategy='mean', allow_missing_for_some_strategies=False):
     """
@@ -174,39 +177,39 @@ def handle_missing_y(y, strategy='mean', allow_missing_for_some_strategies=False
 if __name__ == '__main__':
     # Example for X
     X_test = np.array([[1, 2, np.nan], [4, np.nan, 6], [np.nan, 8, 9], [10, 11, 12]])
-    print("Original X:\n", X_test)
+    logger.info("Original X:\n%s", X_test)
 
     X_mean_imputed = handle_missing_X(X_test, strategy='mean')
-    print("\nX mean imputed:\n", X_mean_imputed)
+    logger.info("\nX mean imputed:\n%s", X_mean_imputed)
 
     X_median_imputed = handle_missing_X(X_test, strategy='median')
-    print("\nX median imputed:\n", X_median_imputed)
+    logger.info("\nX median imputed:\n%s", X_median_imputed)
 
     X_mf_imputed = handle_missing_X(X_test, strategy='most_frequent')
-    print("\nX most_frequent imputed:\n", X_mf_imputed)
+    logger.info("\nX most_frequent imputed:\n%s", X_mf_imputed)
 
     try:
         handle_missing_X(X_test, strategy='error')
     except ValueError as e:
-        print(f"\nError caught as expected: {e}")
+        logger.info("\nError caught as expected: %s", e)
 
     # Example for y
     y_test_reg = np.array([1.0, np.nan, 3.0, 4.0, np.nan, 6.0])
-    print("\nOriginal y (regression):\n", y_test_reg)
+    logger.info("\nOriginal y (regression):\n%s", y_test_reg)
     y_mean_imputed, _ = handle_missing_y(y_test_reg, strategy='mean')
-    print("\ny mean imputed (regression):\n", y_mean_imputed)
+    logger.info("\ny mean imputed (regression):\n%s", y_mean_imputed)
 
     y_removed, removed_mask = handle_missing_y(y_test_reg, strategy='remove_samples')
-    print("\ny with NaNs removed (regression):\n", y_removed)
-    print("Mask of removed samples:\n", removed_mask)
+    logger.info("\ny with NaNs removed (regression):\n%s", y_removed)
+    logger.info("Mask of removed samples:\n%s", removed_mask)
 
 
-    y_test_clf = np.array([0, 1, np.nan, 0, 1, 1, np.nan]).astype(float) # Use float for nan
-    print("\nOriginal y (classification):\n", y_test_clf)
+    y_test_clf = np.array([0, 1, np.nan, 0, 1, 1, np.nan]).astype(float)  # Use float for nan
+    logger.info("\nOriginal y (classification):\n%s", y_test_clf)
     y_mf_imputed, _ = handle_missing_y(y_test_clf, strategy='most_frequent', problem_type='classification')
-    print("\ny most_frequent imputed (classification):\n", y_mf_imputed)
+    logger.info("\ny most_frequent imputed (classification):\n%s", y_mf_imputed)
 
     try:
         handle_missing_y(y_test_clf, strategy='mean', problem_type='classification')
     except ValueError as e:
-        print(f"\nError caught for clf with mean: {e}")
+        logger.info("\nError caught for clf with mean: %s", e)

@@ -11,11 +11,14 @@ scikit-learn's Estimator API.
 # from sklearn.base import BaseEstimator, RegressorMixin, ClassifierMixin
 # from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
 # from sklearn.utils.multiclass import unique_labels # For classifiers
+import logging
 from sklearn.base import BaseEstimator, RegressorMixin
 # from sklearn.utils.validation import check_X_y, check_array, check_is_fitted # Will use these in fit/predict
 # from sklearn.utils.multiclass import unique_labels # For classifiers
-from .earth import Earth as CoreEarth # Rename to avoid clash if EarthRegressor inherits it directly
-# from ._types import XType, YType # Custom types
+from .earth import Earth as CoreEarth  # Rename to avoid clash if EarthRegressor inherits it directly
+# from ._types import XType, YType  # Custom types
+
+logger = logging.getLogger(__name__)
 
 
 class EarthRegressor(RegressorMixin, BaseEstimator): # Corrected Mixin Order
@@ -413,15 +416,17 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
             # We should probably fit the classifier on original X or raise error.
             # For now, let's assume earth_ always produces at least an intercept.
             # If self.basis_ is empty, _build_basis_matrix will return empty B.
-             print("Warning: Earth model fitting resulted in no basis functions. Classifier will be fit on original X (if applicable) or might fail.")
-             # Fallback: use original features, or handle as error.
-             # If we use original features, the "Earth" part isn't doing much.
-             # For simplicity now, if no basis functions, the classifier step might fail or be trivial.
-             # A robust solution would be to ensure earth_ at least has an intercept or handle this.
-             X_transformed = X_validated # Fallback, though not ideal.
-             if not X_transformed.any(): # If X_validated was also empty (should be caught by check_X_y)
-                 self.is_fitted_ = True # Mark as fitted, but it's a degenerate model
-                 return self
+            logger.warning(
+                "Earth model fitting resulted in no basis functions. Classifier will be fit on original X (if applicable) or might fail."
+            )
+            # Fallback: use original features, or handle as error.
+            # If we use original features, the "Earth" part isn't doing much.
+            # For simplicity now, if no basis functions, the classifier step might fail or be trivial.
+            # A robust solution would be to ensure earth_ at least has an intercept or handle this.
+            X_transformed = X_validated  # Fallback, though not ideal.
+            if not X_transformed.any():  # If X_validated was also empty (should be caught by check_X_y)
+                self.is_fitted_ = True  # Mark as fitted, but it's a degenerate model
+                return self
         else:
             # Transform X using the fitted Earth model's basis functions
             # Since X_validated is assumed to be NaN-free by this point (due to check_X_y),
@@ -471,8 +476,10 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
             # and the classifier must have been fit on something (e.g. original X or failed).
             # If self.basis_ is empty, the transform should reflect that (e.g. empty feature set for classifier).
             # This path implies the classifier was fit on X_validated directly in `fit` method's fallback.
-             print("Warning: EarthClassifier.basis_ is empty. Predictions might be based on original features if fit handled this.")
-             return X_validated # Fallback if fit decided to use original X
+            logger.warning(
+                "EarthClassifier.basis_ is empty. Predictions might be based on original features if fit handled this."
+            )
+            return X_validated  # Fallback if fit decided to use original X
 
         # Since X_validated is assumed to be NaN-free by this point (due to check_array),
         # an all-False missing_mask is appropriate.
@@ -489,7 +496,9 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
             # Or, more likely, we should ensure B_matrix is not empty if basis_ is not.
             # A common fallback is to return an array of zeros or means if this happens.
             # Let's assume for now that if self.basis_ is not empty, X_transformed will have columns.
-             print("Warning: Transformed features matrix is empty despite basis functions existing.")
+            logger.warning(
+                "Transformed features matrix is empty despite basis functions existing."
+            )
 
         return X_transformed
 
@@ -556,8 +565,12 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
         # Relies on ClassifierMixin or implement directly
         # from sklearn.metrics import accuracy_score
         # return accuracy_score(y, self.predict(X))
-        print(f"EarthClassifier.score called with X shape {X.shape if hasattr(X, 'shape') else 'unknown'}, y shape {y.shape if hasattr(y, 'shape') else 'unknown'}")
-        return 0.0 # Placeholder
+        logger.debug(
+            "EarthClassifier.score called with X shape %s, y shape %s",
+            X.shape if hasattr(X, "shape") else "unknown",
+            y.shape if hasattr(y, "shape") else "unknown",
+        )
+        return 0.0  # Placeholder
 
     # def get_params(self, deep=True):
     #     # From BaseEstimator - should work due to __init__ params being public attributes

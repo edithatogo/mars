@@ -3,8 +3,12 @@
 """
 The main Earth class, coordinating the model fitting process.
 """
+import logging
 import numpy as np
-from ._basis import ConstantBasisFunction # Used in fallbacks
+# Used in fallbacks
+from ._basis import ConstantBasisFunction
+
+logger = logging.getLogger(__name__)
 # from ._forward import ForwardPasser # Imported locally in fit
 # from ._pruning import PruningPasser # Imported locally in fit
 # from ._record import EarthRecord
@@ -233,7 +237,7 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
             # or if an error occurred. For now, assume forward pass always gives something.
             # If it's just an intercept, pruning might still occur or confirm it.
             # If truly empty (error), we might need to raise an error or set a degenerate model.
-            print("Warning: Forward pass returned no basis functions.")
+            logger.warning("Forward pass returned no basis functions.")
             # Set a model that predicts mean of y, or handle as error
             self.basis_ = [ConstantBasisFunction()] if ConstantBasisFunction not in [type(bf) for bf in fwd_basis_functions] else fwd_basis_functions
             if not self.basis_ : # if fwd_basis_functions was also empty
@@ -328,18 +332,23 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
              # This might happen if fit failed very early or record not initialized.
             if hasattr(X_fit, 'shape') and X_fit.ndim == 2:
                  num_features = X_fit.shape[1]
-            else: # Cannot determine num_features
-                print("Warning: Cannot determine number of features for importance calculation.")
+            else:  # Cannot determine num_features
+                logger.warning(
+                    "Cannot determine number of features for importance calculation."
+                )
                 self.feature_importances_ = np.array([])
                 return
         else:
             num_features = self.record_.n_features
 
         if self.feature_importance_type == 'nb_subsets':
-            if not (hasattr(self.record_, 'pruning_trace_basis_functions_') and \
-                    self.record_.pruning_trace_basis_functions_):
-                print("Warning: Pruning trace not available in record. "
-                      "Cannot calculate 'nb_subsets' feature importance. Returning zeros.")
+            if not (
+                hasattr(self.record_, 'pruning_trace_basis_functions_')
+                and self.record_.pruning_trace_basis_functions_
+            ):
+                logger.warning(
+                    "Pruning trace not available in record. Cannot calculate 'nb_subsets' feature importance. Returning zeros."
+                )
                 self.feature_importances_ = np.zeros(num_features)
                 return
 
@@ -421,8 +430,12 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
 
         elif self.feature_importance_type is not None:
             # Placeholder for other types or warning for unknown types
-            print(f"Warning: feature_importance_type '{self.feature_importance_type}' "
-                  "is not yet fully implemented. Returning zeros for importances.")
+            msg = (
+                f"Warning: feature_importance_type '{self.feature_importance_type}' "
+                "is not yet fully implemented. Returning zeros for importances."
+            )
+            print(msg)
+            logger.warning(msg)
             self.feature_importances_ = np.zeros(num_features)
         else:
             # feature_importance_type is None, so do nothing, self.feature_importances_ remains None
