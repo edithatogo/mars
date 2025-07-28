@@ -4,6 +4,7 @@
 The main Earth class, coordinating the model fitting process.
 """
 import numpy as np
+from sklearn.base import BaseEstimator, RegressorMixin
 from ._basis import ConstantBasisFunction  # Used in fallbacks
 from ._util import (
     calculate_gcv,
@@ -18,7 +19,7 @@ from ._util import (
 # from sklearn.base import BaseEstimator, RegressorMixin, ClassifierMixin
 
 
-class Earth: # Add (BaseEstimator, RegressorMixin) later
+class Earth(RegressorMixin, BaseEstimator):
     """
     Multivariate Adaptive Regression Splines (MARS) model.
 
@@ -129,6 +130,7 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
                  categorical_features: list[int] = None
                  # TODO: Consider other py-earth params
                  ):
+        super().__init__()
         # Core MARS algorithm parameters
         self.max_degree = max_degree
         self.penalty = penalty
@@ -529,9 +531,9 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
                 penalty=self.penalty,
                 num_samples=len(y_processed),
             )
-            gcv_score = calculate_gcv(self.rss_, len(y_processed), effective_params)
+            gcv_score = calculate_gcv(self.rss_, len(y_processed), eff_params)
 
-        self.gcv_ = gcv_score
+        self.gcv_ = gcv_score if np.isfinite(gcv_score) else np.inf
 
     def predict(self, X):
         """
@@ -741,6 +743,15 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
 
         output.append("-------------------------------------")
         return "\n".join(output)
+
+    def get_params(self, deep: bool = True) -> dict:
+        """Return estimator parameters for scikit-learn."""
+        return super().get_params(deep=deep)
+
+    def set_params(self, **params):
+        """Set estimator parameters for scikit-learn."""
+        super().set_params(**params)
+        return self
 
 
 if __name__ == '__main__':
