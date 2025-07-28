@@ -777,16 +777,3 @@ class Earth(BaseEstimator, RegressorMixin):
         return self
 
 
-if __name__ == '__main__':
-    # Example usage (will require actual data and other modules)
-    # import numpy as np
-    # X_train = np.random.rand(100, 3)
-    # y_train = X_train[:, 0] * 2 - X_train[:, 1] + np.random.randn(100) * 0.1
-
-    # model = Earth(max_degree=1, max_terms=10)
-    # model.fit(X_train, y_train)
-    # model.summary()
-
-    # X_test = np.random.rand(20, 3)
-    # y_pred = model.predict(X_test)
-    pass
