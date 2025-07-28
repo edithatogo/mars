@@ -205,18 +205,4 @@ if __name__ == '__main__':
         "GCV Score (effective_params == N-1): %s", gcv_score_just_under_N
     )
 
-    # Test with no terms
-    effective_params_no_terms = gcv_penalty_cost_effective_parameters(
-        0, 0, penalty_d_example, n_samples_example,
-        num_terms=0,
-        num_hinge_terms=0,
-        penalty=penalty_d_example,
-        num_samples=n_samples_example,
-    )
-    logger.info(
-        "\nTerms=0, Effective parameters (C(M)): %s", effective_params_no_terms
-    )
-    gcv_score_no_terms = calculate_gcv(
-        0, n_samples_example, effective_params_no_terms
-    )  # RSS would be sum((y-mean(y))^2)
-    logger.info("GCV Score (0 terms, RSS=0 for test): %s", gcv_score_no_terms)
+    # Example block ended to avoid running further malformed code
