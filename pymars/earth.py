@@ -4,6 +4,7 @@
 The main Earth class, coordinating the model fitting process.
 """
 import numpy as np
+from sklearn.base import BaseEstimator, RegressorMixin
 from ._basis import ConstantBasisFunction  # Used in fallbacks
 from ._util import (
     calculate_gcv,
@@ -14,11 +15,10 @@ from ._util import (
 # from ._record import EarthRecord
 # from ._util import check_X_y_docs # Example, will need proper sklearn later
 
-# For scikit-learn compatibility
-# from sklearn.base import BaseEstimator, RegressorMixin, ClassifierMixin
 
 
-class Earth: # Add (BaseEstimator, RegressorMixin) later
+
+class Earth(BaseEstimator, RegressorMixin):
     """
     Multivariate Adaptive Regression Splines (MARS) model.
 
@@ -129,6 +129,8 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
                  categorical_features: list[int] = None
                  # TODO: Consider other py-earth params
                  ):
+        super().__init__()
+
         # Core MARS algorithm parameters
         self.max_degree = max_degree
         self.penalty = penalty
@@ -513,9 +515,7 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
             )
             self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
 
-        gcv_score = None
-
-        y_pred_train = B_intercept @ self.coef_
+        y_pred_train = B_final @ self.coef_
         self.rss_ = np.sum((y_processed - y_pred_train) ** 2)
         self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
 
@@ -753,6 +753,33 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
 
         output.append("-------------------------------------")
         return "\n".join(output)
+
+    # ------------------------------------------------------------------
+    # scikit-learn estimator interface utilities
+    # ------------------------------------------------------------------
+    def get_params(self, deep: bool = True) -> dict:
+        """Return estimator parameters for compatibility with scikit-learn."""
+        return {
+            "max_degree": self.max_degree,
+            "penalty": self.penalty,
+            "max_terms": self.max_terms,
+            "minspan_alpha": self.minspan_alpha,
+            "endspan_alpha": self.endspan_alpha,
+            "minspan": self.minspan,
+            "endspan": self.endspan,
+            "allow_linear": self.allow_linear,
+            "allow_missing": self.allow_missing,
+            "feature_importance_type": self.feature_importance_type,
+            "categorical_features": self.categorical_features,
+        }
+
+    def set_params(self, **params):
+        """Set estimator parameters for compatibility with scikit-learn."""
+        for key, value in params.items():
+            if not hasattr(self, key):
+                raise ValueError(f"Invalid parameter {key} for Earth.")
+            setattr(self, key, value)
+        return self
 
 
 if __name__ == '__main__':
