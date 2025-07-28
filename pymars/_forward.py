@@ -324,7 +324,10 @@ class ForwardPasser:
                         candidate_additions.append((bf_left, bf_right))
                 # Handle categorical features
                 elif self.categorical_features and var_idx in self.categorical_features:
-                    unique_categories = np.unique(self.X_fit_original[:, var_idx])
+                    col_vals = self.X_fit_original[:, var_idx]
+                    if self.missing_mask is not None:
+                        col_vals = col_vals[~self.missing_mask[:, var_idx]]
+                    unique_categories = np.unique(col_vals)
                     for category in unique_categories:
                         categorical_candidate = CategoricalBasisFunction(
                             variable_idx=var_idx, category=category, parent_bf=parent_bf
