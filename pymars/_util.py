@@ -7,6 +7,7 @@ This module can contain helper functions used across different modules,
 such as input validation, specific calculations not tied to a class, etc.
 """
 
+# Standard library imports
 import logging
 import numpy as np
 
@@ -120,6 +121,7 @@ def calculate_gcv(rss: float, num_samples: int, num_effective_params: float) -> 
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
     # Test check_array and check_X_y
     logger.info("--- Testing check_array & check_X_y ---")
     X_good = np.array([[1,2],[3,4],[5,6]])
@@ -181,14 +183,18 @@ if __name__ == '__main__':
         n_terms_high,
         effective_params_high,
     )
-    gcv_score_high = calculate_gcv(rss_example, n_samples_example, effective_params_high)
+    gcv_score_high = calculate_gcv(
+        rss_example, n_samples_example, effective_params_high
+    )
     logger.info("GCV Score (high terms): %s", gcv_score_high)
 
     # Edge case: num_effective_params == num_samples
     # This should lead to inf GCV. Our C(M) caps at N-1.
     # If C(M) was allowed to be N, then (1 - N/N)^2 = 0.
     effective_params_eq_N = n_samples_example
-    gcv_score_eq_N = calculate_gcv(rss_example, n_samples_example, effective_params_eq_N)
+    gcv_score_eq_N = calculate_gcv(
+        rss_example, n_samples_example, effective_params_eq_N
+    )
     logger.info("GCV Score (effective_params == N): %s", gcv_score_eq_N)
 
     effective_params_just_under_N = n_samples_example - 1
@@ -201,6 +207,7 @@ if __name__ == '__main__':
 
     # Test with no terms
     effective_params_no_terms = gcv_penalty_cost_effective_parameters(
+        0, 0, penalty_d_example, n_samples_example
         0, n_samples_example, penalty_d_example
     )
     logger.info(

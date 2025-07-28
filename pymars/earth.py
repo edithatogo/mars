@@ -683,23 +683,37 @@ class Earth(BaseEstimator, RegressorMixin):
 
         if not self.fitted_:
             logger.info("Model not yet fitted.")
-            return "Model not yet fitted."
+            return
 
-        lines = [
-            "pymars Earth Model Summary",
-            "==========================",
-            f"Number of samples: {self.record_.n_samples if self.record_ else 'N/A'}",
-            f"Number of features: {self.record_.n_features if self.record_ else 'N/A'}",
-            "--------------------------",
-            f"Selected Basis Functions: {len(self.basis_)}",
-            f"GCV (final model): {self.gcv_:.4f}" if self.gcv_ is not None else "GCV: N/A",
-            f"RSS (training): {self.rss_:.4f}" if self.rss_ is not None else "RSS: N/A",
-            f"MSE (training): {self.mse_:.4f}" if self.mse_ is not None else "MSE: N/A",
-            "--------------------------",
-        ]
+        logger.info("pymars Earth Model Summary")
+        logger.info("==========================")
+        logger.info(
+            "Number of samples: %s",
+            self.record_.n_samples if self.record_ else "N/A",
+        )
+        logger.info(
+            "Number of features: %s",
+            self.record_.n_features if self.record_ else "N/A",
+        )
+        logger.info("--------------------------")
+        logger.info("Selected Basis Functions: %d", len(self.basis_))
+        if self.gcv_ is not None:
+            logger.info("GCV (final model): %.4f", self.gcv_)
+        else:
+            logger.info("GCV (final model): N/A")
+        if self.rss_ is not None:
+            logger.info("RSS (training): %.4f", self.rss_)
+        else:
+            logger.info("RSS (training): N/A")
+        if self.mse_ is not None:
+            logger.info("MSE (training): %.4f", self.mse_)
+        else:
+            logger.info("MSE (training): N/A")
+        logger.info("--------------------------")
 
         if self.basis_ and self.coef_ is not None:
-            lines.append("\nBasis Functions and Coefficients:")
+            logger.info("\nBasis Functions and Coefficients:")
+
             # Determine max length of basis function string for alignment
             max_bf_str_len = 0
             if self.basis_: # Ensure basis_ is not empty
@@ -712,14 +726,11 @@ class Earth(BaseEstimator, RegressorMixin):
                 if isinstance(coef_val, np.ndarray): # Should not happen with current 1D y
                     coef_str = ", ".join([f"{c:.4f}" for c in coef_val])
 
-                lines.append(f"  {str(bf):<{max_bf_str_len + 2}} Coef: {coef_str}")
+                logger.info("  %s Coef: %s", f"{str(bf):<{max_bf_str_len + 2}}", coef_str)
         else:
-            lines.append("No basis functions or coefficients available.")
-        lines.append("==========================")
+            logger.info("No basis functions or coefficients available.")
 
-        summary_str = "\n".join(lines)
-        logger.info("\n%s", summary_str)
-        return summary_str
+        logger.info("==========================")
 
     def summary_feature_importances(self, sort_by_importance: bool = True) -> str:
         """

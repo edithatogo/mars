@@ -4,6 +4,7 @@
 Unit tests for the main Earth class in pymars.earth
 """
 
+import logging
 import pytest
 import numpy as np
 from pymars.earth import Earth
@@ -140,27 +141,28 @@ def test_earth_fit_predict_more_complex(more_complex_earth_data):
                              "which can happen with greedy forward pass even with linear terms.")
             assert has_interaction, "Expected interaction terms with max_degree > 1 for this complex data."
 
+import logging
 
-def test_earth_summary_method(simple_earth_data, capsys):
-    """Test that the summary method returns a summary string."""
+
+def test_earth_summary_method(simple_earth_data, caplog):
+    """Test that the summary method logs output."""
     X, y = simple_earth_data
     model = Earth(max_degree=1, max_terms=3)
 
-    # Summary before fit
-    summary_before = model.summary()
-    captured_before = capsys.readouterr()
-    assert captured_before.out == ""  # No direct print output
-    assert "Model not yet fitted." in summary_before
+    with caplog.at_level(logging.INFO, logger="pymars.earth"):
+        model.summary()
+    assert "Model not yet fitted." in caplog.text
+    caplog.clear()
 
     model.fit(X, y)
-    summary_after = model.summary()
-    captured_after = capsys.readouterr()
-    assert captured_after.out == ""  # No direct print output
-    assert "pymars Earth Model Summary" in summary_after
-    assert "Selected Basis Functions:" in summary_after
-    assert "GCV (final model):" in summary_after
-    assert "Basis Functions and Coefficients:" in summary_after
-    assert "Coef:" in summary_after
+    with caplog.at_level(logging.INFO, logger="pymars.earth"):
+        model.summary()
+    output = caplog.text
+    assert "pymars Earth Model Summary" in output
+    assert "Selected Basis Functions:" in output
+    assert "GCV (final model):" in output
+    assert "Basis Functions and Coefficients:" in output
+    assert "Coef:" in output  # Check if coefficients are logged
 
 def test_input_validation_in_fit(simple_earth_data):
     """Test input validation within the fit method."""
@@ -524,13 +526,12 @@ def test_earth_feature_importance_rss(simple_earth_data, more_complex_earth_data
 
 import logging
 
-
 def test_earth_invalid_feature_importance_type(simple_earth_data, caplog):
     """Test behavior with an invalid feature_importance_type."""
     X, y = simple_earth_data
     invalid_type = "this_is_not_a_valid_type"
     model = Earth(feature_importance_type=invalid_type)
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(logging.WARNING, logger="pymars.earth"):
         model.fit(X, y)
 
     assert model.fitted_
@@ -540,6 +541,9 @@ def test_earth_invalid_feature_importance_type(simple_earth_data, caplog):
     assert np.all(model.feature_importances_ == 0.0), "Importances should be all zeros for invalid type"
 
     # Check for the warning message
+    assert any(
+        f"feature_importance_type '{invalid_type}'" in rec.message
+        for rec in caplog.records
     warning_msgs = [rec.message for rec in caplog.records]
     assert any(
         f"feature_importance_type '{invalid_type}'" in msg for msg in warning_msgs
