@@ -506,10 +506,19 @@ class Earth(BaseEstimator, RegressorMixin):
         """Set an intercept-only model and compute its RSS, MSE and GCV."""
         from ._util import calculate_gcv, gcv_penalty_cost_effective_parameters
 
-        # Build an intercept-only basis and coefficient
+        # Build an intercept-only model once
         self.basis_ = [ConstantBasisFunction()]
         intercept = float(np.mean(y_processed))
         self.coef_ = np.array([intercept])
+
+        # Compute predictions, RSS, and MSE a single time
+        B_intercept = self._build_basis_matrix(X_processed, self.basis_, missing_mask)
+        y_pred_train = B_intercept @ self.coef_
+        self.rss_ = float(np.sum((y_processed - y_pred_train) ** 2))
+        self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
+
+        try:
+            eff_params = gcv_penalty_cost_effective_parameters(
 
         # Predict once using the intercept
         y_pred_train = np.full_like(y_processed, intercept, dtype=float)
@@ -527,10 +536,10 @@ class Earth(BaseEstimator, RegressorMixin):
                 penalty=self.penalty,
                 num_samples=len(y_processed),
             )
-            gcv_value = calculate_gcv(self.rss_, len(y_processed), effective_params)
+            gcv_score = calculate_gcv(self.rss_, len(y_processed), eff_params)
         except Exception as exc:  # pragma: no cover - safety net
-            logger.warning("Failed to compute fallback GCV: %s", exc)
-            gcv_value = np.inf
+            logger.warning("Failed to compute GCV for fallback model: %s", exc)
+            gcv_score = np.inf
 
         self.gcv_ = gcv_value if np.isfinite(gcv_value) else np.inf
 
