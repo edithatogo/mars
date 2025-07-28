@@ -7,7 +7,11 @@ This module can contain helper functions used across different modules,
 such as input validation, specific calculations not tied to a class, etc.
 """
 
+# Standard library imports
+import logging
 import numpy as np
+
+logger = logging.getLogger(__name__)
 # from ._types import XType, YType, NumericArray, BoolArray # If using custom types
 
 # Scikit-learn like input validation (simplified examples)
@@ -117,69 +121,98 @@ def calculate_gcv(rss: float, num_samples: int, num_effective_params: float) -> 
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
     # Test check_array and check_X_y
-    print("--- Testing check_array & check_X_y ---")
+    logger.info("--- Testing check_array & check_X_y ---")
     X_good = np.array([[1,2],[3,4],[5,6]])
     y_good = np.array([10,20,30])
     X_c, y_c = check_X_y(X_good, y_good)
-    print(f"Checked X shape: {X_c.shape}, Checked y shape: {y_c.shape}")
+    logger.info("Checked X shape: %s, Checked y shape: %s", X_c.shape, y_c.shape)
 
     try:
         X_bad_dim = np.array([1,2,3])
         check_X_y(X_bad_dim, y_good)
     except ValueError as e:
-        print(f"Caught expected error for X_bad_dim: {e}")
+        logger.info("Caught expected error for X_bad_dim: %s", e)
 
     try:
         y_bad_dim = np.array([[10],[20],[30],[40]]) # Wrong samples
         check_X_y(X_good, y_bad_dim)
     except ValueError as e:
-        print(f"Caught expected error for y_bad_dim (shape mismatch): {e}")
+        logger.info("Caught expected error for y_bad_dim (shape mismatch): %s", e)
 
     try:
         y_bad_dim_2d = np.array([[10,11],[20,21],[30,31]]) # y not 1D
         check_X_y(X_good, y_bad_dim_2d, ensure_y_1d=True)
     except ValueError as e:
-        print(f"Caught expected error for y_bad_dim (not 1D): {e}")
+        logger.info("Caught expected error for y_bad_dim (not 1D): %s", e)
 
     y_col_vec = np.array([[10],[20],[30]])
     _, y_col_c = check_X_y(X_good, y_col_vec, ensure_y_1d=True)
-    print(f"y column vector converted to 1D, new shape: {y_col_c.shape}")
+    logger.info("y column vector converted to 1D, new shape: %s", y_col_c.shape)
 
 
     # Test GCV calculation components
-    print("\n--- Testing GCV Calculations ---")
+    logger.info("\n--- Testing GCV Calculations ---")
     rss_example = 100.0
     n_samples_example = 50
     n_terms_example = 5
     penalty_d_example = 3.0 # Typical penalty for MARS GCV
 
-    effective_params = gcv_penalty_cost_effective_parameters(n_terms_example, n_samples_example, penalty_d_example, has_intercept=True)
-    print(f"RSS={rss_example}, N={n_samples_example}, Terms={n_terms_example}, Penalty={penalty_d_example}")
-    print(f"Effective parameters (C(M)): {effective_params}")
+    effective_params = gcv_penalty_cost_effective_parameters(
+        n_terms_example, n_samples_example, penalty_d_example, has_intercept=True
+    )
+    logger.info(
+        "RSS=%s, N=%s, Terms=%s, Penalty=%s",
+        rss_example,
+        n_samples_example,
+        n_terms_example,
+        penalty_d_example,
+    )
+    logger.info("Effective parameters (C(M)): %s", effective_params)
     gcv_score = calculate_gcv(rss_example, n_samples_example, effective_params)
-    print(f"GCV Score: {gcv_score}")
+    logger.info("GCV Score: %s", gcv_score)
 
     # Edge case: more terms than samples (after penalty)
     n_terms_high = 40
-    effective_params_high = gcv_penalty_cost_effective_parameters(n_terms_high, n_samples_example, penalty_d_example, has_intercept=True)
-    print(f"\nTerms={n_terms_high}, Effective parameters (C(M)): {effective_params_high}")
-    gcv_score_high = calculate_gcv(rss_example, n_samples_example, effective_params_high)
-    print(f"GCV Score (high terms): {gcv_score_high}")
+    effective_params_high = gcv_penalty_cost_effective_parameters(
+        n_terms_high, n_samples_example, penalty_d_example, has_intercept=True
+    )
+    logger.info(
+        "\nTerms=%s, Effective parameters (C(M)): %s",
+        n_terms_high,
+        effective_params_high,
+    )
+    gcv_score_high = calculate_gcv(
+        rss_example, n_samples_example, effective_params_high
+    )
+    logger.info("GCV Score (high terms): %s", gcv_score_high)
 
     # Edge case: num_effective_params == num_samples
     # This should lead to inf GCV. Our C(M) caps at N-1.
     # If C(M) was allowed to be N, then (1 - N/N)^2 = 0.
     effective_params_eq_N = n_samples_example
-    gcv_score_eq_N = calculate_gcv(rss_example, n_samples_example, effective_params_eq_N)
-    print(f"GCV Score (effective_params == N): {gcv_score_eq_N}")
+    gcv_score_eq_N = calculate_gcv(
+        rss_example, n_samples_example, effective_params_eq_N
+    )
+    logger.info("GCV Score (effective_params == N): %s", gcv_score_eq_N)
 
     effective_params_just_under_N = n_samples_example - 1
-    gcv_score_just_under_N = calculate_gcv(rss_example, n_samples_example, effective_params_just_under_N)
-    print(f"GCV Score (effective_params == N-1): {gcv_score_just_under_N}")
+    gcv_score_just_under_N = calculate_gcv(
+        rss_example, n_samples_example, effective_params_just_under_N
+    )
+    logger.info(
+        "GCV Score (effective_params == N-1): %s", gcv_score_just_under_N
+    )
 
     # Test with no terms
-    effective_params_no_terms = gcv_penalty_cost_effective_parameters(0, n_samples_example, penalty_d_example)
-    print(f"\nTerms=0, Effective parameters (C(M)): {effective_params_no_terms}")
-    gcv_score_no_terms = calculate_gcv(0, n_samples_example, effective_params_no_terms) # RSS would be sum((y-mean(y))^2)
-    print(f"GCV Score (0 terms, RSS=0 for test): {gcv_score_no_terms}")
+    effective_params_no_terms = gcv_penalty_cost_effective_parameters(
+        0, n_samples_example, penalty_d_example
+    )
+    logger.info(
+        "\nTerms=0, Effective parameters (C(M)): %s", effective_params_no_terms
+    )
+    gcv_score_no_terms = calculate_gcv(
+        0, n_samples_example, effective_params_no_terms
+    )  # RSS would be sum((y-mean(y))^2)
+    logger.info("GCV Score (0 terms, RSS=0 for test): %s", gcv_score_no_terms)
