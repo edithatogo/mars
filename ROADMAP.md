@@ -20,10 +20,19 @@ The goal of this phase is to implement the core functionality of the MARS algori
 
 The goal of this phase is to implement advanced features that are available in the R `earth` package.
 
-*   **Implement interaction terms.** This will involve modifying the `Earth` class to handle interaction terms.
-*   **Implement generalized linear models (GLMs).** This will involve adding a new `GLMEarth` class that inherits from the `Earth` class.
-*   **Implement cross-validation.** This will involve adding a new `EarthCV` class that inherits from the `Earth` class.
-*   **Implement plotting.** This will involve adding a new `plot` method to the `Earth` class.
+*   **Interaction terms**
+    - Extend `ForwardPasser` to generate interaction candidates and store them as composite basis functions.
+    - Update pruning logic so interactions are considered when evaluating subsets.
+    - Add dedicated tests to ensure interaction terms are selected and pruned correctly.
+*   **Generalized linear models (GLMs)**
+    - Introduce a `GLMEarth` subclass that reuses the basis function search but fits GLM coefficients.
+    - Initial support will include logistic and Poisson families with their canonical link functions.
+*   **Cross-validation helper**
+    - Provide an `EarthCV` class using scikit‑learn utilities to perform k-fold evaluation and hyperparameter search.
+    - Typical parameters such as `penalty` and `max_degree` should be tunable.
+*   **Plotting utilities**
+    - Add a small plotting module built on `matplotlib` for visualising basis functions and residuals.
+    - Integrate a `plot()` helper on the `Earth` model for quick diagnostics.
 
 ## Phase 3: Performance and Optimization
 

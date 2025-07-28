@@ -17,12 +17,18 @@ Welcome to the documentation for `pymars`.
     *   Understanding MARS Model Components (Basis Functions, Coefficients)
     *   Interpreting Model Summaries
     *   Hyperparameter Tuning
+    *   Using `GLMEarth` for logistic and Poisson models
+    *   Cross-validation with `EarthCV`
+    *   Plotting model diagnostics
 *   **API Reference**
     *   `pymars.earth.Earth`
+    *   `pymars.glm.GLMEarth`
+    *   `pymars.cv.EarthCV`
     *   `pymars.sklearn_compat.EarthRegressor`
     *   `pymars.sklearn_compat.EarthClassifier`
     *   Basis Functions (`pymars._basis`)
     *   Utility functions (`pymars._util`)
+    *   Plotting utilities (`pymars.plot`)
 *   **Examples**
     *   Links to example notebooks or scripts.
 *   **Contributing**
