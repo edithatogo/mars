@@ -23,6 +23,8 @@ This project is currently in the initial development phase. The core algorithm a
 
 ## Installation
 
+**Note:** It is recommended to install `pymars` inside a Python virtual environment to avoid pip root warnings.
+
 `pymars` can be installed from TestPyPI:
 
 ```bash
@@ -89,7 +91,7 @@ predictions = model.predict(X)
 
 ## Contributing
 
-Contributions are welcome! Please see `CONTRIBUTING.md` (to be created) and `AGENTS.md` for guidelines.
+Contributions are welcome! Please see `CONTRIBUTING.md` and `AGENTS.md` for guidelines.
 
 ## License
 
