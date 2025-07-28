@@ -65,10 +65,10 @@ The goal of this phase is to improve the performance of `pymars` and optimize th
 | Categorical Features | ✔️ | ✔️ | ✔️ |
 | Missing Values | ✔️ | ✔️ | ✔️ |
 | **Advanced** | | | |
-| Interaction Terms | ❌ | ✔️ | ✔️ |
-| GLMs | ❌ | ❌ | ✔️ |
-| Cross-Validation | ❌ | ✔️ | ✔️ |
-| Plotting | ❌ | ✔️ | ✔️ |
+| Interaction Terms | ✔️ | ✔️ | ✔️ |
+| GLMs | ✔️ | ❌ | ✔️ |
+| Cross-Validation | ✔️ | ✔️ | ✔️ |
+| Plotting | ✔️ | ✔️ | ✔️ |
 | **Performance** | | | |
 | Cython | ❌ | ✔️ | N/A |
 | Fortran | ❌ | ❌ | ✔️ |

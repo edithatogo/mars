@@ -4,6 +4,7 @@
 The main Earth class, coordinating the model fitting process.
 """
 import numpy as np
+from sklearn.base import BaseEstimator, RegressorMixin
 from ._basis import ConstantBasisFunction  # Used in fallbacks
 from ._util import (
     calculate_gcv,
@@ -18,7 +19,7 @@ from ._util import (
 # from sklearn.base import BaseEstimator, RegressorMixin, ClassifierMixin
 
 
-class Earth: # Add (BaseEstimator, RegressorMixin) later
+class Earth(RegressorMixin, BaseEstimator):
     """
     Multivariate Adaptive Regression Splines (MARS) model.
 
@@ -129,6 +130,7 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
                  categorical_features: list[int] = None
                  # TODO: Consider other py-earth params
                  ):
+        super().__init__()
         # Core MARS algorithm parameters
         self.max_degree = max_degree
         self.penalty = penalty
@@ -494,10 +496,10 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
         missing_mask,
         pruning_passer_instance_for_gcv_calc,
     ):
-
-        """Set an intercept-only model and compute its GCV."""
+        """Set an intercept-only model and compute its RSS, MSE and GCV."""
         from ._util import calculate_gcv, gcv_penalty_cost_effective_parameters
-    
+
+        # Build an intercept-only basis and corresponding coefficients
         self.basis_ = [ConstantBasisFunction()]
         self.coef_ = np.array([np.mean(y_processed)])
     
@@ -511,7 +513,6 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
                 if len(y_processed) > 0
                 else 0.0
             )
-            self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
 
         gcv_score = None
 
@@ -519,6 +520,7 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
         # `B_final` already represents the intercept-only basis matrix.
         y_pred_train = B_final @ self.coef_
         self.rss_ = np.sum((y_processed - y_pred_train) ** 2)
+    
         self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
 
         gcv_score: float | None = None
@@ -532,20 +534,21 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
                     X_fit_original=self.X_original_,
                     basis_subset=self.basis_,
                 )
-                gcv_score = gcv_score[0] if isinstance(gcv_score, (list, tuple, np.ndarray)) else gcv_score
+                if isinstance(gcv_score, (list, tuple, np.ndarray)):
+                    gcv_score = gcv_score[0]
             except Exception:
-                    gcv_score = None
-    
+                gcv_score = None
+
         if gcv_score is None:
-            eff_params = gcv_penalty_cost_effective_parameters(
+            effective_params = gcv_penalty_cost_effective_parameters(
                 num_terms=1,
                 num_hinge_terms=0,
                 penalty=self.penalty,
                 num_samples=len(y_processed),
             )
-            gcv_score = calculate_gcv(self.rss_, len(y_processed), effective_params)
+            gcv_score = calculate_gcv(self.rss_, len(y_processed), eff_params)
 
-        self.gcv_ = gcv_score
+        self.gcv_ = gcv_score if np.isfinite(gcv_score) else np.inf
 
     def predict(self, X):
         """
@@ -755,6 +758,15 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
 
         output.append("-------------------------------------")
         return "\n".join(output)
+
+    def get_params(self, deep: bool = True) -> dict:
+        """Return estimator parameters for scikit-learn."""
+        return super().get_params(deep=deep)
+
+    def set_params(self, **params):
+        """Set estimator parameters for scikit-learn."""
+        super().set_params(**params)
+        return self
 
 
 if __name__ == '__main__':
