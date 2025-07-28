@@ -9,7 +9,10 @@ This module will define various types of basis functions, such as:
 - Linear functions
 """
 
+import logging
 import numpy as np
+
+logger = logging.getLogger(__name__)
 
 from abc import ABC, abstractmethod
 # from ._types import XType, FloatArray # Assuming XType is np.ndarray for internal use
@@ -422,16 +425,16 @@ if __name__ == '__main__':
     X_sample = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
 
     const_bf = ConstantBasisFunction()
-    print(f"{str(const_bf)}: {const_bf.transform(X_sample)}")
+    logger.info("%s: %s", str(const_bf), const_bf.transform(X_sample))
 
     hinge_bf_right = HingeBasisFunction(variable_idx=0, knot_val=4.0, variable_name="FeatureA")
-    print(f"{str(hinge_bf_right)}: {hinge_bf_right.transform(X_sample)}")
+    logger.info("%s: %s", str(hinge_bf_right), hinge_bf_right.transform(X_sample))
 
     hinge_bf_left = HingeBasisFunction(variable_idx=1, knot_val=5.0, is_right_hinge=False, variable_name="FeatureB")
-    print(f"{str(hinge_bf_left)}: {hinge_bf_left.transform(X_sample)}")
+    logger.info("%s: %s", str(hinge_bf_left), hinge_bf_left.transform(X_sample))
 
     linear_bf = LinearBasisFunction(variable_idx=2, variable_name="FeatureC")
-    print(f"{str(linear_bf)}: {linear_bf.transform(X_sample)}")
+    logger.info("%s: %s", str(linear_bf), linear_bf.transform(X_sample))
 
     # Example of how interaction might work (conceptual)
     # inter_bf = InteractionBasisFunction(hinge_bf_right, linear_bf)
