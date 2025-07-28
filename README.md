@@ -53,6 +53,10 @@ suite. A small helper script is provided:
 # Option 1: directly with pip
 pip install -r requirements.txt
 
+# To run the full scikit-learn estimator checks, install the optional pandas
+# dependency as well:
+pip install "pymars[pandas]"
+
 # Option 2: using the helper script
 bash scripts/setup_tests.sh
 ```
