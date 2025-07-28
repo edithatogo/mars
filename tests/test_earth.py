@@ -650,3 +650,7 @@ def test_earth_get_set_params():
     assert model.max_degree == 2
     assert model.penalty == 5.0
 
+    # Test that setting an invalid parameter raises an error
+    with pytest.raises(ValueError):
+        model.set_params(invalid_parameter_name=123)
+
