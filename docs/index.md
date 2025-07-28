@@ -17,16 +17,38 @@ Welcome to the documentation for `pymars`.
     *   Understanding MARS Model Components (Basis Functions, Coefficients)
     *   Interpreting Model Summaries
     *   Hyperparameter Tuning
+    *   Using `GLMEarth` for logistic and Poisson models
+    *   Cross-validation with `EarthCV`
+    *   Plotting model diagnostics
 *   **API Reference**
     *   `pymars.earth.Earth`
+    *   `pymars.glm.GLMEarth`
+    *   `pymars.cv.EarthCV`
     *   `pymars.sklearn_compat.EarthRegressor`
     *   `pymars.sklearn_compat.EarthClassifier`
     *   Basis Functions (`pymars._basis`)
     *   Utility functions (`pymars._util`)
+    *   Plotting utilities (`pymars.plot`)
 *   **Examples**
     *   Links to example notebooks or scripts.
 *   **Contributing**
 *   **Changelog**
+
+## Installation
+
+Install the latest development version from the cloned repository:
+
+```bash
+git clone https://github.com/your-repository-url/pymars.git
+cd pymars
+pip install -e .
+```
+
+Once a release is published on PyPI you will be able to install it directly:
+
+```bash
+pip install pymars
+```
 
 This documentation is currently under construction. Please refer to the main `README.md` and `ROADMAP.md` for project status and plans.
 

@@ -520,6 +520,12 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
             gcv_score = calculate_gcv(self.rss_, len(y_processed), effective_params)
 
         self.gcv_ = gcv_score
+                    basis_subset=self.basis_
+                )[0]
+            except Exception: # Broad catch if GCV calc fails for intercept
+                self.gcv_ = np.inf
+        else:
+            self.gcv_ = np.inf
 
 
     def predict(self, X):

@@ -46,21 +46,23 @@ class ForwardPasser:
             coeffs_for_mean = np.array([mean_y]) if (B_matrix is not None and B_matrix.shape[1] == 0) else None
             return rss, coeffs_for_mean, num_valid_rows
 
-        valid_rows_mask = ~np.any(np.isnan(B_matrix), axis=1)
-        num_valid_rows = np.sum(valid_rows_mask)
-
-        if num_valid_rows == 0 or num_valid_rows < B_matrix.shape[1]:
-            return np.inf, None, 0
-
-        B_complete = B_matrix[valid_rows_mask, :]
-        y_complete = y[valid_rows_mask]
+        # Replace NaNs with zeros so that rows with missing values are retained.
+        # This ensures candidates like MissingnessBasisFunction, which never
+        # produce NaNs, compete fairly against hinge or linear terms that would
+        # otherwise drop rows when NaNs are present.
+        if np.isnan(B_matrix).any():
+            B_complete = np.nan_to_num(B_matrix, nan=0.0)
+        else:
+            B_complete = B_matrix
+        num_valid_rows = B_complete.shape[0]
 
         try:
-            if B_complete.ndim == 1: B_complete = B_complete.reshape(-1, 1)
-            coeffs, residuals_sum_sq, rank, s = np.linalg.lstsq(B_complete, y_complete, rcond=None)
+            if B_complete.ndim == 1:
+                B_complete = B_complete.reshape(-1, 1)
+            coeffs, residuals_sum_sq, rank, s = np.linalg.lstsq(B_complete, y, rcond=None)
             if residuals_sum_sq.size == 0 or rank < B_complete.shape[1]:
                 y_pred_complete = B_complete @ coeffs
-                rss = np.sum((y_complete - y_pred_complete)**2)
+                rss = np.sum((y - y_pred_complete) ** 2)
             else:
                 rss = residuals_sum_sq[0]
             return rss, coeffs, num_valid_rows
