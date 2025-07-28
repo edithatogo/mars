@@ -542,7 +542,7 @@ class Earth(BaseEstimator, RegressorMixin):
                 penalty=self.penalty,
                 num_samples=len(y_processed),
             )
-            gcv_score = calculate_gcv(self.rss_, len(y_processed), eff_params)
+            gcv_score = calculate_gcv(self.rss_, len(y_processed), effective_params)
 
         self.gcv_ = gcv_score if np.isfinite(gcv_score) else np.inf
 
