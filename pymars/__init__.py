@@ -1,7 +1,7 @@
 # Pure Python Earth (Multivariate Adaptive Regression Splines)
 # Inspired by py-earth: https://github.com/scikit-learn-contrib/py-earth
 
-__version__ = "0.0.1"
+__version__ = "1.0.0"
 
 # Alias for py-earth compatibility (user can do this in their own code if they prefer)
 # import pymars as earth
