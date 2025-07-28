@@ -141,7 +141,6 @@ def test_earth_fit_predict_more_complex(more_complex_earth_data):
                              "which can happen with greedy forward pass even with linear terms.")
             assert has_interaction, "Expected interaction terms with max_degree > 1 for this complex data."
 
-
 import logging
 
 
@@ -223,7 +222,11 @@ def test_empty_model_after_pruning(simple_earth_data):
     expected_gcv_intercept_only = calculate_gcv(rss, len(y), expected_params)
 
     assert model.gcv_ is not None
-    assert np.isclose(model.gcv_, expected_gcv_intercept_only)
+    # Validate that the computed GCV for the fallback intercept-only model
+    # matches the expected value within floating point tolerance.
+    assert np.isclose(model.gcv_, expected_gcv_intercept_only), (
+        f"GCV ({model.gcv_}) should match the expected value ({expected_gcv_intercept_only}) for an intercept-only model"
+    )
 
 def test_earth_feature_importance_parameter(simple_earth_data):
     """Test that feature_importance_type parameter is stored and used."""
@@ -521,6 +524,8 @@ def test_earth_feature_importance_rss(simple_earth_data, more_complex_earth_data
     if X_simple.shape[1] == 1 and np.any(model_simple_signal.feature_importances_ > 0):
         assert np.isclose(model_simple_signal.feature_importances_[0], 1.0, atol=1e-5)
 
+import logging
+
 def test_earth_invalid_feature_importance_type(simple_earth_data, caplog):
     """Test behavior with an invalid feature_importance_type."""
     X, y = simple_earth_data
@@ -539,6 +544,13 @@ def test_earth_invalid_feature_importance_type(simple_earth_data, caplog):
     assert any(
         f"feature_importance_type '{invalid_type}'" in rec.message
         for rec in caplog.records
+    warning_msgs = [rec.message for rec in caplog.records]
+    assert any(
+        f"feature_importance_type '{invalid_type}'" in msg for msg in warning_msgs
+    )
+    assert any(
+        "is not yet fully implemented. Returning zeros for importances." in msg
+        for msg in warning_msgs
     )
 
     # Test summary method for this case
@@ -640,3 +652,21 @@ def test_earth_fit_with_missingness_terms(data_with_nans):
     # Test predict
     predictions = model.predict(X_nan)
     assert predictions.shape == (y_mod.shape[0],)
+
+
+def test_earth_get_set_params():
+    """Ensure get_params and set_params behave like scikit-learn estimators."""
+    model = Earth(max_degree=1, penalty=3.0)
+
+    params = model.get_params()
+    assert params["max_degree"] == 1
+    assert params["penalty"] == 3.0
+
+    model.set_params(max_degree=2, penalty=5.0)
+    assert model.max_degree == 2
+    assert model.penalty == 5.0
+
+    # Test that setting an invalid parameter raises an error
+    with pytest.raises(ValueError):
+        model.set_params(invalid_parameter_name=123)
+

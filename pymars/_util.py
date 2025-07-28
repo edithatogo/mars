@@ -160,7 +160,7 @@ if __name__ == '__main__':
     penalty_d_example = 3.0 # Typical penalty for MARS GCV
 
     effective_params = gcv_penalty_cost_effective_parameters(
-        n_terms_example, 0, penalty_d_example, n_samples_example
+        n_terms_example, n_samples_example, penalty_d_example, has_intercept=True
     )
     logger.info(
         "RSS=%s, N=%s, Terms=%s, Penalty=%s",
@@ -176,7 +176,7 @@ if __name__ == '__main__':
     # Edge case: more terms than samples (after penalty)
     n_terms_high = 40
     effective_params_high = gcv_penalty_cost_effective_parameters(
-        n_terms_high, 0, penalty_d_example, n_samples_example
+        n_terms_high, n_samples_example, penalty_d_example, has_intercept=True
     )
     logger.info(
         "\nTerms=%s, Effective parameters (C(M)): %s",
@@ -208,6 +208,7 @@ if __name__ == '__main__':
     # Test with no terms
     effective_params_no_terms = gcv_penalty_cost_effective_parameters(
         0, 0, penalty_d_example, n_samples_example
+        0, n_samples_example, penalty_d_example
     )
     logger.info(
         "\nTerms=0, Effective parameters (C(M)): %s", effective_params_no_terms

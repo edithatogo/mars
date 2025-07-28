@@ -5,6 +5,7 @@ The main Earth class, coordinating the model fitting process.
 """
 import logging
 import numpy as np
+from sklearn.base import BaseEstimator, RegressorMixin
 from ._basis import ConstantBasisFunction  # Used in fallbacks
 from ._util import (
     calculate_gcv,
@@ -17,11 +18,8 @@ logger = logging.getLogger(__name__)
 # from ._record import EarthRecord
 # from ._util import check_X_y_docs # Example, will need proper sklearn later
 
-# For scikit-learn compatibility
-# from sklearn.base import BaseEstimator, RegressorMixin, ClassifierMixin
 
-
-class Earth: # Add (BaseEstimator, RegressorMixin) later
+class Earth(BaseEstimator, RegressorMixin):
     """
     Multivariate Adaptive Regression Splines (MARS) model.
 
@@ -132,6 +130,9 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
                  categorical_features: list[int] = None
                  # TODO: Consider other py-earth params
                  ):
+        super().__init__()
+
+        
         # Core MARS algorithm parameters
         self.max_degree = max_degree
         self.penalty = penalty
@@ -503,13 +504,21 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
         pruning_passer_instance_for_gcv_calc,
     ):
 
-        """Set an intercept-only model and compute its GCV."""
+        """Set an intercept-only model and compute its RSS, MSE and GCV."""
         from ._util import calculate_gcv, gcv_penalty_cost_effective_parameters
-    
+
+        # Build basis and coefficient for an intercept-only model
         self.basis_ = [ConstantBasisFunction()]
-        self.coef_ = np.array([np.mean(y_processed)])
-    
+        intercept = float(np.mean(y_processed))
+        self.coef_ = np.array([intercept])
+
+        # Compute RSS and MSE using the constant basis
         B_final = self._build_basis_matrix(X_processed, self.basis_, missing_mask)
+        y_pred_train = B_final @ self.coef_ if B_final.size > 0 else np.full_like(y_processed, intercept)
+        self.rss_ = np.sum((y_processed - y_pred_train) ** 2)
+        self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
+
+        # Attempt to compute GCV using PruningPasser logic if available
         if B_final.size > 0:
             y_pred_train = B_final @ self.coef_
             self.rss_ = np.sum((y_processed - y_pred_train) ** 2)
@@ -519,25 +528,37 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
                 if len(y_processed) > 0
                 else 0.0
             )
-            self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
+
+        B_intercept = self._build_basis_matrix(
+            X_processed, self.basis_, missing_mask
+        )
+
+        # Use the fitted intercept basis matrix to recompute RSS/MSE.
+        # `B_final` already represents the intercept-only basis matrix.
+
+        y_pred_train = B_final @ self.coef_
+        self.rss_ = np.sum((y_processed - y_pred_train) ** 2)
+    
+        self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
 
         gcv_score: float | None = None
-
         if hasattr(pruning_passer_instance_for_gcv_calc, "_compute_gcv_for_subset"):
             try:
                 gcv_score, _, _ = pruning_passer_instance_for_gcv_calc._compute_gcv_for_subset(
                     X_fit_processed=X_processed,
                     y_fit=y_processed,
                     missing_mask=missing_mask,
-                    X_fit_original=self.X_original_,
+                    X_fit_original=self.X_original_ if hasattr(self, "X_original_") else X_processed,
                     basis_subset=self.basis_,
                 )
-                gcv_score = gcv_score[0] if isinstance(gcv_score, (list, tuple, np.ndarray)) else gcv_score
+                if isinstance(gcv_score, (list, tuple, np.ndarray)):
+                    gcv_score = gcv_score[0]
             except Exception:
-                    gcv_score = None
-    
+                gcv_score = None
+
+        # Fall back to direct GCV calculation if needed
         if gcv_score is None:
-            eff_params = gcv_penalty_cost_effective_parameters(
+            effective_params = gcv_penalty_cost_effective_parameters(
                 num_terms=1,
                 num_hinge_terms=0,
                 penalty=self.penalty,
@@ -545,7 +566,7 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
             )
             gcv_score = calculate_gcv(self.rss_, len(y_processed), eff_params)
 
-        self.gcv_ = gcv_score
+        self.gcv_ = gcv_score if np.isfinite(gcv_score) else np.inf
 
     def predict(self, X):
         """
@@ -642,11 +663,11 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
 
     def summary(self):
         """
-        Print a summary of the fitted model.
+        Return a summary of the fitted model and log it.
         """
         if self.basis_ is None:
             logger.info("Model not yet fitted.")
-            return
+            return "Model not yet fitted."
 
         # print("pymars Model Summary")
         # print("--------------------")
@@ -692,6 +713,7 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
 
         if self.basis_ and self.coef_ is not None:
             logger.info("\nBasis Functions and Coefficients:")
+
             # Determine max length of basis function string for alignment
             max_bf_str_len = 0
             if self.basis_: # Ensure basis_ is not empty
@@ -770,6 +792,33 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
 
         output.append("-------------------------------------")
         return "\n".join(output)
+
+    # ------------------------------------------------------------------
+    # scikit-learn estimator interface utilities
+    # ------------------------------------------------------------------
+    def get_params(self, deep: bool = True) -> dict:
+        """Return estimator parameters for compatibility with scikit-learn."""
+        return {
+            "max_degree": self.max_degree,
+            "penalty": self.penalty,
+            "max_terms": self.max_terms,
+            "minspan_alpha": self.minspan_alpha,
+            "endspan_alpha": self.endspan_alpha,
+            "minspan": self.minspan,
+            "endspan": self.endspan,
+            "allow_linear": self.allow_linear,
+            "allow_missing": self.allow_missing,
+            "feature_importance_type": self.feature_importance_type,
+            "categorical_features": self.categorical_features,
+        }
+
+    def set_params(self, **params):
+        """Set estimator parameters for compatibility with scikit-learn."""
+        for key, value in params.items():
+            if not hasattr(self, key):
+                raise ValueError(f"Invalid parameter {key} for Earth.")
+            setattr(self, key, value)
+        return self
 
 
 if __name__ == '__main__':

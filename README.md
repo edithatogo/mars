@@ -42,6 +42,7 @@ After installation you can check the installed version:
 ```bash
 pymars --version
 ```
+```
 
 ## Running Tests
 
@@ -111,7 +112,7 @@ Contributions are welcome! Please see `CONTRIBUTING.md` (to be created) and `AGE
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [Apache License 2.0](LICENSE).
 
 ## Acknowledgements
 
@@ -119,6 +120,3 @@ This project is licensed under the [MIT License](LICENSE).
 - Inspired by the `py-earth` library (scikit-learn-contrib).
 - Inspired by the R `earth` package.
 
-```
-
-```
