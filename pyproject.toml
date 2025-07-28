@@ -27,4 +27,3 @@ package-dir = {"" = "."}
 
 [tool.setuptools.dynamic]
 version = {attr = "pymars.__version__"}
-
