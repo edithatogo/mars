@@ -111,7 +111,7 @@ Contributions are welcome! Please see `CONTRIBUTING.md` (to be created) and `AGE
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE) (to be created).
+This project is licensed under the [MIT License](LICENSE).
 
 ## Acknowledgements
 
