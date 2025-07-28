@@ -23,7 +23,7 @@ This project is currently in the initial development phase. The core algorithm a
 
 ## Installation
 
-**Note:** It is recommended to install `pymars` inside a Python virtual environment to avoid pip root warnings.
+**Note:** Install `pymars` inside a Python virtual environment to silence `pip` warnings about running as root.
 
 `pymars` can be installed from TestPyPI:
 
