@@ -33,11 +33,6 @@ The goal of this phase is to implement advanced features that are available in t
 *   **Plotting utilities**
     - Add a small plotting module built on `matplotlib` for visualising basis functions and residuals.
     - Integrate a `plot()` helper on the `Earth` model for quick diagnostics.
-=======
-*   [ ] Implement interaction terms by extending the `Earth` class to handle interactions.
-*   [ ] Implement generalized linear models (GLMs) through a new `GLMEarth` class.
-*   [ ] Implement cross-validation with an `EarthCV` class.
-*   [ ] Implement plotting utilities for model diagnostics.
 
 These items constitute the major goals for Phase&nbsp;2 and will extend `pymars` beyond basic fitting and prediction.
 
