@@ -676,18 +676,18 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
         )
         logger.info("--------------------------")
         logger.info("Selected Basis Functions: %d", len(self.basis_))
-        logger.info(
-            "GCV (final model): %.4f" if self.gcv_ is not None else "GCV: N/A",
-            self.gcv_ if self.gcv_ is not None else 0,
-        )
-        logger.info(
-            "RSS (training): %.4f" if self.rss_ is not None else "RSS: N/A",
-            self.rss_ if self.rss_ is not None else 0,
-        )
-        logger.info(
-            "MSE (training): %.4f" if self.mse_ is not None else "MSE: N/A",
-            self.mse_ if self.mse_ is not None else 0,
-        )
+        if self.gcv_ is not None:
+            logger.info("GCV (final model): %.4f", self.gcv_)
+        else:
+            logger.info("GCV (final model): N/A")
+        if self.rss_ is not None:
+            logger.info("RSS (training): %.4f", self.rss_)
+        else:
+            logger.info("RSS (training): N/A")
+        if self.mse_ is not None:
+            logger.info("MSE (training): %.4f", self.mse_)
+        else:
+            logger.info("MSE (training): N/A")
         logger.info("--------------------------")
 
         if self.basis_ and self.coef_ is not None:
