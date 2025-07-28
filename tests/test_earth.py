@@ -544,6 +544,7 @@ def test_earth_invalid_feature_importance_type(simple_earth_data, caplog):
     assert any(
         f"feature_importance_type '{invalid_type}'" in rec.message
         for rec in caplog.records
+    )
     warning_msgs = [rec.message for rec in caplog.records]
     assert any(
         f"feature_importance_type '{invalid_type}'" in msg for msg in warning_msgs
