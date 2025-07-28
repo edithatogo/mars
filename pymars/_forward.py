@@ -38,7 +38,9 @@ class ForwardPasser:
         self.missing_mask = None
         self.categorical_features = self.model.categorical_features
 
-    def _calculate_rss_and_coeffs(self, B_matrix: np.ndarray, y: np.ndarray) -> tuple[float, np.ndarray | None, int]:
+    def _calculate_rss_and_coeffs(
+        self, B_matrix: np.ndarray, y: np.ndarray, *, drop_nan_rows: bool = True
+    ) -> tuple[float, np.ndarray | None, int]:
         if B_matrix is None or B_matrix.shape[1] == 0:
             mean_y = np.mean(y)
             rss = np.sum((y - mean_y)**2)
@@ -46,15 +48,20 @@ class ForwardPasser:
             coeffs_for_mean = np.array([mean_y]) if (B_matrix is not None and B_matrix.shape[1] == 0) else None
             return rss, coeffs_for_mean, num_valid_rows
 
-        # Drop rows with NaNs so RSS and GCV are based only on rows where all
-        # involved basis functions are defined.  This mirrors the behavior of
-        # the original MARS algorithm when evaluating candidate terms.
-        if np.isnan(B_matrix).any():
-            valid_rows_mask = ~np.any(np.isnan(B_matrix), axis=1)
-            B_complete = B_matrix[valid_rows_mask]
-            y = y[valid_rows_mask]
+        if drop_nan_rows:
+            # Drop rows with NaNs so RSS and GCV are based only on rows where all
+            # involved basis functions are defined.  This mirrors the behaviour of
+            # the original MARS algorithm when evaluating candidate terms.
+            if np.isnan(B_matrix).any():
+                valid_rows_mask = ~np.any(np.isnan(B_matrix), axis=1)
+                B_complete = B_matrix[valid_rows_mask]
+                y = y[valid_rows_mask]
+            else:
+                B_complete = B_matrix
         else:
-            B_complete = B_matrix
+            # Treat NaNs as zeros.  This is useful when evaluating missingness
+            # candidates so that rows with NaNs are still considered.
+            B_complete = np.nan_to_num(B_matrix, nan=0.0)
         num_valid_rows = B_complete.shape[0]
 
         try:
@@ -93,7 +100,9 @@ class ForwardPasser:
         self.current_basis_functions = [intercept_bf]
         self.current_B_matrix = self._build_basis_matrix(self.X_train, self.current_basis_functions)
 
-        rss, coeffs, _ = self._calculate_rss_and_coeffs(self.current_B_matrix, self.y_train) # Unpack 3
+        rss, coeffs, _ = self._calculate_rss_and_coeffs(
+            self.current_B_matrix, self.y_train
+        )  # Unpack 3
         if coeffs is None:
             print("Warning: Could not calculate initial coefficients for intercept model.")
             return [], np.array([])
@@ -199,7 +208,9 @@ class ForwardPasser:
             return gcv_intercept, np.array([np.mean(self.y_train)])
 
         B_matrix = self._build_basis_matrix(self.X_train, basis_functions)
-        rss, coeffs, num_valid_rows = self._calculate_rss_and_coeffs(B_matrix, self.y_train)
+        rss, coeffs, num_valid_rows = self._calculate_rss_and_coeffs(
+            B_matrix, self.y_train
+        )
 
         if rss == np.inf or coeffs is None or num_valid_rows == 0:
             return np.inf, None
@@ -408,7 +419,15 @@ class ForwardPasser:
             # Use n_samples (from processed X) for this check, num_valid_rows from _calc_rss_... will handle actual fit data size
             if B_candidate.shape[1] >= self.n_samples: continue
 
-            rss_candidate, coeffs_candidate, num_valid_rows_candidate = self._calculate_rss_and_coeffs(B_candidate, self.y_train)
+            drop_nans = True
+            if self.model.allow_missing and any(
+                isinstance(bf, MissingnessBasisFunction) for bf in terms_to_add
+            ):
+                drop_nans = False
+
+            rss_candidate, coeffs_candidate, num_valid_rows_candidate = self._calculate_rss_and_coeffs(
+                B_candidate, self.y_train, drop_nan_rows=drop_nans
+            )
 
             if coeffs_candidate is None: continue
 
