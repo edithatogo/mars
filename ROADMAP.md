@@ -33,7 +33,7 @@ The goal of this phase is to implement advanced features that are available in t
 *   **Plotting utilities**
     - Add a small plotting module built on `matplotlib` for visualising basis functions and residuals.
     - Integrate a `plot()` helper on the `Earth` model for quick diagnostics.
-=======
+
 *   [x] Implement interaction terms by extending the `Earth` class to handle interactions.
 *   [x] Implement generalized linear models (GLMs) through a new `GLMEarth` class.
 *   [x] Implement cross-validation with an `EarthCV` class.

@@ -507,6 +507,13 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
         self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
     
         gcv_score = None
+
+        y_pred_train = B_intercept @ self.coef_
+        self.rss_ = np.sum((y_processed - y_pred_train) ** 2)
+        self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
+
+        gcv_score: float | None = None
+
         if hasattr(pruning_passer_instance_for_gcv_calc, "_compute_gcv_for_subset"):
             try:
                 gcv_score, _, _ = pruning_passer_instance_for_gcv_calc._compute_gcv_for_subset(
@@ -516,6 +523,7 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
                     X_fit_original=self.X_original_,
                     basis_subset=self.basis_,
                 )
+                gcv_score = gcv_score[0] if isinstance(gcv_score, (list, tuple, np.ndarray)) else gcv_score
             except Exception:
                     gcv_score = None
     
@@ -529,9 +537,7 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
             gcv_score = calculate_gcv(self.rss_, len(y_processed), eff_params)
     
         self.gcv_ = gcv_score
-    
-    
-    
+       
     def predict(self, X):
         """
         Predict target values for X.
