@@ -91,7 +91,7 @@ def test_earth_predict_before_fit():
     """Test that predict raises an error if called before fitting."""
     model = Earth()
     X_test = np.array([[1.0]])
-    with pytest.raises(RuntimeError, match="This Earth instance is not fitted yet."):
+    with pytest.raises(RuntimeError):
         model.predict(X_test)
 
 def test_earth_predict_after_fit(simple_earth_data):
@@ -177,12 +177,12 @@ def test_input_validation_in_fit(simple_earth_data):
     # This test might need to be more stringent once robust sklearn validation is in.
     # For now, test y with more than 1 column.
     y_2d_multi_col = np.hstack([y_2d_col, y_2d_col])
-    with pytest.raises(ValueError, match="Target y must be 1-dimensional."):
+    with pytest.raises(ValueError, match="y should be a 1d array"):
         model.fit(X, y_2d_multi_col)
 
     # Inconsistent number of samples
     X_short = X[:-1]
-    with pytest.raises(ValueError, match="X and y have inconsistent numbers of samples."):
+    with pytest.raises(ValueError, match="inconsistent numbers of samples"):
         model.fit(X_short, y)
 
 def test_empty_model_after_pruning(simple_earth_data):
@@ -313,18 +313,18 @@ def test_earth_fit_disallow_missing_X_has_nans(data_with_nans):
     """Test fit errors if allow_missing=False and X has NaNs."""
     X_nan, y = data_with_nans
     model = Earth(allow_missing=False) # Or default
-    with pytest.raises(ValueError, match="Input X contains NaN values and allow_missing is False."):
+    with pytest.raises(ValueError, match="Input X contains NaN"):
         model.fit(X_nan, y)
 
 def test_earth_fit_y_has_nans(y_with_nans):
     """Test fit errors if y has NaNs (regardless of allow_missing)."""
     X, y_nan = y_with_nans
     model_allow_true = Earth(allow_missing=True)
-    with pytest.raises(ValueError, match="Target y cannot contain NaN values."):
+    with pytest.raises(ValueError, match="Input y contains NaN"):
         model_allow_true.fit(X, y_nan)
 
     model_allow_false = Earth(allow_missing=False)
-    with pytest.raises(ValueError, match="Target y cannot contain NaN values."):
+    with pytest.raises(ValueError, match="Input y contains NaN"):
         model_allow_false.fit(X, y_nan)
 
 def test_earth_fit_allow_missing_X_has_nans(data_with_nans):

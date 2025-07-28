@@ -47,24 +47,10 @@ def check_array(array, ensure_2d=False, allow_nd=False, ensure_min_samples=1, en
     return array
 
 
-def check_X_y(X, y, ensure_X_2d=True, allow_X_nd=False, ensure_y_1d=True, allow_missing_X=False, allow_missing_y=False):
-    """
-    Rudimentary input validation for X and y.
-    Inspired by sklearn.utils.validation.check_X_y.
-    """
-    X = check_array(X, ensure_2d=ensure_X_2d, allow_nd=allow_X_nd, allow_missing=allow_missing_X)
-    y = check_array(y, ensure_2d=False, allow_nd=True, allow_missing=allow_missing_y) # y can be 1D or 2D (multi-output)
-
-    if X.shape[0] != y.shape[0]:
-        raise ValueError(f"Found input variables with inconsistent numbers of samples: X has {X.shape[0]}, y has {y.shape[0]}")
-
-    if ensure_y_1d and y.ndim != 1:
-        if y.ndim == 2 and y.shape[1] == 1:
-            y = y.ravel() # Convert column vector to 1D array
-        else:
-            raise ValueError(f"Expected 1D y array, got {y.ndim}D array instead.")
-
-    return X, y
+# ``check_X_y`` was formerly implemented here as a lightweight alternative to
+# :func:`sklearn.utils.validation.check_X_y`.  The project now depends on
+# scikit-learn's implementation directly.  Import ``check_X_y`` from
+# :mod:`sklearn.utils.validation` instead.
 
 
 def gcv_penalty_cost_effective_parameters(num_terms: int, num_hinge_terms: int, penalty: float, num_samples: int) -> float:

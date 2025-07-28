@@ -51,35 +51,6 @@ def test_check_array_nan_handling():
     arr = check_array(data_with_nan, allow_missing=True)
     assert np.isnan(arr[0,1])
 
-# Tests for check_X_y
-def test_check_X_y_basic():
-    from pymars._util import check_X_y
-    X = [[1,2],[3,4]]
-    y = [10,20]
-    X_arr, y_arr = check_X_y(X,y)
-    assert isinstance(X_arr, np.ndarray)
-    assert isinstance(y_arr, np.ndarray)
-    assert X_arr.shape == (2,2)
-    assert y_arr.shape == (2,)
-
-def test_check_X_y_sample_mismatch():
-    from pymars._util import check_X_y
-    X = [[1,2],[3,4]]
-    y = [10,20,30]
-    with pytest.raises(ValueError, match="inconsistent numbers of samples"):
-        check_X_y(X,y)
-
-def test_check_X_y_y_column_vector():
-    from pymars._util import check_X_y
-    X = [[1,2],[3,4]]
-    y_col = [[10],[20]]
-    _, y_arr = check_X_y(X, y_col, ensure_y_1d=True)
-    assert y_arr.ndim == 1
-    assert y_arr.shape == (2,)
-
-    y_row_2d = [[10, 100], [20, 200]] # Not a column vector
-    with pytest.raises(ValueError, match="Expected 1D y array"):
-         check_X_y(X, y_row_2d, ensure_y_1d=True)
 
 
 # Tests for GCV calculation components
