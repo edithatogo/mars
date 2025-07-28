@@ -497,9 +497,9 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
                     X_fit_processed=X_processed,
                     y_fit=y_processed,
                     missing_mask=missing_mask,
-                    basis_functions_subset=self.basis_,
-                    X_fit_original=self.X_original_ # Pass original X for knot selection consistency if needed by GCV's LSTSQ
-                )[0] # [0] is GCV score
+                    X_fit_original=self.X_original_,
+                    basis_subset=self.basis_
+                )[0]
             except Exception: # Broad catch if GCV calc fails for intercept
                 self.gcv_ = np.inf
         else:
