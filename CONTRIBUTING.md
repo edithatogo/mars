@@ -33,7 +33,7 @@ Thank you for your interest in improving **pymars**! The project is a pure Pytho
 
 ## Workflow for New Features or Bug Fixes
 
-1. Review `ROADMAP.md` and `TODO.md` to plan your work and update them when tasks change.
+1. Review `ROADMAP.md` and `TODO.md` before starting a task. Keep them updated and log significant decisions in `SESSION_LOGS.md`.
 2. Create a feature branch from `main`.
 3. Make small, atomic commits with clear messages (e.g., `feat: add hinge basis function`, `fix: resolve pruning error`).
 4. Keep code and tests in the same branch and ensure `pytest` passes locally.
