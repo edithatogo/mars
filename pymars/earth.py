@@ -502,10 +502,18 @@ class Earth(RegressorMixin, BaseEstimator):
         # Build an intercept-only basis and corresponding coefficients
         self.basis_ = [ConstantBasisFunction()]
         self.coef_ = np.array([np.mean(y_processed)])
+    
+        B_final = self._build_basis_matrix(X_processed, self.basis_, missing_mask)
+        if B_final.size > 0:
+            y_pred_train = B_final @ self.coef_
+            self.rss_ = np.sum((y_processed - y_pred_train) ** 2)
+        else:
+            self.rss_ = (
+                np.sum((y_processed - np.mean(y_processed)) ** 2)
+                if len(y_processed) > 0
+                else 0.0
+            )
 
-        B_intercept = self._build_basis_matrix(X_processed, self.basis_, missing_mask)
-        y_pred_train = B_intercept @ self.coef_
-        self.rss_ = np.sum((y_processed - y_pred_train) ** 2)
         self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
 
         gcv_score: float | None = None
