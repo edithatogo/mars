@@ -17,7 +17,8 @@ Thank you for your interest in improving **pymars**! The project is a pure Pytho
   import pymars as earth
   model = earth.Earth()
   ```
-- Follow **PEP 8** and use type hints. Document modules, classes, functions, and methods with clear docstrings (Google or NumPy style) explaining *why* things are done.
+- Follow **PEP 8** and use type hints. Document modules, classes, functions, and methods with clear docstrings explaining *why* things are done.
+- Use a linter such as **flake8** or **pylint** to keep style consistent.
 - Write comments that focus on reasoning and motivation rather than line-by-line explanations.
 - Aim for minimal dependencies (typically NumPy and SciPy). List them in `requirements.txt` and `pyproject.toml`.
 
