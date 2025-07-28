@@ -119,7 +119,6 @@ def calculate_gcv(rss: float, num_samples: int, num_effective_params: float) -> 
     gcv = rss / (num_samples * denominator)
     return gcv
 
-
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
     # Test check_array and check_X_y
@@ -160,7 +159,10 @@ if __name__ == '__main__':
     penalty_d_example = 3.0 # Typical penalty for MARS GCV
 
     effective_params = gcv_penalty_cost_effective_parameters(
-        n_terms_example, n_samples_example, penalty_d_example, has_intercept=True
+        num_terms=n_terms_example,
+        num_hinge_terms=n_terms_example,
+        penalty=penalty_d_example,
+        num_samples=n_samples_example,
     )
     logger.info(
         "RSS=%s, N=%s, Terms=%s, Penalty=%s",
@@ -176,7 +178,10 @@ if __name__ == '__main__':
     # Edge case: more terms than samples (after penalty)
     n_terms_high = 40
     effective_params_high = gcv_penalty_cost_effective_parameters(
-        n_terms_high, n_samples_example, penalty_d_example, has_intercept=True
+        num_terms=n_terms_high,
+        num_hinge_terms=n_terms_high,
+        penalty=penalty_d_example,
+        num_samples=n_samples_example,
     )
     logger.info(
         "\nTerms=%s, Effective parameters (C(M)): %s",

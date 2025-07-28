@@ -62,63 +62,29 @@ pytest
 
 ```
 
-## Basic Usage Example
+## Usage
+
+### Quick demos
+
+Run the included demo scripts to see `pymars` in action:
+
+```bash
+python -m pymars.demos.basic_regression_demo
+python -m pymars.demos.basic_classification_demo
+```
+
+### Basic API
 
 ```python
 import numpy as np
-import pymars as earth # Target import style
-# from pymars._sklearn_compat import EarthRegressor, EarthClassifier # Or direct import
+import pymars as earth
 
-# --- Regression Example ---
-# Generate sample data
-# X_reg = np.random.rand(100, 3)
-# y_reg = 2 * X_reg[:, 0] + np.sin(np.pi * X_reg[:, 1]) - X_reg[:, 2]**2 + np.random.randn(100) * 0.1
+X = np.random.rand(100, 3)
+y = np.sin(X[:, 0]) + X[:, 1]
 
-# Initialize and fit the Earth Regressor
-# model_reg = earth.Earth(max_degree=1) # Using the alias
-# OR
-# model_reg = EarthRegressor(max_degree=1, penalty=3.0) # Assuming EarthRegressor is imported
-# model_reg.fit(X_reg, y_reg)
-
-# Make predictions
-# y_pred_reg = model_reg.predict(X_reg)
-
-# Print model summary (if available)
-# print(model_reg.summary())
-
-# Access feature importances (if calculated)
-# if hasattr(model_reg, 'feature_importances_') and model_reg.feature_importances_ is not None:
-#     print("Feature Importances:", model_reg.feature_importances_)
-#     # Or use the summary method:
-#     # print(model_reg.summary_feature_importances())
-
-
-# --- Classification Example (Conceptual) ---
-# y_clf = (y_reg > np.median(y_reg)).astype(int)
-
-# model_clf = EarthClassifier(max_degree=1) # Assuming EarthClassifier is imported
-# model_clf.fit(X_reg, y_clf)
-# y_pred_clf = model_clf.predict(X_reg)
-# y_proba_clf = model_clf.predict_proba(X_reg)
-
-# print(f"Classification accuracy: {model_clf.score(X_reg, y_clf)}")
-
-# --- GLM Example ---
-glm_model = GLMEarth(family='logistic', max_terms=3)
-glm_model.fit(X_reg, y_clf)
-glm_pred = glm_model.predict(X_reg)
-
-# --- Cross-validation Example ---
-cv = EarthCV(EarthRegressor(max_terms=2), cv=5)
-scores = cv.score(X_reg, y_reg)
-print("CV scores:", scores)
-
-# --- Plotting Diagnostics ---
-from pymars.plot import plot_basis_functions, plot_residuals
-import matplotlib.pyplot as plt
-plot_basis_functions(glm_model, X_reg)
-plot_residuals(glm_model, X_reg, y_reg)
-plt.show()
+model = earth.Earth(max_degree=1, penalty=3.0)
+model.fit(X, y)
+predictions = model.predict(X)
 ```
 
 ## Contributing

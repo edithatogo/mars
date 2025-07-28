@@ -39,4 +39,5 @@ These items form the bulk of the work for Phase&nbsp;2 and will bring `pymars` c
 
 *   [ ] Profile the code.
 *   [ ] Optimize the code for speed using Python-level improvements and algorithmic optimizations identified through profiling.
+*   [ ] Optimize the code for speed using Python-level improvements and algorithmic optimizations; avoid Cython or native extensions.
 *   [ ] Optimize the code for memory usage.
