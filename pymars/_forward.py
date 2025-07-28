@@ -67,6 +67,9 @@ class ForwardPasser:
             B_complete = B_matrix
         num_valid_rows = B_complete.shape[0]
 
+        if num_valid_rows == 0:
+            return np.inf, None, 0
+
         try:
             if B_complete.ndim == 1:
                 B_complete = B_complete.reshape(-1, 1)
@@ -428,7 +431,8 @@ class ForwardPasser:
 
             rss_candidate, coeffs_candidate, num_valid_rows_candidate = self._calculate_rss_and_coeffs(B_candidate, self.y_train)
 
-            if coeffs_candidate is None: continue
+            if coeffs_candidate is None or num_valid_rows_candidate == 0:
+                continue
 
             num_terms_candidate = len(temp_basis_list)
             num_hinge_candidate = sum(isinstance(bf, HingeBasisFunction) for bf in temp_basis_list)
@@ -440,7 +444,13 @@ class ForwardPasser:
             )
             gcv_candidate = calculate_gcv(rss_candidate, num_valid_rows_candidate, eff_params)
 
-            if gcv_candidate < self._min_candidate_gcv - EPSILON:
+            if (
+                gcv_candidate < self._min_candidate_gcv - EPSILON
+                or (
+                    abs(gcv_candidate - self._min_candidate_gcv) <= EPSILON
+                    and rss_candidate < self._min_candidate_rss - EPSILON
+                )
+            ):
                 self._min_candidate_gcv = gcv_candidate
                 self._min_candidate_rss = rss_candidate
                 self._best_candidate_addition = (bf1, bf2_or_None)
