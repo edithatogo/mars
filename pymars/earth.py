@@ -496,11 +496,10 @@ class Earth(RegressorMixin, BaseEstimator):
         missing_mask,
         pruning_passer_instance_for_gcv_calc,
     ):
-
-        """Set an intercept-only model and compute its GCV."""
+        """Set an intercept-only model and compute its RSS, MSE and GCV."""
         from ._util import calculate_gcv, gcv_penalty_cost_effective_parameters
-    
-        # Build intercept-only basis matrix
+
+        # Build an intercept-only basis and corresponding coefficients
         self.basis_ = [ConstantBasisFunction()]
         self.coef_ = np.array([np.mean(y_processed)])
 
@@ -526,7 +525,7 @@ class Earth(RegressorMixin, BaseEstimator):
                 gcv_score = None
 
         if gcv_score is None:
-            eff_params = gcv_penalty_cost_effective_parameters(
+            effective_params = gcv_penalty_cost_effective_parameters(
                 num_terms=1,
                 num_hinge_terms=0,
                 penalty=self.penalty,
