@@ -34,6 +34,25 @@ cd pymars
 # Potentially: pip install -e . (once setup.py or pyproject.toml is ready)
 ```
 
+## Running Tests
+
+Install the dependencies listed in `requirements.txt` before running the test
+suite. A small helper script is provided:
+
+```bash
+# Option 1: directly with pip
+pip install -r requirements.txt
+
+# Option 2: using the helper script
+bash scripts/setup_tests.sh
+```
+
+After the dependencies are installed, run the tests with:
+
+```bash
+pytest
+```
+
 ## Basic Usage (Planned Example)
 
 ```python
