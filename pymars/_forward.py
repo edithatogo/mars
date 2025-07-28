@@ -474,5 +474,3 @@ class ForwardPasser:
                 self._best_new_B_matrix = B_candidate
                 self._best_new_coeffs = coeffs_candidate
 
-if __name__ == '__main__':
-    pass

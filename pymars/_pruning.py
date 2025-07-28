@@ -243,5 +243,3 @@ class PruningPasser:
 
         return self.best_basis_functions_so_far, self.best_coeffs_so_far, self.best_gcv_so_far
 
-if __name__ == '__main__':
-    pass

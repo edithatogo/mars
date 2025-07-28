@@ -5,6 +5,7 @@ Thank you for your interest in improving **pymars**! The project is a pure Pytho
 ## Coding Standards
 
 - **Pure Python only.** No C or Cython extensions are accepted.
+- Focus on correctness and clarity first; optimize Python code only when needed.
 - **Scikit-learn compatibility** is mandatory. Estimators should:
   - inherit from `sklearn.base.BaseEstimator` (and `RegressorMixin` or `ClassifierMixin` as appropriate),
   - implement `fit`, `predict`, `score`, `get_params`, and `set_params`,
