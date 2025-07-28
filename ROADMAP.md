@@ -12,11 +12,9 @@ The goal of this phase is to implement the core functionality of the MARS algori
 *   [x] Implement a `scikit-learn` compatible `predict` method.
 *   [x] Implement a `scikit-learn` compatible `score` method.
 *   [x] Implement a `scikit-learn` compatible `get_params` and `set_params` methods.
-*   [x] Add support for `sample_weight` in the `fit` method.
-*   [x] Implement categorical feature support. This added a `CategoricalImputer` class and modified the `Earth` class to handle categorical features.
-*   [x] Implement missing value support. This added a `MissingValuesImputer` class and modified the `Earth` class to handle missing values.
-
-With these core tasks finished, the project moves on to advanced features such as interaction terms, generalized linear model (GLM) support, and cross-validation.
+*   [ ] Add support for `sample_weight` in the `fit` method.
+*   [x] Implement categorical feature support.
+*   [x] Implement missing value support.
 
 ## Phase 2: Advanced Features
 
@@ -26,6 +24,8 @@ The goal of this phase is to implement advanced features that are available in t
 *   [ ] Implement generalized linear models (GLMs) through a new `GLMEarth` class.
 *   [ ] Implement cross-validation with an `EarthCV` class.
 *   [ ] Implement plotting utilities for model diagnostics.
+
+These items constitute the major goals for Phase&nbsp;2 and will extend `pymars` beyond basic fitting and prediction.
 
 ## Phase 3: Performance and Optimization
 
@@ -47,7 +47,7 @@ The goal of this phase is to improve the performance of `pymars` and optimize th
 | `score` | ✔️ | ✔️ | ✔️ |
 | `get_params` | ✔️ | ✔️ | ✔️ |
 | `set_params` | ✔️ | ✔️ | ✔️ |
-| `sample_weight` | ✔️ | ✔️ | ✔️ |
+| `sample_weight` | ❌ | ✔️ | ✔️ |
 | Categorical Features | ✔️ | ✔️ | ✔️ |
 | Missing Values | ✔️ | ✔️ | ✔️ |
 | **Advanced** | | | |
