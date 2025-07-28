@@ -4,7 +4,7 @@ Thank you for your interest in contributing to **pymars**! This project aims to 
 
 ## Coding Standards
 
-- **Pure Python only.** No C or Cython extensions.
+- **Pure Python only.** No C or Cython extensions are accepted for current contributions. While Cython may be considered for future performance optimizations, the present focus is on a pure Python implementation.
 - **Scikit-learn compatibility** is mandatory: estimators must inherit from `sklearn.base.BaseEstimator` and implement the usual scikit-learn API (`fit`, `predict`, `score`, `get_params`, `set_params`).
 - Keep the class structure similar to `py-earth`. The main model class is `Earth` in `pymars/earth.py` and should be usable via:
   ```python
