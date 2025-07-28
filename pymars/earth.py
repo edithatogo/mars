@@ -487,7 +487,6 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
 
         return X_processed, missing_mask, y_processed
 
-
     def _set_fallback_model(
         self,
         X_processed,
@@ -495,16 +494,17 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
         missing_mask,
         pruning_passer_instance_for_gcv_calc,
     ):
+
         """Set an intercept-only model and compute its GCV."""
+        from ._util import calculate_gcv, gcv_penalty_cost_effective_parameters
+    
         self.basis_ = [ConstantBasisFunction()]
         self.coef_ = np.array([np.mean(y_processed)])
-
+    
         B_final = self._build_basis_matrix(X_processed, self.basis_, missing_mask)
-
         if B_final.size > 0:
             y_pred_train = B_final @ self.coef_
             self.rss_ = np.sum((y_processed - y_pred_train) ** 2)
-            self.mse_ = self.rss_ / len(y_processed)
         else:
             self.rss_ = (
                 np.sum((y_processed - np.mean(y_processed)) ** 2)
@@ -514,6 +514,13 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
             self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
 
         gcv_score = None
+
+        y_pred_train = B_intercept @ self.coef_
+        self.rss_ = np.sum((y_processed - y_pred_train) ** 2)
+        self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
+
+        gcv_score: float | None = None
+
         if hasattr(pruning_passer_instance_for_gcv_calc, "_compute_gcv_for_subset"):
             try:
                 gcv_score, _, _ = pruning_passer_instance_for_gcv_calc._compute_gcv_for_subset(
@@ -523,11 +530,12 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
                     X_fit_original=self.X_original_,
                     basis_subset=self.basis_,
                 )
+                gcv_score = gcv_score[0] if isinstance(gcv_score, (list, tuple, np.ndarray)) else gcv_score
             except Exception:
-                gcv_score = None
-
+                    gcv_score = None
+    
         if gcv_score is None:
-            effective_params = gcv_penalty_cost_effective_parameters(
+            eff_params = gcv_penalty_cost_effective_parameters(
                 num_terms=1,
                 num_hinge_terms=0,
                 penalty=self.penalty,
@@ -540,16 +548,16 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
     def predict(self, X):
         """
         Predict target values for X.
-
+        
         Parameters
         ----------
         X : array-like of shape (n_samples, n_features)
-            The input samples.
-
+        The input samples.
+        
         Returns
         -------
         y_pred : array of shape (n_samples,)
-            The predicted values. (Multi-output not currently supported for predict).
+        The predicted values. (Multi-output not currently supported for predict).
         """
         import numpy as np # Local import for predict
         # from ._util import check_array # Not using this custom one for now
