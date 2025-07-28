@@ -176,7 +176,7 @@ if __name__ == '__main__':
     # Edge case: more terms than samples (after penalty)
     n_terms_high = 40
     effective_params_high = gcv_penalty_cost_effective_parameters(
-        n_terms_high, n_samples_example, penalty_d_example, has_intercept=True
+        n_terms_high, 0, penalty_d_example, n_samples_example
     )
     logger.info(
         "\nTerms=%s, Effective parameters (C(M)): %s",
