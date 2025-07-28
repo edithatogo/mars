@@ -160,7 +160,7 @@ if __name__ == '__main__':
     penalty_d_example = 3.0 # Typical penalty for MARS GCV
 
     effective_params = gcv_penalty_cost_effective_parameters(
-        n_terms_example, n_samples_example, penalty_d_example, has_intercept=True
+        n_terms_example, 0, penalty_d_example, n_samples_example
     )
     logger.info(
         "RSS=%s, N=%s, Terms=%s, Penalty=%s",
