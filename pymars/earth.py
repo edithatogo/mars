@@ -4,7 +4,11 @@
 The main Earth class, coordinating the model fitting process.
 """
 import numpy as np
-from ._basis import ConstantBasisFunction # Used in fallbacks
+from ._basis import ConstantBasisFunction  # Used in fallbacks
+from ._util import (
+    calculate_gcv,
+    gcv_penalty_cost_effective_parameters,
+)
 # from ._forward import ForwardPasser # Imported locally in fit
 # from ._pruning import PruningPasser # Imported locally in fit
 # from ._record import EarthRecord
@@ -150,6 +154,7 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
         self.feature_importances_: np.ndarray = None # Or dict if multiple types
 
         self.fitted_ = False
+        self.categorical_imputer_ = None
 
     # _build_basis_matrix is defined in Earth class. Its signature was:
     # def _build_basis_matrix(self, X: np.ndarray, basis_functions: list) -> np.ndarray:
@@ -431,22 +436,36 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
 
     def _scrub_input_data(self, X, y):
         """Helper to validate and preprocess X and y."""
-        # Convert X
+        # Convert X to object array first to preserve categorical strings
         if not isinstance(X, np.ndarray):
-            X_orig = np.asarray(X, dtype=float)
+            X_obj = np.asarray(X, dtype=object)
         else:
-            X_orig = X.astype(float, copy=False) # Ensure float, avoid copy if possible
+            X_obj = X.astype(object, copy=False)
 
-        if X_orig.ndim == 1:
-            X_orig = X_orig.reshape(-1, 1)
+        if X_obj.ndim == 1:
+            X_obj = X_obj.reshape(-1, 1)
 
-        missing_mask = np.isnan(X_orig)
+        # Build missing mask from original values
+        missing_mask = np.zeros_like(X_obj, dtype=bool)
+        for j in range(X_obj.shape[1]):
+            col = X_obj[:, j]
+            missing_mask[:, j] = np.array([
+                (val is None) or (isinstance(val, float) and np.isnan(val))
+                for val in col
+            ])
 
         if not self.allow_missing and np.any(missing_mask):
             raise ValueError("Input X contains NaN values and allow_missing is False.")
 
-        X_processed = X_orig.copy() if np.any(missing_mask) else X_orig
-        if np.any(missing_mask): # Only fill if NaNs were present
+        X_processed_obj = X_obj
+        if self.categorical_features:
+            from ._categorical import CategoricalImputer
+            self.categorical_imputer_ = CategoricalImputer().fit(X_obj, self.categorical_features)
+            X_processed_obj = self.categorical_imputer_.transform(X_obj)
+
+        X_processed = np.asarray(X_processed_obj, dtype=float)
+        if np.any(missing_mask):
+            X_processed = X_processed.copy()
             X_processed[missing_mask] = 0.0
 
         # Convert y
@@ -470,36 +489,63 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
 
     def _set_fallback_model(self, X_processed, y_processed, missing_mask, pruning_passer_instance_for_gcv_calc):
         """Sets a fallback intercept-only model."""
+        from ._util import calculate_gcv, gcv_penalty_cost_effective_parameters
+    def _set_fallback_model(
+        self,
+        X_processed,
+        y_processed,
+        missing_mask,
+        pruning_passer_instance_for_gcv_calc,
+    ):
+        """Set an intercept-only model and compute its GCV."""
         self.basis_ = [ConstantBasisFunction()]
-        self.coef_ = np.array([np.mean(y_processed)]) # Mean of processed (finite) y
+        self.coef_ = np.array([np.mean(y_processed)])
 
-        B_final = self._build_basis_matrix(X_processed, self.basis_, missing_mask) # Intercept transform is robust to NaNs
+        B_final = self._build_basis_matrix(X_processed, self.basis_, missing_mask)
 
-        if B_final.size > 0 : # B_final for intercept is (n_samples, 1)
+        if B_final.size > 0:
             y_pred_train = B_final @ self.coef_
-            self.rss_ = np.sum((y_processed - y_pred_train)**2)
+            self.rss_ = np.sum((y_processed - y_pred_train) ** 2)
             self.mse_ = self.rss_ / len(y_processed)
-        else: # Should not happen if y_processed is not empty
-            self.rss_ = np.sum((y_processed - np.mean(y_processed))**2) if len(y_processed) > 0 else 0.0
+        else:
+            self.rss_ = (
+                np.sum((y_processed - np.mean(y_processed)) ** 2)
+                if len(y_processed) > 0
+                else 0.0
+            )
             self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
 
-        if hasattr(pruning_passer_instance_for_gcv_calc, '_compute_gcv_for_subset'):
-            # GCV for intercept needs X_processed, y_processed, missing_mask, X_original
-            # The _compute_gcv_for_subset will need to be NaN aware.
-            # For now, this might be inaccurate if not fully NaN aware.
-            # A simple GCV calc for intercept might be:
-            # num_params = 1, N = len(y_processed)
-            # gcv_val = self.rss_ / (N * (1 - num_params/N)**2) if N > num_params else np.inf
-            # This is a placeholder, actual GCV calc needs to be robust.
-            # For now, let PruningPasser's method try, or set to Inf.
+        try:
+            eff_params = gcv_penalty_cost_effective_parameters(
+        gcv_score = None
+        if hasattr(pruning_passer_instance_for_gcv_calc, "_compute_gcv_for_subset"):
             try:
-                self.gcv_ = pruning_passer_instance_for_gcv_calc._compute_gcv_for_subset(
+                gcv_score, _, _ = pruning_passer_instance_for_gcv_calc._compute_gcv_for_subset(
                     X_fit_processed=X_processed,
                     y_fit=y_processed,
                     missing_mask=missing_mask,
                     X_fit_original=self.X_original_,
                     basis_subset=self.basis_
                 )[0]  # [0] is GCV score
+                    basis_subset=self.basis_,
+                )
+            except Exception:
+                gcv_score = None
+
+        if gcv_score is None:
+            effective_params = gcv_penalty_cost_effective_parameters(
+                num_terms=1,
+                num_hinge_terms=0,
+                penalty=self.penalty,
+                num_samples=len(y_processed),
+            )
+            self.gcv_ = calculate_gcv(self.rss_, len(y_processed), eff_params)
+        except Exception:
+            gcv_score = calculate_gcv(self.rss_, len(y_processed), effective_params)
+
+        self.gcv_ = gcv_score
+                    basis_subset=self.basis_
+                )[0]
             except Exception: # Broad catch if GCV calc fails for intercept
                 self.gcv_ = np.inf
         else:
@@ -531,20 +577,33 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
         if self.basis_ is None or self.coef_ is None:
             raise ValueError("Model basis or coefficients are not available despite model being marked as fitted.")
 
-        # Scrub X for prediction (handles NaNs based on self.allow_missing)
+        # Scrub X for prediction (handles categories and NaNs)
         if not isinstance(X, np.ndarray):
-            X_predict_orig = np.asarray(X, dtype=float)
+            X_predict_obj = np.asarray(X, dtype=object)
         else:
-            X_predict_orig = X.astype(float, copy=False)
+            X_predict_obj = X.astype(object, copy=False)
 
-        if X_predict_orig.ndim == 1:
-            X_predict_orig = X_predict_orig.reshape(-1,1)
+        if X_predict_obj.ndim == 1:
+            X_predict_obj = X_predict_obj.reshape(-1,1)
+
+        predict_missing_mask = np.zeros_like(X_predict_obj, dtype=bool)
+        for j in range(X_predict_obj.shape[1]):
+            col = X_predict_obj[:, j]
+            predict_missing_mask[:, j] = np.array([
+                (val is None) or (isinstance(val, float) and np.isnan(val))
+                for val in col
+            ])
+
+        if hasattr(self, 'categorical_imputer_') and self.categorical_imputer_ is not None:
+            X_predict_obj = self.categorical_imputer_.transform(X_predict_obj)
+
+        X_predict_orig = np.asarray(X_predict_obj, dtype=float)
 
         # Check feature consistency with training data (e.g. self.n_features_in_ if stored)
         if hasattr(self.record_, 'n_features') and X_predict_orig.shape[1] != self.record_.n_features:
              raise ValueError(f"X has {X_predict_orig.shape[1]} features, but Earth model was trained with {self.record_.n_features} features.")
 
-        predict_missing_mask = np.isnan(X_predict_orig)
+        # retain original missing mask for zero filling
         X_predict_processed = X_predict_orig.copy() if np.any(predict_missing_mask) else X_predict_orig
         if np.any(predict_missing_mask):
             if not self.allow_missing:
