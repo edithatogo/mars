@@ -116,3 +116,13 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Local bytecode
+pymars/**/__pycache__/
+pymars/**/*.pyc
+tests/**/__pycache__/
+tests/**/*.pyc
+
+# Comparison result artifacts
+comparison_results/*.json
+
