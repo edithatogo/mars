@@ -38,5 +38,5 @@ These items form the bulk of the work for Phase&nbsp;2 and will bring `pymars` c
 ## Phase 3: Performance and Optimization
 
 *   [ ] Profile the code.
-*   [ ] Optimize the code for speed.
+*   [ ] Optimize the code for speed using Python-level improvements and algorithmic optimizations.
 *   [ ] Optimize the code for memory usage.
