@@ -579,28 +579,3 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
     #     # Similarly for MARS params, they are set on self, and `fit` re-creates self.earth_
     #     pass
 
-if __name__ == '__main__':
-    # Example Usage (conceptual, requires actual data and other modules to be functional)
-    # import numpy as np
-    # X_data = np.random.rand(100, 5)
-    # y_reg_data = X_data[:, 0] * 2 - X_data[:, 1] + np.random.randn(100) * 0.2
-    # y_clf_data = (y_reg_data > np.median(y_reg_data)).astype(int)
-
-    # print("--- Regressor Example ---")
-    # regressor = EarthRegressor(max_degree=1, penalty=2.0)
-    # regressor.fit(X_data, y_reg_data)
-    # preds_reg = regressor.predict(X_data[:5])
-    # score_reg = regressor.score(X_data, y_reg_data)
-    # print(f"Sample Regressor Predictions: {preds_reg}")
-    # print(f"Sample Regressor Score: {score_reg}")
-
-    # print("\n--- Classifier Example ---")
-    # classifier = EarthClassifier(max_degree=1, penalty=2.0)
-    # classifier.fit(X_data, y_clf_data)
-    # preds_clf = classifier.predict(X_data[:5])
-    # probas_clf = classifier.predict_proba(X_data[:5])
-    # score_clf = classifier.score(X_data, y_clf_data)
-    # print(f"Sample Classifier Predictions: {preds_clf}")
-    # print(f"Sample Classifier Probabilities:\n{probas_clf}")
-    # print(f"Sample Classifier Score: {score_clf}")
-    pass

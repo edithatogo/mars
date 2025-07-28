@@ -505,7 +505,7 @@ class Earth(BaseEstimator, RegressorMixin):
     ):
         """Set an intercept-only model and compute its RSS, MSE and GCV."""
 
-        # Build an intercept-only basis and coefficient
+        # Intercept-only basis and coefficient
         self.basis_ = [ConstantBasisFunction()]
         intercept = float(np.mean(y_processed))
         self.coef_ = np.array([intercept])
@@ -528,6 +528,7 @@ class Earth(BaseEstimator, RegressorMixin):
             logger.warning("Fallback GCV calculation failed: %s", exc)
             gcv_score = np.inf
 
+        # Ensure self.gcv_ is set even if computation fails
         self.gcv_ = gcv_score if np.isfinite(gcv_score) else np.inf
 
     def predict(self, X):
@@ -761,16 +762,3 @@ class Earth(BaseEstimator, RegressorMixin):
         return self
 
 
-if __name__ == '__main__':
-    # Example usage (will require actual data and other modules)
-    # import numpy as np
-    # X_train = np.random.rand(100, 3)
-    # y_train = X_train[:, 0] * 2 - X_train[:, 1] + np.random.randn(100) * 0.1
-
-    # model = Earth(max_degree=1, max_terms=10)
-    # model.fit(X_train, y_train)
-    # model.summary()
-
-    # X_test = np.random.rand(20, 3)
-    # y_pred = model.predict(X_test)
-    pass
