@@ -487,7 +487,14 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
 
         return X_processed, missing_mask, y_processed
 
-    def _set_fallback_model(self, X_processed, y_processed, missing_mask, pruning_passer_instance_for_gcv_calc):
+    def _set_fallback_model(
+        self,
+        X_processed,
+        y_processed,
+        missing_mask,
+        pruning_passer_instance_for_gcv_calc,
+    ):
+
         """Set an intercept-only model and compute its GCV."""
         from ._util import calculate_gcv, gcv_penalty_cost_effective_parameters
     
@@ -504,8 +511,8 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
                 if len(y_processed) > 0
                 else 0.0
             )
-        self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
-    
+            self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
+
         gcv_score = None
 
         y_pred_train = B_intercept @ self.coef_
@@ -534,10 +541,10 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
                 penalty=self.penalty,
                 num_samples=len(y_processed),
             )
-            gcv_score = calculate_gcv(self.rss_, len(y_processed), eff_params)
-    
+            gcv_score = calculate_gcv(self.rss_, len(y_processed), effective_params)
+
         self.gcv_ = gcv_score
-       
+
     def predict(self, X):
         """
         Predict target values for X.

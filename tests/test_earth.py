@@ -218,6 +218,7 @@ def test_empty_model_after_pruning(simple_earth_data):
     expected_gcv_intercept_only = calculate_gcv(rss, len(y), expected_params)
 
     assert model.gcv_ is not None
+    assert np.isclose(model.gcv_, expected_gcv_intercept_only)
 
 def test_earth_feature_importance_parameter(simple_earth_data):
     """Test that feature_importance_type parameter is stored and used."""
