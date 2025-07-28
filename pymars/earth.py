@@ -510,14 +510,12 @@ class Earth(BaseEstimator, RegressorMixin):
         intercept = float(np.mean(y_processed))
         self.coef_ = np.array([intercept])
 
-        # Predictions do not require building a basis matrix
-        y_pred = np.full_like(y_processed, intercept, dtype=float)
+        # Compute RSS and MSE without constructing a basis matrix
+        residuals = y_processed - intercept
+        self.rss_ = float(np.sum(residuals ** 2))
+        self.mse_ = self.rss_ / len(y_processed) if len(y_processed) else np.inf
 
-        # Compute RSS and MSE
-        self.rss_ = float(np.sum((y_processed - y_pred) ** 2))
-        self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
-
-        # Calculate GCV once using the manual formula
+        # Compute GCV once using the calculated RSS
         try:
             eff_params = gcv_penalty_cost_effective_parameters(
                 num_terms=1,
@@ -527,7 +525,7 @@ class Earth(BaseEstimator, RegressorMixin):
             )
             gcv_score = calculate_gcv(self.rss_, len(y_processed), eff_params)
         except Exception as exc:  # pragma: no cover - safety net
-            logger.warning("Fallback GCV computation failed: %s", exc)
+            logger.warning("Fallback GCV calculation failed: %s", exc)
             gcv_score = np.inf
 
         # Ensure self.gcv_ is set even if computation fails
