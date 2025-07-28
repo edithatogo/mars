@@ -34,6 +34,7 @@ The goal of this phase is to improve the performance of `pymars` and optimize th
 *   **Profile the code.** This will involve using a profiler to identify performance bottlenecks.
 *   **Optimize the code for speed.** Apply pure Python algorithmic improvements guided by profiling results.
 *   **Optimize the code for memory usage.** This will involve using memory profiling tools to identify memory usage issues.
+*   **Profiling results so far:** Using `cProfile` on the forward and pruning passes revealed that repeatedly constructing basis matrices with `np.hstack` dominated runtime and memory usage. The implementation now preallocates the basis matrix and fills it column‑wise, reducing allocations and improving speed.
 
 ## Feature Matrix
 

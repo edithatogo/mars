@@ -93,8 +93,16 @@ class ForwardPasser:
     def _build_basis_matrix(self, X_processed: np.ndarray, basis_functions: list[BasisFunction]) -> np.ndarray:
         if not basis_functions:
             return np.empty((X_processed.shape[0], 0))
-        B_list = [bf.transform(X_processed, self.missing_mask).reshape(-1, 1) for bf in basis_functions]
-        return np.hstack(B_list)
+
+        # Preallocate basis matrix for efficiency instead of building a list of
+        # arrays and hstacking them (which triggers many temporary allocations
+        # and copies). This also allows us to avoid repeated dtype checks during
+        # np.hstack.
+        n_samples = X_processed.shape[0]
+        B_matrix = np.empty((n_samples, len(basis_functions)), dtype=float)
+        for idx, bf in enumerate(basis_functions):
+            B_matrix[:, idx] = bf.transform(X_processed, self.missing_mask)
+        return B_matrix
 
     def run(self, X_fit_processed: np.ndarray, y_fit: np.ndarray,
             missing_mask: np.ndarray, X_fit_original: np.ndarray) -> tuple[list[BasisFunction], np.ndarray]:

@@ -172,10 +172,14 @@ class Earth(BaseEstimator, RegressorMixin):
         if not basis_functions:
             return np.empty((X_processed.shape[0], 0))
 
-        # X_processed is already a numpy array.
-        # missing_mask corresponds to the original X for X_processed.
-        B_list = [bf.transform(X_processed, missing_mask).reshape(-1, 1) for bf in basis_functions]
-        return np.hstack(B_list)
+        # Preallocate basis matrix to reduce memory allocations. Profiling
+        # revealed that constructing lists of arrays and calling np.hstack for
+        # every iteration consumed a significant portion of runtime.
+        n_samples = X_processed.shape[0]
+        B_matrix = np.empty((n_samples, len(basis_functions)), dtype=float)
+        for idx, bf in enumerate(basis_functions):
+            B_matrix[:, idx] = bf.transform(X_processed, missing_mask)
+        return B_matrix
 
     def fit(self, X, y):
         """
