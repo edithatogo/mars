@@ -142,23 +142,25 @@ def test_earth_fit_predict_more_complex(more_complex_earth_data):
 
 
 def test_earth_summary_method(simple_earth_data, capsys):
-    """Test that the summary method runs and prints output."""
+    """Test that the summary method returns a summary string."""
     X, y = simple_earth_data
     model = Earth(max_degree=1, max_terms=3)
 
     # Summary before fit
-    model.summary()
+    summary_before = model.summary()
     captured_before = capsys.readouterr()
-    assert "Model not yet fitted." in captured_before.out
+    assert captured_before.out == ""  # No direct print output
+    assert "Model not yet fitted." in summary_before
 
-    model.fit(X,y)
-    model.summary()
+    model.fit(X, y)
+    summary_after = model.summary()
     captured_after = capsys.readouterr()
-    assert "pymars Earth Model Summary" in captured_after.out
-    assert "Selected Basis Functions:" in captured_after.out
-    assert "GCV (final model):" in captured_after.out
-    assert "Basis Functions and Coefficients:" in captured_after.out
-    assert "Coef:" in captured_after.out # Check if coefficients are printed
+    assert captured_after.out == ""  # No direct print output
+    assert "pymars Earth Model Summary" in summary_after
+    assert "Selected Basis Functions:" in summary_after
+    assert "GCV (final model):" in summary_after
+    assert "Basis Functions and Coefficients:" in summary_after
+    assert "Coef:" in summary_after
 
 def test_input_validation_in_fit(simple_earth_data):
     """Test input validation within the fit method."""
@@ -220,7 +222,9 @@ def test_empty_model_after_pruning(simple_earth_data):
     assert model.gcv_ is not None
     # Validate that the computed GCV for the fallback intercept-only model
     # matches the expected value within floating point tolerance.
-    assert np.isclose(model.gcv_, expected_gcv_intercept_only)
+    assert np.isclose(model.gcv_, expected_gcv_intercept_only), (
+        f"GCV ({model.gcv_}) should match the expected value ({expected_gcv_intercept_only}) for an intercept-only model"
+    )
 
 def test_earth_feature_importance_parameter(simple_earth_data):
     """Test that feature_importance_type parameter is stored and used."""
@@ -518,12 +522,16 @@ def test_earth_feature_importance_rss(simple_earth_data, more_complex_earth_data
     if X_simple.shape[1] == 1 and np.any(model_simple_signal.feature_importances_ > 0):
         assert np.isclose(model_simple_signal.feature_importances_[0], 1.0, atol=1e-5)
 
-def test_earth_invalid_feature_importance_type(simple_earth_data, capsys):
+import logging
+
+
+def test_earth_invalid_feature_importance_type(simple_earth_data, caplog):
     """Test behavior with an invalid feature_importance_type."""
     X, y = simple_earth_data
     invalid_type = "this_is_not_a_valid_type"
     model = Earth(feature_importance_type=invalid_type)
-    model.fit(X, y)
+    with caplog.at_level(logging.WARNING):
+        model.fit(X, y)
 
     assert model.fitted_
     assert model.feature_importances_ is not None
@@ -532,12 +540,14 @@ def test_earth_invalid_feature_importance_type(simple_earth_data, capsys):
     assert np.all(model.feature_importances_ == 0.0), "Importances should be all zeros for invalid type"
 
     # Check for the warning message
-    captured = capsys.readouterr()
-    # The warning is printed during _calculate_feature_importances, which is called by fit()
-    # stdout of fit() method is captured here.
-    # print(f"Captured output for invalid type:\nSTDOUT:\n{captured.out}\nSTDERR:\n{captured.err}")
-    assert f"Warning: feature_importance_type '{invalid_type}'" in captured.out
-    assert "is not yet fully implemented. Returning zeros for importances." in captured.out
+    warning_msgs = [rec.message for rec in caplog.records]
+    assert any(
+        f"feature_importance_type '{invalid_type}'" in msg for msg in warning_msgs
+    )
+    assert any(
+        "is not yet fully implemented. Returning zeros for importances." in msg
+        for msg in warning_msgs
+    )
 
     # Test summary method for this case
     summary_str = model.summary_feature_importances()
@@ -638,3 +648,21 @@ def test_earth_fit_with_missingness_terms(data_with_nans):
     # Test predict
     predictions = model.predict(X_nan)
     assert predictions.shape == (y_mod.shape[0],)
+
+
+def test_earth_get_set_params():
+    """Ensure get_params and set_params behave like scikit-learn estimators."""
+    model = Earth(max_degree=1, penalty=3.0)
+
+    params = model.get_params()
+    assert params["max_degree"] == 1
+    assert params["penalty"] == 3.0
+
+    model.set_params(max_degree=2, penalty=5.0)
+    assert model.max_degree == 2
+    assert model.penalty == 5.0
+
+    # Test that setting an invalid parameter raises an error
+    with pytest.raises(ValueError):
+        model.set_params(invalid_parameter_name=123)
+

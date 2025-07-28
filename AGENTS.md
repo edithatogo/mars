@@ -85,7 +85,6 @@ Refer to the [scikit-learn developer documentation](https://scikit-learn.org/sta
 
 ## 11. Specific Tool Usage
 
-*   **`replace_with_git_merge_diff`**: Use this for modifying existing files. Ensure the `<<<<<<< SEARCH`, `=======`, and `>>>>>>> REPLACE` markers are exact and on their own lines.
 *   **`create_file_with_block` / `overwrite_file_with_block`**: Use for new files or complete rewrites.
 *   **`run_in_bash_session`**: Use for installing dependencies, running tests, etc.
 *   **`set_plan`**: Use to set or update the development plan.
