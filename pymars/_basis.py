@@ -393,21 +393,29 @@ class LinearBasisFunction(BasisFunction):
 #   str: (x0) * max(0, x1 - 5.00)
 #   degree: 1 (from parent_linear) + 1 (from hinge) = 2
 
-# class InteractionBasisFunction(BasisFunction):
-#     def __init__(self, bf1: BasisFunction, bf2: BasisFunction):
-#         # Need to handle variable_idx, knot_val appropriately, or mark them as NA
-#         super().__init__(is_hinge=False, is_linear=False, parent1=bf1, parent2=bf2)
-#         if bf1 is None or bf2 is None:
-#             raise ValueError("Parent basis functions for interaction term cannot be None.")
-#
-#     def transform(self, X):
-#         return self.parent1.transform(X) * self.parent2.transform(X)
-#
-#     def __str__(self):
-#         return f"({str(self.parent1)}) * ({str(self.parent2)})"
-#
-#     def degree(self):
-#         return self.parent1.degree() + self.parent2.degree()
+# Concrete implementation for a product of two arbitrary basis functions.
+class InteractionBasisFunction(BasisFunction):
+    """Represents the product of two basis functions."""
+
+    def __init__(self, bf1: BasisFunction, bf2: BasisFunction):
+        if bf1 is None or bf2 is None:
+            raise ValueError("Parent basis functions for interaction cannot be None.")
+        name = f"({str(bf1)}) * ({str(bf2)})"
+        super().__init__(name=name)
+        involved = bf1.get_involved_variables().union(bf2.get_involved_variables())
+        self._set_properties(parent1=bf1, parent2=bf2, involved_variables=involved)
+
+    def transform(self, X_processed: np.ndarray, missing_mask: np.ndarray) -> np.ndarray:
+        return self.parent1.transform(X_processed, missing_mask) * self.parent2.transform(X_processed, missing_mask)
+
+    def __str__(self) -> str:
+        return self.get_name()
+
+    def degree(self) -> int:
+        return self.parent1.degree() + self.parent2.degree()
+
+    def is_constant(self) -> bool:
+        return False
 
 if __name__ == '__main__':
     # Example Usage

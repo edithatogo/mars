@@ -11,6 +11,9 @@ from .earth import Earth
 
 # Scikit-learn compatible estimators
 from ._sklearn_compat import EarthRegressor, EarthClassifier
+from .glm import GLMEarth
+from .cv import EarthCV
+from .plot import plot_basis_functions, plot_residuals
 from ._categorical import CategoricalImputer
 
 # TODO: Add other classes/functions to expose at the top level if desired.
@@ -21,4 +24,8 @@ __all__ = [
     'EarthRegressor',
     'EarthClassifier',
     'CategoricalImputer'
+    ,'GLMEarth'
+    ,'EarthCV'
+    ,'plot_basis_functions'
+    ,'plot_residuals'
 ]
