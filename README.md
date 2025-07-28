@@ -2,7 +2,7 @@
 
 **pymars** is a pure Python implementation of Multivariate Adaptive Regression Splines (MARS), inspired by the popular `py-earth` library by Jason Friedman and an R package `earth` by Stephen Milborrow. The goal of `pymars` is to provide an easy-to-install, scikit-learn compatible version of the MARS algorithm without C/Cython dependencies.
 
-## Key Features (Planned)
+## Key Features
 
 - **Pure Python:** Easy to install and use across different platforms.
 - **Scikit-learn Compatible:** Integrates with the scikit-learn ecosystem (estimators, pipelines, model selection tools).
@@ -13,12 +13,9 @@
   - Refined `minspan` and `endspan` controls for knot placement, aligning more closely with `py-earth` behavior (e.g., `minspan` as a cooldown period).
 - **Feature Importance:** Calculation of feature importances using methods like 'nb_subsets' (number of subsets in pruning trace), 'gcv' (GCV improvement), and 'rss' (RSS reduction).
 - **Regression and Classification:** Provides `EarthRegressor` and `EarthClassifier` classes.
-
-- **Planned Enhancements:**
-  - Robust interaction term handling in both the forward pass and pruning.
-  - A `GLMEarth` subclass to fit generalized linear models (e.g., logistic or Poisson).
-  - An `EarthCV` helper for cross‑validation and hyperparameter search.
-  - Basic plotting utilities for model diagnostics using `matplotlib`.
+- **Generalized Linear Models:** The `GLMEarth` subclass fits logistic or Poisson models.
+- **Cross‑Validation Helper:** The `EarthCV` class integrates with scikit‑learn's model selection utilities.
+- **Plotting Utilities:** Simple diagnostics built on `matplotlib`.
 
 ## Project Status
 
@@ -45,6 +42,7 @@ After installation you can check the installed version:
 ```bash
 pymars --version
 ```
+```
 
 ## Running Tests
 
@@ -66,7 +64,7 @@ pytest
 
 ```
 
-## Basic Usage (Planned Example)
+## Basic Usage Example
 
 ```python
 import numpy as np
@@ -114,7 +112,7 @@ Contributions are welcome! Please see `CONTRIBUTING.md` (to be created) and `AGE
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE) (to be created).
+This project is licensed under the [MIT License](LICENSE).
 
 ## Acknowledgements
 
