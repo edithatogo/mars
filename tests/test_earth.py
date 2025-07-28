@@ -644,3 +644,21 @@ def test_earth_fit_with_missingness_terms(data_with_nans):
     # Test predict
     predictions = model.predict(X_nan)
     assert predictions.shape == (y_mod.shape[0],)
+
+
+def test_earth_get_set_params():
+    """Ensure get_params and set_params behave like scikit-learn estimators."""
+    model = Earth(max_degree=1, penalty=3.0)
+
+    params = model.get_params()
+    assert params["max_degree"] == 1
+    assert params["penalty"] == 3.0
+
+    model.set_params(max_degree=2, penalty=5.0)
+    assert model.max_degree == 2
+    assert model.penalty == 5.0
+
+    # Test that setting an invalid parameter raises an error
+    with pytest.raises(ValueError):
+        model.set_params(invalid_parameter_name=123)
+
