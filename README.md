@@ -14,24 +14,31 @@
 *   **Feature Importance:** Calculation of feature importances using methods like 'nb_subsets' (number of subsets in pruning trace), 'gcv' (GCV improvement), and 'rss' (RSS reduction).
 *   **Regression and Classification:** Provides `EarthRegressor` and `EarthClassifier` classes.
 
+*   **Planned Enhancements:**
+    * Robust interaction term handling in both the forward pass and pruning.
+    * A `GLMEarth` subclass to fit generalized linear models (e.g., logistic or Poisson).
+    * An `EarthCV` helper for cross‑validation and hyperparameter search.
+    * Basic plotting utilities for model diagnostics using `matplotlib`.
+
 ## Project Status
 
 This project is currently in the initial development phase. The core algorithm and scikit-learn compatibility are being built. See `ROADMAP.md` and `TODO.md` for more details on the development plan and progress.
 
-## Installation (Planned)
+## Installation
 
-Once released, `pymars` will be installable via pip:
+Install the latest development version from source:
+
+```bash
+git clone https://github.com/your-repository-url/pymars.git
+cd pymars
+pip install -e .
+```
+
+After a stable release is published on PyPI you will also be able to install it
+directly with:
 
 ```bash
 pip install pymars
-```
-
-For now, to use the development version, you can clone this repository:
-
-```bash
-git clone https://your-repository-url/pymars.git
-cd pymars
-# Potentially: pip install -e . (once setup.py or pyproject.toml is ready)
 ```
 
 ## Running Tests
