@@ -647,15 +647,6 @@ class Earth(BaseEstimator, RegressorMixin):
             logger.info("Model not yet fitted.")
             return "Model not yet fitted."
 
-        # print("pymars Model Summary")
-        # print("--------------------")
-        # print(f"Number of basis functions: {len(self.basis_)}")
-        # print(f"MSE: {self.mse_:.4f}")
-        # print(f"GCV: {self.gcv_:.4f}")
-        # print("\nBasis Functions and Coefficients:")
-        # for bf, coef in zip(self.basis_, self.coef_):
-        #     # This assumes coef_ is 1D for now
-        #     print(f"  {str(bf):<50} Coef: {coef:.4f}")
         # Placeholder for a more structured summary
         import numpy as np # Local import
 
@@ -811,5 +802,4 @@ if __name__ == '__main__':
 
     # X_test = np.random.rand(20, 3)
     # y_pred = model.predict(X_test)
-    # print("\nPredictions on new data:", y_pred)
     pass
