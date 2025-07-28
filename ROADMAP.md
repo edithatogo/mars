@@ -22,7 +22,7 @@ The goal of this phase is to implement advanced features that are available in t
 
 * [x] Interaction terms: extend `ForwardPasser`, update pruning logic, and add tests.
 * [x] Generalized linear models (GLMs): implement a `GLMEarth` subclass with logistic and Poisson support.
-* [x] Cross-validation helper: provide an `EarthCV` class with tunable parameters.
+* [x] Cross-validation helper: provide an `EarthCV` class using scikit-learn utilities for k-fold evaluation and hyperparameter search.
 * [x] Plotting utilities: add matplotlib-based visualisations and integrate a `plot()` helper on the `Earth` model.
 
 These items constitute the major goals for Phase&nbsp;2 and will extend `pymars` beyond basic fitting and prediction.
