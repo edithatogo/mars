@@ -798,26 +798,13 @@ class Earth(BaseEstimator, RegressorMixin):
     # ------------------------------------------------------------------
     def get_params(self, deep: bool = True) -> dict:
         """Return estimator parameters for compatibility with scikit-learn."""
-        return {
-            "max_degree": self.max_degree,
-            "penalty": self.penalty,
-            "max_terms": self.max_terms,
-            "minspan_alpha": self.minspan_alpha,
-            "endspan_alpha": self.endspan_alpha,
-            "minspan": self.minspan,
-            "endspan": self.endspan,
-            "allow_linear": self.allow_linear,
-            "allow_missing": self.allow_missing,
-            "feature_importance_type": self.feature_importance_type,
-            "categorical_features": self.categorical_features,
-        }
+        # BaseEstimator implements get_params using introspection of __init__
+        # signature, which covers all hyperparameters stored as attributes.
+        return super().get_params(deep=deep)
 
     def set_params(self, **params):
         """Set estimator parameters for compatibility with scikit-learn."""
-        for key, value in params.items():
-            if not hasattr(self, key):
-                raise ValueError(f"Invalid parameter {key} for Earth.")
-            setattr(self, key, value)
+        super().set_params(**params)
         return self
 
 
