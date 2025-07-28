@@ -34,6 +34,22 @@ Welcome to the documentation for `pymars`.
 *   **Contributing**
 *   **Changelog**
 
+## Installation
+
+Install the latest development version from the cloned repository:
+
+```bash
+git clone https://github.com/your-repository-url/pymars.git
+cd pymars
+pip install -e .
+```
+
+Once a release is published on PyPI you will be able to install it directly:
+
+```bash
+pip install pymars
+```
+
 This documentation is currently under construction. Please refer to the main `README.md` and `ROADMAP.md` for project status and plans.
 
 ---

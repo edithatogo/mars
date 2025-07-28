@@ -24,20 +24,21 @@
 
 This project is currently in the initial development phase. The core algorithm and scikit-learn compatibility are being built. See `ROADMAP.md` and `TODO.md` for more details on the development plan and progress.
 
-## Installation (Planned)
+## Installation
 
-Once released, `pymars` will be installable via pip:
+Install the latest development version from source:
+
+```bash
+git clone https://github.com/your-repository-url/pymars.git
+cd pymars
+pip install -e .
+```
+
+After a stable release is published on PyPI you will also be able to install it
+directly with:
 
 ```bash
 pip install pymars
-```
-
-For now, to use the development version, you can clone this repository:
-
-```bash
-git clone https://your-repository-url/pymars.git
-cd pymars
-# Potentially: pip install -e . (once setup.py or pyproject.toml is ready)
 ```
 
 ## Basic Usage (Planned Example)

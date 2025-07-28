@@ -4,8 +4,8 @@ This document lists the tasks that need to be completed for the `pymars` project
 
 ## Phase 1: Core Functionality and sklearn Compatibility
 
-*   [ ] Implement categorical feature support.
-*   [ ] Implement missing value support.
+*   [x] Implement categorical feature support.
+*   [x] Implement missing value support.
 
 ## Phase 2: Advanced Features
 
@@ -32,6 +32,8 @@ This document lists the tasks that need to be completed for the `pymars` project
 *   [ ] Implement basic plots for basis functions and residuals.
 *   [ ] Integrate plotting entry points with the `Earth` model.
 *   [ ] Provide example notebooks demonstrating the visualizations.
+
+These items form the bulk of the work for Phase&nbsp;2 and will bring `pymars` closer to feature parity with other implementations.
 
 ## Phase 3: Performance and Optimization
 
