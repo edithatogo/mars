@@ -514,6 +514,13 @@ class Earth(RegressorMixin, BaseEstimator):
                 else 0.0
             )
 
+        gcv_score = None
+
+        # Use the fitted intercept basis matrix to recompute RSS/MSE.
+        # `B_final` already represents the intercept-only basis matrix.
+        y_pred_train = B_final @ self.coef_
+        self.rss_ = np.sum((y_processed - y_pred_train) ** 2)
+    
         self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
 
         gcv_score: float | None = None
