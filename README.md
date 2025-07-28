@@ -26,20 +26,24 @@ This project is currently in the initial development phase. The core algorithm a
 
 ## Installation
 
-Install the latest development version from source:
-
-```bash
-git clone https://github.com/your-repository-url/pymars.git
-cd pymars
-pip install -e .
-```
-
-After a stable release is published on PyPI you will also be able to install it
-directly with:
+`pymars` can be installed from TestPyPI:
 
 ```bash
 pip install pymars
 ```
+
+To work with the latest source, clone the repository and install it in editable mode:
+
+```bash
+git clone https://your-repository-url/pymars.git
+cd pymars
+pip install -e .
+```
+
+After installation you can check the installed version:
+
+```bash
+pymars --version
 
 ## Running Tests
 
@@ -58,6 +62,7 @@ After the dependencies are installed, run the tests with:
 
 ```bash
 pytest
+
 ```
 
 ## Basic Usage (Planned Example)

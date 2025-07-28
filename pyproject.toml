@@ -1,19 +1,31 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=61", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "pymars"
-version = "0.0.1"
-description = "Pure Python MARS (Multivariate Adaptive Regression Splines) library"
+description = "Pure Python Earth (MARS) algorithm"
 readme = "README.md"
-requires-python = ">=3.8"
-license = {text = "MIT"}
 authors = [{name = "pymars developers"}]
+requires-python = ">=3.8"
+dynamic = ["version"]
 dependencies = [
     "numpy",
     "scikit-learn",
 ]
+
+[project.urls]
+Homepage = "https://github.com/pymars/pymars"
+
+[project.entry-points.console_scripts]
+pymars = "pymars.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "."}
+packages = ["pymars"]
+
+[tool.setuptools.dynamic]
+version = {attr = "pymars.__version__"}
 
 [tool.setuptools.packages.find]
 include = ["pymars*"]
