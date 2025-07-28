@@ -519,6 +519,18 @@ class Earth(BaseEstimator, RegressorMixin):
 
         try:
             eff_params = gcv_penalty_cost_effective_parameters(
+
+        # Predict once using the intercept
+        y_pred_train = np.full_like(y_processed, intercept, dtype=float)
+
+        # Compute RSS and MSE using the single prediction vector
+        residuals = y_processed - y_pred_train
+        self.rss_ = float(np.sum(residuals ** 2))
+        self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
+
+        # Compute GCV directly using the RSS
+        try:
+            effective_params = gcv_penalty_cost_effective_parameters(
                 num_terms=1,
                 num_hinge_terms=0,
                 penalty=self.penalty,
@@ -529,7 +541,7 @@ class Earth(BaseEstimator, RegressorMixin):
             logger.warning("Failed to compute GCV for fallback model: %s", exc)
             gcv_score = np.inf
 
-        self.gcv_ = gcv_score if np.isfinite(gcv_score) else np.inf
+        self.gcv_ = gcv_value if np.isfinite(gcv_value) else np.inf
 
     def predict(self, X):
         """
