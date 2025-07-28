@@ -488,16 +488,9 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
         return X_processed, missing_mask, y_processed
 
     def _set_fallback_model(self, X_processed, y_processed, missing_mask, pruning_passer_instance_for_gcv_calc):
-        """Sets a fallback intercept-only model."""
-        from ._util import calculate_gcv, gcv_penalty_cost_effective_parameters
-    def _set_fallback_model(
-        self,
-        X_processed,
-        y_processed,
-        missing_mask,
-        pruning_passer_instance_for_gcv_calc,
-    ):
         """Set an intercept-only model and compute its GCV."""
+        from ._util import calculate_gcv, gcv_penalty_cost_effective_parameters
+
         self.basis_ = [ConstantBasisFunction()]
         self.coef_ = np.array([np.mean(y_processed)])
 
@@ -508,15 +501,9 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
             self.rss_ = np.sum((y_processed - y_pred_train) ** 2)
             self.mse_ = self.rss_ / len(y_processed)
         else:
-            self.rss_ = (
-                np.sum((y_processed - np.mean(y_processed)) ** 2)
-                if len(y_processed) > 0
-                else 0.0
-            )
+            self.rss_ = np.sum((y_processed - np.mean(y_processed)) ** 2) if len(y_processed) > 0 else 0.0
             self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
 
-        try:
-            eff_params = gcv_penalty_cost_effective_parameters(
         gcv_score = None
         if hasattr(pruning_passer_instance_for_gcv_calc, "_compute_gcv_for_subset"):
             try:
@@ -525,31 +512,23 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
                     y_fit=y_processed,
                     missing_mask=missing_mask,
                     X_fit_original=self.X_original_,
-                    basis_subset=self.basis_
-                )[0]  # [0] is GCV score
                     basis_subset=self.basis_,
                 )
+                gcv_score = gcv_score[0] if isinstance(gcv_score, (list, tuple, np.ndarray)) else gcv_score
             except Exception:
                 gcv_score = None
 
         if gcv_score is None:
-            effective_params = gcv_penalty_cost_effective_parameters(
+            eff_params = gcv_penalty_cost_effective_parameters(
                 num_terms=1,
                 num_hinge_terms=0,
                 penalty=self.penalty,
                 num_samples=len(y_processed),
             )
-            self.gcv_ = calculate_gcv(self.rss_, len(y_processed), eff_params)
-        except Exception:
-            gcv_score = calculate_gcv(self.rss_, len(y_processed), effective_params)
+            gcv_score = calculate_gcv(self.rss_, len(y_processed), eff_params)
 
-        self.gcv_ = gcv_score
-                    basis_subset=self.basis_
-                )[0]
-            except Exception: # Broad catch if GCV calc fails for intercept
-                self.gcv_ = np.inf
-        else:
-            self.gcv_ = np.inf
+        self.gcv_ = gcv_score if gcv_score is not None else np.inf
+
 
 
     def predict(self, X):
