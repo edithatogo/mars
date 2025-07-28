@@ -315,8 +315,15 @@ class ForwardPasser:
                 # Handle continuous features (not in categorical list)
                 if not self.categorical_features or var_idx not in self.categorical_features:
                     if self.model.allow_linear:
-                        linear_candidate = LinearBasisFunction(variable_idx=var_idx, parent_bf=parent_bf)
-                        candidate_additions.append((linear_candidate, None))
+                        exists_linear = any(
+                            isinstance(bf_existing, LinearBasisFunction)
+                            and bf_existing.variable_idx == var_idx
+                            and bf_existing.parent1 == parent_bf
+                            for bf_existing in self.current_basis_functions
+                        )
+                        if not exists_linear:
+                            linear_candidate = LinearBasisFunction(variable_idx=var_idx, parent_bf=parent_bf)
+                            candidate_additions.append((linear_candidate, None))
                     potential_knots = self._get_allowable_knot_values(self.X_fit_original[:, var_idx], parent_bf, var_idx)
                     for knot_val in potential_knots:
                         bf_right = HingeBasisFunction(variable_idx=var_idx, knot_val=knot_val, is_right_hinge=True, parent_bf=parent_bf)
@@ -367,6 +374,7 @@ class ForwardPasser:
 
     def _find_best_candidate_addition(self):
         self._min_candidate_rss = self.current_rss
+        self._min_candidate_gcv = np.inf
         self._best_candidate_addition = None
         self._best_new_B_matrix = None
         self._best_new_coeffs = None
@@ -374,7 +382,16 @@ class ForwardPasser:
         candidate_additions = self._generate_candidates()
         if not candidate_additions: return
 
+        max_terms_for_loop = self.model.max_terms
+        if max_terms_for_loop is None:
+            max_terms_for_loop = min(self.n_samples - 1, max(21, 2 * self.n_features + 1))
+
+        remaining_capacity = max_terms_for_loop - len(self.current_basis_functions)
+
         for bf1, bf2_or_None in candidate_additions:
+            required_terms = 1 + (1 if bf2_or_None is not None else 0)
+            if required_terms > remaining_capacity:
+                continue
             terms_to_add = [bf1]
             if bf2_or_None is not None:
                 terms_to_add.append(bf2_or_None)
@@ -385,11 +402,22 @@ class ForwardPasser:
             # Use n_samples (from processed X) for this check, num_valid_rows from _calc_rss_... will handle actual fit data size
             if B_candidate.shape[1] >= self.n_samples: continue
 
-            rss_candidate, coeffs_candidate, _ = self._calculate_rss_and_coeffs(B_candidate, self.y_train) # Unpack 3
+            rss_candidate, coeffs_candidate, num_valid_rows_candidate = self._calculate_rss_and_coeffs(B_candidate, self.y_train)
 
             if coeffs_candidate is None: continue
 
-            if rss_candidate < self._min_candidate_rss - EPSILON:
+            num_terms_candidate = len(temp_basis_list)
+            num_hinge_candidate = sum(isinstance(bf, HingeBasisFunction) for bf in temp_basis_list)
+            eff_params = gcv_penalty_cost_effective_parameters(
+                num_terms_candidate,
+                num_hinge_candidate,
+                self.model.penalty,
+                num_valid_rows_candidate,
+            )
+            gcv_candidate = calculate_gcv(rss_candidate, num_valid_rows_candidate, eff_params)
+
+            if gcv_candidate < self._min_candidate_gcv - EPSILON:
+                self._min_candidate_gcv = gcv_candidate
                 self._min_candidate_rss = rss_candidate
                 self._best_candidate_addition = (bf1, bf2_or_None)
                 self._best_new_B_matrix = B_candidate

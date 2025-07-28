@@ -470,6 +470,7 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
 
     def _set_fallback_model(self, X_processed, y_processed, missing_mask, pruning_passer_instance_for_gcv_calc):
         """Sets a fallback intercept-only model."""
+        from ._util import calculate_gcv, gcv_penalty_cost_effective_parameters
         self.basis_ = [ConstantBasisFunction()]
         self.coef_ = np.array([np.mean(y_processed)]) # Mean of processed (finite) y
 
@@ -483,26 +484,15 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
             self.rss_ = np.sum((y_processed - np.mean(y_processed))**2) if len(y_processed) > 0 else 0.0
             self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
 
-        if hasattr(pruning_passer_instance_for_gcv_calc, '_compute_gcv_for_subset'):
-            # GCV for intercept needs X_processed, y_processed, missing_mask, X_original
-            # The _compute_gcv_for_subset will need to be NaN aware.
-            # For now, this might be inaccurate if not fully NaN aware.
-            # A simple GCV calc for intercept might be:
-            # num_params = 1, N = len(y_processed)
-            # gcv_val = self.rss_ / (N * (1 - num_params/N)**2) if N > num_params else np.inf
-            # This is a placeholder, actual GCV calc needs to be robust.
-            # For now, let PruningPasser's method try, or set to Inf.
-            try:
-                self.gcv_ = pruning_passer_instance_for_gcv_calc._compute_gcv_for_subset(
-                    X_fit_processed=X_processed,
-                    y_fit=y_processed,
-                    missing_mask=missing_mask,
-                    basis_functions_subset=self.basis_,
-                    X_fit_original=self.X_original_ # Pass original X for knot selection consistency if needed by GCV's LSTSQ
-                )[0] # [0] is GCV score
-            except Exception: # Broad catch if GCV calc fails for intercept
-                self.gcv_ = np.inf
-        else:
+        try:
+            eff_params = gcv_penalty_cost_effective_parameters(
+                num_terms=1,
+                num_hinge_terms=0,
+                penalty=self.penalty,
+                num_samples=len(y_processed),
+            )
+            self.gcv_ = calculate_gcv(self.rss_, len(y_processed), eff_params)
+        except Exception:
             self.gcv_ = np.inf
 
 
