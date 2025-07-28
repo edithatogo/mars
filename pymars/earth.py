@@ -3,6 +3,7 @@
 """
 The main Earth class, coordinating the model fitting process.
 """
+import logging
 import numpy as np
 from sklearn.base import BaseEstimator, RegressorMixin
 from ._basis import ConstantBasisFunction  # Used in fallbacks
@@ -10,6 +11,8 @@ from ._util import (
     calculate_gcv,
     gcv_penalty_cost_effective_parameters,
 )
+
+logger = logging.getLogger(__name__)
 # from ._forward import ForwardPasser # Imported locally in fit
 # from ._pruning import PruningPasser # Imported locally in fit
 # from ._record import EarthRecord
@@ -239,7 +242,7 @@ class Earth(BaseEstimator, RegressorMixin):
             # or if an error occurred. For now, assume forward pass always gives something.
             # If it's just an intercept, pruning might still occur or confirm it.
             # If truly empty (error), we might need to raise an error or set a degenerate model.
-            print("Warning: Forward pass returned no basis functions.")
+            logger.warning("Forward pass returned no basis functions.")
             # Set a model that predicts mean of y, or handle as error
             self.basis_ = [ConstantBasisFunction()] if ConstantBasisFunction not in [type(bf) for bf in fwd_basis_functions] else fwd_basis_functions
             if not self.basis_ : # if fwd_basis_functions was also empty
@@ -335,7 +338,9 @@ class Earth(BaseEstimator, RegressorMixin):
             if hasattr(X_fit, 'shape') and X_fit.ndim == 2:
                  num_features = X_fit.shape[1]
             else: # Cannot determine num_features
-                print("Warning: Cannot determine number of features for importance calculation.")
+                logger.warning(
+                    "Cannot determine number of features for importance calculation."
+                )
                 self.feature_importances_ = np.array([])
                 return
         else:
@@ -344,8 +349,9 @@ class Earth(BaseEstimator, RegressorMixin):
         if self.feature_importance_type == 'nb_subsets':
             if not (hasattr(self.record_, 'pruning_trace_basis_functions_') and \
                     self.record_.pruning_trace_basis_functions_):
-                print("Warning: Pruning trace not available in record. "
-                      "Cannot calculate 'nb_subsets' feature importance. Returning zeros.")
+                logger.warning(
+                    "Pruning trace not available in record. Cannot calculate 'nb_subsets' feature importance. Returning zeros."
+                )
                 self.feature_importances_ = np.zeros(num_features)
                 return
 
@@ -427,8 +433,10 @@ class Earth(BaseEstimator, RegressorMixin):
 
         elif self.feature_importance_type is not None:
             # Placeholder for other types or warning for unknown types
-            print(f"Warning: feature_importance_type '{self.feature_importance_type}' "
-                  "is not yet fully implemented. Returning zeros for importances.")
+            logger.warning(
+                "feature_importance_type '%s' is not yet fully implemented. Returning zeros for importances.",
+                self.feature_importance_type,
+            )
             self.feature_importances_ = np.zeros(num_features)
         else:
             # feature_importance_type is None, so do nothing, self.feature_importances_ remains None
@@ -513,7 +521,9 @@ class Earth(BaseEstimator, RegressorMixin):
                 else 0.0
             )
 
-        gcv_score = None
+        B_intercept = self._build_basis_matrix(
+            X_processed, self.basis_, missing_mask
+        )
 
         # Use the fitted intercept basis matrix to recompute RSS/MSE.
         # `B_final` already represents the intercept-only basis matrix.
@@ -524,7 +534,6 @@ class Earth(BaseEstimator, RegressorMixin):
         self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
 
         gcv_score: float | None = None
-
         if hasattr(pruning_passer_instance_for_gcv_calc, "_compute_gcv_for_subset"):
             try:
                 gcv_score, _, _ = pruning_passer_instance_for_gcv_calc._compute_gcv_for_subset(
@@ -645,11 +654,11 @@ class Earth(BaseEstimator, RegressorMixin):
 
     def summary(self):
         """
-        Print a summary of the fitted model.
+        Return a summary of the fitted model and log it.
         """
         if self.basis_ is None:
-            print("Model not yet fitted.")
-            return
+            logger.info("Model not yet fitted.")
+            return "Model not yet fitted."
 
         # print("pymars Model Summary")
         # print("--------------------")
@@ -664,22 +673,24 @@ class Earth(BaseEstimator, RegressorMixin):
         import numpy as np # Local import
 
         if not self.fitted_:
-            print("Model not yet fitted.")
-            return
+            logger.info("Model not yet fitted.")
+            return "Model not yet fitted."
 
-        print("pymars Earth Model Summary")
-        print("==========================")
-        print(f"Number of samples: {self.record_.n_samples if self.record_ else 'N/A'}")
-        print(f"Number of features: {self.record_.n_features if self.record_ else 'N/A'}")
-        print("--------------------------")
-        print(f"Selected Basis Functions: {len(self.basis_)}")
-        print(f"GCV (final model): {self.gcv_:.4f}" if self.gcv_ is not None else "GCV: N/A")
-        print(f"RSS (training): {self.rss_:.4f}" if self.rss_ is not None else "RSS: N/A")
-        print(f"MSE (training): {self.mse_:.4f}" if self.mse_ is not None else "MSE: N/A")
-        print("--------------------------")
+        lines = [
+            "pymars Earth Model Summary",
+            "==========================",
+            f"Number of samples: {self.record_.n_samples if self.record_ else 'N/A'}",
+            f"Number of features: {self.record_.n_features if self.record_ else 'N/A'}",
+            "--------------------------",
+            f"Selected Basis Functions: {len(self.basis_)}",
+            f"GCV (final model): {self.gcv_:.4f}" if self.gcv_ is not None else "GCV: N/A",
+            f"RSS (training): {self.rss_:.4f}" if self.rss_ is not None else "RSS: N/A",
+            f"MSE (training): {self.mse_:.4f}" if self.mse_ is not None else "MSE: N/A",
+            "--------------------------",
+        ]
 
         if self.basis_ and self.coef_ is not None:
-            print("\nBasis Functions and Coefficients:")
+            lines.append("\nBasis Functions and Coefficients:")
             # Determine max length of basis function string for alignment
             max_bf_str_len = 0
             if self.basis_: # Ensure basis_ is not empty
@@ -692,11 +703,14 @@ class Earth(BaseEstimator, RegressorMixin):
                 if isinstance(coef_val, np.ndarray): # Should not happen with current 1D y
                     coef_str = ", ".join([f"{c:.4f}" for c in coef_val])
 
-                print(f"  {str(bf):<{max_bf_str_len + 2}} Coef: {coef_str}")
+                lines.append(f"  {str(bf):<{max_bf_str_len + 2}} Coef: {coef_str}")
         else:
-            print("No basis functions or coefficients available.")
+            lines.append("No basis functions or coefficients available.")
+        lines.append("==========================")
 
-        print("==========================")
+        summary_str = "\n".join(lines)
+        logger.info("\n%s", summary_str)
+        return summary_str
 
     def summary_feature_importances(self, sort_by_importance: bool = True) -> str:
         """
