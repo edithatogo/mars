@@ -8,10 +8,13 @@ This module is responsible for removing basis functions from the model
 using a criterion like Generalized Cross-Validation (GCV).
 """
 
+import logging
 import numpy as np
-from .earth import Earth # For type hinting
+from .earth import Earth  # For type hinting
 from ._basis import BasisFunction, ConstantBasisFunction, HingeBasisFunction
 from ._util import calculate_gcv, gcv_penalty_cost_effective_parameters
+
+logger = logging.getLogger(__name__)
 
 EPSILON = np.finfo(float).eps
 
@@ -69,7 +72,7 @@ class PruningPasser:
                 rss = residuals_sum_sq[0]
             return rss, coeffs, num_valid_rows
         except np.linalg.LinAlgError as e:
-            print(f"LinAlgError in PruningPasser._calculate_rss_and_coeffs: {e}")
+            logger.warning("LinAlgError in PruningPasser._calculate_rss_and_coeffs: %s", e)
             return np.inf, None, num_valid_rows
 
     def _build_basis_matrix(self, X_data: np.ndarray, basis_functions: list[BasisFunction],
@@ -164,7 +167,9 @@ class PruningPasser:
         )
 
         if initial_coeffs_refit is None:
-            print("Warning: Could not compute GCV for the initial full model from forward pass in PruningPasser.")
+            logger.warning(
+                "Could not compute GCV for the initial full model from forward pass in PruningPasser."
+            )
             self.best_gcv_so_far = np.inf
             return initial_basis_functions, initial_coefficients, np.inf
 
@@ -236,5 +241,3 @@ class PruningPasser:
 
         return self.best_basis_functions_so_far, self.best_coeffs_so_far, self.best_gcv_so_far
 
-if __name__ == '__main__':
-    pass

@@ -7,7 +7,10 @@ This module is responsible for iteratively adding basis functions to the model
 to minimize a criterion (e.g., sum of squared errors).
 """
 
+import logging
 import numpy as np
+
+logger = logging.getLogger(__name__)
 from ._basis import BasisFunction, HingeBasisFunction, ConstantBasisFunction, LinearBasisFunction, MissingnessBasisFunction, CategoricalBasisFunction
 from ._record import EarthRecord # Assuming EarthRecord is used by Earth model instance
 from .earth import Earth # For type hinting
@@ -90,9 +93,9 @@ class ForwardPasser:
         self.current_basis_functions = [intercept_bf]
         self.current_B_matrix = self._build_basis_matrix(self.X_train, self.current_basis_functions)
 
-        rss, coeffs, _ = self._calculate_rss_and_coeffs(self.current_B_matrix, self.y_train) # Unpack 3
+        rss, coeffs, _ = self._calculate_rss_and_coeffs(self.current_B_matrix, self.y_train)  # Unpack 3
         if coeffs is None:
-            print("Warning: Could not calculate initial coefficients for intercept model.")
+            logger.warning("Could not calculate initial coefficients for intercept model.")
             return [], np.array([])
 
         self.current_coefficients = coeffs
@@ -107,9 +110,13 @@ class ForwardPasser:
         if max_terms_for_loop is None:
             max_terms_for_loop = min(self.n_samples - 1, max(21, 2 * self.n_features + 1))
 
-        print(f"Initial model setup: {len(self.current_basis_functions)} term(s), RSS={self.current_rss:.4f}")
+        logger.info(
+            "Initial model setup: %d term(s), RSS=%.4f",
+            len(self.current_basis_functions),
+            self.current_rss,
+        )
         if self.current_coefficients is not None:
-             print(f"Initial coeffs: {self.current_coefficients}")
+            logger.info("Initial coeffs: %s", self.current_coefficients)
 
         while True:
             self._find_best_candidate_addition()
@@ -395,5 +402,3 @@ class ForwardPasser:
                 self._best_new_B_matrix = B_candidate
                 self._best_new_coeffs = coeffs_candidate
 
-if __name__ == '__main__':
-    pass

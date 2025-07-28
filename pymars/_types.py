@@ -42,31 +42,3 @@ CoefficientType = FloatArray # Typically a 1D array of floats
 # KnotSelectorCallable = Callable[[FloatArray], FloatArray] # Function that takes a variable's values and returns knots
 
 
-if __name__ == '__main__':
-    # Example usage of these types for clarity in function signatures (conceptual)
-
-    def example_function(X: XType, y: YType) -> Tuple[BasisFunctionList, CoefficientType]:
-        # X_processed: FloatArray = np.asarray(X, dtype=float)
-        # y_processed: FloatArray = np.asarray(y, dtype=float)
-
-        # dummy basis function and coeffs
-        class DummyBasis:
-            def __str__(self): return "dummy_basis"
-
-        basis_functions: BasisFunctionList = [DummyBasis()]
-        coefficients: CoefficientType = np.array([1.0, 2.0])
-
-        print(f"X type: {type(X)}, y type: {type(y)}")
-        print(f"Basis functions: {basis_functions}")
-        print(f"Coefficients: {coefficients}")
-
-        return basis_functions, coefficients
-
-    # test_X: FloatArray = np.array([[1.0, 2.0], [3.0, 4.0]])
-    # test_y: FloatArray = np.array([1.5, 3.5])
-    # example_function(test_X, test_y)
-
-    # test_X_list: ArrayLike = [[1,2],[3,4]]
-    # test_y_list: ArrayLike = [1,3]
-    # example_function(test_X_list, test_y_list)
-    pass

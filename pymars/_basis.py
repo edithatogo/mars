@@ -409,28 +409,6 @@ class LinearBasisFunction(BasisFunction):
 #     def degree(self):
 #         return self.parent1.degree() + self.parent2.degree()
 
-if __name__ == '__main__':
-    # Example Usage
-    X_sample = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
-
-    const_bf = ConstantBasisFunction()
-    print(f"{str(const_bf)}: {const_bf.transform(X_sample)}")
-
-    hinge_bf_right = HingeBasisFunction(variable_idx=0, knot_val=4.0, variable_name="FeatureA")
-    print(f"{str(hinge_bf_right)}: {hinge_bf_right.transform(X_sample)}")
-
-    hinge_bf_left = HingeBasisFunction(variable_idx=1, knot_val=5.0, is_right_hinge=False, variable_name="FeatureB")
-    print(f"{str(hinge_bf_left)}: {hinge_bf_left.transform(X_sample)}")
-
-    linear_bf = LinearBasisFunction(variable_idx=2, variable_name="FeatureC")
-    print(f"{str(linear_bf)}: {linear_bf.transform(X_sample)}")
-
-    # Example of how interaction might work (conceptual)
-    # inter_bf = InteractionBasisFunction(hinge_bf_right, linear_bf)
-    # print(f"{str(inter_bf)}: {inter_bf.transform(X_sample)}")
-    # print(f"Degree of interaction: {inter_bf.degree()}")
-    # print(f"Degree of hinge: {hinge_bf_right.degree()}")
-    # print(f"Degree of const: {const_bf.degree()}")
 
 
 class MissingnessBasisFunction(BasisFunction):
