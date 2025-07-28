@@ -39,6 +39,13 @@ cd pymars
 pip install -e .
 ```
 
+If you need to run scikit-learn's full estimator checks, install the optional
+pandas dependency:
+
+```bash
+pip install "pymars[pandas]"
+```
+
 After installation you can check the installed version:
 
 ```bash
