@@ -161,9 +161,8 @@ if __name__ == '__main__':
     # Assume one intercept term so the number of hinge terms is ``n_terms_example - 1``.
     num_hinge_example = n_terms_example - 1
     effective_params = gcv_penalty_cost_effective_parameters(
-        n_terms_example, num_hinge_example, penalty_d_example, n_samples_example
         num_terms=n_terms_example,
-        num_hinge_terms=n_terms_example,
+        num_hinge_terms=num_hinge_example,
         penalty=penalty_d_example,
         num_samples=n_samples_example,
     )
@@ -182,9 +181,8 @@ if __name__ == '__main__':
     n_terms_high = 40
     num_hinge_high = n_terms_high - 1
     effective_params_high = gcv_penalty_cost_effective_parameters(
-        n_terms_high, num_hinge_high, penalty_d_example, n_samples_example
         num_terms=n_terms_high,
-        num_hinge_terms=n_terms_high,
+        num_hinge_terms=num_hinge_high,
         penalty=penalty_d_example,
         num_samples=n_samples_example,
     )
