@@ -103,6 +103,23 @@ import pymars as earth # Target import style
 # y_proba_clf = model_clf.predict_proba(X_reg)
 
 # print(f"Classification accuracy: {model_clf.score(X_reg, y_clf)}")
+
+# --- GLM Example ---
+glm_model = GLMEarth(family='logistic', max_terms=3)
+glm_model.fit(X_reg, y_clf)
+glm_pred = glm_model.predict(X_reg)
+
+# --- Cross-validation Example ---
+cv = EarthCV(EarthRegressor(max_terms=2), cv=5)
+scores = cv.score(X_reg, y_reg)
+print("CV scores:", scores)
+
+# --- Plotting Diagnostics ---
+from pymars.plot import plot_basis_functions, plot_residuals
+import matplotlib.pyplot as plt
+plot_basis_functions(glm_model, X_reg)
+plot_residuals(glm_model, X_reg, y_reg)
+plt.show()
 ```
 
 ## Contributing
