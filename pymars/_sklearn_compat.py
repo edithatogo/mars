@@ -275,7 +275,7 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
 
     classifier : estimator object, optional (default=None)
         The scikit-learn compatible classifier to be used on top of the MARS
-        basis functions. If None, `LogisticRegression(solver='liblinear', random_state=0)`
+        basis functions. If None, `LogisticRegression(solver='lbfgs', random_state=0)`
         is used by default. The `random_state` is set for reproducibility.
         Common choices include `LogisticRegression`, `SVC`, `RandomForestClassifier`.
 
@@ -438,8 +438,8 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
             X_transformed = self.earth_._build_basis_matrix(X_validated, self.basis_, missing_mask_for_transform)
 
         # Initialize/Clone and Fit the internal classifier
-        if self.classifier is None: # Use default
-            self.classifier_ = LogisticRegression(solver='liblinear', random_state=0)
+        if self.classifier is None:  # Use default
+            self.classifier_ = LogisticRegression(solver='lbfgs', random_state=0)
         else: # User provided a classifier instance
             self.classifier_ = clone(self.classifier) # Clone to ensure fresh state
 
