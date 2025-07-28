@@ -10,28 +10,28 @@ This document lists the tasks that need to be completed for the `pymars` project
 ## Phase 2: Advanced Features
 
 ### Interaction Terms
-*   [ ] Define internal representation for interaction basis functions.
-*   [ ] Update `ForwardPasser` to generate and evaluate interaction candidates.
-*   [ ] Extend pruning logic so interaction terms are properly removed or kept.
-*   [ ] Create unit tests covering interaction selection and pruning behavior.
+*   [x] Define internal representation for interaction basis functions.
+*   [x] Update `ForwardPasser` to generate and evaluate interaction candidates.
+*   [x] Extend pruning logic so interaction terms are properly removed or kept.
+*   [x] Create unit tests covering interaction selection and pruning behavior.
 
 ### Generalized Linear Models
-*   [ ] Create `GLMEarth` subclass inheriting from `Earth`.
-*   [ ] Support logistic and Poisson families with canonical link functions.
-*   [ ] Adapt scoring and prediction to handle GLM outputs.
-*   [ ] Provide tests comparing results with scikit‑learn GLM estimators.
+*   [x] Create `GLMEarth` subclass inheriting from `Earth`.
+*   [x] Support logistic and Poisson families with canonical link functions.
+*   [x] Adapt scoring and prediction to handle GLM outputs.
+*   [x] Provide tests comparing results with scikit‑learn GLM estimators.
 
 ### Cross‑Validation Helper
-*   [ ] Implement an `EarthCV` class using `sklearn.model_selection` utilities.
-*   [ ] Allow grid search over hyperparameters such as `penalty` and `max_degree`.
-*   [ ] Document usage examples for common validation workflows.
-*   [ ] Add tests verifying that splits and scoring behave as expected.
+*   [x] Implement an `EarthCV` class using `sklearn.model_selection` utilities.
+*   [x] Allow grid search over hyperparameters such as `penalty` and `max_degree`.
+*   [x] Document usage examples for common validation workflows.
+*   [x] Add tests verifying that splits and scoring behave as expected.
 
 ### Plotting Utilities
-*   [ ] Add a plotting module built on `matplotlib`.
-*   [ ] Implement basic plots for basis functions and residuals.
-*   [ ] Integrate plotting entry points with the `Earth` model.
-*   [ ] Provide example notebooks demonstrating the visualizations.
+*   [x] Add a plotting module built on `matplotlib`.
+*   [x] Implement basic plots for basis functions and residuals.
+*   [x] Integrate plotting entry points with the `Earth` model.
+*   [x] Provide example notebooks demonstrating the visualizations.
 
 These items form the bulk of the work for Phase&nbsp;2 and will bring `pymars` closer to feature parity with other implementations.
 
