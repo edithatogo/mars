@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
 # from ._forward import ForwardPasser # Imported locally in fit
 # from ._pruning import PruningPasser # Imported locally in fit
 # from ._record import EarthRecord
-# from ._util import check_X_y_docs # Example, will need proper sklearn later
 
 
 class Earth(BaseEstimator, RegressorMixin):
@@ -200,24 +199,23 @@ class Earth(BaseEstimator, RegressorMixin):
         # Import necessary modules here to avoid circular dependencies at module level
         # and to keep them local to fit if they are only used here.
         import numpy as np
+        from sklearn.utils.validation import check_X_y
         from ._forward import ForwardPasser
         from ._pruning import PruningPasser
-        from ._record import EarthRecord # If using detailed recording
-        from ._util import check_X_y # Basic input validation
+        from ._record import EarthRecord
 
-        # Input validation
-        # TODO: Later, replace with sklearn.utils.validation.check_X_y for full compatibility
-        #       This would also handle converting X, y to float64, ensuring 2D X, 1D y etc.
-        # For now, use our basic check_X_y from _util.
-        # X_checked, y_checked = check_X_y(X, y, ensure_y_1d=True) # ensure_y_1d for current single output
-
-        # Temporary direct conversion and checks (to be replaced by robust validation)
-        # if not isinstance(X, np.ndarray): X = np.asarray(X, dtype=float)
-        # if not isinstance(y, np.ndarray): y = np.asarray(y, dtype=float)
-        # if X.ndim == 1: X = X.reshape(-1,1)
-        # if y.ndim > 1 and y.shape[1] == 1: y = y.ravel()
-        # if y.ndim > 1 : raise ValueError("Target y must be 1-dimensional.")
-        # if X.shape[0] != y.shape[0]: raise ValueError("X and y have inconsistent numbers of samples.")
+        # Basic input validation using scikit-learn utilities. ``dtype=None``
+        # preserves object dtypes so that categorical handling in
+        # ``_scrub_input_data`` still works. ``force_all_finite`` mirrors the
+        # ``allow_missing`` parameter.
+        X, y = check_X_y(
+            X,
+            y,
+            dtype=None,
+            force_all_finite=not self.allow_missing,
+            multi_output=False,
+            y_numeric=True,
+        )
 
         X_processed, missing_mask, y_processed = self._scrub_input_data(X, y)
         self.X_original_ = X # Keep a reference if needed, or just use processed versions
@@ -549,25 +547,27 @@ class Earth(BaseEstimator, RegressorMixin):
         y_pred : array of shape (n_samples,)
         The predicted values. (Multi-output not currently supported for predict).
         """
-        import numpy as np # Local import for predict
-        # from ._util import check_array # Not using this custom one for now
-        # from sklearn.utils.validation import check_is_fitted, check_array # For later
+        import numpy as np  # Local import for predict
+        from sklearn.utils.validation import check_array
 
         if not self.fitted_:
-            raise RuntimeError("This Earth instance is not fitted yet. Call 'fit' with "
-                               "appropriate arguments before using this estimator.")
+            raise RuntimeError(
+                "This Earth instance is not fitted yet. Call 'fit' with appropriate arguments before using this estimator."
+            )
 
         if self.basis_ is None or self.coef_ is None:
-            raise ValueError("Model basis or coefficients are not available despite model being marked as fitted.")
+            raise ValueError(
+                "Model basis or coefficients are not available despite model being marked as fitted."
+            )
 
-        # Scrub X for prediction (handles categories and NaNs)
-        if not isinstance(X, np.ndarray):
-            X_predict_obj = np.asarray(X, dtype=object)
-        else:
-            X_predict_obj = X.astype(object, copy=False)
+        # Validate and convert input using scikit-learn utilities
+        X_checked = check_array(
+            X,
+            dtype=None,
+            force_all_finite=not self.allow_missing,
+        )
 
-        if X_predict_obj.ndim == 1:
-            X_predict_obj = X_predict_obj.reshape(-1,1)
+        X_predict_obj = X_checked.astype(object, copy=False)
 
         predict_missing_mask = np.zeros_like(X_predict_obj, dtype=bool)
         for j in range(X_predict_obj.shape[1]):
