@@ -42,7 +42,6 @@ After installation you can check the installed version:
 ```bash
 pymars --version
 ```
-```
 
 ## Running Tests
 
