@@ -525,6 +525,8 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
                     y_fit=y_processed,
                     missing_mask=missing_mask,
                     X_fit_original=self.X_original_,
+                    basis_subset=self.basis_
+                )[0]  # [0] is GCV score
                     basis_subset=self.basis_,
                 )
             except Exception:
