@@ -504,38 +504,21 @@ class Earth(BaseEstimator, RegressorMixin):
         pruning_passer_instance_for_gcv_calc,
     ):
         """Set an intercept-only model and compute its RSS, MSE and GCV."""
-        from ._util import calculate_gcv, gcv_penalty_cost_effective_parameters
 
-        # Build an intercept-only basis and coefficient
+        # Intercept-only basis and coefficient
         self.basis_ = [ConstantBasisFunction()]
         intercept = float(np.mean(y_processed))
         self.coef_ = np.array([intercept])
 
+        # Predictions do not require building a basis matrix
+        y_pred = np.full_like(y_processed, intercept, dtype=float)
+
         # Compute RSS and MSE
-        B_intercept = self._build_basis_matrix(X_processed, self.basis_, missing_mask)
-        y_pred = B_intercept @ self.coef_
         self.rss_ = float(np.sum((y_processed - y_pred) ** 2))
         self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
 
-        # Try pruning passer's GCV calculation for consistency
-        gcv_score = None
-        if hasattr(pruning_passer_instance_for_gcv_calc, "_compute_gcv_for_subset"):
-            try:
-                gcv_score, _, _ = pruning_passer_instance_for_gcv_calc._compute_gcv_for_subset(
-                    X_fit_processed=X_processed,
-                    y_fit=y_processed,
-                    missing_mask=missing_mask,
-                    X_fit_original=self.X_original_ if hasattr(self, "X_original_") else X_processed,
-                    basis_subset=self.basis_,
-                )
-                if isinstance(gcv_score, (list, tuple, np.ndarray)):
-                    gcv_score = float(gcv_score[0])
-            except Exception as exc:  # pragma: no cover - safety net
-                logger.warning("Fallback GCV via pruning passer failed: %s", exc)
-                gcv_score = None
-
-        # Fall back to manual GCV calculation
-        if gcv_score is None:
+        # Calculate GCV once using the manual formula
+        try:
             eff_params = gcv_penalty_cost_effective_parameters(
                 num_terms=1,
                 num_hinge_terms=0,
@@ -543,7 +526,11 @@ class Earth(BaseEstimator, RegressorMixin):
                 num_samples=len(y_processed),
             )
             gcv_score = calculate_gcv(self.rss_, len(y_processed), eff_params)
+        except Exception as exc:  # pragma: no cover - safety net
+            logger.warning("Fallback GCV computation failed: %s", exc)
+            gcv_score = np.inf
 
+        # Ensure self.gcv_ is set even if computation fails
         self.gcv_ = gcv_score if np.isfinite(gcv_score) else np.inf
 
     def predict(self, X):
@@ -777,16 +764,3 @@ class Earth(BaseEstimator, RegressorMixin):
         return self
 
 
-if __name__ == '__main__':
-    # Example usage (will require actual data and other modules)
-    # import numpy as np
-    # X_train = np.random.rand(100, 3)
-    # y_train = X_train[:, 0] * 2 - X_train[:, 1] + np.random.randn(100) * 0.1
-
-    # model = Earth(max_degree=1, max_terms=10)
-    # model.fit(X_train, y_train)
-    # model.summary()
-
-    # X_test = np.random.rand(20, 3)
-    # y_pred = model.predict(X_test)
-    pass
