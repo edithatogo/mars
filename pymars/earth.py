@@ -503,14 +503,22 @@ class Earth(BaseEstimator, RegressorMixin):
         missing_mask,
         pruning_passer_instance_for_gcv_calc,
     ):
+
         """Set an intercept-only model and compute its RSS, MSE and GCV."""
         from ._util import calculate_gcv, gcv_penalty_cost_effective_parameters
 
-        # Build an intercept-only basis and corresponding coefficients
+        # Build basis and coefficient for an intercept-only model
         self.basis_ = [ConstantBasisFunction()]
-        self.coef_ = np.array([np.mean(y_processed)])
-    
+        intercept = float(np.mean(y_processed))
+        self.coef_ = np.array([intercept])
+
+        # Compute RSS and MSE using the constant basis
         B_final = self._build_basis_matrix(X_processed, self.basis_, missing_mask)
+        y_pred_train = B_final @ self.coef_ if B_final.size > 0 else np.full_like(y_processed, intercept)
+        self.rss_ = np.sum((y_processed - y_pred_train) ** 2)
+        self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
+
+        # Attempt to compute GCV using PruningPasser logic if available
         if B_final.size > 0:
             y_pred_train = B_final @ self.coef_
             self.rss_ = np.sum((y_processed - y_pred_train) ** 2)
@@ -540,7 +548,7 @@ class Earth(BaseEstimator, RegressorMixin):
                     X_fit_processed=X_processed,
                     y_fit=y_processed,
                     missing_mask=missing_mask,
-                    X_fit_original=self.X_original_,
+                    X_fit_original=self.X_original_ if hasattr(self, "X_original_") else X_processed,
                     basis_subset=self.basis_,
                 )
                 if isinstance(gcv_score, (list, tuple, np.ndarray)):
@@ -548,6 +556,7 @@ class Earth(BaseEstimator, RegressorMixin):
             except Exception:
                 gcv_score = None
 
+        # Fall back to direct GCV calculation if needed
         if gcv_score is None:
             effective_params = gcv_penalty_cost_effective_parameters(
                 num_terms=1,
