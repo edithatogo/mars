@@ -16,22 +16,17 @@ Thank you for your interest in improving **pymars**! The project is a pure Pytho
   import pymars as earth
   model = earth.Earth()
   ```
-- Follow **PEP 8** and use type hints. Document modules, classes, functions and methods with clear docstrings explaining *why* things are done.
+- Follow **PEP 8** and use type hints. Document modules, classes, functions, and methods with clear docstrings explaining *why* things are done.
+- Write comments that focus on reasoning and motivation rather than line-by-line explanations.
 - Aim for minimal dependencies (typically NumPy and SciPy). List them in `requirements.txt` and `pyproject.toml`.
 
 ## Running Tests
 
 - Tests reside in the `tests/` directory and use `pytest`.
 - **Test-Driven Development** is encouraged. Provide tests for new features, edge cases, and error handling. Include scikit-learn compatibility checks (for example with `sklearn.utils.estimator_checks.check_estimator`).
-- Install dependencies with:
+- Install dependencies and run the test suite with:
   ```bash
-  pip install -r requirements.txt
-  # or
-  bash scripts/setup_tests.sh
-  ```
-- Run the full suite with:
-  ```bash
-  pytest
+  pip install -r requirements.txt && pytest
   ```
 
 ## Workflow for New Features or Bug Fixes
