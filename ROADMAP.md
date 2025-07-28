@@ -32,7 +32,7 @@ These items constitute the major goals for Phase&nbsp;2 and will extend `pymars`
 The goal of this phase is to improve the performance of `pymars` and optimize the code for speed and memory usage.
 
 *   **Profile the code.** This will involve using a profiler to identify performance bottlenecks.
-*   **Optimize the code for speed.** Apply algorithmic improvements in pure Python identified through profiling; no Cython or native extensions.
+*   **Optimize the code for speed.** Focus on Python-level algorithmic improvements identified through profiling.
 *   **Optimize the code for memory usage.** This will involve using memory profiling tools to identify memory usage issues.
 
 ## Feature Matrix
