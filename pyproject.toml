@@ -22,7 +22,9 @@ pymars = "pymars.cli:main"
 
 
 
+
 [tool.setuptools]
+packages = ["pymars"]
 package-dir = {"" = "."}
 
 [tool.setuptools.dynamic]
