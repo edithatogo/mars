@@ -158,7 +158,10 @@ if __name__ == '__main__':
     n_terms_example = 5
     penalty_d_example = 3.0 # Typical penalty for MARS GCV
 
+    # Assume one intercept term so the number of hinge terms is ``n_terms_example - 1``.
+    num_hinge_example = n_terms_example - 1
     effective_params = gcv_penalty_cost_effective_parameters(
+        n_terms_example, num_hinge_example, penalty_d_example, n_samples_example
         num_terms=n_terms_example,
         num_hinge_terms=n_terms_example,
         penalty=penalty_d_example,
@@ -177,7 +180,9 @@ if __name__ == '__main__':
 
     # Edge case: more terms than samples (after penalty)
     n_terms_high = 40
+    num_hinge_high = n_terms_high - 1
     effective_params_high = gcv_penalty_cost_effective_parameters(
+        n_terms_high, num_hinge_high, penalty_d_example, n_samples_example
         num_terms=n_terms_high,
         num_hinge_terms=n_terms_high,
         penalty=penalty_d_example,
@@ -210,4 +215,5 @@ if __name__ == '__main__':
         "GCV Score (effective_params == N-1): %s", gcv_score_just_under_N
     )
 
-    # Example block ended to avoid running further malformed code
+    # Example block finished
+    pass
