@@ -511,40 +511,28 @@ class Earth(BaseEstimator, RegressorMixin):
         intercept = float(np.mean(y_processed))
         self.coef_ = np.array([intercept])
 
-        # Compute RSS and MSE
-        B_intercept = self._build_basis_matrix(X_processed, self.basis_, missing_mask)
-        y_pred = B_intercept @ self.coef_
-        self.rss_ = float(np.sum((y_processed - y_pred) ** 2))
+        # Predict once using the intercept
+        y_pred_train = np.full_like(y_processed, intercept, dtype=float)
+
+        # Compute RSS and MSE using the single prediction vector
+        residuals = y_processed - y_pred_train
+        self.rss_ = float(np.sum(residuals ** 2))
         self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
 
-        # Try pruning passer's GCV calculation for consistency
-        gcv_score = None
-        if hasattr(pruning_passer_instance_for_gcv_calc, "_compute_gcv_for_subset"):
-            try:
-                gcv_score, _, _ = pruning_passer_instance_for_gcv_calc._compute_gcv_for_subset(
-                    X_fit_processed=X_processed,
-                    y_fit=y_processed,
-                    missing_mask=missing_mask,
-                    X_fit_original=self.X_original_ if hasattr(self, "X_original_") else X_processed,
-                    basis_subset=self.basis_,
-                )
-                if isinstance(gcv_score, (list, tuple, np.ndarray)):
-                    gcv_score = float(gcv_score[0])
-            except Exception as exc:  # pragma: no cover - safety net
-                logger.warning("Fallback GCV via pruning passer failed: %s", exc)
-                gcv_score = None
-
-        # Fall back to manual GCV calculation
-        if gcv_score is None:
-            eff_params = gcv_penalty_cost_effective_parameters(
+        # Compute GCV directly using the RSS
+        try:
+            effective_params = gcv_penalty_cost_effective_parameters(
                 num_terms=1,
                 num_hinge_terms=0,
                 penalty=self.penalty,
                 num_samples=len(y_processed),
             )
-            gcv_score = calculate_gcv(self.rss_, len(y_processed), effective_params)
+            gcv_value = calculate_gcv(self.rss_, len(y_processed), effective_params)
+        except Exception as exc:  # pragma: no cover - safety net
+            logger.warning("Failed to compute fallback GCV: %s", exc)
+            gcv_value = np.inf
 
-        self.gcv_ = gcv_score if np.isfinite(gcv_score) else np.inf
+        self.gcv_ = gcv_value if np.isfinite(gcv_value) else np.inf
 
     def predict(self, X):
         """
