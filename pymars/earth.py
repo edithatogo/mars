@@ -511,12 +511,7 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
                 if len(y_processed) > 0
                 else 0.0
             )
-            self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
 
-        gcv_score = None
-
-        y_pred_train = B_intercept @ self.coef_
-        self.rss_ = np.sum((y_processed - y_pred_train) ** 2)
         self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
 
         gcv_score: float | None = None
@@ -541,7 +536,7 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
                 penalty=self.penalty,
                 num_samples=len(y_processed),
             )
-            gcv_score = calculate_gcv(self.rss_, len(y_processed), effective_params)
+            gcv_score = calculate_gcv(self.rss_, len(y_processed), eff_params)
 
         self.gcv_ = gcv_score
 
