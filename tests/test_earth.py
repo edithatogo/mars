@@ -219,7 +219,7 @@ def test_empty_model_after_pruning(simple_earth_data):
 
     assert model.gcv_ is not None
     assert np.isclose(model.gcv_, expected_gcv_intercept_only), (
-        "GCV should match the expected value for an intercept-only model"
+        f"GCV ({model.gcv_}) should match the expected value ({expected_gcv_intercept_only}) for an intercept-only model"
     )
 
 def test_earth_feature_importance_parameter(simple_earth_data):
