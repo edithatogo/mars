@@ -56,6 +56,5 @@ The goal of this phase is to improve the performance of `pymars` and optimize th
 | Cross-Validation | ✔️ | ✔️ | ✔️ |
 | Plotting | ✔️ | ✔️ | ✔️ |
 | **Performance** | | | |
-| Cython | ❌ | ✔️ | N/A |
 | Fortran | ❌ | ❌ | ✔️ |
 | C | ❌ | ❌ | ✔️ |
