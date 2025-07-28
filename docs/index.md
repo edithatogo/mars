@@ -1,42 +1,16 @@
 # pymars Documentation
 
-Welcome to the documentation for `pymars`.
-
-`pymars` is a pure Python implementation of Multivariate Adaptive Regression Splines (MARS), designed to be compatible with scikit-learn.
-
-## Contents
-
-*   **Introduction**
-    *   What is MARS?
-    *   Features of `pymars`
-*   **Installation**
-*   **User Guide**
-    *   Basic Usage
-    *   Regression with `EarthRegressor`
-    *   Classification with `EarthClassifier`
-    *   Understanding MARS Model Components (Basis Functions, Coefficients)
-    *   Interpreting Model Summaries
-    *   Hyperparameter Tuning
-    *   Using `GLMEarth` for logistic and Poisson models
-    *   Cross-validation with `EarthCV`
-    *   Plotting model diagnostics
-*   **API Reference**
-    *   `pymars.earth.Earth`
-    *   `pymars.glm.GLMEarth`
-    *   `pymars.cv.EarthCV`
-    *   `pymars.sklearn_compat.EarthRegressor`
-    *   `pymars.sklearn_compat.EarthClassifier`
-    *   Basis Functions (`pymars._basis`)
-    *   Utility functions (`pymars._util`)
-    *   Plotting utilities (`pymars.plot`)
-*   **Examples**
-    *   Links to example notebooks or scripts.
-*   **Contributing**
-*   **Changelog**
+`pymars` provides a pure Python implementation of Multivariate Adaptive Regression Splines (MARS) with a scikit‑learn compatible API. The library exposes the classic `Earth` model along with utilities for generalized linear models, cross‑validation, and plotting diagnostics.
 
 ## Installation
 
-Install the latest development version from the cloned repository:
+Install the latest stable release from PyPI:
+
+```bash
+pip install pymars
+```
+
+To work with the current development version, clone the repository and install in editable mode:
 
 ```bash
 git clone https://github.com/your-repository-url/pymars.git
@@ -44,13 +18,52 @@ cd pymars
 pip install -e .
 ```
 
-Once a release is published on PyPI you will be able to install it directly:
+## Usage Examples
 
-```bash
-pip install pymars
+Fit a basic regression model using `Earth`:
+
+```python
+import numpy as np
+import pymars as earth
+
+X = np.random.rand(100, 3)
+y = np.sin(X[:, 0]) + X[:, 1]
+
+model = earth.Earth(max_degree=2)
+model.fit(X, y)
+print(model.predict(X[:5]))
 ```
 
-This documentation is currently under construction. Please refer to the main `README.md` and `ROADMAP.md` for project status and plans.
+`GLMEarth` supports logistic and Poisson models:
 
----
-*This file serves as a placeholder for more detailed documentation, potentially generated using tools like Sphinx.*
+```python
+from pymars import GLMEarth
+
+clf = GLMEarth(family="binomial")
+clf.fit(X, (y > 0).astype(int))
+```
+
+Perform cross‑validation with `EarthCV`:
+
+```python
+from pymars import EarthCV
+
+cv = EarthCV(max_degree=[1, 2], penalty=[2, 3])
+cv.fit(X, y)
+best_model = cv.best_estimator_
+```
+
+## API Reference
+
+### `pymars.earth.Earth`
+The core MARS estimator. Implements the forward and pruning algorithms and is compatible with scikit‑learn.
+
+### `pymars.glm.GLMEarth`
+Extension of `Earth` that fits generalized linear models such as logistic and Poisson regression.
+
+### `pymars.cv.EarthCV`
+Grid‑search helper built on scikit‑learn's `GridSearchCV` for tuning `Earth` hyperparameters.
+
+### Plotting Tools (`pymars.plot`)
+Utility functions for visualizing model diagnostics and basis functions.
+

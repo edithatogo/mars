@@ -93,6 +93,11 @@ model.fit(X, y)
 predictions = model.predict(X)
 ```
 
+## Documentation
+
+See the user guide and API reference in [docs/index.md](docs/index.md).
+
+
 ## Contributing
 
 Contributions are welcome! Please see `CONTRIBUTING.md` and `AGENTS.md` for guidelines.
