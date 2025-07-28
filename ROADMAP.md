@@ -12,9 +12,9 @@ The goal of this phase is to implement the core functionality of the MARS algori
 *   [x] Implement a `scikit-learn` compatible `predict` method.
 *   [x] Implement a `scikit-learn` compatible `score` method.
 *   [x] Implement a `scikit-learn` compatible `get_params` and `set_params` methods.
-*   [ ] Add support for `sample_weight` in the `fit` method.
-*   [x] Implement categorical feature support.
-*   [x] Implement missing value support.
+*   [x] Add support for `sample_weight` in the `fit` method.
+*   [x] Implement categorical feature support via `CategoricalImputer` and updates to `Earth`.
+*   [x] Implement missing value support including imputation and `MissingnessBasisFunction` handling.
 
 ## Phase 2: Advanced Features
 
@@ -61,7 +61,7 @@ The goal of this phase is to improve the performance of `pymars` and optimize th
 | `score` | ✔️ | ✔️ | ✔️ |
 | `get_params` | ✔️ | ✔️ | ✔️ |
 | `set_params` | ✔️ | ✔️ | ✔️ |
-| `sample_weight` | ❌ | ✔️ | ✔️ |
+| `sample_weight` | ✔️ | ✔️ | ✔️ |
 | Categorical Features | ✔️ | ✔️ | ✔️ |
 | Missing Values | ✔️ | ✔️ | ✔️ |
 | **Advanced** | | | |

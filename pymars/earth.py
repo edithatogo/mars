@@ -154,6 +154,7 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
         self.feature_importances_: np.ndarray = None # Or dict if multiple types
 
         self.fitted_ = False
+        self.categorical_imputer_ = None
 
     # _build_basis_matrix is defined in Earth class. Its signature was:
     # def _build_basis_matrix(self, X: np.ndarray, basis_functions: list) -> np.ndarray:
@@ -435,22 +436,36 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
 
     def _scrub_input_data(self, X, y):
         """Helper to validate and preprocess X and y."""
-        # Convert X
+        # Convert X to object array first to preserve categorical strings
         if not isinstance(X, np.ndarray):
-            X_orig = np.asarray(X, dtype=float)
+            X_obj = np.asarray(X, dtype=object)
         else:
-            X_orig = X.astype(float, copy=False) # Ensure float, avoid copy if possible
+            X_obj = X.astype(object, copy=False)
 
-        if X_orig.ndim == 1:
-            X_orig = X_orig.reshape(-1, 1)
+        if X_obj.ndim == 1:
+            X_obj = X_obj.reshape(-1, 1)
 
-        missing_mask = np.isnan(X_orig)
+        # Build missing mask from original values
+        missing_mask = np.zeros_like(X_obj, dtype=bool)
+        for j in range(X_obj.shape[1]):
+            col = X_obj[:, j]
+            missing_mask[:, j] = np.array([
+                (val is None) or (isinstance(val, float) and np.isnan(val))
+                for val in col
+            ])
 
         if not self.allow_missing and np.any(missing_mask):
             raise ValueError("Input X contains NaN values and allow_missing is False.")
 
-        X_processed = X_orig.copy() if np.any(missing_mask) else X_orig
-        if np.any(missing_mask): # Only fill if NaNs were present
+        X_processed_obj = X_obj
+        if self.categorical_features:
+            from ._categorical import CategoricalImputer
+            self.categorical_imputer_ = CategoricalImputer().fit(X_obj, self.categorical_features)
+            X_processed_obj = self.categorical_imputer_.transform(X_obj)
+
+        X_processed = np.asarray(X_processed_obj, dtype=float)
+        if np.any(missing_mask):
+            X_processed = X_processed.copy()
             X_processed[missing_mask] = 0.0
 
         # Convert y
@@ -560,20 +575,33 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
         if self.basis_ is None or self.coef_ is None:
             raise ValueError("Model basis or coefficients are not available despite model being marked as fitted.")
 
-        # Scrub X for prediction (handles NaNs based on self.allow_missing)
+        # Scrub X for prediction (handles categories and NaNs)
         if not isinstance(X, np.ndarray):
-            X_predict_orig = np.asarray(X, dtype=float)
+            X_predict_obj = np.asarray(X, dtype=object)
         else:
-            X_predict_orig = X.astype(float, copy=False)
+            X_predict_obj = X.astype(object, copy=False)
 
-        if X_predict_orig.ndim == 1:
-            X_predict_orig = X_predict_orig.reshape(-1,1)
+        if X_predict_obj.ndim == 1:
+            X_predict_obj = X_predict_obj.reshape(-1,1)
+
+        predict_missing_mask = np.zeros_like(X_predict_obj, dtype=bool)
+        for j in range(X_predict_obj.shape[1]):
+            col = X_predict_obj[:, j]
+            predict_missing_mask[:, j] = np.array([
+                (val is None) or (isinstance(val, float) and np.isnan(val))
+                for val in col
+            ])
+
+        if hasattr(self, 'categorical_imputer_') and self.categorical_imputer_ is not None:
+            X_predict_obj = self.categorical_imputer_.transform(X_predict_obj)
+
+        X_predict_orig = np.asarray(X_predict_obj, dtype=float)
 
         # Check feature consistency with training data (e.g. self.n_features_in_ if stored)
         if hasattr(self.record_, 'n_features') and X_predict_orig.shape[1] != self.record_.n_features:
              raise ValueError(f"X has {X_predict_orig.shape[1]} features, but Earth model was trained with {self.record_.n_features} features.")
 
-        predict_missing_mask = np.isnan(X_predict_orig)
+        # retain original missing mask for zero filling
         X_predict_processed = X_predict_orig.copy() if np.any(predict_missing_mask) else X_predict_orig
         if np.any(predict_missing_mask):
             if not self.allow_missing:
