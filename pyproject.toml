@@ -22,9 +22,7 @@ pymars = "pymars.cli:main"
 
 
 [tool.setuptools]
-packages = ["pymars"]
 package-dir = {"" = "."}
-packages = ["pymars"]
 
 [tool.setuptools.dynamic]
 version = {attr = "pymars.__version__"}
