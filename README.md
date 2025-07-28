@@ -119,6 +119,3 @@ This project is licensed under the [MIT License](LICENSE).
 - Inspired by the `py-earth` library (scikit-learn-contrib).
 - Inspired by the R `earth` package.
 
-```
-
-```
