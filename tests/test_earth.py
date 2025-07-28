@@ -7,8 +7,14 @@ Unit tests for the main Earth class in pymars.earth
 import pytest
 import numpy as np
 from pymars.earth import Earth
-from pymars._basis import ConstantBasisFunction, HingeBasisFunction, LinearBasisFunction, MissingnessBasisFunction
+from pymars._basis import (
+    ConstantBasisFunction,
+    HingeBasisFunction,
+    LinearBasisFunction,
+    MissingnessBasisFunction,
+)
 from pymars._record import EarthRecord
+from pymars._util import calculate_gcv, gcv_penalty_cost_effective_parameters
 
 # Minimal data for testing basic fit and predict
 @pytest.fixture
@@ -181,8 +187,6 @@ def test_empty_model_after_pruning(simple_earth_data):
     model = Earth(max_degree=1, max_terms=3, penalty=3.0) # Normal penalty
 
     # Mock PruningPasser.run to return an empty/invalid model
-    # Need to import PruningPasser for this test's GCV check part too
-    from pymars._pruning import PruningPasser # Local import for this test
     from unittest.mock import patch
 
     # Patch PruningPasser in the module where it's defined and imported from by Earth.fit
@@ -204,24 +208,17 @@ def test_empty_model_after_pruning(simple_earth_data):
     assert np.allclose(predictions, np.mean(y), atol=1e-5), "Predictions should be mean of y"
 
     # Check GCV (should be GCV of intercept-only model)
-    # Re-calculate GCV for intercept-only model manually for assertion
-    temp_earth_for_gcv_check = Earth(penalty=model.penalty)
-    temp_pruner_for_gcv_check = PruningPasser(temp_earth_for_gcv_check)
-    temp_pruner_for_gcv_check.X_train = X
-    temp_pruner_for_gcv_check.y_train = y.ravel()
-    temp_pruner_for_gcv_check.n_samples = X.shape[0]
-    # Create a dummy missing_mask and provide X_fit_original for the call
-    dummy_missing_mask = np.zeros_like(X, dtype=bool)
-    expected_gcv_intercept_only, _, _ = temp_pruner_for_gcv_check._compute_gcv_for_subset(
-        X_fit_processed=X,
-        y_fit=y.ravel(),
-        missing_mask=dummy_missing_mask,
-        X_fit_original=X,
-        basis_subset=[ConstantBasisFunction()]
+    rss = np.sum((y.ravel() - np.mean(y.ravel())) ** 2)
+    expected_params = gcv_penalty_cost_effective_parameters(
+        num_terms=1,
+        num_hinge_terms=0,
+        penalty=model.penalty,
+        num_samples=len(y),
     )
+    expected_gcv_intercept_only = calculate_gcv(rss, len(y), expected_params)
 
     assert model.gcv_ is not None, "GCV should be set"
-    assert np.isclose(model.gcv_, expected_gcv_intercept_only), "GCV should be for the intercept-only model"
+    assert np.isclose(model.gcv_, expected_gcv_intercept_only)
 
 def test_earth_feature_importance_parameter(simple_earth_data):
     """Test that feature_importance_type parameter is stored and used."""
