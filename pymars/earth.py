@@ -4,7 +4,11 @@
 The main Earth class, coordinating the model fitting process.
 """
 import numpy as np
-from ._basis import ConstantBasisFunction # Used in fallbacks
+from ._basis import ConstantBasisFunction  # Used in fallbacks
+from ._util import (
+    calculate_gcv,
+    gcv_penalty_cost_effective_parameters,
+)
 # from ._forward import ForwardPasser # Imported locally in fit
 # from ._pruning import PruningPasser # Imported locally in fit
 # from ._record import EarthRecord
@@ -485,36 +489,61 @@ class Earth: # Add (BaseEstimator, RegressorMixin) later
 
     def _set_fallback_model(self, X_processed, y_processed, missing_mask, pruning_passer_instance_for_gcv_calc):
         """Sets a fallback intercept-only model."""
+        from ._util import calculate_gcv, gcv_penalty_cost_effective_parameters
+    def _set_fallback_model(
+        self,
+        X_processed,
+        y_processed,
+        missing_mask,
+        pruning_passer_instance_for_gcv_calc,
+    ):
+        """Set an intercept-only model and compute its GCV."""
         self.basis_ = [ConstantBasisFunction()]
-        self.coef_ = np.array([np.mean(y_processed)]) # Mean of processed (finite) y
+        self.coef_ = np.array([np.mean(y_processed)])
 
-        B_final = self._build_basis_matrix(X_processed, self.basis_, missing_mask) # Intercept transform is robust to NaNs
+        B_final = self._build_basis_matrix(X_processed, self.basis_, missing_mask)
 
-        if B_final.size > 0 : # B_final for intercept is (n_samples, 1)
+        if B_final.size > 0:
             y_pred_train = B_final @ self.coef_
-            self.rss_ = np.sum((y_processed - y_pred_train)**2)
+            self.rss_ = np.sum((y_processed - y_pred_train) ** 2)
             self.mse_ = self.rss_ / len(y_processed)
-        else: # Should not happen if y_processed is not empty
-            self.rss_ = np.sum((y_processed - np.mean(y_processed))**2) if len(y_processed) > 0 else 0.0
+        else:
+            self.rss_ = (
+                np.sum((y_processed - np.mean(y_processed)) ** 2)
+                if len(y_processed) > 0
+                else 0.0
+            )
             self.mse_ = self.rss_ / len(y_processed) if len(y_processed) > 0 else np.inf
 
-        if hasattr(pruning_passer_instance_for_gcv_calc, '_compute_gcv_for_subset'):
-            # GCV for intercept needs X_processed, y_processed, missing_mask, X_original
-            # The _compute_gcv_for_subset will need to be NaN aware.
-            # For now, this might be inaccurate if not fully NaN aware.
-            # A simple GCV calc for intercept might be:
-            # num_params = 1, N = len(y_processed)
-            # gcv_val = self.rss_ / (N * (1 - num_params/N)**2) if N > num_params else np.inf
-            # This is a placeholder, actual GCV calc needs to be robust.
-            # For now, let PruningPasser's method try, or set to Inf.
+        try:
+            eff_params = gcv_penalty_cost_effective_parameters(
+        gcv_score = None
+        if hasattr(pruning_passer_instance_for_gcv_calc, "_compute_gcv_for_subset"):
             try:
-                self.gcv_ = pruning_passer_instance_for_gcv_calc._compute_gcv_for_subset(
+                gcv_score, _, _ = pruning_passer_instance_for_gcv_calc._compute_gcv_for_subset(
                     X_fit_processed=X_processed,
                     y_fit=y_processed,
                     missing_mask=missing_mask,
-                    basis_functions_subset=self.basis_,
-                    X_fit_original=self.X_original_ # Pass original X for knot selection consistency if needed by GCV's LSTSQ
-                )[0] # [0] is GCV score
+                    X_fit_original=self.X_original_,
+                    basis_subset=self.basis_,
+                )
+            except Exception:
+                gcv_score = None
+
+        if gcv_score is None:
+            effective_params = gcv_penalty_cost_effective_parameters(
+                num_terms=1,
+                num_hinge_terms=0,
+                penalty=self.penalty,
+                num_samples=len(y_processed),
+            )
+            self.gcv_ = calculate_gcv(self.rss_, len(y_processed), eff_params)
+        except Exception:
+            gcv_score = calculate_gcv(self.rss_, len(y_processed), effective_params)
+
+        self.gcv_ = gcv_score
+                    basis_subset=self.basis_
+                )[0]
             except Exception: # Broad catch if GCV calc fails for intercept
                 self.gcv_ = np.inf
         else:
