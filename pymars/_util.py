@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 """
 Utility functions for the pymars library.
@@ -9,6 +8,7 @@ such as input validation, specific calculations not tied to a class, etc.
 
 # Standard library imports
 import logging
+
 import numpy as np
 
 logger = logging.getLogger(__name__)

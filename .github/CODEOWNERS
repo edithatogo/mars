@@ -1,0 +1,37 @@
+# This file enables CODEOWNERS for the repository
+# Code owners will be automatically requested for review when someone creates a pull request
+
+# Core maintainers - review all code
+* @doughnut
+
+# Specific owners for different parts of the codebase
+pymars/earth.py @doughnut
+pymars/_forward.py @doughnut
+pymars/_pruning.py @doughnut
+pymars/_basis.py @doughnut
+pymars/glm.py @doughnut
+pymars/cv.py @doughnut
+pymars/plot.py @doughnut
+pymars/_sklearn_compat.py @doughnut
+pymars/_categorical.py @doughnut
+pymars/_missing.py @doughnut
+pymars/_record.py @doughnut
+pymars/_util.py @doughnut
+pymars/cli.py @doughnut
+
+# Documentation
+docs/* @doughnut
+README.md @doughnut
+
+# Tests
+tests/* @doughnut
+
+# Configuration files
+*.toml @doughnut
+*.cfg @doughnut
+*.ini @doughnut
+.github/**/* @doughnut
+.pre-commit-config.yaml @doughnut
+
+# Scripts
+scripts/* @doughnut

@@ -1,6 +1,32 @@
 # pymars: Pure Python Earth (Multivariate Adaptive Regression Splines)
 
+![CI](https://github.com/pymars/pymars/actions/workflows/ci.yml/badge.svg)
+![Security](https://github.com/pymars/pymars/actions/workflows/security.yml/badge.svg)
+![Code Quality](https://github.com/pymars/pymars/actions/workflows/code-quality.yml/badge.svg)
+![Documentation](https://github.com/pymars/pymars/actions/workflows/docs.yml/badge.svg)
+![Code Coverage](https://codecov.io/gh/pymars/pymars/branch/main/graph/badge.svg)
+![PyPI](https://img.shields.io/pypi/v/pymars.svg)
+![Python Version](https://img.shields.io/pypi/pyversions/pymars.svg)
+![License](https://img.shields.io/github/license/pymars/pymars.svg)
+
 **pymars** is a pure Python implementation of Multivariate Adaptive Regression Splines (MARS), inspired by the popular `py-earth` library by Jason Friedman and an R package `earth` by Stephen Milborrow. The goal of `pymars` is to provide an easy-to-install, scikit-learn compatible version of the MARS algorithm without C/Cython dependencies.
+
+## Key Features
+
+- **Pure Python:** Easy to install and use across different platforms.
+- **Scikit-learn Compatible:** Integrates with the scikit-learn ecosystem (estimators, pipelines, model selection tools).
+- **MARS Algorithm:** Implements the core MARS fitting procedure, including:
+  - Forward pass to select basis functions (both hinge and linear terms).
+  - Pruning pass using Generalized Cross-Validation (GCV) to prevent overfitting.
+  - Support for interaction terms (including interactions involving linear terms).
+  - Refined `minspan` and `endspan` controls for knot placement, aligning more closely with `py-earth` behavior (e.g., `minspan` as a cooldown period).
+- **Feature Importance:** Calculation of feature importances using methods like 'nb_subsets' (number of subsets in pruning trace), 'gcv' (GCV improvement), and 'rss' (RSS reduction).
+- **Regression and Classification:** Provides `EarthRegressor` and `EarthClassifier` classes.
+- **Generalized Linear Models:** The `GLMEarth` subclass fits logistic or Poisson models.
+- **Cross‑Validation Helper:** The `EarthCV` class integrates with scikit‑learn's model selection utilities.
+- **Plotting Utilities:** Simple diagnostics built on `matplotlib`.
+- **Advanced Interpretability:** Partial dependence plots, Individual Conditional Expectation (ICE) plots, and model explanation tools.
+- **Comprehensive CLI:** Command-line interface for model fitting, prediction, and evaluation.
 
 ## Key Features
 

@@ -1,13 +1,13 @@
-# -*- coding: utf-8 -*-
 
 """
 Unit tests for the main Earth class in pymars.earth
 """
 
 import logging
-import pytest
+
 import numpy as np
-from pymars.earth import Earth
+import pytest
+
 from pymars._basis import (
     ConstantBasisFunction,
     HingeBasisFunction,
@@ -16,6 +16,8 @@ from pymars._basis import (
 )
 from pymars._record import EarthRecord
 from pymars._util import calculate_gcv, gcv_penalty_cost_effective_parameters
+from pymars.earth import Earth
+
 
 # Minimal data for testing basic fit and predict
 @pytest.fixture
@@ -141,7 +143,6 @@ def test_earth_fit_predict_more_complex(more_complex_earth_data):
                              "which can happen with greedy forward pass even with linear terms.")
             assert has_interaction, "Expected interaction terms with max_degree > 1 for this complex data."
 
-import logging
 
 
 def test_earth_summary_method(simple_earth_data, caplog):
@@ -524,7 +525,6 @@ def test_earth_feature_importance_rss(simple_earth_data, more_complex_earth_data
     if X_simple.shape[1] == 1 and np.any(model_simple_signal.feature_importances_ > 0):
         assert np.isclose(model_simple_signal.feature_importances_[0], 1.0, atol=1e-5)
 
-import logging
 
 def test_earth_invalid_feature_importance_type(simple_earth_data, caplog):
     """Test behavior with an invalid feature_importance_type."""

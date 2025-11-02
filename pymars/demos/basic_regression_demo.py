@@ -1,9 +1,10 @@
 """Basic regression demonstration using :class:`EarthRegressor`."""
 
 import logging
+
 import numpy as np
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import train_test_split
 
 from pymars._sklearn_compat import EarthRegressor
 

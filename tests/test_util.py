@@ -1,11 +1,11 @@
-# -*- coding: utf-8 -*-
 
 """
 Unit tests for utility functions in pymars._util
 """
 
-import pytest
 import numpy as np
+import pytest
+
 # from pymars._util import check_array, check_X_y, calculate_gcv, gcv_penalty_ κόστος_ কার্যকর_ παραμέτρων
 
 def test_util_module_importable():

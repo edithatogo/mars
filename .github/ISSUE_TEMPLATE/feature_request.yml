@@ -1,0 +1,37 @@
+name: Feature Request
+about: Suggest an idea for this project
+title: '[Feature]: '
+labels: 'enhancement'
+assignees: ''
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature for pymars!
+  - type: textarea
+    id: description
+    attributes:
+      label: Feature Description
+      description: A clear and concise description of what the feature is
+      placeholder: Tell us about your feature idea
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why do you want this feature? What problem does it solve?
+      placeholder: Explain the motivation behind this feature
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: What alternatives have you considered for this feature?
+      placeholder: Describe any alternative solutions you've considered
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context about the feature request here

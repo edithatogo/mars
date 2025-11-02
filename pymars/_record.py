@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 """
 Record objects for storing information about the MARS fitting process.
@@ -8,6 +7,7 @@ and the pruning pass (terms removed, GCV at each step).
 """
 
 import logging
+
 import numpy as np
 
 logger = logging.getLogger(__name__)
@@ -29,13 +29,13 @@ class EarthRecord:
         # Pruning pass tracking
         # These will store the sequence of models considered during pruning.
         # Each element corresponds to a model of a certain size.
-        self.pruning_trace_basis_functions_: list[list['BasisFunction']] = []
+        self.pruning_trace_basis_functions_: list[list[BasisFunction]] = []
         self.pruning_trace_coeffs_: list[np.ndarray] = []
         self.pruning_trace_gcv_: list[float] = []
         self.pruning_trace_rss_: list[float] = []
 
         # Final selected model details (can be set after pruning)
-        self.final_basis_: list['BasisFunction'] = None
+        self.final_basis_: list[BasisFunction] = None
         self.final_coeffs_ = None
         self.final_gcv_ = None
         self.final_rss_ = None
@@ -87,7 +87,7 @@ class EarthRecord:
             # summary.append(f"  GCVs in sequence: {[f'{g:.4f}' for g in self.pruning_trace_gcv_]}")
 
         if self.final_basis_ is not None:
-            summary.append(f"\nFinal Selected Model (after pruning):")
+            summary.append("\nFinal Selected Model (after pruning):")
             summary.append(f"  Number of terms: {len(self.final_basis_)}")
             summary.append(f"  GCV: {self.final_gcv_:.4f}")
             summary.append(f"  RSS: {self.final_rss_:.4f}")

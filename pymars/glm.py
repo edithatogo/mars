@@ -1,6 +1,8 @@
 import numpy as np
 from sklearn.linear_model import LogisticRegression, PoissonRegressor
+
 from ._sklearn_compat import EarthRegressor
+
 
 class GLMEarth(EarthRegressor):
     """Earth model that fits GLM coefficients."""

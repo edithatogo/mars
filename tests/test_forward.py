@@ -1,14 +1,20 @@
-# -*- coding: utf-8 -*-
 
 """
 Unit tests for the ForwardPasser in pymars._forward
 """
 
-import pytest
 import numpy as np
-from pymars.earth import Earth
+import pytest
+
+from pymars._basis import (
+    ConstantBasisFunction,
+    HingeBasisFunction,
+    LinearBasisFunction,
+    MissingnessBasisFunction,
+)
 from pymars._forward import ForwardPasser
-from pymars._basis import ConstantBasisFunction, HingeBasisFunction, LinearBasisFunction, MissingnessBasisFunction
+from pymars.earth import Earth
+
 
 class MockEarth(Earth):
     def __init__(self, max_degree=1, max_terms=10,

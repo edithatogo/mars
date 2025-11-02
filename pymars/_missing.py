@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 """
 Utilities for handling missing values in pymars.
@@ -9,6 +8,7 @@ This module will house such functionalities.
 """
 
 import logging
+
 import numpy as np
 
 logger = logging.getLogger(__name__)

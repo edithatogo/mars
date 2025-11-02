@@ -1,30 +1,41 @@
-[build-system]
-requires = ["setuptools>=61", "wheel"]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "pymars"
+version = "1.0.0-beta.1"
 description = "Pure Python Earth (MARS) algorithm"
 readme = "README.md"
 authors = [{name = "pymars developers"}]
 requires-python = ">=3.8"
-dynamic = ["version"]
 dependencies = [
     "numpy",
     "scikit-learn",
+    "matplotlib",
 ]
 
 [project.optional-dependencies]
 pandas = ["pandas"]
+cli = ["pandas"]
+dev = [
+    "ruff>=0.1.6",
+    "pytest-cov>=4.1.0",
+    "tox>=4.11.0",
+    "mypy>=1.8.0",
+    "pre-commit>=3.6.0",
+    "black>=23.12.1",
+    "isort>=5.13.0",
+    "pytest-benchmark>=4.0.0",
+    "hypothesis>=6.90.0",
+    "mutmut>=2.4.0",
+    "bandit>=1.7.6",
+    "safety>=2.4.0",
+    "pandas",  # For CLI functionality
+]
 
-[project.urls]
-Homepage = "https://github.com/pymars/pymars"
-
-[project.entry-points.console_scripts]
+[project.scripts]
 pymars = "pymars.cli:main"
 
-
-
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 packages = ["pymars", "pymars.demos"]
@@ -32,3 +43,86 @@ package-dir = {"" = "."}
 
 [tool.setuptools.dynamic]
 version = {attr = "pymars.__version__"}
+
+[tool.ruff]
+# Same as Black.
+line-length = 88
+# Assume Python 3.8+
+target-version = "py38"
+
+[tool.ruff.lint]
+# Enable all rules from the `pycodestyle` and `pyflakes` linters by default
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "C",  # complexity (like mccabe)
+    "B",  # bugbear
+    "UP", # pyupgrade
+    "YTT",# flake8-2020
+    "BLE",# flake8-blind-except
+    "ANN",# flake8-annotations (excluding ANN101, ANN102)
+    "S",  # flake8-bandit
+    "C9", # mccabe complexity
+]
+extend-ignore = [
+    "ANN",  # We don't require type annotations everywhere yet
+]
+
+# Allow fix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Allow print statements in demos
+"pymars/demos/*" = ["E501", "S101"]
+
+[tool.ruff.lint.mccabe]
+# Unlike Flake8, default to a complexity of 10.
+max-complexity = 10
+
+[tool.coverage.run]
+source = ["pymars"]
+omit = [
+    "*/tests/*",
+    "*/__pycache__/*",
+    "*/venv/*",
+    "*/env/*",
+    "*/.env/*",
+    "*/.venv/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]

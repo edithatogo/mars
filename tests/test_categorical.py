@@ -1,9 +1,8 @@
 import numpy as np
-import pytest
-from sklearn.preprocessing import LabelEncoder
 
-from pymars import Earth, CategoricalImputer
+from pymars import CategoricalImputer, Earth
 from pymars._basis import CategoricalBasisFunction
+
 
 def test_categorical_feature_handling():
     """Test that the Earth model can handle categorical features."""

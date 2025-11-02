@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 """
 The pruning pass of the MARS algorithm.
@@ -9,10 +8,12 @@ using a criterion like Generalized Cross-Validation (GCV).
 """
 
 import logging
+
 import numpy as np
-from .earth import Earth  # For type hinting
+
 from ._basis import BasisFunction, ConstantBasisFunction, HingeBasisFunction
 from ._util import calculate_gcv, gcv_penalty_cost_effective_parameters
+from .earth import Earth  # For type hinting
 
 logger = logging.getLogger(__name__)
 

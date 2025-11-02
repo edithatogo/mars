@@ -1,11 +1,16 @@
-# -*- coding: utf-8 -*-
 
 """
 Unit tests for the basis functions in pymars._basis
 """
-import pytest
 import numpy as np
-from pymars._basis import BasisFunction, ConstantBasisFunction, HingeBasisFunction, LinearBasisFunction
+import pytest
+
+from pymars._basis import (
+    ConstantBasisFunction,
+    HingeBasisFunction,
+    LinearBasisFunction,
+)
+
 
 # --- Test ConstantBasisFunction ---
 def test_constant_basis_function():
@@ -181,7 +186,7 @@ def test_linear_basis_function(parent_type):
 # --- Test MissingnessBasisFunction ---
 def test_missingness_basis_function():
     """Test MissingnessBasisFunction."""
-    from pymars._basis import MissingnessBasisFunction # Import locally for this test
+    from pymars._basis import MissingnessBasisFunction  # Import locally for this test
 
     var_idx, var_name = 0, "FeatureA"
     bf = MissingnessBasisFunction(variable_idx=var_idx, variable_name=var_name)

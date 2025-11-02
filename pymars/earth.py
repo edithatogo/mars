@@ -1,11 +1,12 @@
-# -*- coding: utf-8 -*-
 
 """
 The main Earth class, coordinating the model fitting process.
 """
 import logging
+
 import numpy as np
 from sklearn.base import BaseEstimator, RegressorMixin
+
 from ._basis import ConstantBasisFunction  # Used in fallbacks
 from ._util import (
     calculate_gcv,
@@ -131,7 +132,7 @@ class Earth(BaseEstimator, RegressorMixin):
                  ):
         super().__init__()
 
-        
+
         # Core MARS algorithm parameters
         self.max_degree = max_degree
         self.penalty = penalty
@@ -200,6 +201,7 @@ class Earth(BaseEstimator, RegressorMixin):
         # and to keep them local to fit if they are only used here.
         import numpy as np
         from sklearn.utils.validation import check_X_y
+
         from ._forward import ForwardPasser
         from ._pruning import PruningPasser
         from ._record import EarthRecord
@@ -332,7 +334,7 @@ class Earth(BaseEstimator, RegressorMixin):
         This will be implemented based on self.feature_importance_type.
         # For 'nb_subsets', it uses the pruning trace stored in self.record_.
         """
-        import numpy as np # Ensure numpy is available
+        import numpy as np  # Ensure numpy is available
 
         if not hasattr(self.record_, 'n_features'):
              # Fallback if record somehow doesn't have n_features, though it should.
@@ -637,7 +639,7 @@ class Earth(BaseEstimator, RegressorMixin):
             return "Model not yet fitted."
 
         # Placeholder for a more structured summary
-        import numpy as np # Local import
+        import numpy as np  # Local import
 
         if not self.fitted_:
             logger.info("Model not yet fitted.")
@@ -709,9 +711,9 @@ class Earth(BaseEstimator, RegressorMixin):
         if not self.fitted_:
             return "Model not yet fitted. Feature importances not available."
         if self.feature_importances_ is None:
-            return (f"Feature importances not computed. "
-                    f"Set `feature_importance_type` (e.g., 'nb_subsets') "
-                    f"during model initialization and call `fit()`.")
+            return ("Feature importances not computed. "
+                    "Set `feature_importance_type` (e.g., 'nb_subsets') "
+                    "during model initialization and call `fit()`.")
 
         # Assuming self.feature_importances_ is a 1D numpy array of scores
         # and self.record_ contains feature names if available, or we use generic names.

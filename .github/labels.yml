@@ -1,0 +1,69 @@
+# Configuration for creating standard labels in the repository
+labels:
+  - name: "bug"
+    color: "d73a4a"
+    description: "Something isn't working"
+  
+  - name: "documentation"
+    color: "0075ca"
+    description: "Improvements or additions to documentation"
+  
+  - name: "duplicate"
+    color: "cfd3d7"
+    description: "This issue or pull request already exists"
+  
+  - name: "enhancement"
+    color: "a2eeef"
+    description: "New feature or request"
+  
+  - name: "good first issue"
+    color: "7057ff"
+    description: "Good for newcomers"
+  
+  - name: "help wanted"
+    color: "008672"
+    description: "Extra attention is needed"
+  
+  - name: "invalid"
+    color: "e11d21"
+    description: "This doesn't seem right"
+  
+  - name: "question"
+    color: "d876e3"
+    description: "Further information is requested"
+  
+  - name: "wontfix"
+    color: "ffffff"
+    description: "This will not be worked on"
+  
+  - name: "dependencies"
+    color: "0366d6"
+    description: "Pull requests that update a dependency file"
+  
+  - name: "python"
+    color: "3776ab"
+    description: "Pull requests that update Python code"
+  
+  - name: "github-actions"
+    color: "000000"
+    description: "Pull requests that update GitHub Actions code"
+  
+  - name: "performance"
+    color: "f9d0c4"
+    description: "Performance related changes"
+  
+  - name: "security"
+    color: "ee0701"
+    description: "Security related changes"
+  
+  - name: "testing"
+    color: "fbca04"
+    description: "Testing related changes"
+  
+  - name: "maintenance"
+    color: "666666"
+    description: "Maintenance related changes"
+  
+  - name: "breaking-change"
+    color: "b60205"
+    description: "Changes that break existing functionality"

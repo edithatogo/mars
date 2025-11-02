@@ -1,7 +1,9 @@
-import numpy as np
-import pymars as pm
 import json
 import os
+
+import numpy as np
+
+import pymars as pm
 
 # --- Configuration ---
 # Hyperparameters to test
@@ -35,7 +37,7 @@ def save_results(library_name, dataset_name, params, results):
 def load_results(library_name, dataset_name, params):
     """Load the results of a model from a JSON file."""
     filename = f"comparison_results/{library_name}_{dataset_name}_{params}.json"
-    with open(filename, "r") as f:
+    with open(filename) as f:
         return json.load(f)
 
 # --- Model Execution ---

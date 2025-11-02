@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 """
 Scikit-learn compatibility layer for pymars.
@@ -12,14 +11,17 @@ scikit-learn's Estimator API.
 # from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
 # from sklearn.utils.multiclass import unique_labels # For classifiers
 # from sklearn.base import BaseEstimator, RegressorMixin, ClassifierMixin
+# from ._types import XType, YType # Custom types
+import logging
+
+import numpy as np
 from sklearn.base import BaseEstimator, RegressorMixin
+
 # from sklearn.utils.validation import check_X_y, check_array, check_is_fitted # Will use these in fit/predict
 # from sklearn.utils.multiclass import unique_labels # For classifiers
-from .earth import Earth as CoreEarth # Rename to avoid clash if EarthRegressor inherits it directly
-# from ._types import XType, YType # Custom types
-
-import logging
-import numpy as np
+from .earth import (
+    Earth as CoreEarth,  # Rename to avoid clash if EarthRegressor inherits it directly
+)
 
 logger = logging.getLogger(__name__)
 
@@ -149,7 +151,7 @@ class EarthRegressor(RegressorMixin, BaseEstimator): # Corrected Mixin Order
         self : EarthRegressor
             The fitted regressor.
         """
-        from sklearn.utils.validation import check_X_y, check_array  # For validation
+        from sklearn.utils.validation import check_X_y  # For validation
 
         # Validate X and y using scikit-learn utilities
         # This ensures X is 2D, y is 1D, they have consistent lengths,
@@ -203,8 +205,7 @@ class EarthRegressor(RegressorMixin, BaseEstimator): # Corrected Mixin Order
         y_pred : YType
             Predicted continuous values.
         """
-        from sklearn.utils.validation import check_is_fitted, check_array
-        import numpy as np
+        from sklearn.utils.validation import check_array, check_is_fitted
 
         # Check if fit has been called
         # Attributes that signify it's fitted: coef_ and basis_ must exist.
@@ -246,6 +247,7 @@ class EarthRegressor(RegressorMixin, BaseEstimator): # Corrected Mixin Order
 from sklearn.base import ClassifierMixin
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
+
 # Using LogisticRegression as a default internal classifier for now.
 # Could be made configurable.
 
@@ -366,10 +368,12 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
         self : EarthClassifier
             The fitted classifier.
         """
-        from sklearn.utils.validation import check_X_y
-        from sklearn.utils.multiclass import unique_labels
-        from sklearn.base import clone # To clone the classifier if user provided an instance
         import numpy as np
+        from sklearn.base import (
+            clone,  # To clone the classifier if user provided an instance
+        )
+        from sklearn.utils.multiclass import unique_labels
+        from sklearn.utils.validation import check_X_y
 
         # Validate X and y
         # For classification, y doesn't strictly need to be numeric for check_X_y,
@@ -450,8 +454,8 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
 
     def _transform_X_for_classifier(self, X):
         """Helper to transform X using fitted Earth basis functions."""
-        from sklearn.utils.validation import check_is_fitted, check_array
         import numpy as np
+        from sklearn.utils.validation import check_array, check_is_fitted
 
         # Attributes that signify it's fitted: classes_, classifier_, earth_ (which implies basis_ is also set up or handled)
         check_is_fitted(self, ["classes_", "classifier_", "earth_"])
@@ -536,7 +540,7 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
         p : np.ndarray of shape (n_samples, n_classes)
             The class probabilities of the input samples.
         """
-        from sklearn.utils.validation import check_is_fitted # Local import
+        from sklearn.utils.validation import check_is_fitted  # Local import
 
         # Attributes that signify it's fitted for classifier context
         check_is_fitted(self, ["classes_", "classifier_", "n_features_in_"])

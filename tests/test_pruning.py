@@ -1,14 +1,15 @@
-# -*- coding: utf-8 -*-
 
 """
 Unit tests for the PruningPasser in pymars._pruning
 """
 
-import pytest
 import numpy as np
-from pymars.earth import Earth
-from pymars._pruning import PruningPasser
+import pytest
+
 from pymars._basis import ConstantBasisFunction, HingeBasisFunction, LinearBasisFunction
+from pymars._pruning import PruningPasser
+from pymars.earth import Earth
+
 
 class MockEarth(Earth):
     def __init__(self, penalty=3.0, allow_missing=False, **kwargs):

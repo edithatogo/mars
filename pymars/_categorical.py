@@ -1,8 +1,10 @@
 """Utilities for handling categorical features."""
 
-import numpy as np
 from collections import Counter
+
+import numpy as np
 from sklearn.preprocessing import LabelEncoder
+
 
 class CategoricalImputer:
     """Simple imputer and label encoder for categorical features."""

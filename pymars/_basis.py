@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 """
 Basis functions used in the MARS model.
@@ -10,11 +9,13 @@ This module will define various types of basis functions, such as:
 """
 
 import logging
+
 import numpy as np
 
 logger = logging.getLogger(__name__)
 
 from abc import ABC, abstractmethod
+
 # from ._types import XType, FloatArray # Assuming XType is np.ndarray for internal use
 
 class BasisFunction(ABC):
@@ -30,8 +31,8 @@ class BasisFunction(ABC):
         # Subclasses will define how these are used.
         self.variable_idx: int = None # Index of the feature used by this basis function (if applicable)
         self.knot_val: float = None   # Knot value for hinge functions (if applicable)
-        self.parent1: 'BasisFunction' = None # First parent for interaction terms
-        self.parent2: 'BasisFunction' = None # Second parent for interaction terms (not used in current 1-parent model)
+        self.parent1: BasisFunction = None # First parent for interaction terms
+        self.parent2: BasisFunction = None # Second parent for interaction terms (not used in current 1-parent model)
         self.is_linear_term: bool = False # Indicates if the *newest* component is linear
         self.is_hinge_term: bool = False  # Indicates if the *newest* component is a hinge
         self._involved_variables: frozenset[int] = frozenset() # Variables involved in this basis function

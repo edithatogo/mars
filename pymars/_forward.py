@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 """
 The forward pass of the MARS algorithm.
@@ -8,18 +7,22 @@ to minimize a criterion (e.g., sum of squared errors).
 """
 
 import logging
+
 import numpy as np
+
 from ._basis import (
     BasisFunction,
-    HingeBasisFunction,
+    CategoricalBasisFunction,
     ConstantBasisFunction,
+    HingeBasisFunction,
     LinearBasisFunction,
     MissingnessBasisFunction,
-    CategoricalBasisFunction,
 )
-from ._record import EarthRecord  # Assuming EarthRecord is used by Earth model instance
+from ._util import (  # For GCV calculations
+    calculate_gcv,
+    gcv_penalty_cost_effective_parameters,
+)
 from .earth import Earth  # For type hinting
-from ._util import calculate_gcv, gcv_penalty_cost_effective_parameters  # For GCV calculations
 
 logger = logging.getLogger(__name__)
 

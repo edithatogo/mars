@@ -1,15 +1,17 @@
-# -*- coding: utf-8 -*-
 
 """
 Unit tests for the scikit-learn compatibility layer in pymars._sklearn_compat
 """
 
-import pytest
 import numpy as np
-from pymars._sklearn_compat import EarthRegressor # EarthClassifier will be tested separately
-from pymars.earth import Earth as CoreEarth
-from sklearn.utils.estimator_checks import check_estimator
+import pytest
 from sklearn.exceptions import NotFittedError
+from sklearn.utils.estimator_checks import check_estimator
+
+from pymars._sklearn_compat import (
+    EarthRegressor,  # EarthClassifier will be tested separately
+)
+
 
 @pytest.fixture
 def reg_data():
@@ -188,9 +190,10 @@ def test_earth_regressor_check_estimator():
     }
     check_estimator(estimator, expected_failed_checks=expected_failures)
 
-from pymars._sklearn_compat import EarthClassifier
-from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
+
+from pymars._sklearn_compat import EarthClassifier
+
 
 @pytest.fixture
 def clf_data():

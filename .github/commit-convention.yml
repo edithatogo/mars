@@ -1,0 +1,94 @@
+rules:
+  - type: "build"
+    section: "Build System"
+    descriptions:
+      - "Changes that affect the build system or external dependencies"
+  
+  - type: "chore"
+    section: "Chores"
+    descriptions:
+      - "Other changes that don't modify src or test files"
+  
+  - type: "ci"
+    section: "Continuous Integration"
+    descriptions:
+      - "Changes to our CI configuration files and scripts"
+  
+  - type: "docs"
+    section: "Documentation"
+    descriptions:
+      - "Documentation only changes"
+  
+  - type: "feat"
+    section: "Features"
+    descriptions:
+      - "A new feature"
+  
+  - type: "fix"
+    section: "Bug Fixes"
+    descriptions:
+      - "A bug fix"
+  
+  - type: "perf"
+    section: "Performance Improvements"
+    descriptions:
+      - "A code change that improves performance"
+  
+  - type: "refactor"
+    section: "Code Refactoring"
+    descriptions:
+      - "A code change that neither fixes a bug nor adds a feature"
+  
+  - type: "revert"
+    section: "Reverts"
+    descriptions:
+      - "Reverts a previous commit"
+  
+  - type: "style"
+    section: "Styles"
+    descriptions:
+      - "Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)"
+  
+  - type: "test"
+    section: "Tests"
+    descriptions:
+      - "Adding missing tests or correcting existing tests"
+
+scopes:
+  - "core"
+  - "api"
+  - "cli"
+  - "docs"
+  - "perf"
+  - "refactor"
+  - "deps"
+  - "ci"
+  - "test"
+
+types:
+  - "feat"
+  - "fix"
+  - "docs"
+  - "style"
+  - "refactor"
+  - "perf"
+  - "test"
+  - "build"
+  - "ci"
+  - "chore"
+  - "revert"
+
+note_keywords:
+  - "BREAKING CHANGE"
+  - "BREAKING CHANGES"
+  - "BREAKING"
+  - "CAUTION"
+  - "WARNING"
+  - "ATTENTION"
+  - "IMPORTANT"
+  - "NOTE"
+  - "TIP"
+  - "TODO"
+  - "FIXME"
+  - "HACK"
+  - "XXX"

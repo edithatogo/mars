@@ -1,0 +1,28 @@
+# Configuration for reviewdog
+runner:
+  ruff:
+    cmd: ruff check pymars tests --format=github
+    errorformat:
+      - "%A%,%#,%l,%c,%t,%m"
+      - "%Z%,%#,%l1,%c1,%t1,%m1"
+    level: warning
+    report_type: diff
+
+# This file is for configuring code review automation
+---
+# Comment on PRs about code quality
+style_check:
+  enabled: true
+  comment: true
+
+# Code coverage configuration
+coverage:
+  status:
+    project:
+      default:
+        target: 90%
+        threshold: 1%
+    patch:
+      default:
+        target: 80%
+        threshold: 1%

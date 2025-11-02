@@ -1,12 +1,12 @@
-import numpy as np
 import matplotlib
+import numpy as np
+
 matplotlib.use('Agg')
 
-from pymars._basis import HingeBasisFunction
-from pymars._basis import InteractionBasisFunction
-from pymars.glm import GLMEarth
-from pymars.cv import EarthCV
+from pymars._basis import HingeBasisFunction, InteractionBasisFunction
 from pymars._sklearn_compat import EarthRegressor
+from pymars.cv import EarthCV
+from pymars.glm import GLMEarth
 from pymars.plot import plot_basis_functions, plot_residuals
 
 

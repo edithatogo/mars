@@ -1,0 +1,38 @@
+name: Performance Benchmarks
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-benchmark numpy scikit-learn matplotlib
+
+    - name: Run performance benchmarks
+      run: |
+        python -m pytest tests/ -k "benchmark" --benchmark-only --benchmark-json=benchmark-results.json || true
+
+    - name: Store benchmark results
+      uses: benchmark-action/github-action-benchmark@v1
+      with:
+        name: pymars benchmarks
+        tool: 'pytest-benchmark'
+        output-file-path: benchmark-results.json
+        gh-pages-branch: benchmark-results
+        alert-threshold: '120%'
+        comment-on-alert: true
+        fail-on-alert: false
+        alert-comment-cc-users: '@doughnut'
