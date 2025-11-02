@@ -1,6 +1,6 @@
 [project]
 name = "pymars"
-version = "1.0.0-beta.1"
+version = "1.0.0"
 description = "Pure Python Earth (MARS) algorithm"
 readme = "README.md"
 authors = [{name = "pymars developers"}]
