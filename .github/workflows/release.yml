@@ -38,7 +38,7 @@ jobs:
       with:
         fetch-depth: 0  # Fetch all history for all tags and branches
     - name: Generate release notes
-      uses: actions/github-script@v6
+      uses: actions/github-script@v8
       with:
         script: |
           const { data: tags } = await github.rest.repos.listTags({
