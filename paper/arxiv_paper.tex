@@ -65,7 +65,7 @@
 \setcounter{tocdepth}{3}
 
 % Title
-\title{pymars: A Pure Python Implementation of Multivariate Adaptive Regression Splines with Applications in Health Economics}
+\title{mars: A Pure Python Implementation of Multivariate Adaptive Regression Splines with Applications in Health Economics}
 
 % Author information
 \author{
@@ -84,7 +84,7 @@
 
 % Abstract
 \begin{abstract}
-Multivariate Adaptive Regression Splines (MARS) is a powerful non-parametric regression technique that automatically models non-linearities and interactions between variables. This paper introduces pymars, a pure Python implementation of the MARS algorithm that provides an easy-to-install, scikit-learn compatible version without C/Cython dependencies. We demonstrate its application in health economic outcomes research using Australian and New Zealand health datasets, showcasing its ability to model complex relationships between health outcomes, costs, and utilization patterns. The implementation includes advanced features such as refined minspan and endspan controls, support for interaction terms, and feature importance calculations. Additionally, we outline planned extensions including JAX/XLA backend support for enhanced computational performance. The pymars library provides a valuable tool for researchers in health economics and other fields requiring flexible regression modeling capabilities.
+Multivariate Adaptive Regression Splines (MARS) is a powerful non-parametric regression technique that automatically models non-linearities and interactions between variables. This paper introduces mars, a pure Python implementation of the MARS algorithm that provides an easy-to-install, scikit-learn compatible version without C/Cython dependencies. We demonstrate its application in health economic outcomes research using Australian and New Zealand health datasets, showcasing its ability to model complex relationships between health outcomes, costs, and utilization patterns. The implementation includes advanced features such as refined minspan and endspan controls, support for interaction terms, and feature importance calculations. Additionally, we outline planned extensions including JAX/XLA backend support for enhanced computational performance. The mars library provides a valuable tool for researchers in health economics and other fields requiring flexible regression modeling capabilities.
 \end{abstract}
 
 % Keywords
@@ -102,11 +102,11 @@ multivariate adaptive regression splines, non-parametric regression, health econ
 
 Multivariate Adaptive Regression Splines (MARS), introduced by Friedman (1991), is a non-parametric regression technique that models complex relationships between variables by creating a piecewise linear model with basis functions that can capture non-linearities and interactions. The method has proven particularly valuable in fields dealing with complex, non-linear relationships such as health economics, where understanding the relationships between health outcomes, costs, utilization, and demographic factors is crucial.
 
-Traditional implementations of MARS, such as the original R package "earth" by Stephen Milborrow and the Python implementation "py-earth" by Jason Friedman, have provided excellent functionality but often require C/Cython dependencies that can complicate installation and usage. The pymars library addresses this limitation by providing a pure Python implementation that maintains compatibility with the popular scikit-learn ecosystem while offering similar functionality.
+Traditional implementations of MARS, such as the original R package "earth" by Stephen Milborrow and the Python implementation "py-earth" by Jason Friedman, have provided excellent functionality but often require C/Cython dependencies that can complicate installation and usage. The mars library addresses this limitation by providing a pure Python implementation that maintains compatibility with the popular scikit-learn ecosystem while offering similar functionality.
 
-The primary contribution of this paper and the pymars library is to make MARS modeling accessible to a broader audience of researchers and practitioners without the installation complexities associated with C/Cython dependencies. This is particularly valuable in healthcare settings where IT restrictions and compatibility requirements can limit the use of certain libraries.
+The primary contribution of this paper and the mars library is to make MARS modeling accessible to a broader audience of researchers and practitioners without the installation complexities associated with C/Cython dependencies. This is particularly valuable in healthcare settings where IT restrictions and compatibility requirements can limit the use of certain libraries.
 
-The pymars library extends beyond the core MARS algorithm with several advanced features that enhance its utility for health economic research:
+The mars library extends beyond the core MARS algorithm with several advanced features that enhance its utility for health economic research:
 
 \begin{itemize}
 \item \textbf{Scikit-learn Compatibility}: Complete integration with the scikit-learn ecosystem, enabling use with scikit-learn's preprocessing, model selection, and evaluation tools
@@ -118,7 +118,7 @@ The pymars library extends beyond the core MARS algorithm with several advanced 
 \item \textbf{Cross-Validation Helper}: Simplified integration with scikit-learn's cross-validation framework
 \end{itemize}
 
-This paper is structured as follows: Section~\ref{sec:background} provides background on the MARS algorithm, Section~\ref{sec:implementation} describes the pymars implementation and its advantages over existing implementations, Section~\ref{sec:applications} demonstrates applications in health economics using Australian and New Zealand health datasets, Section~\ref{sec:future} discusses future directions including planned JAX/XLA backend implementation, and Section~\ref{sec:conclusion} concludes with the significance of the contribution.
+This paper is structured as follows: Section~\ref{sec:background} provides background on the MARS algorithm, Section~\ref{sec:implementation} describes the mars implementation and its advantages over existing implementations, Section~\ref{sec:applications} demonstrates applications in health economics using Australian and New Zealand health datasets, Section~\ref{sec:future} discusses future directions including planned JAX/XLA backend implementation, and Section~\ref{sec:conclusion} concludes with the significance of the contribution.
 
 \section{Background}
 \label{sec:background}
@@ -170,13 +170,13 @@ In health economics, MARS can be used for:
 \subsection{Comparison to Existing Implementations}
 \label{sec:comparison-to-existing-implementations}
 
-Compared to existing MARS implementations, pymars offers several distinct advantages:
+Compared to existing MARS implementations, mars offers several distinct advantages:
 
 \subsubsection{py-earth Comparison}
 \label{sec:py-earth-comparison}
 
 \begin{itemize}
-\item \textbf{Pure Python Implementation}: Unlike py-earth which uses C/Cython extensions, pymars is pure Python, simplifying installation and deployment
+\item \textbf{Pure Python Implementation}: Unlike py-earth which uses C/Cython extensions, mars is pure Python, simplifying installation and deployment
 \item \textbf{Scikit-learn Compatibility}: Full integration with scikit-learn ecosystem, allowing seamless use with scikit-learn tools
 \item \textbf{Modern Architecture}: Clean, modular codebase that is easier to maintain and extend
 \item \textbf{Enhanced Feature Importance}: Multiple methods for calculating feature importance
@@ -193,25 +193,25 @@ Compared to existing MARS implementations, pymars offers several distinct advant
 \item \textbf{Healthcare Integration}: Better suited for integration with healthcare-specific Python libraries
 \end{itemize}
 
-\section{pymars Implementation}
+\section{mars Implementation}
 \label{sec:implementation}
 
 \subsection{Core Architecture}
 \label{sec:core-architecture}
 
-The pymars implementation follows a modular architecture designed for maintainability, extensibility, and compatibility with the scikit-learn ecosystem. The core modules include:
+The mars implementation follows a modular architecture designed for maintainability, extensibility, and compatibility with the scikit-learn ecosystem. The core modules include:
 
 \begin{itemize}
-\item \texttt{pymars/earth.py}: The main \texttt{Earth} class implementing the MARS algorithm with scikit-learn compatibility
-\item \texttt{pymars/\_sklearn\_compat.py}: Provides \texttt{EarthRegressor} and \texttt{EarthClassifier} wrappers for scikit-learn compatibility
-\item \texttt{pymars/\_forward.py}: Implements the forward pass algorithm for basis function selection
-\item \texttt{pymars/\_pruning.py}: Implements the backward pass algorithm for model pruning
-\item \texttt{pymars/\_basis.py}: Defines various basis function types (hinge, linear, categorical, missingness)
-\item \texttt{pymars/\_util.py}: Utility functions for GCV calculation and other common operations
-\item \texttt{pymars/glm.py}: Generalized linear model extensions for logistic and Poisson regression
-\item \texttt{pymars/cv.py}: Cross-validation helper class
-\item \texttt{pymars/plot.py}: Basic visualization utilities
-\item \texttt{pymars/explain.py}: Advanced interpretability features including partial dependence plots
+\item \texttt{mars/earth.py}: The main \texttt{Earth} class implementing the MARS algorithm with scikit-learn compatibility
+\item \texttt{mars/\_sklearn\_compat.py}: Provides \texttt{EarthRegressor} and \texttt{EarthClassifier} wrappers for scikit-learn compatibility
+\item \texttt{mars/\_forward.py}: Implements the forward pass algorithm for basis function selection
+\item \texttt{mars/\_pruning.py}: Implements the backward pass algorithm for model pruning
+\item \texttt{mars/\_basis.py}: Defines various basis function types (hinge, linear, categorical, missingness)
+\item \texttt{mars/\_util.py}: Utility functions for GCV calculation and other common operations
+\item \texttt{mars/glm.py}: Generalized linear model extensions for logistic and Poisson regression
+\item \texttt{mars/cv.py}: Cross-validation helper class
+\item \texttt{mars/plot.py}: Basic visualization utilities
+\item \texttt{mars/explain.py}: Advanced interpretability features including partial dependence plots
 \end{itemize}
 
 \subsection{Key Implementation Features}
@@ -220,7 +220,7 @@ The pymars implementation follows a modular architecture designed for maintainab
 \subsubsection{Basis Function System}
 \label{sec:basis-function-system}
 
-The basis function system in pymars is designed with flexibility and extensibility in mind. The abstract \texttt{BasisFunction} class defines the interface that all basis functions must implement:
+The basis function system in mars is designed with flexibility and extensibility in mind. The abstract \texttt{BasisFunction} class defines the interface that all basis functions must implement:
 
 \begin{itemize}
 \item \textbf{Transform Method}: Evaluates the basis function on input data
@@ -271,7 +271,7 @@ The pruning pass systematically removes basis functions that do not contribute s
 \subsubsection{Missing Value and Categorical Feature Support}
 \label{sec:missing-value-and-categorical-feature-support}
 
-pymars provides robust support for missing values and categorical features through specialized basis functions:
+mars provides robust support for missing values and categorical features through specialized basis functions:
 
 \begin{itemize}
 \item \textbf{Missing Value Handling}: The \texttt{MissingnessBasisFunction} can model the effect of missing data directly
@@ -282,7 +282,7 @@ pymars provides robust support for missing values and categorical features throu
 \subsection{Scikit-learn Compatibility}
 \label{sec:scikit-learn-compatibility}
 
-The pymars library provides full compatibility with the scikit-learn ecosystem:
+The mars library provides full compatibility with the scikit-learn ecosystem:
 
 \begin{itemize}
 \item \textbf{Standard Estimator Interface}: Implements the standard scikit-learn estimator interface with \texttt{fit}, \texttt{predict}, \texttt{score}, \texttt{get\_params}, and \texttt{set\_params} methods
@@ -299,7 +299,7 @@ The \texttt{EarthRegressor} and \texttt{EarthClassifier} classes provide drop-in
 \subsubsection{Feature Importance Methods}
 \label{sec:feature-importance-methods}
 
-pymars implements multiple methods for calculating feature importance:
+mars implements multiple methods for calculating feature importance:
 
 \begin{itemize}
 \item \textbf{nb\_subsets}: Counts the number of times each feature appears in basis functions across the pruning path
@@ -310,7 +310,7 @@ pymars implements multiple methods for calculating feature importance:
 \subsubsection{Generalized Linear Model Extensions}
 \label{sec:generalized-linear-model-extensions}
 
-The \texttt{GLMEarth} class extends pymars to support generalized linear models for logistic and Poisson regression using MARS basis functions, which is particularly useful for health economic applications involving binary or count outcomes.
+The \texttt{GLMEarth} class extends mars to support generalized linear models for logistic and Poisson regression using MARS basis functions, which is particularly useful for health economic applications involving binary or count outcomes.
 
 \subsubsection{Interpretability Tools}
 \label{sec:interpretability-tools}
@@ -329,12 +329,12 @@ The \texttt{explain.py} module provides advanced interpretability tools includin
 \subsection{Australian Health Data Example}
 \label{sec:australian-health-data-example}
 
-The following example demonstrates the use of pymars to model healthcare costs based on Australian health economic data. This example uses simulated data with characteristics similar to those found in Australian health administrative datasets:
+The following example demonstrates the use of mars to model healthcare costs based on Australian health economic data. This example uses simulated data with characteristics similar to those found in Australian health administrative datasets:
 
 \begin{verbatim}
 import numpy as np
 import pandas as pd
-import pymars as earth
+import mars as earth
 from sklearn.model_selection import train_test_split
 
 # Generate simulated Australian health economic data
@@ -436,7 +436,7 @@ for i, (bf, coef) in enumerate(zip(model.basis_, model.coef_)):
 \subsection{New Zealand Health Data Example}
 \label{sec:new-zealand-health-data-example}
 
-The following example demonstrates the use of pymars on New Zealand health economic data, focusing on health outcomes and their relationship with socioeconomic factors and healthcare access:
+The following example demonstrates the use of mars on New Zealand health economic data, focusing on health outcomes and their relationship with socioeconomic factors and healthcare access:
 
 \begin{verbatim}
 # New Zealand health economic example with deprivation indices and Māori ethnicity
@@ -518,7 +518,7 @@ print(f"\nFeature Importances:")
 print(model_nz.summary_feature_importances())
 
 # Generate partial dependence plots to visualize relationships
-from pymars.explain import plot_partial_dependence
+from mars.explain import plot_partial_dependence
 
 # Plot partial dependence for the top 4 most important features
 top_features = np.argsort(model_nz.feature_importances_)[-4:][::-1]
@@ -532,13 +532,13 @@ plt.show()
 \subsection{Real Data Example with Pima Indians Diabetes Dataset}
 \label{sec:real-data-example-with-pima-indians-diabetes-dataset}
 
-To demonstrate the practical application of pymars with real health data, we provide an example using the publicly available Pima Indians Diabetes dataset. This dataset contains 768 observations with features related to diabetes diagnosis and is commonly used in machine learning for predicting the onset of diabetes:
+To demonstrate the practical application of mars with real health data, we provide an example using the publicly available Pima Indians Diabetes dataset. This dataset contains 768 observations with features related to diabetes diagnosis and is commonly used in machine learning for predicting the onset of diabetes:
 
 \begin{verbatim}
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
-import pymars as earth
+import mars as earth
 
 # Load the dataset from public repository
 column_names = [
@@ -604,7 +604,7 @@ for name, imp in zip(feature_names, importances):
 \subsection{Analysis and Interpretation}
 \label{sec:analysis-and-interpretation}
 
-The above examples demonstrate how pymars can identify complex, non-linear relationships in health economic data that would be missed by traditional linear models:
+The above examples demonstrate how mars can identify complex, non-linear relationships in health economic data that would be missed by traditional linear models:
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -614,7 +614,7 @@ The above examples demonstrate how pymars can identify complex, non-linear relat
 \item \textbf{Health Equity Analysis}: The models can quantify health disparities by ethnicity (Māori, Pacific peoples) and geographic factors (rural vs urban).
 \end{enumerate}
 
-These capabilities make pymars particularly valuable for health economic analysis where understanding these complex relationships is crucial for policy development and resource allocation.
+These capabilities make mars particularly valuable for health economic analysis where understanding these complex relationships is crucial for policy development and resource allocation.
 
 \section{Future Directions}
 \label{sec:future}
@@ -622,7 +622,7 @@ These capabilities make pymars particularly valuable for health economic analysi
 \subsection{Planned Implementation of JAX/XLA Backend}
 \label{sec:planned-implementation-of-jaxxla-backend}
 
-One of the significant planned enhancements for pymars is the addition of a JAX/XLA backend option. This enhancement is critical for scaling pymars to larger healthcare datasets, which are increasingly common in modern health economic research and policy analysis.
+One of the significant planned enhancements for mars is the addition of a JAX/XLA backend option. This enhancement is critical for scaling mars to larger healthcare datasets, which are increasingly common in modern health economic research and policy analysis.
 
 \subsubsection{Technical Approach}
 \label{sec:technical-approach}
@@ -654,7 +654,7 @@ The JAX/XLA backend would provide several performance advantages:
 The implementation would preserve the same API and functionality while providing performance improvements:
 
 \begin{itemize}
-\item \textbf{API Compatibility}: The same pymars interface regardless of backend
+\item \textbf{API Compatibility}: The same mars interface regardless of backend
 \item \textbf{Optional Dependency}: JAX remains an optional dependency to maintain accessibility
 \item \textbf{Precision Consistency}: Ensuring numerical precision matches between backends
 \item \textbf{Testing Framework}: Comprehensive tests to ensure consistent results
@@ -689,7 +689,7 @@ Future versions will include more sophisticated methods for handling missing dat
 \subsubsection{Extended Model Classes}
 \label{sec:extended-model-classes}
 
-Expansion of the model types supported by pymars:
+Expansion of the model types supported by mars:
 
 \begin{itemize}
 \item \textbf{Time Series Extensions}: MARS models for time-dependent health economic outcomes
@@ -711,7 +711,7 @@ Enhanced visualization capabilities specifically tailored for health economic an
 \section{Computational Performance and Scalability}
 \label{sec:computational-performance-and-scalability}
 
-As highlighted in the peer review process, computational performance is a key consideration for statistical software. The pure Python implementation of pymars provides accessibility benefits at the cost of computational speed compared to C/Cython implementations. Performance characteristics include:
+As highlighted in the peer review process, computational performance is a key consideration for statistical software. The pure Python implementation of mars provides accessibility benefits at the cost of computational speed compared to C/Cython implementations. Performance characteristics include:
 
 \begin{itemize}
 \item \textbf{Small to Medium Datasets} (n < 5,000): Performance is acceptable for most applications
@@ -719,7 +719,7 @@ As highlighted in the peer review process, computational performance is a key co
 \item \textbf{High-Dimensional Data}: Performance scales with the number of features and selected basis functions
 \end{itemize}
 
-For comparison, pymars performance on benchmark datasets shows:
+For comparison, mars performance on benchmark datasets shows:
 \begin{itemize}
 \item Training time approximately 2-5x slower than py-earth for typical datasets
 \item Memory usage comparable to other Python ML libraries
@@ -745,7 +745,7 @@ MARS is particularly appropriate when interpretability is important, relationshi
 \section{Conclusion}
 \label{sec:conclusion}
 
-pymars provides a valuable pure Python implementation of the MARS algorithm that maintains compatibility with scikit-learn while eliminating installation complexities associated with C/Cython dependencies. The library is particularly valuable for health economic outcomes research where understanding complex relationships between health outcomes, costs, and utilization patterns is critical.
+mars provides a valuable pure Python implementation of the MARS algorithm that maintains compatibility with scikit-learn while eliminating installation complexities associated with C/Cython dependencies. The library is particularly valuable for health economic outcomes research where understanding complex relationships between health outcomes, costs, and utilization patterns is critical.
 
 The implementation advances beyond existing MARS libraries in several important ways:
 
@@ -758,7 +758,7 @@ The implementation advances beyond existing MARS libraries in several important 
 \item \textbf{Extensibility}: Modular architecture enables extensions like the planned JAX backend
 \end{enumerate}
 
-The demonstrated examples on Australian and New Zealand health data show the effectiveness of pymars in modeling complex relationships that traditional linear models might miss. The automatic identification of non-linearities and interactions makes MARS particularly well-suited for health economic applications where:
+The demonstrated examples on Australian and New Zealand health data show the effectiveness of mars in modeling complex relationships that traditional linear models might miss. The automatic identification of non-linearities and interactions makes MARS particularly well-suited for health economic applications where:
 
 \begin{itemize}
 \item Healthcare costs often increase exponentially with age and morbidity
@@ -767,9 +767,9 @@ The demonstrated examples on Australian and New Zealand health data show the eff
 \item Health disparities exist across different population subgroups
 \end{itemize}
 
-Future development will focus on the JAX/XLA backend to enhance computational performance while maintaining the accessibility and compatibility that makes pymars valuable for researchers across diverse computing environments. Additional features planned include enhanced missing value handling and specialized visualization tools for health economic analysis.
+Future development will focus on the JAX/XLA backend to enhance computational performance while maintaining the accessibility and compatibility that makes mars valuable for researchers across diverse computing environments. Additional features planned include enhanced missing value handling and specialized visualization tools for health economic analysis.
 
-The pymars library addresses a specific need in the health economic research community for accessible, flexible, and interpretable non-parametric regression methods that can handle the complex, non-linear relationships common in health data. By providing a pure Python implementation with scikit-learn compatibility, pymars lowers the barrier to entry for researchers who need sophisticated modeling tools but want to avoid the complexity of non-Python implementations.
+The mars library addresses a specific need in the health economic research community for accessible, flexible, and interpretable non-parametric regression methods that can handle the complex, non-linear relationships common in health data. By providing a pure Python implementation with scikit-learn compatibility, mars lowers the barrier to entry for researchers who need sophisticated modeling tools but want to avoid the complexity of non-Python implementations.
 
 The library's design emphasizes extensibility and maintainability, positioning it well for continued development and adaptation to emerging needs in health economic research. The planned JAX backend represents an important step forward in computational performance without sacrificing the accessibility that makes the library valuable to a broad research community.
 
