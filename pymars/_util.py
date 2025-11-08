@@ -1,4 +1,3 @@
-
 """
 Utility functions for the pymars library.
 
@@ -18,7 +17,15 @@ logger = logging.getLogger(__name__)
 # In a real scenario, we would use sklearn.utils.validation directly
 # if scikit-learn is a hard dependency. If not, we might implement some checks.
 
-def check_array(array, ensure_2d=False, allow_nd=False, ensure_min_samples=1, ensure_min_features=1, allow_missing=False):
+
+def check_array(
+    array,
+    ensure_2d=False,
+    allow_nd=False,
+    ensure_min_samples=1,
+    ensure_min_features=1,
+    allow_missing=False,
+):
     """
     Rudimentary input validation for an array.
     Inspired by sklearn.utils.validation.check_array.
@@ -27,7 +34,9 @@ def check_array(array, ensure_2d=False, allow_nd=False, ensure_min_samples=1, en
         try:
             array = np.asarray(array)
         except Exception as e:
-            raise ValueError(f"Input could not be converted to a NumPy array. Error: {e}")
+            raise ValueError(
+                f"Input could not be converted to a NumPy array. Error: {e}"
+            )
 
     if not allow_missing and np.isnan(array).any():
         raise ValueError("Input contains NaN values.")
@@ -39,10 +48,14 @@ def check_array(array, ensure_2d=False, allow_nd=False, ensure_min_samples=1, en
         raise ValueError(f"Expected 1D or 2D array, got {array.ndim}D array instead.")
 
     if array.shape[0] < ensure_min_samples:
-        raise ValueError(f"Found array with {array.shape[0]} sample(s), but a minimum of {ensure_min_samples} is required.")
+        raise ValueError(
+            f"Found array with {array.shape[0]} sample(s), but a minimum of {ensure_min_samples} is required."
+        )
 
     if array.ndim > 1 and array.shape[1] < ensure_min_features:
-        raise ValueError(f"Found array with {array.shape[1]} feature(s), but a minimum of {ensure_min_features} is required.")
+        raise ValueError(
+            f"Found array with {array.shape[1]} feature(s), but a minimum of {ensure_min_features} is required."
+        )
 
     return array
 
@@ -53,7 +66,9 @@ def check_array(array, ensure_2d=False, allow_nd=False, ensure_min_samples=1, en
 # :mod:`sklearn.utils.validation` instead.
 
 
-def gcv_penalty_cost_effective_parameters(num_terms: int, num_hinge_terms: int, penalty: float, num_samples: int) -> float:
+def gcv_penalty_cost_effective_parameters(
+    num_terms: int, num_hinge_terms: int, penalty: float, num_samples: int
+) -> float:
     """
     Calculate the effective number of parameters for GCV, aligning with py-earth's approach.
     Effective parameters = num_terms + penalty * num_hinge_terms.
@@ -96,12 +111,11 @@ def calculate_gcv(rss: float, num_samples: int, num_effective_params: float) -> 
     if num_samples == 0:
         return np.inf
     if num_effective_params >= num_samples:
-        return np.inf # Avoid division by zero or sqrt of negative
+        return np.inf  # Avoid division by zero or sqrt of negative
 
-    denominator = (1.0 - num_effective_params / num_samples)**2
-    if denominator < 1e-9: # Effectively zero
+    denominator = (1.0 - num_effective_params / num_samples) ** 2
+    if denominator < 1e-9:  # Effectively zero
         return np.inf
 
     gcv = rss / (num_samples * denominator)
     return gcv
-

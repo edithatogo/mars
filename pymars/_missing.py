@@ -1,4 +1,3 @@
-
 """
 Utilities for handling missing values in pymars.
 
@@ -13,7 +12,8 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
-def handle_missing_X(X, strategy='mean', allow_missing_for_some_strategies=False):
+
+def handle_missing_X(X, strategy="mean", allow_missing_for_some_strategies=False):
     """
     Handle missing values in the input feature matrix X.
 
@@ -50,29 +50,33 @@ def handle_missing_X(X, strategy='mean', allow_missing_for_some_strategies=False
         # and contains non-numeric NaNs like None, or actual strings.
         # This basic handler assumes numeric data primarily.
         # More sophisticated handling for mixed types would be needed.
-        pass # For now, let it proceed, np.isnan will fail if not float.
+        pass  # For now, let it proceed, np.isnan will fail if not float.
 
     nan_present = np.isnan(X).any()
 
     if not nan_present:
         return X
 
-    if strategy == 'error':
+    if strategy == "error":
         raise ValueError("Input X contains NaN values and strategy is 'error'.")
 
-    if strategy == 'pass_through':
+    if strategy == "pass_through":
         if allow_missing_for_some_strategies:
-            return X # Basis functions must be able to handle NaNs
+            return X  # Basis functions must be able to handle NaNs
         else:
-            raise ValueError("Strategy 'pass_through' for NaNs requires model to be configured to allow missing values.")
+            raise ValueError(
+                "Strategy 'pass_through' for NaNs requires model to be configured to allow missing values."
+            )
 
-    X_processed = np.copy(X) # Work on a copy
+    X_processed = np.copy(X)  # Work on a copy
 
-    if X_processed.ndim == 1: # Handle 1D array case
-      X_processed = X_processed.reshape(-1, 1) # Temporarily make it 2D for consistent processing
-      was_1d = True
+    if X_processed.ndim == 1:  # Handle 1D array case
+        X_processed = X_processed.reshape(
+            -1, 1
+        )  # Temporarily make it 2D for consistent processing
+        was_1d = True
     else:
-      was_1d = False
+        was_1d = False
 
     for j in range(X_processed.shape[1]):
         col = X_processed[:, j]
@@ -81,30 +85,35 @@ def handle_missing_X(X, strategy='mean', allow_missing_for_some_strategies=False
         if not nan_mask_col.any():
             continue
 
-        if strategy == 'mean':
+        if strategy == "mean":
             fill_value = np.nanmean(col)
-        elif strategy == 'median':
+        elif strategy == "median":
             fill_value = np.nanmedian(col)
-        elif strategy == 'most_frequent':
+        elif strategy == "most_frequent":
             # Simple approach for most_frequent with numbers
             # For categorical, a more robust method (e.g., scipy.stats.mode) is needed
             unique_vals, counts = np.unique(col[~nan_mask_col], return_counts=True)
             if unique_vals.size > 0:
                 fill_value = unique_vals[np.argmax(counts)]
-            else: # All values were NaN
-                fill_value = 0 # Or some other default
+            else:  # All values were NaN
+                fill_value = 0  # Or some other default
         else:
             raise ValueError(f"Unknown missing value strategy: {strategy}")
 
         col[nan_mask_col] = fill_value
 
     if was_1d and X_processed.shape[1] == 1:
-      X_processed = X_processed.ravel() # Convert back to 1D if original was 1D
+        X_processed = X_processed.ravel()  # Convert back to 1D if original was 1D
 
     return X_processed
 
 
-def handle_missing_y(y, strategy='mean', allow_missing_for_some_strategies=False, problem_type='regression'):
+def handle_missing_y(
+    y,
+    strategy="mean",
+    allow_missing_for_some_strategies=False,
+    problem_type="regression",
+):
     """
     Handle missing values in the target variable y.
 
@@ -137,15 +146,15 @@ def handle_missing_y(y, strategy='mean', allow_missing_for_some_strategies=False
 
     nan_mask = np.isnan(y)
     if not nan_mask.any():
-        return y, nan_mask # No NaNs
+        return y, nan_mask  # No NaNs
 
-    if strategy is None: # Determine default based on problem type
-        strategy = 'mean' if problem_type == 'regression' else 'error'
+    if strategy is None:  # Determine default based on problem type
+        strategy = "mean" if problem_type == "regression" else "error"
 
-    if strategy == 'error':
+    if strategy == "error":
         raise ValueError("Target y contains NaN values and strategy is 'error'.")
 
-    if strategy == 'remove_samples':
+    if strategy == "remove_samples":
         # This strategy implies X also needs to be filtered.
         # The function calling this should handle that synchronization.
         # Here, we just return the filtered y and the mask of what *was* NaN.
@@ -153,24 +162,32 @@ def handle_missing_y(y, strategy='mean', allow_missing_for_some_strategies=False
 
     y_processed = np.copy(y)
 
-    if strategy == 'mean':
-        if problem_type == 'classification':
+    if strategy == "mean":
+        if problem_type == "classification":
             raise ValueError("Cannot use 'mean' imputation for classification target.")
         fill_value = np.nanmean(y_processed)
-    elif strategy == 'median':
-        if problem_type == 'classification':
-            raise ValueError("Cannot use 'median' imputation for classification target.")
+    elif strategy == "median":
+        if problem_type == "classification":
+            raise ValueError(
+                "Cannot use 'median' imputation for classification target."
+            )
         fill_value = np.nanmedian(y_processed)
-    elif strategy == 'most_frequent':
+    elif strategy == "most_frequent":
         unique_vals, counts = np.unique(y_processed[~nan_mask], return_counts=True)
         if unique_vals.size > 0:
             fill_value = unique_vals[np.argmax(counts)]
-        else: # All values were NaN
-            fill_value = 0 if problem_type == 'regression' else (y_processed.dtype.type(0) if np.issubdtype(y_processed.dtype, np.integer) else 0.0) # Default
+        else:  # All values were NaN
+            fill_value = (
+                0
+                if problem_type == "regression"
+                else (
+                    y_processed.dtype.type(0)
+                    if np.issubdtype(y_processed.dtype, np.integer)
+                    else 0.0
+                )
+            )  # Default
     else:
         raise ValueError(f"Unknown missing value strategy for y: {strategy}")
 
     y_processed[nan_mask] = fill_value
     return y_processed, nan_mask
-
-

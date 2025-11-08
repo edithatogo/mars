@@ -1,6 +1,7 @@
 """
 Property-based tests for pymars using Hypothesis.
 """
+
 import numpy as np
 from hypothesis import given, settings
 from hypothesis import strategies as st
@@ -16,17 +17,25 @@ def feature_and_target_strategy(draw):
     n_samples = draw(st.integers(min_value=10, max_value=50))
     n_features = draw(st.integers(min_value=1, max_value=5))
 
-    X = draw(arrays(
-        dtype=float,
-        shape=(n_samples, n_features),
-        elements=st.floats(min_value=-10.0, max_value=10.0, allow_infinity=False, allow_nan=False)
-    ))
+    X = draw(
+        arrays(
+            dtype=float,
+            shape=(n_samples, n_features),
+            elements=st.floats(
+                min_value=-10.0, max_value=10.0, allow_infinity=False, allow_nan=False
+            ),
+        )
+    )
 
-    y = draw(arrays(
-        dtype=float,
-        shape=(n_samples,),
-        elements=st.floats(min_value=-10.0, max_value=10.0, allow_infinity=False, allow_nan=False)
-    ))
+    y = draw(
+        arrays(
+            dtype=float,
+            shape=(n_samples,),
+            elements=st.floats(
+                min_value=-10.0, max_value=10.0, allow_infinity=False, allow_nan=False
+            ),
+        )
+    )
 
     return X, y
 
@@ -84,12 +93,14 @@ def test_earth_max_degree_property(draw):
     """Test max_degree parameter with various values."""
     X, y = draw
     for max_degree in [1, 2, 3]:
-        model = Earth(max_degree=max_degree, max_terms=min(15, X.shape[0] // 2))  # Adjust max_terms to avoid overfitting
+        model = Earth(
+            max_degree=max_degree, max_terms=min(15, X.shape[0] // 2)
+        )  # Adjust max_terms to avoid overfitting
         model.fit(X, y)
 
         # Model should be fitted regardless of max_degree
         assert model.fitted_
-        assert hasattr(model, 'basis_')
+        assert hasattr(model, "basis_")
         if model.basis_ is not None:  # Check that if basis exists, it's valid
             assert len(model.basis_) >= 1  # At least intercept should be there
 
