@@ -128,7 +128,12 @@ predictions = model.predict(X)
 
 ## Documentation
 
-See the user guide and API reference in [docs/index.md](docs/index.md).
+The pymars project uses a multi-branch documentation approach:
+
+- **Code Documentation**: API and development documentation is available in the [docs branch](https://github.com/edithatogo/pymars/tree/docs)
+- **Research Paper**: The academic paper describing pymars is available in the [paper branch](https://github.com/edithatogo/pymars/tree/paper)
+
+For usage examples and tutorials, check the [examples directory](examples/) in this main branch.
 
 
 ## Contributing
