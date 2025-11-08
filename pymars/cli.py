@@ -14,11 +14,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="pymars: Pure Python Multivariate Adaptive Regression Splines"
     )
-    parser.add_argument(
-        "--version",
-        action="version",
-        version=f"pymars {__version__}"
-    )
+    parser.add_argument("--version", action="version", version=f"pymars {__version__}")
 
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
@@ -26,20 +22,42 @@ def main() -> None:
     fit_parser = subparsers.add_parser("fit", help="Fit an Earth model")
     fit_parser.add_argument("--input", required=True, help="Input data file (CSV)")
     fit_parser.add_argument("--target", required=True, help="Target column name")
-    fit_parser.add_argument("--output-model", required=True, help="Output model file (pickle)")
-    fit_parser.add_argument("--max-degree", type=int, default=1, help="Maximum degree of interaction terms (default: 1)")
-    fit_parser.add_argument("--penalty", type=float, default=3.0, help="GCV penalty parameter (default: 3.0)")
-    fit_parser.add_argument("--max-terms", type=int, help="Maximum number of terms (default: None)")
+    fit_parser.add_argument(
+        "--output-model", required=True, help="Output model file (pickle)"
+    )
+    fit_parser.add_argument(
+        "--max-degree",
+        type=int,
+        default=1,
+        help="Maximum degree of interaction terms (default: 1)",
+    )
+    fit_parser.add_argument(
+        "--penalty",
+        type=float,
+        default=3.0,
+        help="GCV penalty parameter (default: 3.0)",
+    )
+    fit_parser.add_argument(
+        "--max-terms", type=int, help="Maximum number of terms (default: None)"
+    )
 
     # Predict command
-    predict_parser = subparsers.add_parser("predict", help="Make predictions with a fitted model")
-    predict_parser.add_argument("--model", required=True, help="Input model file (pickle)")
+    predict_parser = subparsers.add_parser(
+        "predict", help="Make predictions with a fitted model"
+    )
+    predict_parser.add_argument(
+        "--model", required=True, help="Input model file (pickle)"
+    )
     predict_parser.add_argument("--input", required=True, help="Input data file (CSV)")
-    predict_parser.add_argument("--output", required=True, help="Output predictions file (CSV)")
+    predict_parser.add_argument(
+        "--output", required=True, help="Output predictions file (CSV)"
+    )
 
     # Score command
     score_parser = subparsers.add_parser("score", help="Score a fitted model")
-    score_parser.add_argument("--model", required=True, help="Input model file (pickle)")
+    score_parser.add_argument(
+        "--model", required=True, help="Input model file (pickle)"
+    )
     score_parser.add_argument("--input", required=True, help="Input data file (CSV)")
     score_parser.add_argument("--target", required=True, help="Target column name")
 
@@ -80,7 +98,7 @@ def fit_model(args) -> None:
     earth.fit(X, y)
 
     # Save model
-    with open(args.output_model, 'wb') as f:
+    with open(args.output_model, "wb") as f:
         pickle.dump(earth, f)
 
     print(f"Model fitted and saved to {args.output_model}")
@@ -95,7 +113,7 @@ def make_predictions(args) -> None:
     import pandas as pd
 
     # Load model
-    with open(args.model, 'rb') as f:
+    with open(args.model, "rb") as f:
         model = pickle.load(f)
 
     # Load input data
@@ -106,7 +124,7 @@ def make_predictions(args) -> None:
     predictions = model.predict(X)
 
     # Save predictions
-    pred_df = pd.DataFrame({'prediction': predictions})
+    pred_df = pd.DataFrame({"prediction": predictions})
     pred_df.to_csv(args.output, index=False)
 
     print(f"Predictions made and saved to {args.output}")
@@ -118,7 +136,7 @@ def score_model(args) -> None:
     import pandas as pd
 
     # Load model
-    with open(args.model, 'rb') as f:
+    with open(args.model, "rb") as f:
         model = pickle.load(f)
 
     # Load data

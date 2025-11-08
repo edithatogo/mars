@@ -38,7 +38,7 @@ class CategoricalImputer:
     def transform(self, X):
         X_arr = np.asarray(X, dtype=object).copy()
         if X_arr.ndim == 1:
-            X_arr = X_arr.reshape(-1,1)
+            X_arr = X_arr.reshape(-1, 1)
         for idx, le in self.encoders.items():
             col = X_arr[:, idx]
             new_col = []

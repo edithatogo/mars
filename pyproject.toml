@@ -102,6 +102,8 @@ exclude = [
 [tool.ruff.lint.per-file-ignores]
 # Allow print statements in demos
 "pymars/demos/*" = ["E501", "S101"]
+# Allow asserts and long lines in tests
+"tests/*" = ["E501", "S101"]
 
 [tool.ruff.lint.mccabe]
 # Unlike Flake8, default to a complexity of 10.

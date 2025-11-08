@@ -1,4 +1,3 @@
-
 """
 Scikit-learn compatibility layer for pymars.
 
@@ -15,7 +14,9 @@ scikit-learn's Estimator API.
 import logging
 
 import numpy as np
-from sklearn.base import BaseEstimator, RegressorMixin
+from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
 
 # from sklearn.utils.validation import check_X_y, check_array, check_is_fitted # Will use these in fit/predict
 # from sklearn.utils.multiclass import unique_labels # For classifiers
@@ -26,7 +27,7 @@ from .earth import (
 logger = logging.getLogger(__name__)
 
 
-class EarthRegressor(RegressorMixin, BaseEstimator): # Corrected Mixin Order
+class EarthRegressor(RegressorMixin, BaseEstimator):  # Corrected Mixin Order
     """
     Pymars Earth model for regression tasks, scikit-learn compatible.
 
@@ -102,11 +103,17 @@ class EarthRegressor(RegressorMixin, BaseEstimator): # Corrected Mixin Order
     EarthRegressor(...)
     >>> preds = model.predict(X)
     """
-    def __init__(self, max_degree: int = 1, penalty: float = 3.0, max_terms: int = None,
-                 minspan_alpha: float = 0.0, endspan_alpha: float = 0.0,
-                 allow_linear: bool = True):
 
-        super().__init__() # Recommended for BaseEstimator subclasses
+    def __init__(
+        self,
+        max_degree: int = 1,
+        penalty: float = 3.0,
+        max_terms: int = None,
+        minspan_alpha: float = 0.0,
+        endspan_alpha: float = 0.0,
+        allow_linear: bool = True,
+    ):
+        super().__init__()  # Recommended for BaseEstimator subclasses
 
         self.max_degree = max_degree
         self.penalty = penalty
@@ -134,7 +141,6 @@ class EarthRegressor(RegressorMixin, BaseEstimator): # Corrected Mixin Order
         # will be initialized in the fit() method, as per scikit-learn convention
         # to pass check_no_attributes_set_in_init from check_estimator.
 
-
     def fit(self, X, y):
         """
         Fit the Earth regressor to the training data.
@@ -156,15 +162,19 @@ class EarthRegressor(RegressorMixin, BaseEstimator): # Corrected Mixin Order
         # Validate X and y using scikit-learn utilities
         # This ensures X is 2D, y is 1D, they have consistent lengths,
         # are numeric, finite, and converts them to float64 by default.
-        X_validated, y_validated = check_X_y(X, y, accept_sparse=False, y_numeric=True, multi_output=False)
+        X_validated, y_validated = check_X_y(
+            X, y, accept_sparse=False, y_numeric=True, multi_output=False
+        )
 
         # Store number of features and feature names (if X was a DataFrame)
         self.n_features_in_ = X_validated.shape[1]
-        if hasattr(X, 'columns'): # Check if original X was a DataFrame
+        if hasattr(X, "columns"):  # Check if original X was a DataFrame
             self.feature_names_in_ = np.array(X.columns, dtype=object)
         else:
             # Create generic feature names if not provided
-            self.feature_names_in_ = np.array([f"x{i}" for i in range(self.n_features_in_)], dtype=object)
+            self.feature_names_in_ = np.array(
+                [f"x{i}" for i in range(self.n_features_in_)], dtype=object
+            )
 
         # Re-initialize the core Earth model with current hyperparameters
         # This ensures that if set_params was called, the new params are used.
@@ -174,7 +184,7 @@ class EarthRegressor(RegressorMixin, BaseEstimator): # Corrected Mixin Order
             max_terms=self.max_terms,
             minspan_alpha=self.minspan_alpha,
             endspan_alpha=self.endspan_alpha,
-            allow_linear=self.allow_linear
+            allow_linear=self.allow_linear,
         )
 
         # Fit the internal Earth model
@@ -220,8 +230,7 @@ class EarthRegressor(RegressorMixin, BaseEstimator): # Corrected Mixin Order
         if X_validated.ndim == 1:
             # If X is 1D (e.g. a single sample like [f1, f2, f3]), reshape to (1, n_features)
             # This check is important because our CoreEarth.predict expects 2D X.
-             X_validated = X_validated.reshape(1, -1)
-
+            X_validated = X_validated.reshape(1, -1)
 
         # Check that the number of features is the same as during fit
         if X_validated.shape[1] != self.n_features_in_:
@@ -244,14 +253,12 @@ class EarthRegressor(RegressorMixin, BaseEstimator): # Corrected Mixin Order
     #    so changes made by `set_params` to `EarthRegressor`'s attributes
     #    will be reflected in the `CoreEarth` instance used during the next `fit`.
 
-from sklearn.base import ClassifierMixin
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
 
 # Using LogisticRegression as a default internal classifier for now.
 # Could be made configurable.
 
-class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
+
+class EarthClassifier(ClassifierMixin, BaseEstimator):  # Corrected Mixin Order
     """
     Pymars Earth model for classification tasks, scikit-learn compatible.
 
@@ -308,13 +315,18 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
     is_fitted_ : bool
         Flag indicating whether the model has been fitted.
     """
-    def __init__(self, max_degree: int = 1, penalty: float = 3.0, max_terms: int = None,
-                 minspan_alpha: float = 0.0, endspan_alpha: float = 0.0,
-                 allow_linear: bool = True,
-                 classifier=None # Allow user to pass a classifier instance
-                 # TODO: Add specific classifier params like C for LogisticRegression if classifier is None
-                ):
 
+    def __init__(
+        self,
+        max_degree: int = 1,
+        penalty: float = 3.0,
+        max_terms: int = None,
+        minspan_alpha: float = 0.0,
+        endspan_alpha: float = 0.0,
+        allow_linear: bool = True,
+        classifier=None,  # Allow user to pass a classifier instance
+        # TODO: Add specific classifier params like C for LogisticRegression if classifier is None
+    ):
         super().__init__()
 
         self.max_degree = max_degree
@@ -323,7 +335,7 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
         self.minspan_alpha = minspan_alpha
         self.endspan_alpha = endspan_alpha
         self.allow_linear = allow_linear
-        self.classifier = classifier # User-provided or None
+        self.classifier = classifier  # User-provided or None
 
         # Internal Earth model instance
         # Instantiated here so get_params can find its params if deep=True
@@ -344,7 +356,6 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
 
         # Fitted attributes (like self.basis_, self.classes_, self.n_features_in_,
         # self.is_fitted_, self.classifier_) will be initialized in the fit() method.
-
 
     def fit(self, X, y):
         """
@@ -380,7 +391,9 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
         # but our CoreEarth model currently expects numeric y.
         # This might need adjustment if CoreEarth cannot handle non-numeric y in its GCV.
         # For now, assume y will be label encoded or numeric.
-        X_validated, y_original_labels = check_X_y(X, y, accept_sparse=False, multi_output=False)
+        X_validated, y_original_labels = check_X_y(
+            X, y, accept_sparse=False, multi_output=False
+        )
 
         self.classes_ = unique_labels(y_original_labels)
         self.n_features_in_ = X_validated.shape[1]
@@ -389,13 +402,16 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
         # We use LabelEncoder to convert y to numeric for CoreEarth,
         # but the final classifier self.classifier_ will be fit on original (or validated) y labels.
         from sklearn.preprocessing import LabelEncoder
+
         self._label_encoder = LabelEncoder()
         y_numeric_for_earth = self._label_encoder.fit_transform(y_original_labels)
 
-        if hasattr(X, 'columns'):
+        if hasattr(X, "columns"):
             self.feature_names_in_ = np.array(X.columns, dtype=object)
         else:
-            self.feature_names_in_ = np.array([f"x{i}" for i in range(self.n_features_in_)], dtype=object)
+            self.feature_names_in_ = np.array(
+                [f"x{i}" for i in range(self.n_features_in_)], dtype=object
+            )
 
         # Re-initialize the core Earth model
         self.earth_ = CoreEarth(
@@ -404,7 +420,7 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
             max_terms=self.max_terms,
             minspan_alpha=self.minspan_alpha,
             endspan_alpha=self.endspan_alpha,
-            allow_linear=self.allow_linear
+            allow_linear=self.allow_linear,
         )
 
         # Fit the Earth model to generate basis functions.
@@ -423,31 +439,37 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
             # We should probably fit the classifier on original X or raise error.
             # For now, let's assume earth_ always produces at least an intercept.
             # If self.basis_ is empty, _build_basis_matrix will return empty B.
-             logger.warning(
-                 "Earth model fitting resulted in no basis functions. Classifier will be fit on original X (if applicable) or might fail."
-             )
-             # Fallback: use original features, or handle as error.
-             # If we use original features, the "Earth" part isn't doing much.
-             # For simplicity now, if no basis functions, the classifier step might fail or be trivial.
-             # A robust solution would be to ensure earth_ at least has an intercept or handle this.
-             X_transformed = X_validated # Fallback, though not ideal.
-             if not X_transformed.any(): # If X_validated was also empty (should be caught by check_X_y)
-                 self.is_fitted_ = True # Mark as fitted, but it's a degenerate model
-                 return self
+            logger.warning(
+                "Earth model fitting resulted in no basis functions. Classifier will be fit on original X (if applicable) or might fail."
+            )
+            # Fallback: use original features, or handle as error.
+            # If we use original features, the "Earth" part isn't doing much.
+            # For simplicity now, if no basis functions, the classifier step might fail or be trivial.
+            # A robust solution would be to ensure earth_ at least has an intercept or handle this.
+            X_transformed = X_validated  # Fallback, though not ideal.
+            if (
+                not X_transformed.any()
+            ):  # If X_validated was also empty (should be caught by check_X_y)
+                self.is_fitted_ = True  # Mark as fitted, but it's a degenerate model
+                return self
         else:
             # Transform X using the fitted Earth model's basis functions
             # Since X_validated is assumed to be NaN-free by this point (due to check_X_y),
             # an all-False missing_mask is appropriate for the core Earth's _build_basis_matrix.
             missing_mask_for_transform = np.zeros_like(X_validated, dtype=bool)
-            X_transformed = self.earth_._build_basis_matrix(X_validated, self.basis_, missing_mask_for_transform)
+            X_transformed = self.earth_._build_basis_matrix(
+                X_validated, self.basis_, missing_mask_for_transform
+            )
 
         # Initialize/Clone and Fit the internal classifier
         if self.classifier is None:  # Use default
-            self.classifier_ = LogisticRegression(solver='lbfgs', random_state=0)
-        else: # User provided a classifier instance
-            self.classifier_ = clone(self.classifier) # Clone to ensure fresh state
+            self.classifier_ = LogisticRegression(solver="lbfgs", random_state=0)
+        else:  # User provided a classifier instance
+            self.classifier_ = clone(self.classifier)  # Clone to ensure fresh state
 
-        self.classifier_.fit(X_transformed, y_original_labels) # Fit classifier on original (validated) labels
+        self.classifier_.fit(
+            X_transformed, y_original_labels
+        )  # Fit classifier on original (validated) labels
 
         self.is_fitted_ = True
         return self
@@ -464,14 +486,17 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
             X_validated = X_validated.reshape(1, -1)
 
         # n_features_in_ should be set by fit. If not, check_is_fitted should have caught it.
-        if self.n_features_in_ is not None and X_validated.shape[1] != self.n_features_in_: # check self.n_features_in_ existence
+        if (
+            self.n_features_in_ is not None
+            and X_validated.shape[1] != self.n_features_in_
+        ):  # check self.n_features_in_ existence
             # Message pattern for check_estimator
             raise ValueError(
                 f"X has {X_validated.shape[1]} features, but {self.__class__.__name__} "
                 f"is expecting {self.n_features_in_} features as input."
             )
 
-        if not self.basis_: # Earth model resulted in no basis functions
+        if not self.basis_:  # Earth model resulted in no basis functions
             # This case should be handled based on how fit decided to proceed.
             # If fit defaulted to using original X for classifier:
             # print("Warning: Earth model has no basis functions. Using original X for classifier prediction.")
@@ -483,15 +508,17 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
             # and the classifier must have been fit on something (e.g. original X or failed).
             # If self.basis_ is empty, the transform should reflect that (e.g. empty feature set for classifier).
             # This path implies the classifier was fit on X_validated directly in `fit` method's fallback.
-             logger.warning(
-                 "EarthClassifier.basis_ is empty. Predictions might be based on original features if fit handled this."
-             )
-             return X_validated # Fallback if fit decided to use original X
+            logger.warning(
+                "EarthClassifier.basis_ is empty. Predictions might be based on original features if fit handled this."
+            )
+            return X_validated  # Fallback if fit decided to use original X
 
         # Since X_validated is assumed to be NaN-free by this point (due to check_array),
         # an all-False missing_mask is appropriate.
         missing_mask_for_transform = np.zeros_like(X_validated, dtype=bool)
-        X_transformed = self.earth_._build_basis_matrix(X_validated, self.basis_, missing_mask_for_transform)
+        X_transformed = self.earth_._build_basis_matrix(
+            X_validated, self.basis_, missing_mask_for_transform
+        )
 
         # Ensure X_transformed is not empty if basis functions exist, otherwise it's an issue.
         # (e.g. if all basis functions evaluate to constants that get removed, or some error)
@@ -503,9 +530,9 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
             # Or, more likely, we should ensure B_matrix is not empty if basis_ is not.
             # A common fallback is to return an array of zeros or means if this happens.
             # Let's assume for now that if self.basis_ is not empty, X_transformed will have columns.
-             logger.warning(
-                 "Transformed features matrix is empty despite basis functions existing."
-             )
+            logger.warning(
+                "Transformed features matrix is empty despite basis functions existing."
+            )
 
         return X_transformed
 
@@ -550,7 +577,9 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
                 f"The internal classifier {self.classifier_.__class__.__name__} "
                 "does not support predict_proba."
             )
-        X_transformed = self._transform_X_for_classifier(X) # This also calls check_is_fitted
+        X_transformed = self._transform_X_for_classifier(
+            X
+        )  # This also calls check_is_fitted
         return self.classifier_.predict_proba(X_transformed)
 
     def score(self, X, y):
@@ -582,4 +611,3 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
     #     # or its sub-parameters. `fit` then uses the updated `self.classifier`.
     #     # Similarly for MARS params, they are set on self, and `fit` re-creates self.earth_
     #     pass
-
