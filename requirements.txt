@@ -1,4 +1,5 @@
-numpy
-scikit-learn
-pytest
-matplotlib
+# Required packages for building pymars documentation
+mkdocs==1.6.1
+mkdocs-material==9.5.38
+mkdocstrings==0.26.2
+mkdocstrings-python==1.12.2
