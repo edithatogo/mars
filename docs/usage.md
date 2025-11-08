@@ -2,13 +2,13 @@
 
 ## Basic Usage
 
-The pymars library provides MARS (Multivariate Adaptive Regression Splines) functionality with scikit-learn compatibility.
+The mars library provides MARS (Multivariate Adaptive Regression Splines) functionality with scikit-learn compatibility.
 
 ### Basic Example
 
 ```python
 import numpy as np
-from pymars import Earth
+from mars import Earth
 
 # Generate sample data
 X = np.random.rand(100, 4)
@@ -26,7 +26,7 @@ print(f"R-squared: {model.score(X, y):.3f}")
 ### Regression Example
 
 ```python
-from pymars import EarthRegressor
+from mars import EarthRegressor
 from sklearn.datasets import make_regression
 from sklearn.model_selection import train_test_split
 
@@ -46,7 +46,7 @@ print(f"Test Score: {test_score:.3f}")
 ### Classification Example
 
 ```python
-from pymars import EarthClassifier
+from mars import EarthClassifier
 from sklearn.datasets import make_classification
 
 X, y = make_classification(n_samples=1000, n_features=10, n_classes=2, random_state=42)
@@ -60,10 +60,10 @@ print(f"Accuracy: {accuracy:.3f}")
 
 ### Cross-Validation
 
-pymars includes a cross-validation helper:
+mars includes a cross-validation helper:
 
 ```python
-from pymars import EarthCV
+from mars import EarthCV
 from sklearn.datasets import make_regression
 
 X, y = make_regression(n_samples=500, n_features=8, noise=0.1, random_state=42)
@@ -86,11 +86,11 @@ print(f"Best model: {cv_model.best_estimator_}")
 
 ### Feature Importance
 
-pymars provides multiple methods to assess feature importance:
+mars provides multiple methods to assess feature importance:
 
 ```python
 import numpy as np
-from pymars import Earth
+from mars import Earth
 
 # Generate sample data
 X = np.random.rand(500, 5)

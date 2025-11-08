@@ -1,8 +1,8 @@
-# 🎉 pymars v1.0.0: PUBLISHING READY CHECKLIST
+# 🎉 mars v1.0.0: PUBLISHING READY CHECKLIST
 
 ## 🚀 RELEASE STATUS: ✅ IMPLEMENTATION COMPLETE AND READY FOR PUBLICATION
 
-This checklist confirms that pymars v1.0.0 is ready for publication to PyPI/TestPyPI.
+This checklist confirms that mars v1.0.0 is ready for publication to PyPI/TestPyPI.
 
 ## ✅ Pre-Publication Verification
 
@@ -16,8 +16,8 @@ This checklist confirms that pymars v1.0.0 is ready for publication to PyPI/Test
 
 ### ✅ Package Distribution Ready
 - [x] **Version 1.0.0** (stable) - Complete and published to GitHub
-- [x] **Wheel Distribution** - pymars-1.0.0-py3-none-any.whl (65KB) 
-- [x] **Source Distribution** - pymars-1.0.0.tar.gz (82KB)
+- [x] **Wheel Distribution** - mars-1.0.0-py3-none-any.whl (65KB) 
+- [x] **Source Distribution** - mars-1.0.0.tar.gz (82KB)
 - [x] **GitHub Release** - v1.0.0 published with automated workflows
 - [x] **PyPI Compatibility** - Ready for TestPyPI and PyPI publication
 
@@ -65,8 +65,8 @@ python -m pip install build twine
 # Check distribution files
 ls -la dist/
 ```
-- [x] **pymars-1.0.0-py3-none-any.whl** (65KB) - Wheel distribution
-- [x] **pymars-1.0.0.tar.gz** (82KB) - Source distribution
+- [x] **mars-1.0.0-py3-none-any.whl** (65KB) - Wheel distribution
+- [x] **mars-1.0.0.tar.gz** (82KB) - Source distribution
 
 ### ✅ Authentication Configured
 Create `.pypirc` with your credentials:
@@ -92,7 +92,7 @@ password = pypi-your-test-token-here
 ### ✅ Core Earth Model
 ```python
 import numpy as np
-import pymars as pm
+import mars as pm
 
 # Generate test data
 X = np.random.rand(20, 2)
@@ -177,7 +177,7 @@ print(f"Model explanation keys: {list(explanation.keys())}")  # ['model_summary'
 ### ✅ CLI Interface
 ```bash
 # Test CLI functionality
-python -m pymars --version  # pymars 1.0.0
+python -m mars --version  # mars 1.0.0
 ```
 
 ## 🚀 Publishing Instructions
@@ -188,7 +188,7 @@ python -m pymars --version  # pymars 1.0.0
 twine upload --repository testpypi dist/*
 
 # Test installation from TestPyPI
-pip install --index-url https://test.pypi.org/simple/ pymars
+pip install --index-url https://test.pypi.org/simple/ mars
 ```
 
 ### ✅ PyPI Publication (for production)
@@ -197,7 +197,7 @@ pip install --index-url https://test.pypi.org/simple/ pymars
 twine upload dist/*
 
 # Test installation from PyPI
-pip install pymars
+pip install mars
 ```
 
 ## 📦 Post-Publication Verification
@@ -205,15 +205,15 @@ pip install pymars
 ### ✅ Installation Testing
 ```bash
 # From TestPyPI
-pip install --index-url https://test.pypi.org/simple/ pymars
+pip install --index-url https://test.pypi.org/simple/ mars
 
 # From PyPI (production)
-pip install pymars
+pip install mars
 ```
 
 ### ✅ Functionality Verification
 ```python
-import pymars as pm
+import mars as pm
 import numpy as np
 
 # Test basic functionality
@@ -227,7 +227,7 @@ print(f"Published package R²: {score:.4f}")  # Should be ~0.9149
 
 ## 🎉 Conclusion
 
-pymars v1.0.0 is now officially ready for publication to PyPI!
+mars v1.0.0 is now officially ready for publication to PyPI!
 
 ✅ **All core functionality verified and tested**
 ✅ **Package distributions built and available**
@@ -250,10 +250,10 @@ The library can be confidently published to PyPI and used as a direct substitute
 4. **Test Installation**:
    ```bash
    # From TestPyPI
-   pip install --index-url https://test.pypi.org/simple/ pymars
+   pip install --index-url https://test.pypi.org/simple/ mars
    
    # From PyPI (production)
-   pip install pymars
+   pip install mars
    ```
 
-**pymars v1.0.0 is NOW READY FOR PUBLICATION TO PYPI!** 🎉🚀
+**mars v1.0.0 is NOW READY FOR PUBLICATION TO PYPI!** 🎉🚀

@@ -1,6 +1,6 @@
 # API Reference
 
-The pymars library provides a comprehensive API for Multivariate Adaptive Regression Splines (MARS) with full scikit-learn compatibility.
+The mars library provides a comprehensive API for Multivariate Adaptive Regression Splines (MARS) with full scikit-learn compatibility.
 
 ## Core Classes
 
@@ -8,7 +8,7 @@ The pymars library provides a comprehensive API for Multivariate Adaptive Regres
 
 The main MARS implementation class that provides the core algorithm functionality:
 
-::: pymars.Earth
+::: mars.Earth
     handler: python
     options:
       members: 
@@ -36,7 +36,7 @@ The main MARS implementation class that provides the core algorithm functionalit
 
 Scikit-learn compatible regressor wrapper for the MARS algorithm:
 
-::: pymars.EarthRegressor
+::: mars.EarthRegressor
     handler: python
     options:
       members: true
@@ -47,7 +47,7 @@ Scikit-learn compatible regressor wrapper for the MARS algorithm:
 
 Scikit-learn compatible classifier wrapper for the MARS algorithm:
 
-::: pymars.EarthClassifier
+::: mars.EarthClassifier
     handler: python
     options:
       members: true
@@ -60,7 +60,7 @@ Scikit-learn compatible classifier wrapper for the MARS algorithm:
 
 Extended class for Generalized Linear Models with MARS basis functions:
 
-::: pymars.GLMEarth
+::: mars.GLMEarth
     handler: python
     options:
       members: true
@@ -73,7 +73,7 @@ Extended class for Generalized Linear Models with MARS basis functions:
 
 Grid search helper with cross-validation for MARS models:
 
-::: pymars.EarthCV
+::: mars.EarthCV
     handler: python
     options:
       members: true
@@ -86,7 +86,7 @@ Grid search helper with cross-validation for MARS models:
 
 Earth model with caching for improved performance:
 
-::: pymars.CachedEarth
+::: mars.CachedEarth
     handler: python
     options:
       members: 
@@ -100,7 +100,7 @@ Earth model with caching for improved performance:
 
 Earth models with parallel computation support:
 
-::: pymars.ParallelEarth
+::: mars.ParallelEarth
     handler: python
     options:
       members: true
@@ -111,7 +111,7 @@ Earth models with parallel computation support:
 
 Earth models with sparse matrix support:
 
-::: pymars.SparseEarth
+::: mars.SparseEarth
     handler: python
     options:
       members: true
@@ -124,7 +124,7 @@ Earth models with sparse matrix support:
 
 Functions for model interpretation and explanation:
 
-::: pymars.explain
+::: mars.explain
     handler: python
     options:
       members: 
@@ -137,7 +137,7 @@ Functions for model interpretation and explanation:
 
 Visualization utilities for MARS models:
 
-::: pymars.plot
+::: mars.plot
     handler: python
     options:
       members: 
@@ -152,7 +152,7 @@ Visualization utilities for MARS models:
 
 Advanced generalized linear models with MARS basis functions:
 
-::: pymars.AdvancedGLMEarth
+::: mars.AdvancedGLMEarth
     handler: python
     options:
       members: true
@@ -163,21 +163,21 @@ Advanced generalized linear models with MARS basis functions:
 
 Specialized regressors for different distribution families:
 
-::: pymars.GammaRegressor
+::: mars.GammaRegressor
     handler: python
     options:
       members: true
       show_root_heading: true
       show_root_full_path: false
 
-::: pymars.TweedieRegressor
+::: mars.TweedieRegressor
     handler: python
     options:
       members: true
       show_root_heading: true
       show_root_full_path: false
 
-::: pymars.InverseGaussianRegressor
+::: mars.InverseGaussianRegressor
     handler: python
     options:
       members: true
@@ -186,7 +186,7 @@ Specialized regressors for different distribution families:
 
 ## Feature Importance Methods
 
-pymars implements multiple methods for calculating feature importance:
+mars implements multiple methods for calculating feature importance:
 
 - **nb_subsets**: Number of subsets method counting basis function appearances
 - **gcv**: Generalized Cross-Validation improvement method

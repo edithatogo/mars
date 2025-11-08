@@ -1,17 +1,17 @@
-# Design for pymars: Pure Python Earth (Multivariate Adaptive Regression Splines)
+# Design for mars: Pure Python Earth (Multivariate Adaptive Regression Splines)
 
 ## Overview
 
-This document describes the design of pymars, a pure Python implementation of Multivariate Adaptive Regression Splines (MARS) that maintains full compatibility with the scikit-learn ecosystem. The design follows the requirements specified in requirements.md and implements a scikit-learn compliant API while providing feature parity with the py-earth library.
+This document describes the design of mars, a pure Python implementation of Multivariate Adaptive Regression Splines (MARS) that maintains full compatibility with the scikit-learn ecosystem. The design follows the requirements specified in requirements.md and implements a scikit-learn compliant API while providing feature parity with the py-earth library.
 
 ## System Architecture
 
 ### 2.1 Component Structure
 
-The pymars library is organized into the following components:
+The mars library is organized into the following components:
 
 ```
-pymars/
+mars/
 ├── earth.py              # Core Earth model implementation
 ├── __init__.py           # Package interface
 ├── _basis.py             # Basis function definitions
@@ -483,4 +483,4 @@ class CategoricalImputer:
 
 ---
 
-*This design document serves as a blueprint for the pymars implementation, ensuring all requirements from the requirements.md file are properly addressed while maintaining the pure Python approach.*
+*This design document serves as a blueprint for the mars implementation, ensuring all requirements from the requirements.md file are properly addressed while maintaining the pure Python approach.*

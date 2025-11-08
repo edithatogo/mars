@@ -1,8 +1,8 @@
-# pymars v1.0.0: Implementation Complete 🎉
+# mars v1.0.0: Implementation Complete 🎉
 
 ## 🚀 Release Status: PRODUCTION READY
 
-After extensive development and comprehensive testing, pymars v1.0.0 is now complete and ready for production use!
+After extensive development and comprehensive testing, mars v1.0.0 is now complete and ready for production use!
 
 ## 📊 Implementation Summary
 
@@ -76,13 +76,13 @@ After extensive development and comprehensive testing, pymars v1.0.0 is now comp
 
 ### ✅ Package Distribution
 - **Version**: 1.0.0 (stable) ✅
-- **Name**: pymars ✅
+- **Name**: mars ✅
 - **Description**: Pure Python Earth (MARS) algorithm ✅
 - **Python Versions**: 3.8+ ✅
 - **Dependencies**: numpy, scikit-learn, matplotlib ✅
 - **Optional Dependencies**: pandas (for CLI functionality) ✅
-- **Wheel Distribution**: pymars-1.0.0-py3-none-any.whl (48KB) ✅
-- **Source Distribution**: pymars-1.0.0.tar.gz (68KB) ✅
+- **Wheel Distribution**: mars-1.0.0-py3-none-any.whl (48KB) ✅
+- **Source Distribution**: mars-1.0.0.tar.gz (68KB) ✅
 - **GitHub Release**: v1.0.0 published with automated workflows ✅
 
 ## 📈 Performance Benchmarks
@@ -216,7 +216,7 @@ These enhancements would further improve performance and capabilities but are no
 
 ## 🎉 Conclusion
 
-pymars v1.0.0 represents a mature, production-ready implementation that:
+mars v1.0.0 represents a mature, production-ready implementation that:
 
 ✅ **Maintains full compatibility** with the scikit-learn ecosystem
 ✅ **Provides all core functionality** of the popular py-earth library
@@ -260,10 +260,10 @@ The library is now ready for stable release and can be confidently used as a dir
 4. **Test Installation**:
    ```bash
    # From TestPyPI
-   pip install --index-url https://test.pypi.org/simple/ pymars
+   pip install --index-url https://test.pypi.org/simple/ mars
    
    # From PyPI (production)
-   pip install pymars
+   pip install mars
    ```
 
-The pymars library is now production-ready and can be confidently published to PyPI for public use!
+The mars library is now production-ready and can be confidently published to PyPI for public use!

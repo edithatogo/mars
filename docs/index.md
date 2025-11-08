@@ -1,17 +1,17 @@
-# pymars: Pure Python Earth (Multivariate Adaptive Regression Splines)
+# mars: Pure Python Earth (Multivariate Adaptive Regression Splines)
 
-![CI](https://github.com/edithatogo/pymars/actions/workflows/ci.yml/badge.svg)
-![Security](https://github.com/edithatogo/pymars/actions/workflows/security.yml/badge.svg)
-![Code Quality](https://github.com/edithatogo/pymars/actions/workflows/code-quality.yml/badge.svg)
-![Documentation](https://github.com/edithatogo/pymars/actions/workflows/docs.yml/badge.svg)
-![Code Coverage](https://codecov.io/gh/edithatogo/pymars/branch/main/graph/badge.svg)
-![PyPI](https://img.shields.io/pypi/v/pymars.svg)
-![Python Version](https://img.shields.io/pypi/pyversions/pymars.svg)
-![License](https://img.shields.io/github/license/edithatogo/pymars.svg)
+![CI](https://github.com/edithatogo/mars/actions/workflows/ci.yml/badge.svg)
+![Security](https://github.com/edithatogo/mars/actions/workflows/security.yml/badge.svg)
+![Code Quality](https://github.com/edithatogo/mars/actions/workflows/code-quality.yml/badge.svg)
+![Documentation](https://github.com/edithatogo/mars/actions/workflows/docs.yml/badge.svg)
+![Code Coverage](https://codecov.io/gh/edithatogo/mars/branch/main/graph/badge.svg)
+![PyPI](https://img.shields.io/pypi/v/mars.svg)
+![Python Version](https://img.shields.io/pypi/pyversions/mars.svg)
+![License](https://img.shields.io/github/license/edithatogo/mars.svg)
 
 ## Overview
 
-**pymars** is a pure Python implementation of Multivariate Adaptive Regression Splines (MARS), also known as Earth. The goal is to provide an easy-to-install, scikit-learn compatible version without C/Cython dependencies.
+**mars** is a pure Python implementation of Multivariate Adaptive Regression Splines (MARS), also known as Earth. The goal is to provide an easy-to-install, scikit-learn compatible version without C/Cython dependencies.
 
 MARS is a non-parametric regression technique that automatically models nonlinearities and interactions between variables. The method works by creating a piecewise linear model with basis functions that can capture non-linear relationships and interactions automatically.
 
@@ -34,15 +34,15 @@ MARS is a non-parametric regression technique that automatically models nonlinea
 
 ## Motivation
 
-pymars was developed to address specific needs in health economic outcomes research, particularly in the analysis of complex health system reforms such as New Zealand's Pae Ora (Healthy Futures) Act 2022. The analysis of such reforms is complicated by the presence of multiple confounding factors, including COVID-19 pandemic effects, systemic changes, and dozens of concurrent policy modifications.
+mars was developed to address specific needs in health economic outcomes research, particularly in the analysis of complex health system reforms such as New Zealand's Pae Ora (Healthy Futures) Act 2022. The analysis of such reforms is complicated by the presence of multiple confounding factors, including COVID-19 pandemic effects, systemic changes, and dozens of concurrent policy modifications.
 
 Traditional approaches focusing solely on dates for intervention analysis were insufficient; instead, changepoint detection methods were required to identify significant shifts in health outcomes and utilization patterns. The MARS approach of auto-fitting knots and optimizing to a specific number of knots proved particularly useful for health economic analysis.
 
-The journey toward pymars began with the R implementation of MARS ("earth"), but the author's primary workflow was in Python with scikit-learn. The existing Python implementation "py-earth" by Jason Friedman had limitations including Python 2 compatibility issues and difficulty integrating into automated machine learning tools. These practical challenges motivated the development of pymars as a pure Python implementation maintaining full scikit-learn compatibility.
+The journey toward mars began with the R implementation of MARS ("earth"), but the author's primary workflow was in Python with scikit-learn. The existing Python implementation "py-earth" by Jason Friedman had limitations including Python 2 compatibility issues and difficulty integrating into automated machine learning tools. These practical challenges motivated the development of mars as a pure Python implementation maintaining full scikit-learn compatibility.
 
 ## Health Economic Applications
 
-pymars is particularly valuable for health economic outcomes research where understanding complex relationships between health outcomes, costs, and utilization patterns is crucial. The automatic identification of non-linearities and interactions makes MARS particularly well-suited for health economic applications where:
+mars is particularly valuable for health economic outcomes research where understanding complex relationships between health outcomes, costs, and utilization patterns is crucial. The automatic identification of non-linearities and interactions makes MARS particularly well-suited for health economic applications where:
 
 - Healthcare costs often increase exponentially with age and morbidity
 - The effects of socioeconomic factors may have threshold effects
@@ -55,7 +55,7 @@ For installation instructions, see the [Installation page](installation.md). For
 
 ## Contributing
 
-We welcome contributions to pymars! Please see our contributing guidelines in the repository.
+We welcome contributions to mars! Please see our contributing guidelines in the repository.
 
 ## License
 

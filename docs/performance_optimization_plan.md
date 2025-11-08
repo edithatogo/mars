@@ -1,12 +1,12 @@
-# Performance Optimization Plan for pymars
+# Performance Optimization Plan for mars
 
 ## Overview
 
-This document outlines a comprehensive plan to optimize the performance of pymars, identifying bottlenecks and proposing solutions to improve both speed and memory usage.
+This document outlines a comprehensive plan to optimize the performance of mars, identifying bottlenecks and proposing solutions to improve both speed and memory usage.
 
 ## Current Performance Analysis
 
-Based on profiling results, the main performance bottlenecks in pymars are:
+Based on profiling results, the main performance bottlenecks in mars are:
 
 1. **Basis Function Transformations** (60-70% of runtime)
    - `_build_basis_matrix` method in `_forward.py` and `_pruning.py`

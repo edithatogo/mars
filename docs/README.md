@@ -2,7 +2,7 @@
 
 ## Overview
 
-The pymars repository now has a complete documentation system using MkDocs with mkdocstrings. This provides:
+The mars repository now has a complete documentation system using MkDocs with mkdocstrings. This provides:
 
 1. **Easy-to-read documentation** in Markdown format
 2. **Auto-generated API documentation** from Python docstrings

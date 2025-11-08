@@ -1,10 +1,10 @@
 # Advanced Features Tutorial
 
-This tutorial covers advanced features of pymars including model interpretation, changepoint detection, cross-validation, and specialized health economic applications.
+This tutorial covers advanced features of mars including model interpretation, changepoint detection, cross-validation, and specialized health economic applications.
 
 ## Model Interpretation Tools
 
-pymars provides several tools for understanding model behavior:
+mars provides several tools for understanding model behavior:
 
 ```python
 import numpy as np
@@ -61,7 +61,7 @@ if hasattr(model, 'summary_feature_importances'):
 Understanding how individual features affect predictions:
 
 ```python
-from pymars.explain import plot_partial_dependence, plot_individual_conditional_expectation
+from mars.explain import plot_partial_dependence, plot_individual_conditional_expectation
 
 # Plot partial dependence for top 3 most important features
 top_features_idx = np.argsort(feature_importance)[-3:][::-1]
@@ -97,10 +97,10 @@ plt.show()
 
 ## Cross-Validation and Model Selection
 
-pymars provides specialized cross-validation helpers:
+mars provides specialized cross-validation helpers:
 
 ```python
-from pymars.cv import EarthCV
+from mars.cv import EarthCV
 from sklearn.model_selection import KFold
 
 # Define parameter grid for cross-validation
@@ -190,7 +190,7 @@ for i, bf in enumerate(changepoint_model.basis_):
 
 ## Generalized Linear Models
 
-pymars supports logistic and Poisson regression through generalized linear models:
+mars supports logistic and Poisson regression through generalized linear models:
 
 ```python
 from sklearn.datasets import make_classification
@@ -210,7 +210,7 @@ X_train_bin, X_test_bin, y_train_bin, y_test_bin = train_test_split(
 )
 
 # Fit logistic regression model with MARS basis functions
-from pymars.glm import GLMEarth
+from mars.glm import GLMEarth
 
 glm_model = GLMEarth(
     family='binomial',  # Logistic regression
@@ -245,7 +245,7 @@ for name, imp in zip([f"x{i}" for i in range(X_binary.shape[1])], glm_model.feat
 Using cross-validation with GLMs:
 
 ```python
-from pymars.cv import GLMEarthCV
+from mars.cv import GLMEarthCV
 
 # Parameter grid for GLM
 glm_param_grid = {

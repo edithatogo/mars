@@ -1,8 +1,8 @@
-# pymars v1.0.0: IMPLEMENTATION COMPLETE 🎉
+# mars v1.0.0: IMPLEMENTATION COMPLETE 🎉
 
 ## 🚀 Release Status: READY FOR PUBLICATION
 
-After extensive development and rigorous testing, pymars v1.0.0 is now complete and ready for publication to PyPI!
+After extensive development and rigorous testing, mars v1.0.0 is now complete and ready for publication to PyPI!
 
 ## 📊 Final Status Summary
 
@@ -67,8 +67,8 @@ After extensive development and rigorous testing, pymars v1.0.0 is now complete 
 ## 📦 Package Distribution
 
 ### ✅ Build Artifacts
-- **Wheel Distribution**: pymars-1.0.0-py3-none-any.whl (48KB)
-- **Source Distribution**: pymars-1.0.0.tar.gz (68KB)
+- **Wheel Distribution**: mars-1.0.0-py3-none-any.whl (48KB)
+- **Source Distribution**: mars-1.0.0.tar.gz (68KB)
 - **GitHub Release**: v1.0.0 published with automated workflows
 - **PyPI Compatibility**: Ready for TestPyPI and PyPI publication
 
@@ -114,15 +114,15 @@ After extensive development and rigorous testing, pymars v1.0.0 is now complete 
 4. **Test Installation**:
    ```bash
    # From TestPyPI
-   pip install --index-url https://test.pypi.org/simple/ pymars
+   pip install --index-url https://test.pypi.org/simple/ mars
    
    # From PyPI (production)
-   pip install pymars
+   pip install mars
    ```
 
 ## 🎉 Conclusion
 
-pymars v1.0.0 represents a mature, production-ready implementation that:
+mars v1.0.0 represents a mature, production-ready implementation that:
 
 ✅ **Maintains full compatibility** with the scikit-learn ecosystem
 ✅ **Provides all core functionality** of the popular py-earth library
@@ -146,4 +146,4 @@ The core implementation is **100% complete and production-ready**. The experimen
 
 ---
 
-**pymars v1.0.0 is NOW READY FOR PUBLICATION TO PYPI!** 🚀
+**mars v1.0.0 is NOW READY FOR PUBLICATION TO PYPI!** 🚀

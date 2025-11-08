@@ -1,4 +1,4 @@
-# Tasks for pymars: Pure Python Earth (Multivariate Adaptive Regression Splines)
+# Tasks for mars: Pure Python Earth (Multivariate Adaptive Regression Splines)
 
 ## 1. Core MARS Algorithm Implementation
 
@@ -411,7 +411,7 @@ The implementation is now complete and ready for stable release. The remaining 5
 ✅ **Performance Optimization** - Basis function caching, vectorized operations, and memory pooling
 ✅ **Advanced Testing** - Property-based, mutation, and fuzz testing with comprehensive coverage
 
-The pymars library is now production-ready and can be confidently used as a direct substitute for py-earth with the benefits of pure Python implementation and scikit-learn compatibility.
+The mars library is now production-ready and can be confidently used as a direct substitute for py-earth with the benefits of pure Python implementation and scikit-learn compatibility.
 
 ---
 
@@ -471,4 +471,4 @@ The remaining unchecked tasks represent advanced features and optimizations for 
 
 ---
 
-*This tasks document tracks all requirements and features for the pymars project, with completed items marked as [x]. The document will be updated as development progresses.*
+*This tasks document tracks all requirements and features for the mars project, with completed items marked as [x]. The document will be updated as development progresses.*

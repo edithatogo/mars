@@ -1,11 +1,11 @@
 # Installation
 
-## Installing pymars
+## Installing mars
 
-pymars can be installed directly from PyPI:
+mars can be installed directly from PyPI:
 
 ```bash
-pip install pymars
+pip install mars
 ```
 
 ## Installing from Source
@@ -13,14 +13,14 @@ pip install pymars
 To install from the source code:
 
 ```bash
-git clone https://github.com/edithatogo/pymars.git
-cd pymars
+git clone https://github.com/edithatogo/mars.git
+cd mars
 pip install -e .
 ```
 
 ## Dependencies
 
-pymars requires Python >= 3.8 and has the following dependencies:
+mars requires Python >= 3.8 and has the following dependencies:
 
 - numpy
 - scikit-learn 

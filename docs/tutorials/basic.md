@@ -1,6 +1,6 @@
 # Basic Tutorial
 
-This tutorial introduces the basic concepts and usage of pymars for multivariate adaptive regression splines.
+This tutorial introduces the basic concepts and usage of mars for multivariate adaptive regression splines.
 
 ## Loading and Preparing Data
 
@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-import pymars as earth
+import mars as earth
 
 # Generate sample data with non-linear relationships
 np.random.seed(42)
@@ -135,11 +135,11 @@ plt.show()
 
 ## Model Interpretation
 
-pymars provides tools for interpreting models:
+mars provides tools for interpreting models:
 
 ```python
 # Generate partial dependence plots to understand feature effects
-from pymars.explain import plot_partial_dependence
+from mars.explain import plot_partial_dependence
 
 # Plot partial dependence for the most important features
 top_features_idx = np.argsort(importances)[-3:][::-1]  # Top 3 features
@@ -157,7 +157,7 @@ plt.show()
 
 ## Hyperparameter Tuning
 
-Like other scikit-learn compatible estimators, pymars works well with scikit-learn's model selection tools:
+Like other scikit-learn compatible estimators, mars works well with scikit-learn's model selection tools:
 
 ```python
 from sklearn.model_selection import GridSearchCV
@@ -197,7 +197,7 @@ print(f"Best model - Test R²: {best_test_score:.3f}")
 
 ## Handling Missing Values
 
-pymars can handle missing values directly:
+mars can handle missing values directly:
 
 ```python
 # Add some missing values to the dataset

@@ -1,7 +1,7 @@
-site_name: pymars Documentation
-site_description: Documentation for pymars - Pure Python Earth (Multivariate Adaptive Regression Splines)
+site_name: mars Documentation
+site_description: Documentation for mars - Pure Python Earth (Multivariate Adaptive Regression Splines)
 site_author: Dylan A Mordaunt
-site_url: https://edithatogo.github.io/pymars/
+site_url: https://edithatogo.github.io/mars/
 
 theme:
   name: material

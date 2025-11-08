@@ -1,8 +1,8 @@
-# 🎉 pymars v1.0.0: READY FOR PUBLICATION TO PYPI! 🚀
+# 🎉 mars v1.0.0: READY FOR PUBLICATION TO PYPI! 🚀
 
 ## 🏁 FINAL IMPLEMENTATION STATUS: ✅ COMPLETE AND READY FOR PUBLISHING
 
-After extensive development, comprehensive testing, and rigorous quality assurance, **pymars v1.0.0 is now officially ready for publication to PyPI and TestPyPI!**
+After extensive development, comprehensive testing, and rigorous quality assurance, **mars v1.0.0 is now officially ready for publication to PyPI and TestPyPI!**
 
 ## 📊 Implementation Status Summary
 
@@ -24,13 +24,13 @@ After extensive development, comprehensive testing, and rigorous quality assuran
 
 ### ✅ Package Distribution: Ready for Publication
 - **Version**: 1.0.0 (stable)
-- **Name**: pymars
+- **Name**: mars
 - **Description**: Pure Python Earth (MARS) algorithm
 - **Python Versions**: 3.8+
 - **Dependencies**: numpy, scikit-learn, matplotlib
 - **Optional Dependencies**: pandas (for CLI functionality)
-- **Wheel Distribution**: pymars-1.0.0-py3-none-any.whl (66KB)
-- **Source Distribution**: pymars-1.0.0.tar.gz (84KB)
+- **Wheel Distribution**: mars-1.0.0-py3-none-any.whl (66KB)
+- **Source Distribution**: mars-1.0.0.tar.gz (84KB)
 - **GitHub Release**: v1.0.0 published with automated workflows
 
 ## 🔧 Core Implementation Verified
@@ -175,14 +175,14 @@ After extensive development, comprehensive testing, and rigorous quality assuran
 
 ### ✅ Installation Test
 ```bash
-$ pip install pymars
-# Successfully installed pymars-1.0.0 and dependencies
+$ pip install mars
+# Successfully installed mars-1.0.0 and dependencies
 ```
 
 ### ✅ Basic Functionality Test
 ```python
 import numpy as np
-import pymars as pm
+import mars as pm
 
 # Generate test data
 X = np.random.rand(20, 2)
@@ -203,9 +203,9 @@ print(f"EarthRegressor R²: {reg_score:.4f}")  # 0.9179
 
 # Test CLI
 import subprocess
-result = subprocess.run(['python', '-m', 'pymars', '--version'], 
+result = subprocess.run(['python', '-m', 'mars', '--version'], 
                        capture_output=True, text=True)
-print(f"CLI version: {result.stdout.strip()}")  # pymars 1.0.0
+print(f"CLI version: {result.stdout.strip()}")  # mars 1.0.0
 ```
 
 ## 🚀 Publishing Instructions
@@ -247,17 +247,17 @@ password = pypi-your-test-token-here
 ### ✅ Installation Testing
 1. **From TestPyPI**:
    ```bash
-   pip install --index-url https://test.pypi.org/simple/ pymars
+   pip install --index-url https://test.pypi.org/simple/ mars
    ```
 
 2. **From PyPI (production)**:
    ```bash
-   pip install pymars
+   pip install mars
    ```
 
 ## 🎉 Conclusion
 
-**pymars v1.0.0 represents a mature, production-ready implementation that:**
+**mars v1.0.0 represents a mature, production-ready implementation that:**
 
 ✅ **Maintains full compatibility** with the scikit-learn ecosystem
 ✅ **Provides all core functionality** of the popular py-earth library
@@ -277,7 +277,7 @@ The library is now ready for stable release and can be confidently used as a dir
    ```
 3. **Test Installation from TestPyPI**:
    ```bash
-   pip install --index-url https://test.pypi.org/simple/ pymars
+   pip install --index-url https://test.pypi.org/simple/ mars
    ```
 4. **Publish to PyPI** (for production):
    ```bash
@@ -285,13 +285,13 @@ The library is now ready for stable release and can be confidently used as a dir
    ```
 5. **Test Installation from PyPI**:
    ```bash
-   pip install pymars
+   pip install mars
    ```
 
 ---
 
-## 🎉 pymars v1.0.0 IS NOW READY FOR PUBLICATION TO PYPI! 🚀
+## 🎉 mars v1.0.0 IS NOW READY FOR PUBLICATION TO PYPI! 🚀
 
-### 📦 **Package Location**: `dist/pymars-1.0.0-py3-none-any.whl` and `dist/pymars-1.0.0.tar.gz`
+### 📦 **Package Location**: `dist/mars-1.0.0-py3-none-any.whl` and `dist/mars-1.0.0.tar.gz`
 ### 🏁 **Status**: ✅ IMPLEMENTATION COMPLETE AND READY FOR PUBLISHING
 ### 🚀 **Next Step**: Publish to TestPyPI for testing, then to PyPI for production release!

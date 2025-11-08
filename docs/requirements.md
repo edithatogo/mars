@@ -1,8 +1,8 @@
-# Requirements for pymars: Pure Python Earth (Multivariate Adaptive Regression Splines)
+# Requirements for mars: Pure Python Earth (Multivariate Adaptive Regression Splines)
 
 ## Overview
 
-pymars is a pure Python implementation of Multivariate Adaptive Regression Splines (MARS), designed as a drop-in replacement for the `py-earth` library while maintaining full compatibility with the scikit-learn ecosystem. This document outlines the functional, performance, and compatibility requirements for the library.
+mars is a pure Python implementation of Multivariate Adaptive Regression Splines (MARS), designed as a drop-in replacement for the `py-earth` library while maintaining full compatibility with the scikit-learn ecosystem. This document outlines the functional, performance, and compatibility requirements for the library.
 
 ## Core Functional Requirements
 
