@@ -1,69 +1,62 @@
-# pymars Documentation
+# pymars: Pure Python Earth (Multivariate Adaptive Regression Splines)
 
-`pymars` provides a pure Python implementation of Multivariate Adaptive Regression Splines (MARS) with a scikit‑learn compatible API. The library exposes the classic `Earth` model along with utilities for generalized linear models, cross‑validation, and plotting diagnostics.
+![CI](https://github.com/edithatogo/pymars/actions/workflows/ci.yml/badge.svg)
+![Security](https://github.com/edithatogo/pymars/actions/workflows/security.yml/badge.svg)
+![Code Quality](https://github.com/edithatogo/pymars/actions/workflows/code-quality.yml/badge.svg)
+![Documentation](https://github.com/edithatogo/pymars/actions/workflows/docs.yml/badge.svg)
+![Code Coverage](https://codecov.io/gh/edithatogo/pymars/branch/main/graph/badge.svg)
+![PyPI](https://img.shields.io/pypi/v/pymars.svg)
+![Python Version](https://img.shields.io/pypi/pyversions/pymars.svg)
+![License](https://img.shields.io/github/license/edithatogo/pymars.svg)
 
-## Installation
+## Overview
 
-Install the latest stable release from PyPI:
+**pymars** is a pure Python implementation of Multivariate Adaptive Regression Splines (MARS), also known as Earth. The goal is to provide an easy-to-install, scikit-learn compatible version without C/Cython dependencies.
 
-```bash
-pip install pymars
-```
+MARS is a non-parametric regression technique that automatically models nonlinearities and interactions between variables. The method works by creating a piecewise linear model with basis functions that can capture non-linear relationships and interactions automatically.
 
-To work with the current development version, clone the repository and install in editable mode:
+## Key Features
 
-```bash
-git clone https://github.com/your-repository-url/pymars.git
-cd pymars
-pip install -e .
-```
+- **Pure Python**: Easy to install and use across different platforms
+- **Scikit-learn Compatible**: Integrates with the scikit-learn ecosystem (estimators, pipelines, model selection tools)
+- **MARS Algorithm**: Implements the core MARS algorithm with:
+  - Forward pass to select basis functions (both hinge and linear terms)
+  - Pruning pass using Generalized Cross-Validation (GCV) to prevent overfitting
+  - Support for interaction terms (including interactions involving linear terms)
+  - Refined `minspan` and `endspan` controls for knot placement
+- **Feature Importance**: Multiple methods for calculating feature importance ('nb_subsets', 'gcv', 'rss')
+- **Missing Value Handling**: Robust handling of missing data using specialized basis functions
+- **Categorical Variable Support**: Direct handling of categorical variables
+- **Generalized Linear Models**: Extensions for logistic and Poisson regression
+- **Cross-Validation Helper**: Simplified cross-validation with scikit-learn integration
+- **Interpretability Tools**: Built-in explanation functions including partial dependence plots
+- **Changepoint Detection**: Automatic identification of knots as changepoints in the data
 
-## Usage Examples
+## Motivation
 
-Fit a basic regression model using `Earth`:
+pymars was developed to address specific needs in health economic outcomes research, particularly in the analysis of complex health system reforms such as New Zealand's Pae Ora (Healthy Futures) Act 2022. The analysis of such reforms is complicated by the presence of multiple confounding factors, including COVID-19 pandemic effects, systemic changes, and dozens of concurrent policy modifications.
 
-```python
-import numpy as np
-import pymars as earth
+Traditional approaches focusing solely on dates for intervention analysis were insufficient; instead, changepoint detection methods were required to identify significant shifts in health outcomes and utilization patterns. The MARS approach of auto-fitting knots and optimizing to a specific number of knots proved particularly useful for health economic analysis.
 
-X = np.random.rand(100, 3)
-y = np.sin(X[:, 0]) + X[:, 1]
+The journey toward pymars began with the R implementation of MARS ("earth"), but the author's primary workflow was in Python with scikit-learn. The existing Python implementation "py-earth" by Jason Friedman had limitations including Python 2 compatibility issues and difficulty integrating into automated machine learning tools. These practical challenges motivated the development of pymars as a pure Python implementation maintaining full scikit-learn compatibility.
 
-model = earth.Earth(max_degree=2)
-model.fit(X, y)
-print(model.predict(X[:5]))
-```
+## Health Economic Applications
 
-`GLMEarth` supports logistic and Poisson models:
+pymars is particularly valuable for health economic outcomes research where understanding complex relationships between health outcomes, costs, and utilization patterns is crucial. The automatic identification of non-linearities and interactions makes MARS particularly well-suited for health economic applications where:
 
-```python
-from pymars import GLMEarth
+- Healthcare costs often increase exponentially with age and morbidity
+- The effects of socioeconomic factors may have threshold effects
+- Interactions between demographic, clinical, and geographic factors are important
+- Health disparities exist across different population subgroups
 
-clf = GLMEarth(family="binomial")
-clf.fit(X, (y > 0).astype(int))
-```
+## Getting Started
 
-Perform cross‑validation with `EarthCV`:
+For installation instructions, see the [Installation page](installation.md). For usage examples, see the [Usage page](usage.md).
 
-```python
-from pymars import EarthCV
+## Contributing
 
-cv = EarthCV(max_degree=[1, 2], penalty=[2, 3])
-cv.fit(X, y)
-best_model = cv.best_estimator_
-```
+We welcome contributions to pymars! Please see our contributing guidelines in the repository.
 
-## API Reference
+## License
 
-### `pymars.earth.Earth`
-The core MARS estimator. Implements the forward and pruning algorithms and is compatible with scikit‑learn.
-
-### `pymars.glm.GLMEarth`
-Extension of `Earth` that fits generalized linear models such as logistic and Poisson regression.
-
-### `pymars.cv.EarthCV`
-Grid‑search helper built on scikit‑learn's `GridSearchCV` for tuning `Earth` hyperparameters.
-
-### Plotting Tools (`pymars.plot`)
-Utility functions for visualizing model diagnostics and basis functions.
-
+This project is licensed under the MIT License - see the [LICENSE](../LICENSE) file for details.

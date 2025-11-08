@@ -1,0 +1,59 @@
+site_name: pymars Documentation
+site_description: Documentation for pymars - Pure Python Earth (Multivariate Adaptive Regression Splines)
+site_author: Dylan A Mordaunt
+site_url: https://edithatogo.github.io/pymars/
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/lightbulb
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/lightbulb-outline
+        name: Switch to light mode
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            docstring_options:
+              ignore_init_summary: yes
+            members_order: source
+            show_category_heading: yes
+            show_if_no_docstring: yes
+            show_signature_annotations: yes
+            show_source: yes
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Usage: usage.md
+  - API Reference:
+    - Earth: api/earth.md
+    - GLM: api/glm.md
+    - CV: api/cv.md
+    - Sklearn Compatibility: api/sklearn_compat.md
+  - Tutorials:
+    - Basic Tutorial: tutorials/basic.md
+    - Advanced Features: tutorials/advanced.md
+  - Examples: examples.md
