@@ -48,12 +48,7 @@ nav:
   - Home: index.md
   - Installation: installation.md
   - Usage: usage.md
-  - API Reference:
-    - Earth: api/earth.md
-    - GLM: api/glm.md
-    - CV: api/cv.md
-    - Sklearn Compatibility: api/sklearn_compat.md
+  - API Reference: api.md
   - Tutorials:
     - Basic Tutorial: tutorials/basic.md
     - Advanced Features: tutorials/advanced.md
-  - Examples: examples.md
