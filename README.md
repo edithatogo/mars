@@ -1,17 +1,19 @@
-# pymars: Pure Python Earth (Multivariate Adaptive Regression Splines)
-
-# pymars: Pure Python Earth (Multivariate Adaptive Regression Splines)
+# mars: A Pure Python Implementation of Multivariate Adaptive Regression Splines (formerly pymars)
 
 ![CI](https://github.com/edithatogo/mars/actions/workflows/ci.yml/badge.svg)
 ![Security](https://github.com/edithatogo/mars/actions/workflows/security.yml/badge.svg)
 ![Code Quality](https://github.com/edithatogo/mars/actions/workflows/code-quality.yml/badge.svg)
 ![Documentation](https://github.com/edithatogo/mars/actions/workflows/docs.yml/badge.svg)
 ![Code Coverage](https://codecov.io/gh/edithatogo/mars/branch/main/graph/badge.svg)
-![PyPI](https://img.shields.io/pypi/v/pymars.svg)
-![Python Version](https://img.shields.io/pypi/pyversions/pymars.svg)
+![PyPI](https://img.shields.io/pypi/v/mars.svg)
+![Python Version](https://img.shields.io/pypi/pyversions/mars.svg)
 ![License](https://img.shields.io/github/license/edithatogo/mars.svg)
 
-**pymars** is a pure Python implementation of Multivariate Adaptive Regression Splines (MARS), inspired by the popular `py-earth` library by Jason Friedman and an R package `earth` by Stephen Milborrow. The goal of `pymars` is to provide an easy-to-install, scikit-learn compatible version of the MARS algorithm without C/Cython dependencies.
+**mars** (formerly **pymars**) is a pure Python implementation of Multivariate Adaptive Regression Splines (MARS), inspired by the popular `py-earth` library by Jason Friedman and an R package `earth` by Stephen Milborrow. The goal of **mars** is to provide an easy-to-install, scikit-learn compatible version of the MARS algorithm without C/Cython dependencies.
+
+## Documentation
+
+Complete documentation is available at: [https://edithatogo.github.io/mars/](https://edithatogo.github.io/mars/) (once GitHub Pages is configured)
 
 ## Key Features
 
@@ -44,6 +46,8 @@
 - **Generalized Linear Models:** The `GLMEarth` subclass fits logistic or Poisson models.
 - **Cross‑Validation Helper:** The `EarthCV` class integrates with scikit‑learn's model selection utilities.
 - **Plotting Utilities:** Simple diagnostics built on `matplotlib`.
+- **Advanced Interpretability:** Partial dependence plots, Individual Conditional Expectation (ICE) plots, and model explanation tools.
+- **Comprehensive CLI:** Command-line interface for model fitting, prediction, and evaluation.
 
 ## Project Status
 
@@ -51,19 +55,19 @@ This project is currently in the initial development phase. The core algorithm a
 
 ## Installation
 
-**Note:** Install `pymars` inside a Python virtual environment to silence `pip` warnings about running as root.
+**Note:** Install `mars` inside a Python virtual environment to silence `pip` warnings about running as root.
 
-`pymars` can be installed from TestPyPI:
+`mars` can be installed from TestPyPI:
 
 ```bash
-pip install pymars
+pip install mars
 ```
 
 To work with the latest source, clone the repository and install it in editable mode:
 
 ```bash
-git clone https://your-repository-url/pymars.git
-cd pymars
+git clone https://github.com/edithatogo/mars.git
+cd mars
 pip install -e .
 ```
 
@@ -71,14 +75,15 @@ If you need to run scikit-learn's full estimator checks, install the optional
 pandas dependency:
 
 ```bash
-pip install "pymars[pandas]"
+pip install "mars[pandas]"
 ```
 
 After installation you can check the installed version:
 
 ```bash
-pymars --version
+mars --version
 ```
+
 ## Running Tests
 
 Install the dependencies listed in `requirements.txt` before running the test
@@ -90,7 +95,7 @@ pip install -r requirements.txt
 
 # To run the full scikit-learn estimator checks, install the optional pandas
 # dependency as well:
-pip install "pymars[pandas]"
+pip install "mars[pandas]"
 
 # Option 2: using the helper script
 bash scripts/setup_tests.sh
@@ -107,18 +112,18 @@ pytest
 
 ### Quick demos
 
-Run the included demo scripts to see `pymars` in action:
+Run the included demo scripts to see `mars` in action:
 
 ```bash
-python -m pymars.demos.basic_regression_demo
-python -m pymars.demos.basic_classification_demo
+python -m mars.demos.basic_regression_demo
+python -m mars.demos.basic_classification_demo
 ```
 
 ### Basic API
 
 ```python
 import numpy as np
-import pymars as earth
+import mars as earth
 
 X = np.random.rand(100, 3)
 y = np.sin(X[:, 0]) + X[:, 1]
@@ -130,13 +135,12 @@ predictions = model.predict(X)
 
 ## Documentation
 
-The pymars project uses a multi-branch documentation approach:
+The mars project uses a multi-branch documentation approach:
 
 - **Code Documentation**: API and development documentation is available in the [docs branch](https://github.com/edithatogo/mars/tree/docs)
-- **Research Paper**: The academic paper describing pymars is available in the [paper branch](https://github.com/edithatogo/mars/tree/paper)
+- **Research Paper**: The academic paper describing mars is available in the [paper branch](https://github.com/edithatogo/mars/tree/paper)
 
 For usage examples and tutorials, check the [examples directory](examples/) in this main branch.
-
 
 ## Contributing
 
