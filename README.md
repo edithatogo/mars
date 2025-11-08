@@ -1,13 +1,13 @@
 # pymars: Pure Python Earth (Multivariate Adaptive Regression Splines)
 
-![CI](https://github.com/pymars/pymars/actions/workflows/ci.yml/badge.svg)
-![Security](https://github.com/pymars/pymars/actions/workflows/security.yml/badge.svg)
-![Code Quality](https://github.com/pymars/pymars/actions/workflows/code-quality.yml/badge.svg)
-![Documentation](https://github.com/pymars/pymars/actions/workflows/docs.yml/badge.svg)
-![Code Coverage](https://codecov.io/gh/pymars/pymars/branch/main/graph/badge.svg)
+![CI](https://github.com/edithatogo/pymars/actions/workflows/ci.yml/badge.svg)
+![Security](https://github.com/edithatogo/pymars/actions/workflows/security.yml/badge.svg)
+![Code Quality](https://github.com/edithatogo/pymars/actions/workflows/code-quality.yml/badge.svg)
+![Documentation](https://github.com/edithatogo/pymars/actions/workflows/docs.yml/badge.svg)
+![Code Coverage](https://codecov.io/gh/edithatogo/pymars/branch/main/graph/badge.svg)
 ![PyPI](https://img.shields.io/pypi/v/pymars.svg)
 ![Python Version](https://img.shields.io/pypi/pyversions/pymars.svg)
-![License](https://img.shields.io/github/license/pymars/pymars.svg)
+![License](https://img.shields.io/github/license/edithatogo/pymars.svg)
 
 **pymars** is a pure Python implementation of Multivariate Adaptive Regression Splines (MARS), inspired by the popular `py-earth` library by Jason Friedman and an R package `earth` by Stephen Milborrow. The goal of `pymars` is to provide an easy-to-install, scikit-learn compatible version of the MARS algorithm without C/Cython dependencies.
 
