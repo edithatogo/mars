@@ -3,11 +3,12 @@
 The main Earth class, coordinating the model fitting process.
 """
 import logging
+from typing import Union, Sequence, Tuple, Optional, List, Any
 
 import numpy as np
 from sklearn.base import BaseEstimator, RegressorMixin
 
-from ._basis import ConstantBasisFunction  # Used in fallbacks
+from ._basis import ConstantBasisFunction, BasisFunction  # Used in fallbacks
 from ._util import (
     calculate_gcv,
     gcv_penalty_cost_effective_parameters,
@@ -121,13 +122,13 @@ class Earth(BaseEstimator, RegressorMixin):
     may not be present or may behave differently.
     """
 
-    def __init__(self, max_degree: int = 1, penalty: float = 3.0, max_terms: int = None,
+    def __init__(self, max_degree: int = 1, penalty: float = 3.0, max_terms: Optional[int] = None,
                  minspan_alpha: float = 0.0, endspan_alpha: float = 0.0,
                  minspan: int = -1, endspan: int = -1,
                  allow_linear: bool = True,
                  allow_missing: bool = False, # New parameter
-                 feature_importance_type: str = None,
-                 categorical_features: list[int] = None
+                 feature_importance_type: Optional[str] = None,
+                 categorical_features: Optional[list] = None
                  # TODO: Consider other py-earth params
                  ):
         super().__init__()
@@ -147,27 +148,35 @@ class Earth(BaseEstimator, RegressorMixin):
         self.categorical_features = categorical_features
 
         # Attributes that will be learned during fit
-        self.basis_: list = None
-        self.coef_: np.ndarray = None
-        self.record_ = None
+        self.basis_: Optional[List['BasisFunction']] = None  # Using forward reference
+        self.coef_: Optional[np.ndarray] = None
+        
+        # Import type annotation temporarily
+        from ._record import EarthRecord
+        self.record_: Optional[EarthRecord] = None
 
-        self.rss_: float = None
-        self.mse_: float = None
-        self.gcv_: float = None
+        self.rss_: Optional[float] = None
+        self.mse_: Optional[float] = None
+        self.gcv_: Optional[float] = None
 
-        self.feature_importances_: np.ndarray = None # Or dict if multiple types
+        self.feature_importances_: Optional[np.ndarray] = None
 
-        self.fitted_ = False
+        self.fitted_: bool = False
         self.categorical_imputer_ = None
 
-    # _build_basis_matrix is defined in Earth class. Its signature was:
-    # def _build_basis_matrix(self, X: np.ndarray, basis_functions: list) -> np.ndarray:
-    # It needs to accept missing_mask.
     def _build_basis_matrix(self, X_processed: np.ndarray, basis_functions: list, missing_mask: np.ndarray) -> np.ndarray:
         """
         Constructs the basis matrix B from X_processed and a list of basis functions,
         using the provided missing_mask.
         Centralized helper method.
+        
+        Args:
+            X_processed: Processed input data of shape (n_samples, n_features)
+            basis_functions: List of basis functions to apply
+            missing_mask: Boolean mask indicating missing values of shape (n_samples, n_features)
+            
+        Returns:
+            Basis matrix of shape (n_samples, n_basis_functions)
         """
         if not basis_functions:
             return np.empty((X_processed.shape[0], 0))
@@ -181,7 +190,7 @@ class Earth(BaseEstimator, RegressorMixin):
             B_matrix[:, idx] = bf.transform(X_processed, missing_mask)
         return B_matrix
 
-    def fit(self, X, y):
+    def fit(self, X: Union[np.ndarray, Sequence], y: Union[np.ndarray, Sequence]) -> 'Earth':
         """
         Fit the Earth model to the training data.
 
@@ -328,11 +337,14 @@ class Earth(BaseEstimator, RegressorMixin):
         self.fitted_ = True
         return self
 
-    def _calculate_feature_importances(self, X_fit):
+    def _calculate_feature_importances(self, X_fit: Union[np.ndarray, Sequence]) -> None:
         """
         Placeholder for feature importance calculation.
         This will be implemented based on self.feature_importance_type.
         # For 'nb_subsets', it uses the pruning trace stored in self.record_.
+        
+        Args:
+            X_fit: Training input data used for feature importance calculations
         """
         import numpy as np  # Ensure numpy is available
 
@@ -447,8 +459,16 @@ class Earth(BaseEstimator, RegressorMixin):
             pass
 
 
-    def _scrub_input_data(self, X, y):
-        """Helper to validate and preprocess X and y."""
+    def _scrub_input_data(self, X: Union[np.ndarray, Sequence], y: Union[np.ndarray, Sequence]) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """Helper to validate and preprocess X and y.
+        
+        Args:
+            X: Input features of shape (n_samples, n_features)
+            y: Target values of shape (n_samples,)
+            
+        Returns:
+            Tuple of (processed_X, missing_mask, processed_y)
+        """
         # Convert X to object array first to preserve categorical strings
         if not isinstance(X, np.ndarray):
             X_obj = np.asarray(X, dtype=object)
@@ -502,11 +522,11 @@ class Earth(BaseEstimator, RegressorMixin):
 
     def _set_fallback_model(
         self,
-        X_processed,
-        y_processed,
-        missing_mask,
-        pruning_passer_instance_for_gcv_calc,
-    ):
+        X_processed: np.ndarray,
+        y_processed: np.ndarray,
+        missing_mask: np.ndarray,
+        pruning_passer_instance_for_gcv_calc: Any,
+    ) -> None:
         """Set an intercept-only model and compute its RSS, MSE and GCV."""
 
         # Intercept-only basis and coefficient
@@ -535,7 +555,7 @@ class Earth(BaseEstimator, RegressorMixin):
         # Ensure self.gcv_ is set even if computation fails
         self.gcv_ = gcv_score if np.isfinite(gcv_score) else np.inf
 
-    def predict(self, X):
+    def predict(self, X: Union[np.ndarray, Sequence]) -> np.ndarray:
         """
         Predict target values for X.
         

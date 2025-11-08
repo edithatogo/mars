@@ -1,0 +1,20 @@
+{
+  "include": [
+    "pymars"
+  ],
+  "exclude": [
+    "**/node_modules",
+    "**/__pycache__",
+    "tests",
+    "dist",
+    "build"
+  ],
+  "defineConstant": {
+    "DEBUG": true
+  },
+  "useLibraryCodeForTypes": true,
+  "reportMissingImports": true,
+  "reportMissingTypeStubs": false,
+  "pythonVersion": "3.8",
+  "pythonPlatform": "All"
+}

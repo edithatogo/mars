@@ -1,0 +1,6 @@
+# Requirements for pymars demo notebook
+numpy
+matplotlib
+scikit-learn
+pymars
+jupyter

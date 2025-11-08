@@ -1,0 +1,19 @@
+project:
+  type: default
+
+format:
+  pdf:
+    documentclass: article
+    fontsize: 11pt
+    geometry:
+      - margin=1in
+    toc: false
+    number-sections: true
+    fig-pos: "htbp"
+    indent: false
+    biblio-style: plainnat
+    citation-package: natbib
+    keep-tex: true
+    template: jss_template.tex
+
+bibliography: references.bib

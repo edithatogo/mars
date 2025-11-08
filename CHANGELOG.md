@@ -26,5 +26,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Automated release workflow to PyPI
 - Code coverage integration with Codecov
 
-[Unreleased]: https://github.com/pymars/pymars/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/pymars/pymars/releases/tag/v1.0.0
+[Unreleased]: https://github.com/edithatogo/pymars/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/edithatogo/pymars/releases/tag/v1.0.0

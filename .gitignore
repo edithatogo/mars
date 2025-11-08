@@ -128,3 +128,17 @@ tests/**/*.pyc
 # Comparison result artifacts
 comparison_results/*.json
 
+# AI work files
+paper/jax_implementation_plan.md
+paper/simulated_peer_review.md
+paper/final_preparation.md
+
+# Paper figures (to be replaced with actual graphics)
+paper/figures/mars_concept.md
+paper/figures/basis_functions.md
+paper/figures/workflow_diagram.md
+paper/figures/integration_workflow.md
+
+# Tutorial notebook
+paper/pymars_health_tutorial.ipynb
+

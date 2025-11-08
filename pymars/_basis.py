@@ -9,7 +9,7 @@ This module will define various types of basis functions, such as:
 """
 
 import logging
-
+from typing import Optional, Any
 import numpy as np
 
 logger = logging.getLogger(__name__)
@@ -96,8 +96,8 @@ class BasisFunction(ABC):
         self._name = name
 
     # Optional: Methods to explicitly set properties if not done in init by subclasses
-    def _set_properties(self, variable_idx: int = None, knot_val: float = None,
-                        parent1: 'BasisFunction' = None, parent2: 'BasisFunction' = None,
+    def _set_properties(self, variable_idx: Optional[int] = None, knot_val: Optional[float] = None,
+                        parent1: Optional['BasisFunction'] = None, parent2: Optional['BasisFunction'] = None,
                         is_linear: bool = False, is_hinge: bool = False,
                         involved_variables: frozenset[int] = frozenset()):
         self.variable_idx = variable_idx
@@ -171,7 +171,7 @@ class HingeBasisFunction(BasisFunction):
     Represents a hinge function: max(0, x - knot) or max(0, knot - x).
     Its degree is 1.
     """
-    def __init__(self, variable_idx: int, knot_val: float, is_right_hinge: bool = True, variable_name: str = None, parent_bf: 'BasisFunction' = None):
+    def __init__(self, variable_idx: int, knot_val: float, is_right_hinge: bool = True, variable_name: Optional[str] = None, parent_bf: Optional['BasisFunction'] = None):
         # Determine name based on properties
         self.variable_name = variable_name if variable_name else f"x{variable_idx}"
         name_str = ""
@@ -256,7 +256,7 @@ class CategoricalBasisFunction(BasisFunction):
     Represents a categorical variable indicator: 1 if variable_idx is a specific category, 0 otherwise.
     Its degree is 1.
     """
-    def __init__(self, variable_idx: int, category: any, variable_name: str = None, parent_bf: 'BasisFunction' = None):
+    def __init__(self, variable_idx: int, category: Any, variable_name: Optional[str] = None, parent_bf: Optional['BasisFunction'] = None):
         self.category = category
         self.variable_name = variable_name if variable_name else f"x{variable_idx}"
 
@@ -325,7 +325,7 @@ class LinearBasisFunction(BasisFunction):
     or if hinge functions on that variable are not effective (e.g., if the relationship
     is purely linear). Its degree is 1.
     """
-    def __init__(self, variable_idx: int, variable_name: str = None, parent_bf: 'BasisFunction' = None):
+    def __init__(self, variable_idx: int, variable_name: Optional[str] = None, parent_bf: Optional['BasisFunction'] = None):
         self.variable_name = variable_name if variable_name else f"x{variable_idx}"
         name_str = ""
         if parent_bf:

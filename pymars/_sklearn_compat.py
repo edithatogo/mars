@@ -13,7 +13,7 @@ scikit-learn's Estimator API.
 # from sklearn.base import BaseEstimator, RegressorMixin, ClassifierMixin
 # from ._types import XType, YType # Custom types
 import logging
-
+from typing import Union, Sequence, Optional
 import numpy as np
 from sklearn.base import BaseEstimator, RegressorMixin
 
@@ -102,9 +102,13 @@ class EarthRegressor(RegressorMixin, BaseEstimator): # Corrected Mixin Order
     EarthRegressor(...)
     >>> preds = model.predict(X)
     """
-    def __init__(self, max_degree: int = 1, penalty: float = 3.0, max_terms: int = None,
+    def __init__(self, max_degree: int = 1, penalty: float = 3.0, max_terms: Optional[int] = None,
                  minspan_alpha: float = 0.0, endspan_alpha: float = 0.0,
-                 allow_linear: bool = True):
+                 minspan: int = -1, endspan: int = -1,
+                 allow_linear: bool = True,
+                 allow_missing: bool = False,
+                 feature_importance_type: Optional[str] = None,
+                 categorical_features: Optional[list] = None):
 
         super().__init__() # Recommended for BaseEstimator subclasses
 
@@ -113,7 +117,12 @@ class EarthRegressor(RegressorMixin, BaseEstimator): # Corrected Mixin Order
         self.max_terms = max_terms
         self.minspan_alpha = minspan_alpha
         self.endspan_alpha = endspan_alpha
+        self.minspan = minspan
+        self.endspan = endspan
         self.allow_linear = allow_linear
+        self.allow_missing = allow_missing
+        self.feature_importance_type = feature_importance_type
+        self.categorical_features = categorical_features
 
         # Internal Earth model instance will be created in fit or lazily
         # For get_params/set_params to work seamlessly with nested models,
@@ -135,7 +144,7 @@ class EarthRegressor(RegressorMixin, BaseEstimator): # Corrected Mixin Order
         # to pass check_no_attributes_set_in_init from check_estimator.
 
 
-    def fit(self, X, y):
+    def fit(self, X: Union[np.ndarray, Sequence], y: Union[np.ndarray, Sequence]) -> 'EarthRegressor':
         """
         Fit the Earth regressor to the training data.
 
@@ -191,7 +200,7 @@ class EarthRegressor(RegressorMixin, BaseEstimator): # Corrected Mixin Order
         self.is_fitted_ = True
         return self
 
-    def predict(self, X):
+    def predict(self, X: Union[np.ndarray, Sequence]) -> np.ndarray:
         """
         Predict target values for X.
 
@@ -308,7 +317,7 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
     is_fitted_ : bool
         Flag indicating whether the model has been fitted.
     """
-    def __init__(self, max_degree: int = 1, penalty: float = 3.0, max_terms: int = None,
+    def __init__(self, max_degree: int = 1, penalty: float = 3.0, max_terms: Optional[int] = None,
                  minspan_alpha: float = 0.0, endspan_alpha: float = 0.0,
                  allow_linear: bool = True,
                  classifier=None # Allow user to pass a classifier instance
@@ -553,9 +562,9 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
         X_transformed = self._transform_X_for_classifier(X) # This also calls check_is_fitted
         return self.classifier_.predict_proba(X_transformed)
 
-    def score(self, X, y):
+    def score(self, X: Union[np.ndarray, Sequence], y: Union[np.ndarray, Sequence]) -> float:
         """
-        Return the mean accuracy on the given test data and labels.
+        Return the coefficient of determination R^2 of the prediction.
 
         Parameters
         ----------
@@ -567,7 +576,7 @@ class EarthClassifier(ClassifierMixin, BaseEstimator): # Corrected Mixin Order
         Returns
         -------
         score : float
-            Mean accuracy.
+            R^2 score of the prediction
         """
         # Relies on ClassifierMixin or implement directly
         return accuracy_score(y, self.predict(X))

@@ -44,7 +44,7 @@ Install `pymars` inside a Python virtual environment:
 pip install pymars
 
 # Or work with the latest source
-git clone https://github.com/pymars/pymars.git
+git clone https://github.com/edithatogo/pymars.git
 cd pymars
 pip install -e .
 ```

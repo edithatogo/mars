@@ -1,0 +1,777 @@
+% Template for Journal of Statistical Software submissions
+%
+% This is a minimal template file for submissions to JSS. For full
+% details of how to write and format your manuscript, please see
+% <https://www.jstatsoft.org/pages/view/style>.
+%
+% This file is based on the standard <https://www.ctan.org/pkg/article>
+% class and hence widely supported by LaTeX editors, converters, etc.
+% It loads the <https://www.ctan.org/pkg/jss> package which provides
+% the actual formatting for JSS (employing <https://www.ctan.org/pkg/itia>
+% and other standard LaTeX packages internally).
+
+\documentclass[article, shortnames]{jss}
+
+%% recommended packages
+%\usepackage{bookmark}
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+\author{
+  Dylan A Mordaunt\\Healthcare Data Scientist
+}
+\title{
+  pymars: A Pure Python Implementation of Multivariate Adaptive Regression Splines with Applications in Health Economics
+}
+
+\Plainauthor{Dylan A Mordaunt}
+\Plaintitle{pymars: A Pure Python Implementation of Multivariate Adaptive Regression Splines with Applications in Health Economics}
+\Shorttitle{pymars: Python MARS Implementation}
+
+\Abstract{
+  Multivariate Adaptive Regression Splines (MARS) is a powerful non-parametric regression technique that automatically models non-linearities and interactions between variables. This paper introduces pymars, a pure Python implementation of the MARS algorithm that provides an easy-to-install, scikit-learn compatible version without C/Cython dependencies. We demonstrate its application in health economic outcomes research using Australian and New Zealand health datasets, showcasing its ability to model complex relationships between health outcomes, costs, and utilization patterns. The implementation includes advanced features such as refined minspan and endspan controls, support for interaction terms, and feature importance calculations. Additionally, we outline planned extensions including JAX/XLA backend support for enhanced computational performance. The pymars library provides a valuable tool for researchers in health economics and other fields requiring flexible regression modeling capabilities.
+}
+
+\Keywords{multivariate adaptive regression splines, non-parametric regression, health economics, machine learning, Python}
+\Plainkeywords{multivariate adaptive regression splines, non-parametric regression, health economics, machine learning, Python}
+
+%% publication information
+%% \Volume{NN}
+%% \Issue{MM}
+%% \Month{yyyy}
+%% \Year{YYYY}
+%% \Submitdate{yyyy-mm-dd}
+%% \Acceptdate{yyyy-mm-dd}
+
+\Address{
+  Dylan A Mordaunt\\
+  Healthcare Data Scientist\\
+  Email: \email{dylan.mordaunt@example.com}
+}
+
+\begin{document}
+
+\section{Introduction}\label{introduction}
+
+Multivariate Adaptive Regression Splines (MARS), introduced by Friedman (1991), is a non-parametric regression technique that models complex relationships between variables by creating a piecewise linear model with basis functions that can capture non-linearities and interactions. The method has proven particularly valuable in fields dealing with complex, non-linear relationships such as health economics, where understanding the relationships between health outcomes, costs, utilization, and demographic factors is crucial.
+
+Traditional implementations of MARS, such as the original R package "earth" by Stephen Milborrow and the Python implementation "py-earth" by Jason Friedman, have provided excellent functionality but often require C/Cython dependencies that can complicate installation and usage. The pymars library addresses this limitation by providing a pure Python implementation that maintains compatibility with the popular scikit-learn ecosystem while offering similar functionality.
+
+The primary contribution of this paper and the pymars library is to make MARS modeling accessible to a broader audience of researchers and practitioners without the installation complexities associated with C/Cython dependencies. This is particularly valuable in healthcare settings where IT restrictions and compatibility requirements can limit the use of certain libraries.
+
+The pymars library extends beyond the core MARS algorithm with several advanced features that enhance its utility for health economic research:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Scikit-learn Compatibility}: Complete integration with the scikit-learn ecosystem, enabling use with scikit-learn's preprocessing, model selection, and evaluation tools
+\item
+  \textbf{Feature Importance Metrics}: Multiple methods for calculating feature importance (nb\_subsets, gcv, rss) that help identify key drivers in health outcomes
+\item
+  \textbf{Missing Value Handling}: Robust handling of missing data using specialized basis functions
+\item
+  \textbf{Categorical Variable Support}: Direct handling of categorical variables without requiring preprocessing
+\item
+  \textbf{Interpretability Tools}: Built-in explainability functions including partial dependence plots and model explanations
+\item
+  \textbf{Generalized Linear Models}: Extensions for logistic and Poisson regression using MARS basis functions
+\item
+  \textbf{Cross-Validation Helper}: Simplified integration with scikit-learn's model selection utilities through \texttt{EarthCV} class
+\end{itemize}
+
+This paper is structured as follows: Section 2 provides background on the MARS algorithm, Section 3 describes the pymars implementation and its advantages over existing implementations, Section 4 demonstrates applications in health economics using Australian and New Zealand health datasets, Section 5 discusses future directions including planned JAX/XLA backend implementation, and Section 6 concludes with the significance of the contribution.
+
+\section{Background}\label{background}
+
+\subsection{MARS Algorithm}\label{mars-algorithm}
+
+The MARS algorithm operates in two main phases: a forward pass and a backward pass. During the forward pass, the algorithm adds basis functions by identifying optimal knot points in the predictor variables that minimize prediction error. These basis functions take the form of hinge functions, which are defined as:
+
+$$\max(0, x - t) \text{ or } \max(0, t - x)$$
+
+where $t$ represents the knot location for predictor $x$. The forward pass continues until a stopping criterion is reached, typically when a maximum number of basis functions is added or when no further improvement in prediction accuracy is possible.
+
+The backward pass then performs model pruning using Generalized Cross-Validation (GCV) to remove basis functions that do not contribute significantly to predictive performance. This process helps prevent overfitting and results in a more parsimonious model that retains interpretability while maintaining predictive accuracy.
+
+The MARS model can be expressed as:
+
+$$\hat{f}(x) = \beta_0 + \sum_{m=1}^{M} \beta_m BF_m(x)$$
+
+where $\hat{f}(x)$ is the predicted response, $\beta_0$ is the intercept, $BF_m(x)$ are the basis functions, and $\beta_m$ are the coefficients estimated using least squares regression.
+
+The algorithm includes several important parameters that control model behavior:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{max\_degree}: The maximum degree of interaction terms, controlling the complexity of the model
+\item
+  \textbf{penalty}: The penalty parameter in the GCV criterion, affecting model complexity
+\item
+  \textbf{max\_terms}: The maximum number of terms to include in the model
+\item
+  \textbf{minspan}: Controls minimum separation between knots
+\item
+  \textbf{endspan}: Controls how close knots can be to data boundaries
+\item
+  \textbf{allow\_linear}: Whether to include linear basis functions
+\end{itemize}
+
+\subsection{Health Economic Applications}\label{health-economic-applications}
+
+Health economic outcomes research (HEOR) often involves modeling complex relationships between health outcomes, utilization patterns, costs, and demographic factors. Traditional linear models may be insufficient to capture these relationships, making flexible non-parametric methods like MARS particularly valuable.
+
+For example, modeling the relationship between healthcare costs and patient characteristics often involves non-linearities (e.g., exponential increases in costs with age) and interactions (e.g., the effect of age on costs varying by disease status). MARS models can automatically identify and incorporate these complex relationships without requiring a priori specification.
+
+In health economics, MARS can be used for:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Cost prediction}: Modeling healthcare utilization and costs based on patient characteristics
+\item
+  \textbf{Outcome modeling}: Understanding the complex relationships between risk factors and health outcomes
+\item
+  \textbf{Policy evaluation}: Assessing the impact of policy changes that may have non-linear effects
+\item
+  \textbf{Resource allocation}: Identifying key factors affecting resource allocation and efficiency
+\end{itemize}
+
+\subsection{Comparison to Existing Implementations}\label{comparison-to-existing-implementations}
+
+Compared to existing MARS implementations, pymars offers several distinct advantages:
+
+\subsubsection{py-earth Comparison}\label{py-earth-comparison}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Pure Python Implementation}: Unlike py-earth which uses C/Cython extensions, pymars is pure Python, simplifying installation and deployment
+\item
+  \textbf{Scikit-learn Compatibility}: Full integration with scikit-learn ecosystem, allowing seamless use with scikit-learn tools
+\item
+  \textbf{Modern Architecture}: Clean, modular codebase that is easier to maintain and extend
+\item
+  \textbf{Enhanced Feature Importance}: Multiple methods for calculating feature importance
+\item
+  \textbf{Missing Value Handling}: Built-in support for handling missing data with specialized basis functions
+\end{itemize}
+
+\subsubsection{R earth Comparison}\label{r-earth-comparison}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Python Ecosystem}: Integration with Python's rich ecosystem of data science tools
+\item
+  \textbf{Machine Learning Workflows}: Natural integration into modern ML workflows with pandas, numpy, scikit-learn, etc.
+\item
+  \textbf{Extensibility}: Easier to modify and extend for specific use cases
+\item
+  \textbf{Healthcare Integration}: Better suited for integration with healthcare-specific Python libraries
+\end{itemize}
+
+\section{pymars Implementation}\label{pymars-implementation}
+
+\subsection{Core Architecture}\label{core-architecture}
+
+The pymars implementation follows a modular architecture designed for maintainability, extensibility, and compatibility with the scikit-learn ecosystem. The core modules include:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{pymars/earth.py}: The main \texttt{Earth} class implementing the MARS algorithm with scikit-learn compatibility
+\item
+  \texttt{pymars/\_sklearn\_compat.py}: Provides \texttt{EarthRegressor} and \texttt{EarthClassifier} wrappers for scikit-learn compatibility
+\item
+  \texttt{pymars/\_forward.py}: Implements the forward pass algorithm for basis function selection
+\item
+  \texttt{pymars/\_pruning.py}: Implements the backward pass algorithm for model pruning
+\item
+  \texttt{pymars/\_basis.py}: Defines various basis function types (hinge, linear, categorical, missingness)
+\item
+  \texttt{pymars/\_util.py}: Utility functions for GCV calculation and other common operations
+\item
+  \texttt{pymars/glm.py}: Generalized linear model extensions for logistic and Poisson regression
+\item
+  \texttt{pymars/cv.py}: Cross-validation helper class
+\item
+  \texttt{pymars/plot.py}: Basic visualization utilities
+\item
+  \texttt{pymars/explain.py}: Advanced interpretability features including partial dependence plots
+\end{itemize}
+
+\subsection{Key Implementation Features}\label{key-implementation-features}
+
+\subsubsection{Basis Function System}\label{basis-function-system}
+
+The basis function system in pymars is designed with flexibility and extensibility in mind. The abstract \texttt{BasisFunction} class defines the interface that all basis functions must implement:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Transform Method}: Evaluates the basis function on input data
+\item
+  \textbf{Degree Method}: Returns the functional degree of the basis function
+\item
+  \textbf{String Representation}: Provides human-readable descriptions of basis functions
+\item
+  \textbf{Variable Tracking}: Tracks which input variables are involved in the basis function
+\end{itemize}
+
+Currently implemented basis functions include:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{ConstantBasisFunction}: The intercept term
+\item
+  \textbf{HingeBasisFunction}: The core MARS basis function for modeling non-linearities
+\item
+  \textbf{LinearBasisFunction}: Linear terms that can be added to models
+\item
+  \textbf{CategoricalBasisFunction}: Handles categorical variables directly
+\item
+  \textbf{MissingnessBasisFunction}: Models the effect of missing data
+\item
+  \textbf{InteractionBasisFunction}: Represents products of two arbitrary basis functions
+\end{itemize}
+
+\subsubsection{Forward Pass Implementation}\label{forward-pass-implementation}
+
+The forward pass implementation efficiently identifies optimal basis functions through a systematic search procedure:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Candidate Generation}: For each existing basis function in the current model, generates potential new basis functions by adding hinge or linear terms for each unused variable
+\item
+  \textbf{Knot Selection}: Uses minspan and endspan parameters to control knot placement and avoid overfitting
+\item
+  \textbf{Model Evaluation}: Evaluates each candidate model using RSS and GCV criteria
+\item
+  \textbf{Model Selection}: Selects the best candidate pair of basis functions to add to the model
+\end{enumerate}
+
+The implementation includes optimizations for computational efficiency, particularly for large datasets.
+
+\subsubsection{Pruning Pass Implementation}\label{pruning-pass-implementation}
+
+The pruning pass systematically removes basis functions that do not contribute significantly to model performance:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{GCV Calculation}: Efficiently computes GCV scores for different model subsets
+\item
+  \textbf{Stepwise Reduction}: Iteratively removes the least important basis function
+\item
+  \textbf{Optimal Model Selection}: Selects the model with the lowest GCV score
+\item
+  \textbf{Coefficient Refitting}: Refits coefficients for the final selected model
+\end{enumerate}
+
+\subsubsection{Missing Value and Categorical Feature Support}\label{missing-value-and-categorical-feature-support}
+
+pymars provides robust support for missing values and categorical features through specialized basis functions:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Missing Value Handling}: The \texttt{MissingnessBasisFunction} can model the effect of missing data directly
+\item
+  \textbf{Categorical Feature Support}: The \texttt{CategoricalBasisFunction} handles categorical variables without requiring preprocessing
+\item
+  \textbf{Integration}: These features are seamlessly integrated into the forward and pruning passes
+\end{itemize}
+
+\subsection{Scikit-learn Compatibility}\label{scikit-learn-compatibility}
+
+The pymars library provides full compatibility with the scikit-learn ecosystem:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Standard Estimator Interface}: Implements the standard scikit-learn estimator interface with \texttt{fit}, \texttt{predict}, \texttt{score}, \texttt{get\_params}, and \texttt{set\_params} methods
+\item
+  \textbf{Pipeline Integration}: Works seamlessly with sklearn pipelines, feature selectors, and transformers
+\item
+  \textbf{Cross-Validation Support}: Compatible with sklearn's cross-validation functions
+\item
+  \textbf{Grid Search Integration}: Can be used with sklearn's model selection tools like \texttt{GridSearchCV}
+\end{itemize}
+
+The \texttt{EarthRegressor} and \texttt{EarthClassifier} classes provide drop-in replacements for standard scikit-learn regressors and classifiers.
+
+\subsection{Advanced Features}\label{advanced-features}
+
+\subsubsection{Feature Importance Methods}\label{feature-importance-methods}
+
+pymars implements multiple methods for calculating feature importance:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{nb\_subsets}: Counts the number of times each feature appears in basis functions across the pruning path
+\item
+  \textbf{gcv}: Measures the contribution to GCV improvement when terms involving each feature are added
+\item
+  \textbf{rss}: Measures the contribution to RSS reduction when terms involving each feature are added
+\end{itemize}
+
+\subsubsection{Generalized Linear Model Extensions}\label{generalized-linear-model-extensions}
+
+The \texttt{GLMEarth} class extends pymars to support generalized linear models for logistic and Poisson regression using MARS basis functions, which is particularly useful for health economic applications involving binary or count outcomes.
+
+\subsubsection{Interpretability Tools}\label{interpretability-tools}
+
+The \texttt{explain.py} module provides advanced interpretability tools including:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Partial Dependence Plots}: Visualize the relationship between features and predictions
+\item
+  \textbf{Individual Conditional Expectation (ICE) Plots}: Show how individual predictions change as features vary
+\item
+  \textbf{Model Explanations}: Generate comprehensive explanations of model behavior
+\end{itemize}
+
+\section{Health Economic Applications}\label{health-economic-applications-1}
+
+\subsection{Australian Health Data Example}\label{australian-health-data-example}
+
+The following example demonstrates the use of pymars to model healthcare costs based on Australian health economic data. This example uses simulated data with characteristics similar to those found in Australian health administrative datasets:
+
+\begin{verbatim}
+import numpy as np
+import pandas as pd
+import pymars as earth
+from sklearn.model_selection import train_test_split
+
+# Generate simulated Australian health economic data
+# This represents the type of data available from AIHW (Australian Institute of Health and Welfare)
+np.random.seed(42)
+n_samples = 2000
+
+# Simulated Australian health economic variables
+# Age as a key risk factor with non-linear effects
+age = np.random.normal(50, 18, n_samples)
+age = np.clip(age, 18, 90)  # Realistic age range
+
+# Socioeconomic status (SEIFA scores, normalized)
+ses = np.random.normal(0, 1, n_samples)
+
+# Comorbidity score (Charlson Comorbidity Index, normalized)
+comorbidities = np.random.gamma(2, 0.6, n_samples)
+
+# Healthcare utilization (number of GP visits, specialist visits, etc.)
+utilization = np.random.exponential(3, n_samples)
+
+# Geographic factors (rural/urban, state)
+rural_urban = np.random.choice([0, 1], n_samples, p=[0.7, 0.3])  # 30% rural
+state = np.random.choice(['NSW', 'VIC', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT'], n_samples)
+
+# Simulated healthcare costs with complex non-linear relationships
+healthcare_costs = (
+    500  # Base cost
+    + 10 * age  # Linear age effect
+    + 0.05 * age**2  # Quadratic age effect (accelerating with age)
+    + 200 * np.where(age > 65, 1, 0)  # Step-up after retirement age
+    - 30 * ses  # Higher SES associated with lower costs (better preventive care)
+    + 150 * comorbidities  # Exponential cost increase with comorbidities
+    + 50 * utilization  # Direct relationship with utilization
+    + 500 * rural_urban  # Higher costs in rural areas
+    + np.where(age > 65, 100 * comorbidities**1.5, 50 * comorbidities)  # Interaction: age and comorbidities
+    + np.random.normal(0, 100, n_samples)  # Random noise
+)
+
+# Convert to positive values (healthcare costs are always positive)
+healthcare_costs = np.clip(healthcare_costs, 50, None)  # Minimum $50 cost
+
+# Create feature matrix
+X = pd.DataFrame({
+    'age': age,
+    'ses': ses,
+    'comorbidities': comorbidities,
+    'utilization': utilization,
+    'rural_urban': rural_urban
+})
+
+# Add categorical variable
+X = pd.get_dummies(X, columns=['rural_urban'], prefix=['rural'], dtype=int)
+
+# Create a state feature (simplified for this example)
+state_encoded = (state == 'NSW').astype(int)  # Simplified encoding for this example
+X['state_NSWSA'] = state_encoded
+
+# Split the data
+X_train, X_test, y_train, y_test = train_test_split(X, healthcare_costs, test_size=0.2, random_state=42)
+
+# Fit MARS model
+model = earth.Earth(
+    max_degree=2,      # Allow two-way interactions
+    penalty=3.0,       # GCV penalty
+    max_terms=21,      # Max number of terms (rule of thumb: 2*n_features + 1)
+    minspan_alpha=0.05,  # Minimum span control
+    endspan_alpha=0.05,  # End span control
+    allow_linear=True,    # Allow linear terms
+    feature_importance_type='gcv'  # Calculate feature importance
+)
+
+# Fit the model
+model.fit(X_train.values, y_train)
+
+# Model evaluation
+train_r2 = model.score(X_train.values, y_train)
+test_r2 = model.score(X_test.values, y_test)
+
+print("Australian Healthcare Costs Model Summary:")
+print(f"Number of basis functions: {len(model.basis_) - 1}")  # Subtract 1 for intercept
+print(f"Training R-squared: {train_r2:.3f}")
+print(f"Test R-squared: {test_r2:.3f}")
+print(f"GCV Score: {model.gcv_:.3f}")
+
+# Feature importance
+print(f"\nFeature Importances:")
+print(model.summary_feature_importances())
+
+# Show the selected basis functions
+print(f"\nSelected Basis Functions:")
+for i, (bf, coef) in enumerate(zip(model.basis_, model.coef_)):
+    if i == 0:  # Intercept
+        print(f"  {bf}: {coef:.3f}")
+    else:
+        print(f"  {bf}: {coef:.3f}")
+\end{verbatim}
+
+\subsection{New Zealand Health Data Example}\label{new-zealand-health-data-example}
+
+The following example demonstrates the use of pymars on New Zealand health economic data, focusing on health outcomes and their relationship with socioeconomic factors and healthcare access:
+
+\begin{verbatim}
+# New Zealand health economic example with deprivation indices and Māori ethnicity
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Generate simulated New Zealand health data with characteristics similar to 
+# data from New Zealand's Health Quality and Safety Commission and Ministry of Health
+np.random.seed(123)
+n_samples = 2500
+
+# Demographic variables
+age = np.random.normal(45, 16, n_samples)
+age = np.clip(age, 0, 100)
+
+# Gender (binary for this example)
+gender = np.random.choice([0, 1], n_samples)  # 0: female, 1: male
+
+# Socioeconomic factors
+deprivation_index = np.random.uniform(1, 10, n_samples)  # NZDep index
+
+# Ethnicity variables
+maori_ethnicity = np.random.binomial(1, 0.15, n_samples)  # ~15% Māori population
+pacific_ethnicity = np.random.binomial(1, 0.08, n_samples)  # ~8% Pacific peoples
+
+# Geographic factors (urban vs rural)
+is_urban = np.random.binomial(1, 0.85, n_samples)  # ~85% urban
+
+# Healthcare access variables
+rhe_priority = np.random.binomial(1, 0.20, n_samples)  # 20% of population with higher needs
+healthcare_access_score = np.random.beta(2, 1, n_samples)  # Access score between 0 and 1
+
+# Simulated health outcome (e.g., standardized mortality ratio or health index)
+health_outcome = (
+    100  # Baseline
+    + 0.8 * age  # Age has positive effect on health events
+    + 0.005 * age**2  # Accelerating effect at older ages
+    + 5 * np.where(age > 65, 1, 0)  # Step-up after 65
+    + 8 * deprivation_index  # Higher deprivation associated with worse outcomes
+    + 15 * maori_ethnicity  # Historical and social health disparities
+    + 12 * pacific_ethnicity  # Health disparities
+    + 20 * rhe_priority  # Higher need population
+    - 15 * healthcare_access_score  # Better access improves outcomes
+    + np.where(deprivation_index > 7, 5 * maori_ethnicity, 0)  # Interaction: deprivation and ethnicity
+    + np.random.normal(0, 10, n_samples)  # Random noise
+)
+
+# Create feature matrix
+X_nz = np.column_stack([
+    age, deprivation_index, maori_ethnicity, 
+    pacific_ethnicity, is_urban, rhe_priority, healthcare_access_score
+])
+
+feature_names_nz = [
+    'age', 'deprivation_index', 'maori_ethnicity', 
+    'pacific_ethnicity', 'is_urban', 'rhe_priority', 'healthcare_access_score'
+]
+
+# Fit MARS model
+model_nz = earth.Earth(
+    max_degree=2,
+    penalty=3.0,
+    max_terms=21,
+    minspan_alpha=0.05,
+    endspan_alpha=0.05,
+    allow_linear=True,
+    feature_importance_type='nb_subsets'
+)
+
+model_nz.fit(X_nz, health_outcome)
+
+print("\nNew Zealand Health Outcomes Model Summary:")
+print(f"Number of basis functions: {len(model_nz.basis_) - 1}")
+print(f"R-squared: {model_nz.score(X_nz, health_outcome):.3f}")
+print(f"GCV Score: {model_nz.gcv_:.3f}")
+
+# Feature importance
+print(f"\nFeature Importances:")
+print(model_nz.summary_feature_importances())
+
+# Generate partial dependence plots to visualize relationships
+from pymars.explain import plot_partial_dependence
+
+# Plot partial dependence for the top 4 most important features
+top_features = np.argsort(model_nz.feature_importances_)[-4:][::-1]
+fig, axes = plot_partial_dependence(model_nz, X_nz, top_features, 
+                                   feature_names=feature_names_nz, 
+                                   n_cols=2, figsize=(12, 10))
+plt.tight_layout()
+plt.show()
+\end{verbatim}
+
+\subsection{Analysis and Interpretation}\label{analysis-and-interpretation}
+
+The above examples demonstrate how pymars can identify complex, non-linear relationships in health economic data that would be missed by traditional linear models:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Non-linear Age Effects}: The models automatically identify the non-linear effect of age on healthcare costs and outcomes, showing accelerating costs at older ages.
+\item
+  \textbf{Socioeconomic Gradients}: The models capture the relationship between deprivation indices and health outcomes/costs, which is often non-linear with threshold effects.
+\item
+  \textbf{Interaction Effects}: The models identify important interaction effects, such as the interaction between age and comorbidities, or between deprivation and ethnicity.
+\item
+  \textbf{Health Equity Analysis}: The models can quantify health disparities by ethnicity (Māori, Pacific peoples) and geographic factors (rural vs urban).
+\end{enumerate}
+
+These capabilities make pymars particularly valuable for health economic analysis where understanding these complex relationships is crucial for policy development and resource allocation.
+
+\section{Future Directions}\label{future-directions}
+
+\subsection{Planned Implementation of JAX/XLA Backend}\label{planned-implementation-of-jaxxla-backend}
+
+One of the significant planned enhancements for pymars is the addition of a JAX/XLA backend option. This enhancement is critical for scaling pymars to larger healthcare datasets, which are increasingly common in modern health economic research and policy analysis.
+
+\subsubsection{Technical Approach}\label{technical-approach}
+
+The JAX implementation will follow a modular backend abstraction, allowing users to select between NumPy and JAX implementations:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Computational Backend Interface}: An abstract interface that defines all mathematical operations (linear algebra, optimization, etc.)
+\item
+  \textbf{JAX-Specific Implementations}: JAX-optimized versions of core computational functions
+\item
+  \textbf{Automatic Differentiation}: Leverage JAX's automatic differentiation for advanced optimization techniques
+\item
+  \textbf{GPU Support}: Native GPU acceleration for model fitting on large datasets
+\end{itemize}
+
+\subsubsection{Performance Benefits}\label{performance-benefits}
+
+The JAX/XLA backend would provide several performance advantages:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{XLA Compilation}: Ahead-of-time compilation for faster execution of repeated operations
+\item
+  \textbf{Vectorization}: Better utilization of vectorized operations on modern CPUs
+\item
+  \textbf{GPU Acceleration}: The ability to leverage GPUs for matrix operations in model fitting
+\item
+  \textbf{Memory Efficiency}: More efficient memory usage patterns through JAX's functional approach
+\end{itemize}
+
+\subsubsection{Implementation Considerations}\label{implementation-considerations}
+
+The implementation would preserve the same API and functionality while providing performance improvements:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{API Compatibility}: The same pymars interface regardless of backend
+\item
+  \textbf{Optional Dependency}: JAX remains an optional dependency to maintain accessibility
+\item
+  \textbf{Precision Consistency}: Ensuring numerical precision matches between backends
+\item
+  \textbf{Testing Framework}: Comprehensive tests to ensure consistent results
+\end{itemize}
+
+\subsubsection{Performance Impact Assessment}\label{performance-impact-assessment}
+
+For health economic applications, the JAX backend would be particularly beneficial for:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Large Population Studies}: Analyses using national healthcare datasets with millions of records
+\item
+  \textbf{Multiple Model Fitting}: Scenarios requiring fitting many models (e.g., cross-validation, bootstrap)
+\item
+  \textbf{Real-time Analysis}: Applications requiring fast model fitting for decision support
+\item
+  \textbf{High-Dimensional Data}: Analyses with many variables (e.g., genomic data combined with health records)
+\end{itemize}
+
+\subsection{Additional Planned Features}\label{additional-planned-features}
+
+\subsubsection{Enhanced Missing Value Handling}\label{enhanced-missing-value-handling}
+
+Future versions will include more sophisticated methods for handling missing data in MARS models, including:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Multiple Imputation Integration}: Compatibility with multiple imputation techniques
+\item
+  \textbf{Missingness Pattern Analysis}: Enhanced analysis of missing data patterns
+\item
+  \textbf{Pattern-Based Models}: Models that specifically account for different missingness mechanisms
+\end{itemize}
+
+\subsubsection{Extended Model Classes}\label{extended-model-classes}
+
+Expansion of the model types supported by pymars:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Time Series Extensions}: MARS models for time-dependent health economic outcomes
+\item
+  \textbf{Spatial Extensions}: Integration with spatial analysis for geographic health patterns
+\item
+  \textbf{Mixed Effects Models}: Combining MARS with random effects for hierarchical data
+\end{itemize}
+
+\subsubsection{Improved Visualization Tools}\label{improved-visualization-tools}
+
+Enhanced visualization capabilities specifically tailored for health economic analysis:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Cost-Effectiveness Planes}: Specialized plots for cost-effectiveness analysis
+\item
+  \textbf{Population Heterogeneity}: Visualizations showing variation across subpopulations
+\item
+  \textbf{Policy Impact Curves}: Visualizations showing the impact of policy changes
+\end{itemize}
+
+\section{Conclusion}\label{conclusion}
+
+pymars provides a valuable pure Python implementation of the MARS algorithm that maintains compatibility with scikit-learn while eliminating installation complexities associated with C/Cython dependencies. The library is particularly valuable for health economic outcomes research where understanding complex relationships between health outcomes, costs, and utilization patterns is critical.
+
+The implementation advances beyond existing MARS libraries in several important ways:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Accessibility}: Pure Python implementation eliminates installation barriers common with C/Cython implementations
+\item
+  \textbf{Integration}: Seamless integration with the scikit-learn ecosystem enables complex machine learning workflows
+\item
+  \textbf{Feature-Rich}: Implementation of multiple feature importance methods, missing value handling, and categorical variable support
+\item
+  \textbf{Interpretability}: Built-in tools for model interpretation, crucial in health economic applications
+\item
+  \textbf{Extensibility}: Modular architecture enables extensions like the planned JAX backend
+\end{enumerate}
+
+The demonstrated examples on Australian and New Zealand health data show the effectiveness of pymars in modeling complex relationships that traditional linear models might miss. The automatic identification of non-linearities and interactions makes MARS particularly well-suited for health economic applications where:
+
+\begin{itemize}
+\tightlist
+\item
+  Healthcare costs often increase exponentially with age and morbidity
+\item
+  The effects of socioeconomic factors may have threshold effects
+\item
+  Interactions between demographic, clinical, and geographic factors are important
+\item
+  Health disparities exist across different population subgroups
+\end{itemize}
+
+Future development will focus on the JAX/XLA backend to enhance computational performance while maintaining the accessibility and compatibility that makes pymars valuable for researchers across diverse computing environments. Additional features planned include enhanced missing value handling and specialized visualization tools for health economic analysis.
+
+The pymars library addresses a specific need in the health economic research community for accessible, flexible, and interpretable non-parametric regression methods that can handle the complex, non-linear relationships common in health data. By providing a pure Python implementation with scikit-learn compatibility, pymars lowers the barrier to entry for researchers who need sophisticated modeling tools but want to avoid the complexity of non-Python implementations.
+
+The library's design emphasizes extensibility and maintainability, positioning it well for continued development and adaptation to emerging needs in health economic research. The planned JAX backend represents an important step forward in computational performance without sacrificing the accessibility that makes the library valuable to a broad research community.
+
+\section*{References}\label{references}
+\addcontentsline{toc}{section}{References}
+
+\hypertarget{refs}{}
+\begin{CSLReferences}{1}{0}
+\leavevmode\vadjust pre{\hypertarget{ref-friedman1991}{}}%
+Friedman, J. H. 1991. {``Multivariate Adaptive Regression Splines.''}
+\emph{The Annals of Statistics} 19 (1): 1--67.
+
+\leavevmode\vadjust pre{\hypertarget{ref-milborrow2023}{}}%
+Milborrow, S. 2023. {``earth: Multivariate Adaptive Regression
+Splines.''} R Package Version 5.3.1.
+\url{https://CRAN.R-project.org/package=earth}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-friedman2023}{}}%
+Friedman, J. 2023. {``py-earth: A Python Implementation of Jerome
+Friedman's Mars Algorithm.''}
+\url{https://github.com/jcrudy/py-earth}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-pedregosa2011}{}}%
+Pedregosa, F., G. Varoquaux, A. Gramfort, V. Michel, B. Thirion, O.
+Grisel, M. Blondel, et al. 2011. {``Scikit-Learn: Machine Learning in
+{P}ython.''} \emph{Journal of Machine Learning Research} 12: 2825--30.
+
+\leavevmode\vadjust pre{\hypertarget{ref-harris2020}{}}%
+Harris, C. R., K. Jarrod Millman, S. J. van der Walt, R. Gommers, P.
+Virtanen, D. Cournapeau, E. Wieser, et al. 2020. {``Array Programming
+with {N}um{P}y.''} \emph{Nature} 585 (7825): 357--62.
+
+\leavevmode\vadjust pre{\hypertarget{ref-virtanen2020}{}}%
+Virtanen, P., R. Gommers, T. E. Oliphant, M. Haberland, T. Reddy, D.
+Cournapeau, E. Burovski, et al. 2020. {``SciPy 1.0: Fundamental
+Algorithms for Scientific Computing in {P}ython.''} \emph{Nature Methods}
+17 (3): 261--72.
+
+\leavevmode\vadjust pre{\hypertarget{ref-aihw2022}{}}%
+AIHW. 2022. {``Australian Institute of Health and Welfare Data.''}
+\emph{Australian Institute of Health and Welfare}.
+\url{https://www.aihw.gov.au}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-moh2022}{}}%
+Ministry of Health. 2022. {``New Zealand Ministry of Health Data.''}
+\emph{New Zealand Government}.
+\url{https://www.health.govt.nz}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-bradbury2018}{}}%
+Bradbury, James, Roy Frostig, Peter Hawkins, Matthew James Johnson,
+Chris Leary, Dougal Maclaurin, George Necula, et al. 2018. {``{JAX}:
+Composable Transformations of {P}ython+{N}um{P}y Programs.''}
+\url{https://github.com/google/jax}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-mordaunt2025}{}}%
+Mordaunt, Dylan A. 2025. {``pymars: A Pure Python Implementation of
+Multivariate Adaptive Regression Splines.''}
+\url{https://github.com/edithatogo/pymars}.
+\end{CSLReferences}
+
+\end{document}

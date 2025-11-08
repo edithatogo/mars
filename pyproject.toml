@@ -19,6 +19,8 @@ dev = [
     "pytest-cov>=4.1.0",
     "tox>=4.11.0",
     "mypy>=1.8.0",
+    "pyright>=1.1.300",
+    "ty>=0.1.0",
     "pre-commit>=3.6.0",
     "black>=23.12.1",
     "isort>=5.13.0",
@@ -28,6 +30,12 @@ dev = [
     "bandit>=1.7.6",
     "safety>=2.4.0",
     "pandas",  # For CLI functionality
+    "pandera>=0.17.0",
+    "pydantic>=2.5.0",
+    "nbqa>=1.7.0",
+    "nbstripout>=0.6.0",
+    "syrupy>=4.0.0",
+    "lizard>=1.17.0"
 ]
 
 [project.scripts]

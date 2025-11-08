@@ -1,0 +1,56 @@
+project:
+  type: website
+  output-dir: docs
+  preview:
+    port: 8000
+    host: 0.0.0.0
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    number-sections: true
+
+website:
+  title: "pymars: A Pure Python Implementation of Multivariate Adaptive Regression Splines"
+  site-url: "https://pymars.github.io"
+  description: "Documentation and paper for the pymars library"
+  repo-url: "https://github.com/edithatogo/pymars"
+  repo-actions: [issue]
+  open-graph: true
+  twitter-card: true
+  page-navigation: true
+  
+  navbar:
+    background: light
+    search: true
+    tools:
+      - icon: github
+        href: https://github.com/edithatogo/pymars
+    left:
+      - text: "Home"
+        href: index.qmd
+      - text: "Paper"
+        href: pymars-paper.qmd
+      - text: "Documentation"
+        href: reference/
+      - text: "News"
+        href: news.qmd
+
+  sidebar:
+    style: "docked"
+    contents:
+      - reference/
+      - text: "---"
+      - section: "Articles"
+        contents:
+          - article1.qmd
+          - article2.qmd
+
+metadata-files:
+  - references.bib
+  - custom.scss
+
+filters:
+  - mermaid
