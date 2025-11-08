@@ -2,9 +2,8 @@ name: Documentation
 
 on:
   push:
-    branches: [ docs ]  # Changed to docs branch since docs are now there
-  pull_request:
-    branches: [ docs ]  # Changed to docs branch
+    branches: [ docs ]  # Trigger when docs branch is pushed
+  workflow_dispatch: # Allow manual triggering
 
 permissions:
   contents: write
@@ -14,6 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v5
+      with:
+        ref: docs  # Always check out the docs branch
+        
     - name: Set up Python
       uses: actions/setup-python@v6
       with:
@@ -29,7 +31,6 @@ jobs:
         mkdocs build
 
     - name: Deploy to GitHub Pages
-      if: github.event_name == 'push'
       uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
