@@ -1,13 +1,15 @@
 # pymars: Pure Python Earth (Multivariate Adaptive Regression Splines)
 
-![CI](https://github.com/edithatogo/pymars/actions/workflows/ci.yml/badge.svg)
-![Security](https://github.com/edithatogo/pymars/actions/workflows/security.yml/badge.svg)
-![Code Quality](https://github.com/edithatogo/pymars/actions/workflows/code-quality.yml/badge.svg)
-![Documentation](https://github.com/edithatogo/pymars/actions/workflows/docs.yml/badge.svg)
-![Code Coverage](https://codecov.io/gh/edithatogo/pymars/branch/main/graph/badge.svg)
+# pymars: Pure Python Earth (Multivariate Adaptive Regression Splines)
+
+![CI](https://github.com/edithatogo/mars/actions/workflows/ci.yml/badge.svg)
+![Security](https://github.com/edithatogo/mars/actions/workflows/security.yml/badge.svg)
+![Code Quality](https://github.com/edithatogo/mars/actions/workflows/code-quality.yml/badge.svg)
+![Documentation](https://github.com/edithatogo/mars/actions/workflows/docs.yml/badge.svg)
+![Code Coverage](https://codecov.io/gh/edithatogo/mars/branch/main/graph/badge.svg)
 ![PyPI](https://img.shields.io/pypi/v/pymars.svg)
 ![Python Version](https://img.shields.io/pypi/pyversions/pymars.svg)
-![License](https://img.shields.io/github/license/edithatogo/pymars.svg)
+![License](https://img.shields.io/github/license/edithatogo/mars.svg)
 
 **pymars** is a pure Python implementation of Multivariate Adaptive Regression Splines (MARS), inspired by the popular `py-earth` library by Jason Friedman and an R package `earth` by Stephen Milborrow. The goal of `pymars` is to provide an easy-to-install, scikit-learn compatible version of the MARS algorithm without C/Cython dependencies.
 
@@ -130,8 +132,8 @@ predictions = model.predict(X)
 
 The pymars project uses a multi-branch documentation approach:
 
-- **Code Documentation**: API and development documentation is available in the [docs branch](https://github.com/edithatogo/pymars/tree/docs)
-- **Research Paper**: The academic paper describing pymars is available in the [paper branch](https://github.com/edithatogo/pymars/tree/paper)
+- **Code Documentation**: API and development documentation is available in the [docs branch](https://github.com/edithatogo/mars/tree/docs)
+- **Research Paper**: The academic paper describing pymars is available in the [paper branch](https://github.com/edithatogo/mars/tree/paper)
 
 For usage examples and tutorials, check the [examples directory](examples/) in this main branch.
 
