@@ -7,6 +7,7 @@ to minimize a criterion (e.g., sum of squared errors).
 """
 
 import logging
+from typing import Optional
 
 import numpy as np
 
@@ -53,7 +54,7 @@ class ForwardPasser:
 
     def _calculate_rss_and_coeffs(
         self, B_matrix: np.ndarray, y: np.ndarray, *, drop_nan_rows: bool = True
-    ) -> tuple[float, np.ndarray | None, int]:
+    ) -> tuple[float, Optional[np.ndarray], int]:
         if B_matrix is None or B_matrix.shape[1] == 0:
             mean_y = np.mean(y)
             rss = np.sum((y - mean_y)**2)
@@ -225,7 +226,7 @@ class ForwardPasser:
 
         return self.current_basis_functions, self.current_coefficients
 
-    def _calculate_gcv_for_basis_set(self, basis_functions: list[BasisFunction]) -> tuple[float | None, np.ndarray | None]:
+    def _calculate_gcv_for_basis_set(self, basis_functions: list[BasisFunction]) -> tuple[Optional[float], Optional[np.ndarray]]:
         if not basis_functions:
             # This implies an intercept-only model for GCV calculation purposes
             rss_intercept_only = np.sum((self.y_train - np.mean(self.y_train))**2)
@@ -348,8 +349,8 @@ class ForwardPasser:
             minspan_countdown = max(0, minspan_abs - 1)
         return np.array(final_allowable_knots)
 
-    def _generate_candidates(self) -> list[tuple[BasisFunction, BasisFunction | None]]:
-        candidate_additions: list[tuple[BasisFunction, BasisFunction | None]] = []
+    def _generate_candidates(self) -> list[tuple[BasisFunction, Optional[BasisFunction]]]:
+        candidate_additions: list[tuple[BasisFunction, Optional[BasisFunction]]] = []
         for parent_bf in self.current_basis_functions:
             if parent_bf.degree() + 1 > self.model.max_degree: continue
             parent_involved_vars = parent_bf.get_involved_variables()

@@ -8,6 +8,7 @@ using a criterion like Generalized Cross-Validation (GCV).
 """
 
 import logging
+from typing import Optional
 
 import numpy as np
 
@@ -38,7 +39,7 @@ class PruningPasser:
         self.best_basis_functions_so_far: list[BasisFunction] = []
         self.best_coeffs_so_far: np.ndarray = None
 
-    def _calculate_rss_and_coeffs(self, B_matrix: np.ndarray, y_data: np.ndarray) -> tuple[float, np.ndarray | None, int]:
+    def _calculate_rss_and_coeffs(self, B_matrix: np.ndarray, y_data: np.ndarray) -> tuple[float, Optional[np.ndarray], int]:
         """
         Calculates RSS, coefficients, and num_valid_rows, considering NaNs in B_matrix.
         y_data is assumed finite.
@@ -97,7 +98,7 @@ class PruningPasser:
 
     def _compute_gcv_for_subset(self, X_fit_processed: np.ndarray, y_fit: np.ndarray,
                                 missing_mask: np.ndarray, X_fit_original: np.ndarray,
-                                basis_subset: list[BasisFunction]) -> tuple[float | None, float | None, np.ndarray | None]:
+                                basis_subset: list[BasisFunction]) -> tuple[Optional[float], Optional[float], Optional[np.ndarray]]:
         """
         Computes GCV, RSS, and coefficients for a given subset of basis functions.
         Returns (gcv, rss, coeffs).
