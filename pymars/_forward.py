@@ -7,6 +7,7 @@ to minimize a criterion (e.g., sum of squared errors).
 """
 
 import logging
+from typing import List, Optional, Tuple
 
 import numpy as np
 
@@ -39,7 +40,7 @@ class ForwardPasser:
         self.y_train = None
         self.n_samples = 0
         self.n_features = 0
-        self.current_basis_functions: list[BasisFunction] = []
+        self.current_basis_functions: List[BasisFunction] = []
         self.current_B_matrix = None
         self.current_coefficients = None
         self.current_rss = np.inf
@@ -53,7 +54,7 @@ class ForwardPasser:
 
     def _calculate_rss_and_coeffs(
         self, B_matrix: np.ndarray, y: np.ndarray, *, drop_nan_rows: bool = True
-    ) -> tuple[float, np.ndarray | None, int]:
+    ) -> Tuple[float, Optional[np.ndarray], int]:
         if B_matrix is None or B_matrix.shape[1] == 0:
             mean_y = np.mean(y)
             rss = np.sum((y - mean_y)**2)
@@ -93,7 +94,7 @@ class ForwardPasser:
         except np.linalg.LinAlgError:
             return np.inf, None, num_valid_rows
 
-    def _build_basis_matrix(self, X_processed: np.ndarray, basis_functions: list[BasisFunction]) -> np.ndarray:
+    def _build_basis_matrix(self, X_processed: np.ndarray, basis_functions: List[BasisFunction]) -> np.ndarray:
         if not basis_functions:
             return np.empty((X_processed.shape[0], 0))
 
@@ -108,7 +109,7 @@ class ForwardPasser:
         return B_matrix
 
     def run(self, X_fit_processed: np.ndarray, y_fit: np.ndarray,
-            missing_mask: np.ndarray, X_fit_original: np.ndarray) -> tuple[list[BasisFunction], np.ndarray]:
+            missing_mask: np.ndarray, X_fit_original: np.ndarray) -> Tuple[List[BasisFunction], np.ndarray]:
         self.X_train = X_fit_processed
         self.y_train = y_fit
         self.missing_mask = missing_mask
@@ -225,7 +226,7 @@ class ForwardPasser:
 
         return self.current_basis_functions, self.current_coefficients
 
-    def _calculate_gcv_for_basis_set(self, basis_functions: list[BasisFunction]) -> tuple[float | None, np.ndarray | None]:
+    def _calculate_gcv_for_basis_set(self, basis_functions: List[BasisFunction]) -> Tuple[Optional[float], Optional[np.ndarray]]:
         if not basis_functions:
             # This implies an intercept-only model for GCV calculation purposes
             rss_intercept_only = np.sum((self.y_train - np.mean(self.y_train))**2)
@@ -348,8 +349,8 @@ class ForwardPasser:
             minspan_countdown = max(0, minspan_abs - 1)
         return np.array(final_allowable_knots)
 
-    def _generate_candidates(self) -> list[tuple[BasisFunction, BasisFunction | None]]:
-        candidate_additions: list[tuple[BasisFunction, BasisFunction | None]] = []
+    def _generate_candidates(self) -> List[Tuple[BasisFunction, Optional[BasisFunction]]]:
+        candidate_additions: List[Tuple[BasisFunction, Optional[BasisFunction]]] = []
         for parent_bf in self.current_basis_functions:
             if parent_bf.degree() + 1 > self.model.max_degree: continue
             parent_involved_vars = parent_bf.get_involved_variables()

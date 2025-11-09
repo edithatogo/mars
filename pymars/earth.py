@@ -3,6 +3,7 @@
 The main Earth class, coordinating the model fitting process.
 """
 import logging
+from typing import List, Optional
 
 import numpy as np
 from sklearn.base import BaseEstimator, RegressorMixin
@@ -127,7 +128,7 @@ class Earth(BaseEstimator, RegressorMixin):
                  allow_linear: bool = True,
                  allow_missing: bool = False, # New parameter
                  feature_importance_type: str = None,
-                 categorical_features: list[int] = None
+                 categorical_features: Optional[List[int]] = None
                  # TODO: Consider other py-earth params
                  ):
         super().__init__()
