@@ -8,6 +8,7 @@ using a criterion like Generalized Cross-Validation (GCV).
 """
 
 import logging
+from typing import List, Optional, Tuple
 
 import numpy as np
 
@@ -35,10 +36,10 @@ class PruningPasser:
         self.X_fit_original = None
 
         self.best_gcv_so_far = np.inf
-        self.best_basis_functions_so_far: list[BasisFunction] = []
+        self.best_basis_functions_so_far: List[BasisFunction] = []
         self.best_coeffs_so_far: np.ndarray = None
 
-    def _calculate_rss_and_coeffs(self, B_matrix: np.ndarray, y_data: np.ndarray) -> tuple[float, np.ndarray | None, int]:
+    def _calculate_rss_and_coeffs(self, B_matrix: np.ndarray, y_data: np.ndarray) -> Tuple[float, Optional[np.ndarray], int]:
         """
         Calculates RSS, coefficients, and num_valid_rows, considering NaNs in B_matrix.
         y_data is assumed finite.
@@ -78,7 +79,7 @@ class PruningPasser:
             )
             return np.inf, None, num_valid_rows
 
-    def _build_basis_matrix(self, X_data: np.ndarray, basis_functions: list[BasisFunction],
+    def _build_basis_matrix(self, X_data: np.ndarray, basis_functions: List[BasisFunction],
                             missing_mask: np.ndarray) -> np.ndarray:
         """
         Constructs the basis matrix B from X_data (which is X_processed)
@@ -97,7 +98,7 @@ class PruningPasser:
 
     def _compute_gcv_for_subset(self, X_fit_processed: np.ndarray, y_fit: np.ndarray,
                                 missing_mask: np.ndarray, X_fit_original: np.ndarray,
-                                basis_subset: list[BasisFunction]) -> tuple[float | None, float | None, np.ndarray | None]:
+                                basis_subset: List[BasisFunction]) -> Tuple[Optional[float], Optional[float], Optional[np.ndarray]]:
         """
         Computes GCV, RSS, and coefficients for a given subset of basis functions.
         Returns (gcv, rss, coeffs).
@@ -155,8 +156,8 @@ class PruningPasser:
 
     def run(self, X_fit_processed: np.ndarray, y_fit: np.ndarray,
             missing_mask: np.ndarray, X_fit_original: np.ndarray,
-            initial_basis_functions: list[BasisFunction],
-            initial_coefficients: np.ndarray) -> tuple[list[BasisFunction], np.ndarray, float]:
+            initial_basis_functions: List[BasisFunction],
+            initial_coefficients: np.ndarray) -> Tuple[List[BasisFunction], np.ndarray, float]:
 
         self.X_train = X_fit_processed
         self.y_train = y_fit.ravel()
