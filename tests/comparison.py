@@ -12,18 +12,22 @@ HYPERPARAMS = {
     "penalty": [0.01, 0.1, 1.0],
 }
 
+
 # Datasets to use for comparison
 # (Using a simple synthetic dataset for this example)
 def generate_friedman1(n_samples=100, n_features=10, noise=0.1, random_state=0):
     """Generate the Friedman #1 dataset."""
     rng = np.random.RandomState(random_state)
     X = rng.rand(n_samples, n_features)
-    y = (10 * np.sin(np.pi * X[:, 0] * X[:, 1]) +
-         20 * (X[:, 2] - 0.5) ** 2 +
-         10 * X[:, 3] +
-         5 * X[:, 4] +
-         noise * rng.randn(n_samples))
+    y = (
+        10 * np.sin(np.pi * X[:, 0] * X[:, 1])
+        + 20 * (X[:, 2] - 0.5) ** 2
+        + 10 * X[:, 3]
+        + 5 * X[:, 4]
+        + noise * rng.randn(n_samples)
+    )
     return X, y
+
 
 # --- Helper Functions ---
 def save_results(library_name, dataset_name, params, results):
@@ -34,16 +38,18 @@ def save_results(library_name, dataset_name, params, results):
     with open(filename, "w") as f:
         json.dump(results, f, indent=4)
 
+
 def load_results(library_name, dataset_name, params):
     """Load the results of a model from a JSON file."""
     filename = f"comparison_results/{library_name}_{dataset_name}_{params}.json"
     with open(filename) as f:
         return json.load(f)
 
+
 # --- Model Execution ---
 def run_pymars(X, y, params):
     """Fit a pymars model and return the results."""
-    model = pm.Earth(feature_importance_type='gcv', **params)
+    model = pm.Earth(feature_importance_type="gcv", **params)
     model.fit(X, y)
     y_hat = model.predict(X)
 
@@ -57,13 +63,16 @@ def run_pymars(X, y, params):
         "feature_importances": model.feature_importances_.tolist(),
     }
 
+
 def run_pyearth_placeholder(X, y, params):
     """
     Placeholder function for running py-earth.
     In a real scenario, this would be run in a separate environment.
     """
     print("--- Running py-earth (placeholder) ---")
-    print("In a real scenario, you would run the py-earth model here and save the results.")
+    print(
+        "In a real scenario, you would run the py-earth model here and save the results."
+    )
     # As a placeholder, we'll just create an empty results dictionary.
     # In a real test, you would populate this with actual results from py-earth.
     results = {
@@ -84,7 +93,13 @@ def compare_results(pymars_results, pyearth_results):
 
     # Compare predictions
     if pymars_results["predictions"] and pyearth_results["predictions"]:
-        mse = np.mean((np.array(pymars_results["predictions"]) - np.array(pyearth_results["predictions"])) ** 2)
+        mse = np.mean(
+            (
+                np.array(pymars_results["predictions"])
+                - np.array(pyearth_results["predictions"])
+            )
+            ** 2
+        )
         print(f"MSE of predictions: {mse}")
     else:
         print("Could not compare predictions (one or both are missing).")
@@ -126,8 +141,11 @@ if __name__ == "__main__":
             # In a real scenario, you would load the py-earth results from a file
             # pyearth_results = load_results("pyearth", "friedman1", str(params))
             pyearth_results = {
-                "predictions": [], "basis_functions": [], "coefficients": [], "feature_importances": []
-            } # Placeholder
+                "predictions": [],
+                "basis_functions": [],
+                "coefficients": [],
+                "feature_importances": [],
+            }  # Placeholder
 
             loaded_pymars_results = load_results("pymars", "friedman1", str(params))
             compare_results(loaded_pymars_results, pyearth_results)

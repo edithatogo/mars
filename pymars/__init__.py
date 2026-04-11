@@ -25,15 +25,15 @@ from .plot import plot_basis_functions, plot_residuals
 # e.g., from ._basis import BasisFunction (if users need to interact with it directly)
 
 __all__ = [
-    'CategoricalImputer',
-    'Earth',
-    'EarthCV',
-    'EarthClassifier',
-    'EarthRegressor',
-    'GLMEarth',
-    'get_model_explanation',
-    'plot_basis_functions',
-    'plot_individual_conditional_expectation',
-    'plot_partial_dependence',
-    'plot_residuals'
+    "CategoricalImputer",
+    "Earth",
+    "EarthCV",
+    "EarthClassifier",
+    "EarthRegressor",
+    "GLMEarth",
+    "get_model_explanation",
+    "plot_basis_functions",
+    "plot_individual_conditional_expectation",
+    "plot_partial_dependence",
+    "plot_residuals",
 ]

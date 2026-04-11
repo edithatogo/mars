@@ -21,10 +21,12 @@ class TestSklearnPipelineIntegration:
         X = np.random.rand(100, 3)
         y = np.sin(X[:, 0]) + X[:, 1] + 0.1 * np.random.randn(100)
 
-        pipeline = Pipeline([
-            ('scaler', StandardScaler()),
-            ('mars', Earth(max_degree=1, penalty=3.0)),
-        ])
+        pipeline = Pipeline(
+            [
+                ("scaler", StandardScaler()),
+                ("mars", Earth(max_degree=1, penalty=3.0)),
+            ]
+        )
 
         pipeline.fit(X, y)
         predictions = pipeline.predict(X)
@@ -56,10 +58,12 @@ class TestSklearnPipelineIntegration:
         X = np.random.rand(100, 4)
         y = (X[:, 0] + X[:, 1] > 1).astype(int)
 
-        pipeline = Pipeline([
-            ('scaler', StandardScaler()),
-            ('mars', EarthClassifier(max_degree=1, penalty=3.0)),
-        ])
+        pipeline = Pipeline(
+            [
+                ("scaler", StandardScaler()),
+                ("mars", EarthClassifier(max_degree=1, penalty=3.0)),
+            ]
+        )
 
         pipeline.fit(X, y)
         predictions = pipeline.predict(X)
@@ -86,15 +90,13 @@ class TestFileIOIntegration:
         model.fit(X, y)
 
         model_path = tmp_path / "model.pkl"
-        with open(model_path, 'wb') as f:
+        with open(model_path, "wb") as f:
             pickle.dump(model, f)
 
-        with open(model_path, 'rb') as f:
+        with open(model_path, "rb") as f:
             loaded_model = pickle.load(f)
 
         predictions_original = model.predict(X)
         predictions_loaded = loaded_model.predict(X)
 
-        np.testing.assert_array_almost_equal(
-            predictions_original, predictions_loaded
-        )
+        np.testing.assert_array_almost_equal(predictions_original, predictions_loaded)

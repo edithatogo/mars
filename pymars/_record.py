@@ -1,4 +1,3 @@
-
 """
 Record objects for storing information about the MARS fitting process.
 
@@ -12,19 +11,23 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
+
 class EarthRecord:
     """
     Stores information about the fitting process of an Earth model.
     """
+
     def __init__(self, X, y, earth_model_instance):
-        self.model_params = earth_model_instance.__dict__.copy() # Store initial model params
+        self.model_params = (
+            earth_model_instance.__dict__.copy()
+        )  # Store initial model params
         self.n_samples = X.shape[0]
         self.n_features = X.shape[1]
 
         # Forward pass tracking
-        self.fwd_basis_ = []         # List of lists: basis functions at each step of fwd pass
-        self.fwd_coeffs_ = []        # List of arrays: coefficients at each step
-        self.fwd_rss_ = []           # List of floats: RSS at each step
+        self.fwd_basis_ = []  # List of lists: basis functions at each step of fwd pass
+        self.fwd_coeffs_ = []  # List of arrays: coefficients at each step
+        self.fwd_rss_ = []  # List of floats: RSS at each step
 
         # Pruning pass tracking
         # These will store the sequence of models considered during pruning.
@@ -39,16 +42,21 @@ class EarthRecord:
         self.final_coeffs_ = None
         self.final_gcv_ = None
         self.final_rss_ = None
-        self.final_mse_ = None # MSE of the final model on training data
+        self.final_mse_ = None  # MSE of the final model on training data
 
     def log_forward_pass_step(self, basis_functions, coefficients, rss):
         """Log a step in the forward pass."""
-        self.fwd_basis_.append(list(basis_functions)) # Store copies
+        self.fwd_basis_.append(list(basis_functions))  # Store copies
         self.fwd_coeffs_.append(np.copy(coefficients))
         self.fwd_rss_.append(rss)
 
-    def log_pruning_step(self, basis_functions: list['BasisFunction'],
-                         coefficients: np.ndarray, gcv: float, rss: float): # Renamed
+    def log_pruning_step(
+        self,
+        basis_functions: list["BasisFunction"],
+        coefficients: np.ndarray,
+        gcv: float,
+        rss: float,
+    ):  # Renamed
         """
         Log a model state (basis functions, coefficients, GCV, RSS) encountered
         during the pruning pass sequence. This is typically called for each model size
@@ -59,7 +67,9 @@ class EarthRecord:
             len(basis_functions),
             gcv,
         )
-        self.pruning_trace_basis_functions_.append(list(basis_functions)) # Store copies
+        self.pruning_trace_basis_functions_.append(
+            list(basis_functions)
+        )  # Store copies
         self.pruning_trace_coeffs_.append(np.copy(coefficients))
         self.pruning_trace_gcv_.append(gcv)
         self.pruning_trace_rss_.append(rss)
@@ -74,15 +84,21 @@ class EarthRecord:
 
     def __str__(self):
         summary = ["Earth Model Fit Record"]
-        summary.append("="*len(summary[0]))
-        summary.append(f"Initial Samples: {self.n_samples}, Features: {self.n_features}")
+        summary.append("=" * len(summary[0]))
+        summary.append(
+            f"Initial Samples: {self.n_samples}, Features: {self.n_features}"
+        )
 
         if self.fwd_rss_:
-            summary.append(f"\nForward Pass completed with {len(self.fwd_basis_[-1])} terms.")
+            summary.append(
+                f"\nForward Pass completed with {len(self.fwd_basis_[-1])} terms."
+            )
             summary.append(f"  Final RSS from forward pass: {self.fwd_rss_[-1]:.4f}")
 
         if self.pruning_trace_gcv_:
-            summary.append(f"\nPruning Pass Trace (models considered): {len(self.pruning_trace_gcv_)}")
+            summary.append(
+                f"\nPruning Pass Trace (models considered): {len(self.pruning_trace_gcv_)}"
+            )
             # Optionally print details of the trace, e.g., GCVs
             # summary.append(f"  GCVs in sequence: {[f'{g:.4f}' for g in self.pruning_trace_gcv_]}")
 
@@ -94,4 +110,3 @@ class EarthRecord:
             summary.append(f"  MSE: {self.final_mse_:.4f}")
 
         return "\n".join(summary)
-

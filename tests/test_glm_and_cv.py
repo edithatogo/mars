@@ -1,7 +1,7 @@
 import matplotlib
 import numpy as np
 
-matplotlib.use('Agg')
+matplotlib.use("Agg")
 
 from pymars._basis import HingeBasisFunction, InteractionBasisFunction
 from pymars._sklearn_compat import EarthRegressor
@@ -25,7 +25,7 @@ def test_glmearth_logistic():
     rng = np.random.RandomState(0)
     X = rng.rand(50, 2)
     y = (X[:, 0] + X[:, 1] > 1).astype(int)
-    model = GLMEarth(family='logistic', max_terms=3)
+    model = GLMEarth(family="logistic", max_terms=3)
     model.fit(X, y)
     preds = model.predict(X)
     assert preds.shape == y.shape
@@ -35,7 +35,7 @@ def test_glmearth_poisson():
     rng = np.random.RandomState(0)
     X = rng.rand(50, 2)
     y = rng.poisson(2 + X[:, 0])
-    model = GLMEarth(family='poisson', max_terms=3)
+    model = GLMEarth(family="poisson", max_terms=3)
     model.fit(X, y)
     preds = model.predict(X)
     assert preds.min() >= 0
@@ -48,7 +48,7 @@ def test_earthcv_and_plotting():
     cv = EarthCV(EarthRegressor(max_terms=2), cv=3)
     scores = cv.score(X, y)
     assert len(scores) == 3
-    model = GLMEarth(family='poisson', max_terms=2)
+    model = GLMEarth(family="poisson", max_terms=2)
     model.fit(X, y + 1)
     plot_basis_functions(model, X)
     plot_residuals(model, X, y + 1)

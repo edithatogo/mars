@@ -17,17 +17,11 @@ class TestCompleteWorkflows:
         np.random.seed(42)
         X_train = np.random.rand(200, 5)
         y_train = (
-            np.sin(X_train[:, 0])
-            + X_train[:, 1] ** 2
-            + 0.1 * np.random.randn(200)
+            np.sin(X_train[:, 0]) + X_train[:, 1] ** 2 + 0.1 * np.random.randn(200)
         )
 
         X_test = np.random.rand(50, 5)
-        y_test = (
-            np.sin(X_test[:, 0])
-            + X_test[:, 1] ** 2
-            + 0.1 * np.random.randn(50)
-        )
+        y_test = np.sin(X_test[:, 0]) + X_test[:, 1] ** 2 + 0.1 * np.random.randn(50)
 
         model = Earth(max_degree=2, penalty=3.0, minspan_alpha=0.5)
         model.fit(X_train, y_train)

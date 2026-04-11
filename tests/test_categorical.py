@@ -11,7 +11,13 @@ def test_categorical_feature_handling():
     X = np.random.rand(100, 3)
     # Create a categorical feature with 3 categories
     X[:, 1] = np.random.randint(0, 3, 100)
-    y = X[:, 0] + (X[:, 1] == 0) * 5 + (X[:, 1] == 1) * 10 + (X[:, 1] == 2) * 15 + X[:, 2]**2
+    y = (
+        X[:, 0]
+        + (X[:, 1] == 0) * 5
+        + (X[:, 1] == 1) * 10
+        + (X[:, 1] == 2) * 15
+        + X[:, 2] ** 2
+    )
 
     # Fit an Earth model with the categorical feature specified
     model = Earth(max_degree=1, categorical_features=[1])
@@ -22,7 +28,8 @@ def test_categorical_feature_handling():
 
     # Check that the predictions are reasonable
     y_pred = model.predict(X)
-    assert np.mean((y - y_pred)**2) < 1.0
+    assert np.mean((y - y_pred) ** 2) < 1.0
+
 
 def test_categorical_interaction():
     """Test that the Earth model can handle interactions with categorical features."""
@@ -38,20 +45,26 @@ def test_categorical_interaction():
     model.fit(X, y)
 
     # Check that the model has selected at least one categorical basis function with a parent
-    assert any(isinstance(bf, CategoricalBasisFunction) and bf.parent1 is not None for bf in model.basis_)
+    assert any(
+        isinstance(bf, CategoricalBasisFunction) and bf.parent1 is not None
+        for bf in model.basis_
+    )
 
     # Check that the predictions are reasonable
     y_pred = model.predict(X)
-    assert np.mean((y - y_pred)**2) < 1.0
+    assert np.mean((y - y_pred) ** 2) < 1.0
 
 
 def test_categorical_imputer():
-    X = np.array([
-        ['a', 'b'],
-        ['b', None],
-        ['b', 'b'],
-        ['a', 'a'],
-    ], dtype=object)
+    X = np.array(
+        [
+            ["a", "b"],
+            ["b", None],
+            ["b", "b"],
+            ["a", "a"],
+        ],
+        dtype=object,
+    )
     imputer = CategoricalImputer()
     X_trans = imputer.fit_transform(X, [0, 1])
     assert X_trans.shape == (4, 2)
@@ -59,12 +72,15 @@ def test_categorical_imputer():
 
 
 def test_earth_categorical_with_strings_and_missing():
-    X = np.array([
-        [1.0, 'a'],
-        [2.0, None],
-        [3.0, 'b'],
-        [4.0, 'a'],
-    ], dtype=object)
+    X = np.array(
+        [
+            [1.0, "a"],
+            [2.0, None],
+            [3.0, "b"],
+            [4.0, "a"],
+        ],
+        dtype=object,
+    )
     y = np.array([1.0, 2.0, 3.0, 4.0])
     model = Earth(max_degree=1, categorical_features=[1], allow_missing=True)
     model.fit(X, y)
