@@ -596,7 +596,7 @@ def test_run_adds_linear_interaction_term():
     final_bfs, final_coeffs = passer.run(X_fit_processed=X_inter, y_fit=y_inter.ravel(), missing_mask=dummy_missing_mask, X_fit_original=X_inter)
 
     print("\nLinear Interaction Test BFs:")
-    for i, bf_s in enumerate(final_bfs): print(f"  BF {i}: {str(bf_s)}, Degree: {bf_s.degree()}, Coeff: {final_coeffs[i] if final_coeffs is not None and i < len(final_coeffs) else 'N/A'}")
+    for i, bf_s in enumerate(final_bfs): print(f"  BF {i}: {bf_s!s}, Degree: {bf_s.degree()}, Coeff: {final_coeffs[i] if final_coeffs is not None and i < len(final_coeffs) else 'N/A'}")
     print(f"Final RSS: {passer.current_rss}")
 
     has_linear_interaction = False

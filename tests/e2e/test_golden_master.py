@@ -1,7 +1,7 @@
 """Golden master regression tests to prevent output regression."""
 
-import pytest
 import numpy as np
+import pytest
 
 pytest.importorskip("pymars")
 

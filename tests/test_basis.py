@@ -62,15 +62,15 @@ def test_hinge_basis_function(is_right, parent_type):
 
     if parent_type == "Constant":
         parent_bf = ConstantBasisFunction()
-        expected_parent_str = f"({str(parent_bf)}) * "
+        expected_parent_str = f"({parent_bf!s}) * "
     elif parent_type == "Hinge":
         parent_bf = HingeBasisFunction(variable_idx=1, knot_val=1.5, is_right_hinge=True, variable_name="X1")
-        expected_parent_str = f"({str(parent_bf)}) * "
+        expected_parent_str = f"({parent_bf!s}) * "
         parent_degree = 1
         parent_involved_vars = {1}
     elif parent_type == "Linear":
         parent_bf = LinearBasisFunction(variable_idx=1, variable_name="X1")
-        expected_parent_str = f"({str(parent_bf)}) * "
+        expected_parent_str = f"({parent_bf!s}) * "
         parent_degree = 1
         parent_involved_vars = {1}
 
@@ -133,15 +133,15 @@ def test_linear_basis_function(parent_type):
 
     if parent_type == "Constant":
         parent_bf = ConstantBasisFunction()
-        expected_parent_str = f"({str(parent_bf)}) * "
+        expected_parent_str = f"({parent_bf!s}) * "
     elif parent_type == "Hinge":
         parent_bf = HingeBasisFunction(variable_idx=1, knot_val=1.5, is_right_hinge=True, variable_name="X1")
-        expected_parent_str = f"({str(parent_bf)}) * "
+        expected_parent_str = f"({parent_bf!s}) * "
         parent_degree = 1
         parent_involved_vars = {1}
     elif parent_type == "Linear":
         parent_bf = LinearBasisFunction(variable_idx=1, variable_name="X1")
-        expected_parent_str = f"({str(parent_bf)}) * "
+        expected_parent_str = f"({parent_bf!s}) * "
         parent_degree = 1
         parent_involved_vars = {1}
 

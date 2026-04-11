@@ -625,8 +625,8 @@ class Earth(BaseEstimator, RegressorMixin):
             # we need a stored mean from training y.
             if hasattr(self.record_, 'y_mean_'): # Assuming y_mean_ is stored by EarthRecord or fit
                  return np.full(X_predict_processed.shape[0], self.record_.y_mean_)
-            else: # Fallback if no mean stored (should not happen in normal operation)
-                 return np.zeros(X_predict_processed.shape[0])
+            # Fallback if no mean stored (should not happen in normal operation)
+            return np.zeros(X_predict_processed.shape[0])
 
 
         B_pred = self._build_basis_matrix(X_predict_processed, self.basis_, predict_missing_mask)
@@ -668,7 +668,7 @@ class Earth(BaseEstimator, RegressorMixin):
 
         if not self.fitted_:
             logger.info("Model not yet fitted.")
-            return
+            return None
 
         logger.info("pymars Earth Model Summary")
         logger.info("==========================")
@@ -711,7 +711,7 @@ class Earth(BaseEstimator, RegressorMixin):
                 if isinstance(coef_val, np.ndarray): # Should not happen with current 1D y
                     coef_str = ", ".join([f"{c:.4f}" for c in coef_val])
 
-                logger.info("  %s Coef: %s", f"{str(bf):<{max_bf_str_len + 2}}", coef_str)
+                logger.info("  %s Coef: %s", f"{bf!s:<{max_bf_str_len + 2}}", coef_str)
         else:
             logger.info("No basis functions or coefficients available.")
 

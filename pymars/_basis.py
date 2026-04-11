@@ -9,12 +9,11 @@ This module will define various types of basis functions, such as:
 """
 
 import logging
+from abc import ABC, abstractmethod
 
 import numpy as np
 
 logger = logging.getLogger(__name__)
-
-from abc import ABC, abstractmethod
 
 # from ._types import XType, FloatArray # Assuming XType is np.ndarray for internal use
 
@@ -145,12 +144,9 @@ class ConstantBasisFunction(BasisFunction):
         """
         if not isinstance(X_processed, np.ndarray): # Corrected: removed the erroneous check for 'X'
             raise TypeError("Input X_processed must be a numpy array.")
-        if X_processed.ndim == 1:
+        if X_processed.ndim == 1 or X_processed.ndim == 2:
             return np.ones(X_processed.shape[0])
-        elif X_processed.ndim == 2:
-            return np.ones(X_processed.shape[0])
-        else:
-            raise ValueError("Input X_processed must be 1D or 2D.")
+        raise ValueError("Input X_processed must be 1D or 2D.")
 
 
     def __str__(self) -> str:
@@ -176,7 +172,7 @@ class HingeBasisFunction(BasisFunction):
         self.variable_name = variable_name if variable_name else f"x{variable_idx}"
         name_str = ""
         if parent_bf:
-            name_str += f"({str(parent_bf)}) * "
+            name_str += f"({parent_bf!s}) * "
 
         if is_right_hinge:
             name_str += f"max(0, {self.variable_name} - {knot_val:.2f})"
@@ -230,8 +226,8 @@ class HingeBasisFunction(BasisFunction):
             parent_transformed = self.parent1.transform(X_processed, missing_mask) # Recursive call
             # NaN propagation happens if either parent_transformed or current_term_values is NaN
             return parent_transformed * current_term_values
-        else: # This is a simple hinge (degree 1)
-            return current_term_values
+        # This is a simple hinge (degree 1)
+        return current_term_values
 
     def __str__(self) -> str:
         # The name is already constructed in __init__ to handle interactions properly.
@@ -262,7 +258,7 @@ class CategoricalBasisFunction(BasisFunction):
 
         name_str = ""
         if parent_bf:
-            name_str += f"({str(parent_bf)}) * "
+            name_str += f"({parent_bf!s}) * "
         name_str += f"{self.variable_name}_is_{self.category}"
 
         super().__init__(name=name_str)
@@ -298,8 +294,7 @@ class CategoricalBasisFunction(BasisFunction):
         if self.parent1: # This is an interaction term
             parent_transformed = self.parent1.transform(X_processed, missing_mask)
             return parent_transformed * current_term_values
-        else:
-            return current_term_values
+        return current_term_values
 
     def __str__(self) -> str:
         return self.get_name()
@@ -329,7 +324,7 @@ class LinearBasisFunction(BasisFunction):
         self.variable_name = variable_name if variable_name else f"x{variable_idx}"
         name_str = ""
         if parent_bf:
-            name_str += f"({str(parent_bf)}) * "
+            name_str += f"({parent_bf!s}) * "
         name_str += self.variable_name
 
         super().__init__(name=name_str)
@@ -366,8 +361,8 @@ class LinearBasisFunction(BasisFunction):
         if self.parent1: # This is an interaction term
             parent_transformed = self.parent1.transform(X_processed, missing_mask) # Recursive call
             return parent_transformed * current_term_values
-        else: # This is a simple linear term (degree 1)
-            return current_term_values
+        # This is a simple linear term (degree 1)
+        return current_term_values
 
     def __str__(self) -> str:
         return self.get_name()
@@ -404,7 +399,7 @@ class InteractionBasisFunction(BasisFunction):
     def __init__(self, bf1: BasisFunction, bf2: BasisFunction):
         if bf1 is None or bf2 is None:
             raise ValueError("Parent basis functions for interaction cannot be None.")
-        name = f"({str(bf1)}) * ({str(bf2)})"
+        name = f"({bf1!s}) * ({bf2!s})"
         super().__init__(name=name)
         involved = bf1.get_involved_variables().union(bf2.get_involved_variables())
         self._set_properties(parent1=bf1, parent2=bf2, involved_variables=involved)

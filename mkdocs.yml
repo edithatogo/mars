@@ -35,10 +35,7 @@ plugins:
       handlers:
         python:
           options:
-            docstring_style: sphinx
-            docstring_options:
-              ignore_init_summary: yes
-            members_order: source
+            docstring_style: google
             show_submodules: yes
 
 markdown_extensions:

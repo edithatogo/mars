@@ -1,10 +1,10 @@
 """Integration tests for sklearn pipeline compatibility."""
 
-import pytest
 import numpy as np
+import pytest
+from sklearn.model_selection import cross_val_score
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import cross_val_score
 
 pytest.importorskip("pymars")
 
@@ -75,6 +75,7 @@ class TestFileIOIntegration:
     def test_model_save_load(self, tmp_path):
         """Test model serialization and deserialization."""
         import pickle
+
         from pymars import Earth
 
         np.random.seed(42)

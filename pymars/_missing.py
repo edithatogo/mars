@@ -63,8 +63,7 @@ def handle_missing_X(X, strategy='mean', allow_missing_for_some_strategies=False
     if strategy == 'pass_through':
         if allow_missing_for_some_strategies:
             return X # Basis functions must be able to handle NaNs
-        else:
-            raise ValueError("Strategy 'pass_through' for NaNs requires model to be configured to allow missing values.")
+        raise ValueError("Strategy 'pass_through' for NaNs requires model to be configured to allow missing values.")
 
     X_processed = np.copy(X) # Work on a copy
 

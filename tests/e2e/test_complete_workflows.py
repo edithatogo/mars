@@ -1,7 +1,7 @@
 """End-to-end tests for complete mars workflows."""
 
-import pytest
 import numpy as np
+import pytest
 
 pytest.importorskip("pymars")
 
