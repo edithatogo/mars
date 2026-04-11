@@ -37,7 +37,7 @@ class TestCompleteWorkflows:
 
         assert predictions.shape == (50,)
         assert r2 > 0.8
-        assert len(model.trace()[-1]['basis_functions']) > 0
+        assert len(model.basis_) > 0
 
     def test_classification_workflow(self):
         """Test complete classification workflow."""
