@@ -20,23 +20,23 @@ theme:
         name: Switch to light mode
 
 nav:
-  - Home: index.md
-  - Installation: installation.md
-  - Tutorial: tutorial.md
-  - Usage: usage.md
-  - API Reference:
-    - Overview: api/index.md
-  - Contributing: contributing.md
-  - Changelog: changelog.md
+  - Home: docs/index.md
+  - Installation: docs/installation.md
+  - Usage: docs/usage.md
+  - API Reference: docs/api.md
+  - Design: docs/design.md
+  - Requirements: docs/requirements.md
+  - Tasks: docs/tasks.md
+  - Tutorials:
+    - Basic: docs/tutorials/basic.md
+    - Advanced: docs/tutorials/advanced.md
+  - Performance: docs/performance_optimization_plan.md
+  - Robustness: docs/robustness_improvement_plan.md
+  - Contributing: CONTRIBUTING.md
+  - Changelog: CHANGELOG.md
 
 plugins:
   - search
-  - mkdocstrings:
-      handlers:
-        python:
-          options:
-            docstring_style: google
-            show_submodules: yes
 
 markdown_extensions:
   - admonition
@@ -55,4 +55,4 @@ extra:
     - icon: fontawesome/brands/python
       link: https://pypi.org/project/mars/
 
-copyright: Copyright &copy; 2025 Dylan A Mordaunt. Licensed under Apache License, Version 2.0
+copyright: Copyright &copy; 2026 Dylan A Mordaunt. Licensed under Apache License, Version 2.0
