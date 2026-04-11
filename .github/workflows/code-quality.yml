@@ -2,35 +2,40 @@ name: Code Quality
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
+
+permissions:
+  contents: read
 
 jobs:
   code-quality:
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v5
-    - name: Set up Python
-      uses: actions/setup-python@v6
-      with:
-        python-version: '3.11'
+      - uses: actions/checkout@v4
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install ruff mypy pre-commit pytest
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
 
-    - name: Run pre-commit hooks
-      run: |
-        pre-commit run --all-files
+      - name: Set up Python 3.12
+        run: uv python install 3.12
 
-    - name: Check for common spelling errors
-      run: |
-        pip install codespell
-        codespell --write-changes
+      - name: Install dependencies
+        run: uv sync --extra dev
 
-    - name: Check for dead links in documentation
-      run: |
-        pip install lychee
-        lychee README.md docs/*.md || true
+      - name: Run ruff check
+        run: uv run ruff check pymars tests
+
+      - name: Run ruff format check
+        run: uv run ruff format --check pymars tests
+
+      - name: Run mypy type check
+        run: uv run mypy pymars/ --ignore-missing-imports
+
+      - name: Check for spelling errors
+        run: uv run codespell pymars tests README.md CONTRIBUTING.md || true

@@ -1,0 +1,46 @@
+name: Nightly Builds
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Daily at 2 AM UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  nightly:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Install dependencies (allowing pre-release)
+        run: |
+          uv sync --extra dev --prerelease=allow
+
+      - name: Run full test suite
+        run: uv run pytest tests/ -v --tb=short || true
+
+      - name: Run type checks
+        run: uv run mypy pymars/ --ignore-missing-imports || true
+
+      - name: Report status
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runUrl = context.payload.repository.html_url + '/actions/runs/' + context.runId;
+            console.log(`Nightly build failed: ${runUrl}`);

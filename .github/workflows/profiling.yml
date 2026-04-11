@@ -1,0 +1,54 @@
+name: Profiling
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'pymars/**/*.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  profile:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+
+      - name: Set up Python 3.12
+        run: uv python install 3.12
+
+      - name: Install dependencies
+        run: uv sync --extra dev --extra profiling
+
+      - name: Run Scalene profiler
+        run: |
+          uv run python -c "
+          import numpy as np
+          from pymars import Earth
+          np.random.seed(42)
+          X = np.random.rand(500, 10)
+          y = np.sin(X[:, 0]) + X[:, 1] + X[:, 2] ** 2
+          model = Earth(max_degree=2)
+          model.fit(X, y)
+          " 2>&1 | head -100 || true
+
+      - name: Run py-spy on demo
+        run: |
+          uv run py-spy record -o flame_graph.svg -- python -m pymars.demos.basic_regression_demo || true
+
+      - name: Upload profiling results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: profiling-results
+          path: |
+            flame_graph.svg
+          retention-days: 30
