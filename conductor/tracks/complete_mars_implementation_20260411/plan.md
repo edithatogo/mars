@@ -193,26 +193,26 @@
 - [x] Task: Automated Phase Review & Progression (Phase 6)
 
 ## Phase 7: Core Algorithm Verification
-[checkpoint: pending]
+[checkpoint: 0af573c]
 
-- [ ] Task: Verify forward pass implementation
-    - [ ] Write unit tests for basic forward pass with linear terms
-    - [ ] Write unit tests for forward pass with hinge terms
-    - [ ] Write unit tests for interaction terms
-    - [ ] Write unit tests for minspan and endspan controls
-    - [ ] Test edge cases (empty data, single feature, etc.)
-- [ ] Task: Verify pruning implementation
-    - [ ] Write unit tests for GCV-based pruning
-    - [ ] Write unit tests for penalty parameter effects
-    - [ ] Write unit tests for pruning trace
-    - [ ] Test edge cases (overfitting scenarios, etc.)
-- [ ] Task: Verify basis functions
-    - [ ] Write unit tests for linear basis functions
-    - [ ] Write unit tests for hinge basis functions
-    - [ ] Write unit tests for basis function evaluation
-    - [ ] Test basis function combinations
+- [x] Task: Verify forward pass implementation
+    - [x] Write unit tests for basic forward pass with linear terms
+    - [x] Write unit tests for forward pass with hinge terms
+    - [x] Write unit tests for interaction terms
+    - [x] Write unit tests for minspan and endspan controls
+    - [x] Test edge cases (empty data, single feature, etc.)
+- [x] Task: Verify pruning implementation
+    - [x] Write unit tests for GCV-based pruning
+    - [x] Write unit tests for penalty parameter effects
+    - [x] Write unit tests for pruning trace
+    - [x] Test edge cases (overfitting scenarios, etc.)
+- [x] Task: Verify basis functions
+    - [x] Write unit tests for constant basis functions
+    - [x] Write unit tests for linear basis functions
+    - [x] Write unit tests for hinge basis functions
+    - [x] Test basis function combinations
 
-- [ ] Task: Automated Phase Review & Progression (Phase 7)
+- [x] Task: Automated Phase Review & Progression (Phase 7)
 
 ## Phase 8: Scikit-Learn Compatibility
 [checkpoint: pending]
