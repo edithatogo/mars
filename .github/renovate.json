@@ -1,0 +1,63 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":automergePatch",
+    ":automergeRequireAllStatusChecks",
+    ":maintainLockFilesWeekly",
+    ":separateMultipleMajorReleases",
+    ":prConcurrentLimit10",
+    ":prHourlyLimit2"
+  ],
+  "schedule": ["before 3am on Monday"],
+  "timezone": "UTC",
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchCurrentVersion": "!/^0/",
+      "automerge": true,
+      "automergeType": "pr",
+      "requiredStatusChecks": ["ci", "code-quality", "security"]
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "labels": ["major-update", "breaking-change"],
+      "semanticCommitType": "feat"
+    },
+    {
+      "groupName": "pytest ecosystem",
+      "matchPackagePrefixes": ["pytest", "pytest-"]
+    },
+    {
+      "groupName": "ruff ecosystem",
+      "matchPackageNames": ["ruff", "ruff-pre-commit"]
+    },
+    {
+      "groupName": "scikit-learn ecosystem",
+      "matchPackageNames": ["scikit-learn", "scipy", "numpy"]
+    },
+    {
+      "groupName": "GitHub Actions",
+      "matchManagers": ["github-actions"],
+      "automerge": true
+    },
+    {
+      "matchManagers": ["pip_requirements", "pip_setup"],
+      "enabled": false
+    }
+  ],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 3am on Monday"]
+  },
+  "rangeStrategy": "bump",
+  "semanticCommits": "enabled",
+  "semanticCommitType": "chore",
+  "semanticCommitScope": "deps",
+  "commitMessagePrefix": "chore(deps): ",
+  "prBodyTemplate": "{{{header}}}{{{table}}}{{{notes}}}{{{changelog}}}{{{controls}}}",
+  "labels": ["dependencies"],
+  "reviewers": ["@edithatogo"]
+}

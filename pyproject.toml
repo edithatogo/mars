@@ -1,9 +1,10 @@
 [project]
 name = "pymars"
-version = "1.0.0"
+version = "1.0.1"
 description = "Pure Python Earth (MARS) algorithm"
 readme = "README.md"
-authors = [{name = "pymars developers"}]
+authors = [{name = "Dylan A Mordaunt"}]
+license = {text = "Apache-2.0"}
 requires-python = ">=3.8"
 dependencies = [
     "numpy",

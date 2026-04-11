@@ -1,0 +1,24 @@
+# Auto-label PRs based on files changed
+bug:
+  - 'pymars/*.py'
+  - 'pymars/**/*.py'
+
+documentation:
+  - 'docs/**/*'
+  - 'README.md'
+  - 'CONTRIBUTING.md'
+  - '*.md'
+
+ci-cd:
+  - '.github/workflows/**/*'
+  - '.github/renovate.json'
+  - '.pre-commit-config.yaml'
+
+testing:
+  - 'tests/**/*'
+  - 'pytest.ini'
+
+dependencies:
+  - 'pyproject.toml'
+  - 'requirements.txt'
+  - 'uv.lock'

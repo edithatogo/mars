@@ -1,0 +1,60 @@
+name: Auto-label Issues
+on:
+  issues:
+    types: [opened, edited]
+
+permissions:
+  issues: write
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Label issues based on content
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const title = issue.title.toLowerCase();
+            const body = issue.body ? issue.body.toLowerCase() : '';
+            const content = `${title} ${body}`;
+
+            const labelsToAdd = [];
+
+            // Algorithm-related issues
+            if (content.includes('algorithm') || content.includes('mars') || content.includes('basis') ||
+                content.includes('forward') || content.includes('pruning') || content.includes('gcv')) {
+              labelsToAdd.push('algorithm');
+            }
+
+            // sklearn compatibility
+            if (content.includes('sklearn') || content.includes('scikit-learn') || content.includes('fit(') ||
+                content.includes('predict(')) {
+              labelsToAdd.push('sklearn-compatibility');
+            }
+
+            // Performance
+            if (content.includes('performance') || content.includes('slow') || content.includes('speed') ||
+                content.includes('fast') || content.includes('optimize')) {
+              labelsToAdd.push('performance');
+            }
+
+            // Installation
+            if (content.includes('install') || content.includes('setup') || content.includes('pip')) {
+              labelsToAdd.push('installation');
+            }
+
+            // Question
+            if (content.includes('how do') || content.includes('how to') || content.includes('question') ||
+                title.includes('?')) {
+              labelsToAdd.push('question');
+            }
+
+            if (labelsToAdd.length > 0) {
+              await github.rest.issues.addLabels({
+                issue_number: issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                labels: labelsToAdd
+              });
+            }

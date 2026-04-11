@@ -1,37 +1,70 @@
 name: Documentation
 
+# Note: This workflow is designed to work with GitHub Pages configured 
+# to use the /docs folder on the main branch
 on:
   push:
-    branches: [ docs ]  # Trigger when docs branch is pushed
-  workflow_dispatch: # Allow manual triggering
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  docs:
+  deploy:
+    # Only run on main branch pushes, not on PRs (to avoid permission issues)
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v5
-      with:
-        ref: docs  # Always check out the docs branch
-        
-    - name: Set up Python
-      uses: actions/setup-python@v6
-      with:
-        python-version: '3.11'
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # Make sure we have the latest changes
+          fetch-depth: 0
 
-    - name: Install MkDocs dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install mkdocs-material mkdocstrings[python]
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
 
-    - name: Build documentation
-      run: |
-        mkdocs build
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install mkdocs-material mkdocstrings[python]
+          pip install -e .
 
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v4
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./site
+      - name: Build documentation
+        run: mkdocs build
+
+      # Copy the built site to the docs folder
+      - name: Update docs directory
+        run: |
+          # Create the site directory if it doesn't exist
+          mkdir -p docs
+          
+          # Copy built documentation to docs folder, excluding .nojekyll if it exists in site
+          rsync -av --delete --exclude '.nojekyll' site/ docs/
+          
+          # Add .nojekyll file to ensure GitHub Pages works properly with mkdocs
+          touch docs/.nojekyll
+
+      # Commit and push changes back to main
+      - name: Commit and push changes
+        run: |
+          # Configure git
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          
+          # Add all changes in docs directory
+          git add docs/
+          
+          # Check if there are changes to commit
+          if [[ -n "$(git status --porcelain docs/)" ]]; then
+            git commit -m "Auto-update documentation [skip ci]"
+            git push
+          else
+            echo "No documentation changes to commit"
+          fi

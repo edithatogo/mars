@@ -1,0 +1,61 @@
+site_name: mars Documentation
+site_url: https://edithatogo.github.io/mars/
+repo_url: https://github.com/edithatogo/mars
+repo_name: edithatogo/mars
+edit_uri: edit/main/docs/
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: teal
+      accent: amber
+      toggle:
+        icon: material/lightbulb
+        name: Switch to dark mode
+    - scheme: slate
+      primary: teal
+      accent: amber
+      toggle:
+        icon: material/lightbulb-outline
+        name: Switch to light mode
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Tutorial: tutorial.md
+  - Usage: usage.md
+  - API Reference:
+    - Overview: api/index.md
+  - Contributing: contributing.md
+  - Changelog: changelog.md
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: sphinx
+            docstring_options:
+              ignore_init_summary: yes
+            members_order: source
+            show_submodules: yes
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/edithatogo/mars
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/mars/
+
+copyright: Copyright &copy; 2025 Dylan A Mordaunt. Licensed under Apache License, Version 2.0

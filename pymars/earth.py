@@ -210,14 +210,28 @@ class Earth(BaseEstimator, RegressorMixin):
         # preserves object dtypes so that categorical handling in
         # ``_scrub_input_data`` still works. ``force_all_finite`` mirrors the
         # ``allow_missing`` parameter.
-        X, y = check_X_y(
-            X,
-            y,
-            dtype=None,
-            force_all_finite=not self.allow_missing,
-            multi_output=False,
-            y_numeric=True,
-        )
+        # Use ensure_all_finite for newer sklearn versions, with fallback to force_all_finite
+        try:
+            from sklearn.utils.validation import check_X_y
+            # Try the new parameter name first
+            X, y = check_X_y(
+                X,
+                y,
+                dtype=None,
+                ensure_all_finite=not self.allow_missing,
+                multi_output=False,
+                y_numeric=True,
+            )
+        except TypeError:
+            # Fallback to older parameter name if new one not supported
+            X, y = check_X_y(
+                X,
+                y,
+                dtype=None,
+                force_all_finite=not self.allow_missing,
+                multi_output=False,
+                y_numeric=True,
+            )
 
         X_processed, missing_mask, y_processed = self._scrub_input_data(X, y)
         self.X_original_ = X # Keep a reference if needed, or just use processed versions
@@ -563,11 +577,22 @@ class Earth(BaseEstimator, RegressorMixin):
             )
 
         # Validate and convert input using scikit-learn utilities
-        X_checked = check_array(
-            X,
-            dtype=None,
-            force_all_finite=not self.allow_missing,
-        )
+        # Use ensure_all_finite for newer sklearn versions, with fallback to force_all_finite
+        try:
+            from sklearn.utils.validation import check_array
+            # Try the new parameter name first
+            X_checked = check_array(
+                X,
+                dtype=None,
+                ensure_all_finite=not self.allow_missing,
+            )
+        except TypeError:
+            # Fallback to older parameter name if new one not supported
+            X_checked = check_array(
+                X,
+                dtype=None,
+                force_all_finite=not self.allow_missing,
+            )
 
         X_predict_obj = X_checked.astype(object, copy=False)
 

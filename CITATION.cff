@@ -1,0 +1,25 @@
+cff-format: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "mars: A Pure Python Implementation of Multivariate Adaptive Regression Splines"
+type: software
+authors:
+  - family-names: Mordaunt
+    given-names: Dylan A.
+    orcid: "https://orcid.org/0000-0000-0000-0000"
+abstract: >
+  mars (formerly pymars) is a pure Python implementation of Multivariate
+  Adaptive Regression Splines (MARS), providing a scikit-learn compatible
+  API without C/Cython dependencies for easy cross-platform installation.
+repository-code: "https://github.com/edithatogo/mars"
+url: "https://github.com/edithatogo/mars"
+version: 1.0.1
+date-released: "2026-04-11"
+license: Apache-2.0
+keywords:
+  - "mars"
+  - "multivariate adaptive regression splines"
+  - "machine learning"
+  - "scikit-learn"
+  - "python"
+  - "regression"
+  - "classification"

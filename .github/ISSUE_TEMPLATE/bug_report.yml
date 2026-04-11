@@ -1,34 +1,64 @@
 name: Bug Report
-about: Create a report to help us improve
-title: '[Bug]: '
-labels: 'bug'
-assignees: ''
+description: File a bug report
+title: "[Bug]: "
+labels: ["bug", "triage"]
+assignees: []
 body:
   - type: markdown
     attributes:
       value: |
         Thanks for taking the time to fill out this bug report!
+  - type: input
+    id: version
+    attributes:
+      label: mars Version
+      description: What version of mars are you running?
+      placeholder: e.g., 1.0.1
+    validations:
+      required: true
+  - type: dropdown
+    id: python-version
+    attributes:
+      label: Python Version
+      description: What Python version are you using?
+      options:
+        - "3.8"
+        - "3.9"
+        - "3.10"
+        - "3.11"
+        - "3.12"
+    validations:
+      required: true
   - type: textarea
     id: what-happened
     attributes:
       label: What happened?
       description: Also tell us, what did you expect to happen?
-      placeholder: Tell us what you see!
-      value: "A bug happened!"
+      placeholder: Describe the bug and expected behavior
     validations:
       required: true
   - type: textarea
-    id: environment
+    id: reproduction
     attributes:
-      label: Environment
-      description: Please provide information about your environment
-      placeholder: pymars version, Python version, OS
-      value: "pymars version: \nPython version: \nOS: "
+      label: Reproduction Steps
+      description: How can we reproduce the issue?
+      placeholder: |
+        1. Install mars...
+        2. Run...
+        3. See error...
     validations:
       required: true
   - type: textarea
     id: logs
     attributes:
       label: Relevant log output
-      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code.
       render: shell
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our Code of Conduct
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

@@ -1,37 +1,24 @@
-# This file enables CODEOWNERS for the repository
-# Code owners will be automatically requested for review when someone creates a pull request
+# Code Owners
+# This file controls which reviewers are automatically assigned to review PRs
 
-# Core maintainers - review all code
-* @doughnut
+# Core maintainers
+* @edithatogo
 
-# Specific owners for different parts of the codebase
-pymars/earth.py @doughnut
-pymars/_forward.py @doughnut
-pymars/_pruning.py @doughnut
-pymars/_basis.py @doughnut
-pymars/glm.py @doughnut
-pymars/cv.py @doughnut
-pymars/plot.py @doughnut
-pymars/_sklearn_compat.py @doughnut
-pymars/_categorical.py @doughnut
-pymars/_missing.py @doughnut
-pymars/_record.py @doughnut
-pymars/_util.py @doughnut
-pymars/cli.py @doughnut
-
-# Documentation
-docs/* @doughnut
-README.md @doughnut
+# Algorithm code
+/pymars/earth.py @edithatogo
+/pymars/_basis.py @edithatogo
+/pymars/_forward.py @edithatogo
+/pymars/_pruning.py @edithatogo
 
 # Tests
-tests/* @doughnut
+/tests/ @edithatogo
 
-# Configuration files
-*.toml @doughnut
-*.cfg @doughnut
-*.ini @doughnut
-.github/**/* @doughnut
-.pre-commit-config.yaml @doughnut
+# Documentation
+/docs/ @edithatogo
+/README.md @edithatogo
 
-# Scripts
-scripts/* @doughnut
+# CI/CD and infrastructure
+/.github/ @edithatogo
+
+# Conductor configuration
+/conductor/ @edithatogo

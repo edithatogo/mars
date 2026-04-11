@@ -51,7 +51,7 @@ pymars is now a fully-featured, production-ready implementation of the Multivari
 - **Name**: pymars
 - **Version**: 1.0.0-beta.1
 - **Description**: Pure Python Earth (MARS) algorithm
-- **License**: MIT
+- **License**: Apache 2.0
 - **Python Versions**: 3.8+
 - **Dependencies**: numpy, scikit-learn, matplotlib
 - **Optional Dependencies**: pandas (for CLI functionality)

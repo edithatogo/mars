@@ -146,9 +146,26 @@ For usage examples and tutorials, check the [examples directory](examples/) in t
 
 Contributions are welcome! Please see `CONTRIBUTING.md` and `AGENTS.md` for guidelines.
 
+## Citing mars
+
+If you use mars in your research, please cite it as follows:
+
+```bibtex
+@software{mars2026,
+  author = {Mordaunt, Dylan A.},
+  title = {mars: A Pure Python Implementation of Multivariate Adaptive Regression Splines},
+  year = {2026},
+  url = {https://github.com/edithatogo/mars},
+  version = {1.0.1},
+  license = {Apache-2.0},
+}
+```
+
+A `CITATION.cff` file is also included in the repository for easy citation management.
+
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [Apache 2.0 License](LICENSE).
 
 ## Acknowledgements
 
