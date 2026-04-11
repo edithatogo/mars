@@ -44,7 +44,7 @@ jobs:
         run: uv sync --extra dev
 
       - name: Run tests
-        run: uv run pytest tests/unit tests/ --cov=pymars --cov-report=xml -q
+        run: uv run pytest tests/ -q --cov=pymars --cov-report=xml
 
       - name: Upload coverage to Codecov
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
