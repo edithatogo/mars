@@ -8,7 +8,7 @@
       
       
       
-        <link rel="canonical" href="https://edithatogo.github.io/mars/api/">
+        <link rel="canonical" href="https://edithatogo.github.io/mars/requirements/">
       
       
       
@@ -21,7 +21,7 @@
     
     
       
-        <title>API Reference - mars Documentation</title>
+        <title>Requirements for mars: Pure Python Earth (Multivariate Adaptive Regression Splines) - mars Documentation</title>
       
     
     
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#api-reference" class="md-skip">
+        <a href="#requirements-for-mars-pure-python-earth-multivariate-adaptive-regression-splines" class="md-skip">
           Skip to content
         </a>
       
@@ -108,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              API Reference
+              Requirements for mars: Pure Python Earth (Multivariate Adaptive Regression Splines)
             
           </span>
         </div>
@@ -681,22 +681,33 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#core-classes" class="md-nav__link">
+  <a href="#overview" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Core Classes
+        Overview
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Core Classes">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#core-functional-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Functional Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Functional Requirements">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#earth" class="md-nav__link">
+  <a href="#1-core-mars-algorithm-implementation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Earth
+        1. Core MARS Algorithm Implementation
       
     </span>
   </a>
@@ -704,10 +715,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#earthregressor" class="md-nav__link">
+  <a href="#2-model-fitting-and-prediction" class="md-nav__link">
     <span class="md-ellipsis">
       
-        EarthRegressor
+        2. Model Fitting and Prediction
       
     </span>
   </a>
@@ -715,10 +726,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#earthclassifier" class="md-nav__link">
+  <a href="#3-feature-importances" class="md-nav__link">
     <span class="md-ellipsis">
       
-        EarthClassifier
+        3. Feature Importances
       
     </span>
   </a>
@@ -731,50 +742,33 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#generalized-linear-models" class="md-nav__link">
+  <a href="#scikit-learn-compatibility-requirements" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Generalized Linear Models
+        Scikit-learn Compatibility Requirements
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Generalized Linear Models">
+    <nav class="md-nav" aria-label="Scikit-learn Compatibility Requirements">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#glmearth" class="md-nav__link">
+  <a href="#4-estimator-interface" class="md-nav__link">
     <span class="md-ellipsis">
       
-        GLMEarth
+        4. Estimator Interface
       
     </span>
   </a>
   
 </li>
         
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cross-validation-helpers" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Cross-Validation Helpers
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Cross-Validation Helpers">
-      <ul class="md-nav__list">
-        
           <li class="md-nav__item">
-  <a href="#earthcv" class="md-nav__link">
+  <a href="#5-pipeline-integration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        EarthCV
+        5. Pipeline Integration
       
     </span>
   </a>
@@ -799,10 +793,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#cached-earth" class="md-nav__link">
+  <a href="#6-generalized-linear-models" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Cached Earth
+        6. Generalized Linear Models
       
     </span>
   </a>
@@ -810,10 +804,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#parallel-earth" class="md-nav__link">
+  <a href="#7-cross-validation-helper" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Parallel Earth
+        7. Cross-Validation Helper
       
     </span>
   </a>
@@ -821,10 +815,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#sparse-earth" class="md-nav__link">
+  <a href="#8-visualization-and-diagnostics" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Sparse Earth
+        8. Visualization and Diagnostics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-data-preprocessing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Data Preprocessing
       
     </span>
   </a>
@@ -837,22 +842,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#utilities-and-explanation-tools" class="md-nav__link">
+  <a href="#performance-requirements" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Utilities and Explanation Tools
+        Performance Requirements
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Utilities and Explanation Tools">
+    <nav class="md-nav" aria-label="Performance Requirements">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#explain-module" class="md-nav__link">
+  <a href="#10-algorithmic-efficiency" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Explain Module
+        10. Algorithmic Efficiency
       
     </span>
   </a>
@@ -860,10 +865,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#plot-module" class="md-nav__link">
+  <a href="#11-numerical-stability" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Plot Module
+        11. Numerical Stability
       
     </span>
   </a>
@@ -876,22 +881,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#advanced-glm-extensions" class="md-nav__link">
+  <a href="#compatibility-requirements" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Advanced GLM Extensions
+        Compatibility Requirements
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Advanced GLM Extensions">
+    <nav class="md-nav" aria-label="Compatibility Requirements">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#advanced-glms" class="md-nav__link">
+  <a href="#12-api-compatibility-with-py-earth" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Advanced GLMs
+        12. API Compatibility with py-earth
       
     </span>
   </a>
@@ -899,10 +904,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#specialized-regressors" class="md-nav__link">
+  <a href="#13-python-environment-compatibility" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Specialized Regressors
+        13. Python Environment Compatibility
       
     </span>
   </a>
@@ -915,13 +920,91 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#feature-importance-methods" class="md-nav__link">
+  <a href="#quality-assurance-requirements" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Feature Importance Methods
+        Quality Assurance Requirements
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Quality Assurance Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#14-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15. Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#non-functional-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Non-functional Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Non-functional Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#16-maintainability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        16. Maintainability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-usability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        17. Usability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#18-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        18. Deployment
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -945,154 +1028,219 @@
   
 
 
-<h1 id="api-reference">API Reference</h1>
-<p>The mars library provides a comprehensive API for Multivariate Adaptive Regression Splines (MARS) with full scikit-learn compatibility.</p>
-<h2 id="core-classes">Core Classes</h2>
-<h3 id="earth">Earth</h3>
-<p>The main MARS implementation class that provides the core algorithm functionality:</p>
-<p>::: mars.Earth
-    handler: python
-    options:
-      members: 
-        - fit
-        - predict
-        - score
-        - transform
-        - summary
-        - gcv_
-        - rss_
-        - feature_importances_
-        - feature_importance_type
-        - coef_
-        - basis_
-        - max_terms
-        - max_degree
-        - penalty
-        - minspan_alpha
-        - endspan_alpha
-        - allow_linear
-      show_root_heading: true
-      show_root_full_path: false</p>
-<h3 id="earthregressor">EarthRegressor</h3>
-<p>Scikit-learn compatible regressor wrapper for the MARS algorithm:</p>
-<p>::: mars.EarthRegressor
-    handler: python
-    options:
-      members: true
-      show_root_heading: true
-      show_root_full_path: false</p>
-<h3 id="earthclassifier">EarthClassifier</h3>
-<p>Scikit-learn compatible classifier wrapper for the MARS algorithm:</p>
-<p>::: mars.EarthClassifier
-    handler: python
-    options:
-      members: true
-      show_root_heading: true
-      show_root_full_path: false</p>
-<h2 id="generalized-linear-models">Generalized Linear Models</h2>
-<h3 id="glmearth">GLMEarth</h3>
-<p>Extended class for Generalized Linear Models with MARS basis functions:</p>
-<p>::: mars.GLMEarth
-    handler: python
-    options:
-      members: true
-      show_root_heading: true
-      show_root_full_path: false</p>
-<h2 id="cross-validation-helpers">Cross-Validation Helpers</h2>
-<h3 id="earthcv">EarthCV</h3>
-<p>Grid search helper with cross-validation for MARS models:</p>
-<p>::: mars.EarthCV
-    handler: python
-    options:
-      members: true
-      show_root_heading: true
-      show_root_full_path: false</p>
+<h1 id="requirements-for-mars-pure-python-earth-multivariate-adaptive-regression-splines">Requirements for mars: Pure Python Earth (Multivariate Adaptive Regression Splines)</h1>
+<h2 id="overview">Overview</h2>
+<p>mars is a pure Python implementation of Multivariate Adaptive Regression Splines (MARS), designed as a drop-in replacement for the <code>py-earth</code> library while maintaining full compatibility with the scikit-learn ecosystem. This document outlines the functional, performance, and compatibility requirements for the library.</p>
+<h2 id="core-functional-requirements">Core Functional Requirements</h2>
+<h3 id="1-core-mars-algorithm-implementation">1. Core MARS Algorithm Implementation</h3>
+<p><strong>REQ-1.1: Forward Pass</strong>
+- [x] Must implement the forward selection phase of MARS
+- [x] Must select basis functions (hinge and linear terms) based on reduction in residual sum of squares (RSS)
+- [x] Must support interaction terms with maximum degree control
+- [x] Must implement <code>minspan</code> and <code>endspan</code> parameters for knot placement control
+- [x] Must handle both categorical and continuous features</p>
+<p><strong>REQ-1.2: Pruning Pass</strong>
+- [x] Must implement backward elimination using Generalized Cross-Validation (GCV)
+- [x] Must support penalty parameter for regularization
+- [x] Must provide pruning trace for model selection
+- [x] Must handle interaction terms during pruning</p>
+<p><strong>REQ-1.3: Basis Functions</strong>
+- [x] Must implement hinge functions: max(0, x - const) and max(0, const - x)
+- [x] Must implement linear terms
+- [x] Must support interaction terms between basis functions
+- [ ] Must support tensor products for multi-dimensional basis functions
+- [x] Must handle missing values in basis function computation</p>
+<h3 id="2-model-fitting-and-prediction">2. Model Fitting and Prediction</h3>
+<p><strong>REQ-2.1: Model Fitting</strong>
+- [x] Must implement <code>fit(X, y)</code> method compatible with scikit-learn
+- [x] Must support sample weights
+- [x] Must handle missing values in both X and y
+- [x] Must provide options for imputation strategies
+- [x] Must support categorical feature encoding</p>
+<p><strong>REQ-2.2: Prediction</strong>
+- [x] Must implement <code>predict(X)</code> method compatible with scikit-learn
+- [x] Must handle missing values in prediction data
+- [x] Must return consistent predictions across multiple calls
+- [x] Must validate input dimensions match training data</p>
+<p><strong>REQ-2.3: Model Evaluation</strong>
+- [x] Must implement <code>score(X, y)</code> method returning R² score
+- [x] Must provide GCV score for model selection
+- [x] Must compute RSS, MSE, and other key metrics
+- [x] Must support custom scoring functions</p>
+<h3 id="3-feature-importances">3. Feature Importances</h3>
+<p><strong>REQ-3.1: Feature Importance Calculation</strong>
+- [x] Must support 'nb_subsets' importance calculation (number of subsets in pruning trace)
+- [x] Must support 'gcv' importance calculation (GCV improvement)
+- [x] Must support 'rss' importance calculation (RSS reduction)
+- [x] Must normalize importance scores to sum to 1.0
+- [x] Must handle interaction terms in importance calculations</p>
+<h2 id="scikit-learn-compatibility-requirements">Scikit-learn Compatibility Requirements</h2>
+<h3 id="4-estimator-interface">4. Estimator Interface</h3>
+<p><strong>REQ-4.1: Base Estimator Compliance</strong>
+- [x] Must inherit from <code>sklearn.base.BaseEstimator</code>
+- [x] Must implement <code>get_params(deep=True)</code> and <code>set_params(**params)</code>
+- [x] Must follow scikit-learn parameter naming conventions
+- [x] Must store all initialization parameters as public attributes
+- [x] Must store learned attributes with trailing underscores</p>
+<p><strong>REQ-4.2: Regressor Interface</strong>
+- [x] Must inherit from <code>sklearn.base.RegressorMixin</code>
+- [x] Must implement <code>fit(X, y)</code>, <code>predict(X)</code>, and <code>score(X, y)</code>
+- [x] Must validate inputs using <code>check_X_y</code> and <code>check_array</code>
+- [x] Must return <code>self</code> from <code>fit</code> method
+- [x] Must check if fitted before prediction using <code>check_is_fitted</code></p>
+<p><strong>REQ-4.3: Classifier Interface</strong>
+- [x] Must inherit from <code>sklearn.base.ClassifierMixin</code>
+- [x] Must implement <code>fit(X, y)</code>, <code>predict(X)</code>, and <code>score(X, y)</code>
+- [x] Must provide <code>predict_proba(X)</code> if the underlying classifier supports it
+- [x] Must store class labels in <code>classes_</code> attribute
+- [x] Must handle multi-class classification tasks</p>
+<h3 id="5-pipeline-integration">5. Pipeline Integration</h3>
+<p><strong>REQ-5.1: Pipeline Compatibility</strong>
+- [x] Must work seamlessly within scikit-learn pipelines
+- [x] Must support feature selection and preprocessing steps
+- [x] Must maintain state consistency across pipeline steps
+- [x] Must handle different data types appropriately</p>
+<p><strong>REQ-5.2: Model Selection Integration</strong>
+- [x] Must work with <code>GridSearchCV</code> and <code>RandomizedSearchCV</code>
+- [x] Must support cross-validation using <code>cross_val_score</code>
+- [x] Must be compatible with <code>learning_curve</code> and other validation utilities
+- [x] Must support nested cross-validation</p>
 <h2 id="advanced-features">Advanced Features</h2>
-<h3 id="cached-earth">Cached Earth</h3>
-<p>Earth model with caching for improved performance:</p>
-<p>::: mars.CachedEarth
-    handler: python
-    options:
-      members: 
-        - enable_basis_function_caching
-        - disable_basis_function_caching
-        - get_basis_function_cache_info
-      show_root_heading: true
-      show_root_full_path: false</p>
-<h3 id="parallel-earth">Parallel Earth</h3>
-<p>Earth models with parallel computation support:</p>
-<p>::: mars.ParallelEarth
-    handler: python
-    options:
-      members: true
-      show_root_heading: true
-      show_root_full_path: false</p>
-<h3 id="sparse-earth">Sparse Earth</h3>
-<p>Earth models with sparse matrix support:</p>
-<p>::: mars.SparseEarth
-    handler: python
-    options:
-      members: true
-      show_root_heading: true
-      show_root_full_path: false</p>
-<h2 id="utilities-and-explanation-tools">Utilities and Explanation Tools</h2>
-<h3 id="explain-module">Explain Module</h3>
-<p>Functions for model interpretation and explanation:</p>
-<p>::: mars.explain
-    handler: python
-    options:
-      members: 
-        - get_model_explanation
-        - plot_individual_conditional_expectation
-        - plot_partial_dependence
-      show_root_full_path: false</p>
-<h3 id="plot-module">Plot Module</h3>
-<p>Visualization utilities for MARS models:</p>
-<p>::: mars.plot
-    handler: python
-    options:
-      members: 
-        - plot_basis_functions
-        - plot_residuals
-        - plot_partial_dependence
-      show_root_full_path: false</p>
-<h2 id="advanced-glm-extensions">Advanced GLM Extensions</h2>
-<h3 id="advanced-glms">Advanced GLMs</h3>
-<p>Advanced generalized linear models with MARS basis functions:</p>
-<p>::: mars.AdvancedGLMEarth
-    handler: python
-    options:
-      members: true
-      show_root_heading: true
-      show_root_full_path: false</p>
-<h3 id="specialized-regressors">Specialized Regressors</h3>
-<p>Specialized regressors for different distribution families:</p>
-<p>::: mars.GammaRegressor
-    handler: python
-    options:
-      members: true
-      show_root_heading: true
-      show_root_full_path: false</p>
-<p>::: mars.TweedieRegressor
-    handler: python
-    options:
-      members: true
-      show_root_heading: true
-      show_root_full_path: false</p>
-<p>::: mars.InverseGaussianRegressor
-    handler: python
-    options:
-      members: true
-      show_root_heading: true
-      show_root_full_path: false</p>
-<h2 id="feature-importance-methods">Feature Importance Methods</h2>
-<p>mars implements multiple methods for calculating feature importance:</p>
-<ul>
-<li><strong>nb_subsets</strong>: Number of subsets method counting basis function appearances</li>
-<li><strong>gcv</strong>: Generalized Cross-Validation improvement method</li>
-<li><strong>rss</strong>: Residual Sum of Squares reduction method</li>
-</ul>
-<p>These can be accessed through the <code>feature_importances_</code> attribute of fitted models.</p>
+<h3 id="6-generalized-linear-models">6. Generalized Linear Models</h3>
+<p><strong>REQ-6.1: GLM Support</strong>
+- [x] Must implement <code>GLMEarth</code> subclass for generalized linear models
+- [x] Must support binomial family (logistic regression)
+- [x] Must support Poisson family
+- [x] Must implement canonical link functions
+- [x] Must provide appropriate scoring for GLMs</p>
+<h3 id="7-cross-validation-helper">7. Cross-Validation Helper</h3>
+<p><strong>REQ-7.1: EarthCV Class</strong>
+- [x] Must implement <code>EarthCV</code> for hyperparameter tuning
+- [x] Must support grid search over MARS hyperparameters
+- [x] Must allow tuning of <code>max_degree</code>, <code>penalty</code>, <code>max_terms</code>, <code>minspan_alpha</code>, <code>endspan_alpha</code>
+- [x] Must provide <code>best_estimator_</code>, <code>best_params_</code>, and <code>best_score_</code>
+- [x] Must be compatible with scikit-learn's model selection utilities</p>
+<h3 id="8-visualization-and-diagnostics">8. Visualization and Diagnostics</h3>
+<p><strong>REQ-8.1: Plotting Utilities</strong>
+- [x] Must provide <code>plot_basis_functions</code> for visualizing selected basis functions
+- [x] Must provide <code>plot_residuals</code> for model diagnostics
+- [x] Must support customizable plot parameters
+- [x] Must integrate with matplotlib's plotting system
+- [x] Must handle missing values in plotting functions</p>
+<h3 id="9-data-preprocessing">9. Data Preprocessing</h3>
+<p><strong>REQ-9.1: Categorical Feature Handling</strong>
+- [x] Must implement categorical feature imputation
+- [x] Must support different encoding strategies
+- [x] Must handle unseen categories in prediction
+- [x] Must preserve categorical information during transformation</p>
+<p><strong>REQ-9.2: Missing Value Handling</strong>
+- [x] Must support missing values in training data
+- [x] Must support missing values in prediction data
+- [x] Must implement appropriate imputation strategies
+- [x] Must handle missing values during basis function computation
+- [x] Must provide control over missing value handling via <code>allow_missing</code> parameter</p>
+<h2 id="performance-requirements">Performance Requirements</h2>
+<h3 id="10-algorithmic-efficiency">10. Algorithmic Efficiency</h3>
+<p><strong>REQ-10.1: Time Complexity</strong>
+- [x] Forward pass must scale reasonably with sample size and feature count
+- [x] Pruning pass must be efficient for large numbers of basis functions
+- [x] Must avoid excessive memory allocations during basis matrix construction
+- [x] Must implement memory-efficient basis matrix building with preallocation
+- [ ] Must provide performance benchmarks vs. py-earth when available</p>
+<p><strong>REQ-10.2: Memory Usage</strong>
+- [x] Must avoid creating unnecessary copies of input data
+- [x] Must use memory-efficient algorithms for large datasets
+- [x] Must handle basis matrix construction without excessive memory usage
+- [x] Must clean up temporary variables after computation</p>
+<h3 id="11-numerical-stability">11. Numerical Stability</h3>
+<p><strong>REQ-11.1: Numerical Precision</strong>
+- [x] Must handle near-duplicate values robustly
+- [x] Must handle extreme values without numerical overflow
+- [x] Must provide stable linear algebra computations
+- [x] Must handle rank-deficient cases gracefully</p>
+<h2 id="compatibility-requirements">Compatibility Requirements</h2>
+<h3 id="12-api-compatibility-with-py-earth">12. API Compatibility with py-earth</h3>
+<p><strong>REQ-12.1: Parameter Compatibility</strong>
+- [x] Must support equivalent parameters to py-earth: <code>max_degree</code>, <code>penalty</code>, <code>max_terms</code>, <code>minspan_alpha</code>, <code>endspan_alpha</code>
+- [x] Must implement <code>minspan</code> and <code>endspan</code> with cooldown behavior matching py-earth
+- [x] Must support <code>allow_linear</code> parameter for linear term inclusion
+- [x] Must provide equivalent feature importance types
+- [ ] Must maintain same parameter defaults when possible</p>
+<p><strong>REQ-12.2: Method Compatibility</strong>
+- [x] Must provide similar method signatures to py-earth
+- [x] Must support <code>summary()</code> method for model inspection
+- [x] Must provide access to basis functions and coefficients
+- [x] Must support equivalent prediction interface
+- [x] Must maintain consistent return types for metrics</p>
+<h3 id="13-python-environment-compatibility">13. Python Environment Compatibility</h3>
+<p><strong>REQ-13.1: Python Version Support</strong>
+- [x] Must support Python 3.8+
+- [x] Must use Python features available in target versions
+- [x] Must provide clear version compatibility information
+- [x] Must handle version-specific language features appropriately</p>
+<p><strong>REQ-13.2: Dependency Management</strong>
+- [x] Must depend only on standard Python libraries where possible
+- [x] Must specify minimal required versions of NumPy and scikit-learn
+- [x] Must avoid using deprecated library features
+- [x] Must maintain compatibility with common Python environments
+- [x] Must not use C/Cython extensions (pure Python only)</p>
+<h2 id="quality-assurance-requirements">Quality Assurance Requirements</h2>
+<h3 id="14-testing">14. Testing</h3>
+<p><strong>REQ-14.1: Test Coverage</strong>
+- [x] Must provide comprehensive unit tests for all core functionality
+- [x] Must include scikit-learn estimator compatibility tests
+- [x] Must test edge cases and error conditions
+- [x] Must verify numerical correctness against reference implementations
+- [x] Must include regression tests for bug fixes</p>
+<p><strong>REQ-14.2: Test Quality</strong>
+- [x] Must follow pytest best practices
+- [x] Must use appropriate test fixtures and parametrization
+- [x] Must test API consistency and error handling
+- [x] Must include property-based tests where appropriate
+- [x] Must provide clear test documentation</p>
+<h3 id="15-documentation">15. Documentation</h3>
+<p><strong>REQ-15.1: API Documentation</strong>
+- [x] Must provide comprehensive docstrings for all public methods
+- [x] Must document all parameters with types and descriptions
+- [x] Must include usage examples in docstrings
+- [x] Must document return types and exceptions
+- [x] Must follow NumPy/SciPy documentation standards</p>
+<p><strong>REQ-15.2: User Documentation</strong>
+- [x] Must provide getting started guides
+- [x] Must include advanced usage examples
+- [x] Must document scikit-learn integration
+- [x] Must provide comparison with py-earth features
+- [x] Must include troubleshooting guides</p>
+<h2 id="non-functional-requirements">Non-functional Requirements</h2>
+<h3 id="16-maintainability">16. Maintainability</h3>
+<p><strong>REQ-16.1: Code Quality</strong>
+- [x] Must follow PEP 8 coding standards
+- [x] Must include type hints for public interfaces
+- [x] Must maintain clean, readable code structure
+- [x] Must follow consistent naming conventions
+- [x] Must include appropriate comments explaining complex logic</p>
+<p><strong>REQ-16.2: Architecture</strong>
+- [x] Must maintain clear separation of concerns
+- [x] Must support modular testing of components
+- [x] Must provide clean interfaces between modules
+- [x] Must avoid tight coupling between components
+- [x] Must support future extensibility</p>
+<h3 id="17-usability">17. Usability</h3>
+<p><strong>REQ-17.1: User Experience</strong>
+- [x] Must provide intuitive API matching scikit-learn conventions
+- [x] Must provide clear error messages
+- [x] Must include helpful warnings for common issues
+- [x] Must maintain consistency with scikit-learn behavior
+- [x] Must provide meaningful progress indicators for long operations</p>
+<h3 id="18-deployment">18. Deployment</h3>
+<p><strong>REQ-18.1: Installation</strong>
+- [x] Must be installable via <code>pip install</code>
+- [x] Must work with virtual environments
+- [x] Must include proper metadata in <code>pyproject.toml</code>
+- [x] Must support installation from source
+- [x] Must provide clear installation instructions</p>
+<hr />
+<p><em>This requirements document is a living document and will be updated as the project evolves.</em></p>
 
 
 
