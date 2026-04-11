@@ -1,7 +1,8 @@
 """Unit tests for basis functions - integration level."""
 
-import pytest
 import numpy as np
+import pytest
+
 from pymars import Earth
 
 
@@ -50,12 +51,14 @@ class TestBasisFunctionsIntegration:
     def test_basis_function_degree_0(self):
         """Test constant basis function has degree 0."""
         from pymars._basis import ConstantBasisFunction
+
         bf = ConstantBasisFunction()
         assert bf.degree() == 0
 
     def test_basis_function_degree_1(self):
         """Test linear/hinge basis functions have degree 1."""
-        from pymars._basis import LinearBasisFunction, HingeBasisFunction
+        from pymars._basis import HingeBasisFunction, LinearBasisFunction
+
         linear = LinearBasisFunction(variable_idx=0)
         hinge = HingeBasisFunction(variable_idx=0, knot_val=0.5)
         assert linear.degree() == 1

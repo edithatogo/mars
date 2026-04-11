@@ -1,9 +1,9 @@
 """Unit tests for forward pass implementation."""
 
-import pytest
 import numpy as np
+import pytest
+
 from pymars import Earth
-from pymars._forward import ForwardPasser
 
 
 @pytest.mark.unit

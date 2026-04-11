@@ -1,9 +1,9 @@
 """Unit tests for pruning implementation."""
 
-import pytest
 import numpy as np
+import pytest
+
 from pymars import Earth
-from pymars._pruning import PruningPasser
 
 
 @pytest.mark.unit
@@ -67,7 +67,7 @@ class TestPruningTrace:
         model.fit(X, y)
 
         # Record should exist
-        assert hasattr(model, 'record_')
+        assert hasattr(model, "record_")
         assert model.record_ is not None
 
 

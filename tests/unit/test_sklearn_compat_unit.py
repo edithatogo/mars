@@ -1,11 +1,10 @@
 """Unit tests for scikit-learn compatibility."""
 
-import pytest
 import numpy as np
-from sklearn.utils.estimator_checks import check_estimator
+import pytest
+from sklearn.model_selection import cross_val_score
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import GridSearchCV, cross_val_score
 
 pytest.importorskip("pymars")
 
@@ -16,8 +15,9 @@ class TestEarthRegressorSklearn:
 
     def test_earth_regressor_basic_sklearn_compatibility(self):
         """Test EarthRegressor basic sklearn compatibility."""
-        from pymars import EarthRegressor
         from sklearn.base import BaseEstimator, RegressorMixin
+
+        from pymars import EarthRegressor
 
         # Verify inheritance
         assert issubclass(EarthRegressor, BaseEstimator)
@@ -32,11 +32,11 @@ class TestEarthRegressorSklearn:
         model.fit(X, y)
 
         # Verify sklearn-compatible interface
-        assert hasattr(model, 'predict')
-        assert hasattr(model, 'score')
-        assert hasattr(model, 'get_params')
-        assert hasattr(model, 'set_params')
-        assert hasattr(model, 'coef_')
+        assert hasattr(model, "predict")
+        assert hasattr(model, "score")
+        assert hasattr(model, "get_params")
+        assert hasattr(model, "set_params")
+        assert hasattr(model, "coef_")
 
     def test_earth_regressor_fit_returns_self(self):
         """Test that fit returns self."""
@@ -87,9 +87,9 @@ class TestEarthRegressorSklearn:
         model = EarthRegressor(max_terms=15, max_degree=2, penalty=3.0)
         params = model.get_params()
 
-        assert params['max_terms'] == 15
-        assert params['max_degree'] == 2
-        assert params['penalty'] == 3.0
+        assert params["max_terms"] == 15
+        assert params["max_degree"] == 2
+        assert params["penalty"] == 3.0
 
     def test_earth_regressor_set_params(self):
         """Test set_params updates hyperparameters."""
@@ -109,10 +109,12 @@ class TestEarthRegressorSklearn:
         X = np.random.rand(100, 3)
         y = np.sin(X[:, 0]) + X[:, 1]
 
-        pipeline = Pipeline([
-            ('scaler', StandardScaler()),
-            ('mars', EarthRegressor(max_terms=15, max_degree=1)),
-        ])
+        pipeline = Pipeline(
+            [
+                ("scaler", StandardScaler()),
+                ("mars", EarthRegressor(max_terms=15, max_degree=1)),
+            ]
+        )
 
         pipeline.fit(X, y)
         predictions = pipeline.predict(X)
@@ -190,8 +192,8 @@ class TestEarthClassifierSklearn:
         model = EarthClassifier(max_terms=15, max_degree=2)
         params = model.get_params()
 
-        assert params['max_terms'] == 15
-        assert params['max_degree'] == 2
+        assert params["max_terms"] == 15
+        assert params["max_degree"] == 2
 
         model.set_params(max_terms=25)
         assert model.max_terms == 25
