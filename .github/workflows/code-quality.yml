@@ -38,4 +38,6 @@ jobs:
         run: uv run mypy pymars/ --ignore-missing-imports
 
       - name: Check for spelling errors
-        run: uv run codespell pymars tests README.md CONTRIBUTING.md || true
+        run: |
+          uv tool install codespell || pip install codespell
+          codespell pymars tests README.md CONTRIBUTING.md || echo "Spelling check completed with warnings"
