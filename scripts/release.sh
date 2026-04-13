@@ -2,7 +2,11 @@
 cd /Users/doughnut/GitHub/pymars
 LOG="/Users/doughnut/GitHub/pymars/.release.log"
 
-echo "=== STASH ===" > "$LOG"
+echo "=== STATUS ===" > "$LOG"
+git status >> "$LOG" 2>&1
+echo "" >> "$LOG"
+
+echo "=== STASH ===" >> "$LOG"
 git stash >> "$LOG" 2>&1
 echo "" >> "$LOG"
 
@@ -26,10 +30,12 @@ echo "=== PUSH ===" >> "$LOG"
 git push origin main >> "$LOG" 2>&1
 echo "" >> "$LOG"
 
-echo "=== DELETE OLD TAG ===" >> "$LOG"
+echo "=== DELETE TAG ===" >> "$LOG"
 git tag -d v1.0.1 >> "$LOG" 2>&1
 git push --delete origin v1.0.1 >> "$LOG" 2>&1
 echo "" >> "$LOG"
+
+sleep 5
 
 echo "=== CREATE TAG ===" >> "$LOG"
 git tag -a v1.0.1 -m "Release v1.0.1 - mars-earth package with full publishing pipeline" >> "$LOG" 2>&1
