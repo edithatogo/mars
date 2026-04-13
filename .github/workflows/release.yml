@@ -39,6 +39,8 @@ jobs:
       # ── Publish to PyPI (trusted publishing via OIDC) ──
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true
 
       # ── Verify the package is installable from PyPI ──
       - name: Wait for PyPI index update
