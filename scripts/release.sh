@@ -2,32 +2,48 @@
 cd /Users/doughnut/GitHub/pymars
 LOG="/Users/doughnut/GitHub/pymars/.release.log"
 
-echo "=== GIT STATUS ===" > "$LOG"
-git status >> "$LOG" 2>&1
+echo "=== STASH ===" > "$LOG"
+git stash >> "$LOG" 2>&1
 echo "" >> "$LOG"
 
-echo "=== GIT LOG -3 ===" >> "$LOG"
-git log -3 --oneline >> "$LOG" 2>&1
+echo "=== PULL ===" >> "$LOG"
+git pull --rebase origin main >> "$LOG" 2>&1
 echo "" >> "$LOG"
 
-echo "=== ADD ===" >> "$LOG"
+echo "=== POP STASH ===" >> "$LOG"
+git stash pop >> "$LOG" 2>&1
+echo "" >> "$LOG"
+
+echo "=== DELETE OLD TAG LOCAL ===" >> "$LOG"
+git tag -d v1.0.1 >> "$LOG" 2>&1
+echo "" >> "$LOG"
+
+echo "=== DELETE OLD TAG REMOTE ===" >> "$LOG"
+git push --delete origin v1.0.1 >> "$LOG" 2>&1
+echo "" >> "$LOG"
+
+echo "=== ADD ALL ===" >> "$LOG"
 git add -A >> "$LOG" 2>&1
 echo "" >> "$LOG"
 
 echo "=== COMMIT ===" >> "$LOG"
-git commit -m "feat: rename package to mars-earth, add TestPyPI gate, conda-forge recipe, and post-publish verification" >> "$LOG" 2>&1
+git commit -m "feat: rename package to mars-earth, fix release workflow, add conda-forge recipe" >> "$LOG" 2>&1
 echo "" >> "$LOG"
 
 echo "=== PUSH ===" >> "$LOG"
 git push origin main >> "$LOG" 2>&1
 echo "" >> "$LOG"
 
-echo "=== TAG ===" >> "$LOG"
-git tag -a v1.0.1 -m "Release v1.0.1 - mars-earth package rename with full publishing pipeline" >> "$LOG" 2>&1
+echo "=== CREATE TAG ===" >> "$LOG"
+git tag -a v1.0.1 -m "Release v1.0.1 - mars-earth package with full publishing pipeline" >> "$LOG" 2>&1
 echo "" >> "$LOG"
 
 echo "=== PUSH TAG ===" >> "$LOG"
 git push origin v1.0.1 >> "$LOG" 2>&1
+echo "" >> "$LOG"
+
+echo "=== GH RUN ===" >> "$LOG"
+gh run list --workflow=release.yml --limit 3 >> "$LOG" 2>&1
 echo "" >> "$LOG"
 
 echo "=== DONE ===" >> "$LOG"
