@@ -46,8 +46,8 @@ jobs:
 
       - name: Install and smoke-test from PyPI
         run: |
-          uv pip install mars-earth
-          uv run python -c "import pymars; print(f'mars-earth {pymars.__version__} installed successfully')"
+          uv pip install --system mars-earth
+          python -c "import pymars; print(f'mars-earth {pymars.__version__} installed successfully')"
 
       # ── Create GitHub Release ──
       - name: Create GitHub Release
