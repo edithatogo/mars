@@ -2,11 +2,7 @@
 cd /Users/doughnut/GitHub/pymars
 LOG="/Users/doughnut/GitHub/pymars/.release.log"
 
-echo "=== STATUS ===" > "$LOG"
-git status >> "$LOG" 2>&1
-echo "" >> "$LOG"
-
-echo "=== STASH ===" >> "$LOG"
+echo "=== STASH ===" > "$LOG"
 git stash >> "$LOG" 2>&1
 echo "" >> "$LOG"
 
@@ -23,26 +19,26 @@ git add -A >> "$LOG" 2>&1
 echo "" >> "$LOG"
 
 echo "=== COMMIT ===" >> "$LOG"
-git commit -m "fix(release): add --system flag to uv pip install in smoke-test" >> "$LOG" 2>&1
+git commit -m "chore(release): bump to v1.0.2 (v1.0.1 already on PyPI)" >> "$LOG" 2>&1
 echo "" >> "$LOG"
 
 echo "=== PUSH ===" >> "$LOG"
 git push origin main >> "$LOG" 2>&1
 echo "" >> "$LOG"
 
-echo "=== DELETE TAG ===" >> "$LOG"
+echo "=== DELETE OLD TAG ===" >> "$LOG"
 git tag -d v1.0.1 >> "$LOG" 2>&1
 git push --delete origin v1.0.1 >> "$LOG" 2>&1
 echo "" >> "$LOG"
 
-sleep 5
+sleep 3
 
-echo "=== CREATE TAG ===" >> "$LOG"
-git tag -a v1.0.1 -m "Release v1.0.1 - mars-earth package with full publishing pipeline" >> "$LOG" 2>&1
+echo "=== CREATE v1.0.2 TAG ===" >> "$LOG"
+git tag -a v1.0.2 -m "Release v1.0.2 - mars-earth on PyPI and TestPyPI" >> "$LOG" 2>&1
 echo "" >> "$LOG"
 
 echo "=== PUSH TAG ===" >> "$LOG"
-git push origin v1.0.1 >> "$LOG" 2>&1
+git push origin v1.0.2 >> "$LOG" 2>&1
 echo "" >> "$LOG"
 
 echo "=== DONE ===" >> "$LOG"
