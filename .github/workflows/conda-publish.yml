@@ -101,11 +101,19 @@ jobs:
           VERSION: ${{ steps.tag.outputs.version }}
           SHA256: ${{ steps.sha.outputs.sha256 }}
         run: |
-          git clone --depth 1 https://x-access-token:${GH_TOKEN}@github.com/edithatogo/staged-recipes.git /tmp/staged-recipes
+          git clone --depth 1 https://github.com/conda-forge/staged-recipes.git /tmp/staged-recipes
           cd /tmp/staged-recipes
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Authenticate push to edithatogo fork via credential store
+          git config credential.helper 'store --file=/tmp/.git-creds'
+          echo "https://x-access-token:${GH_TOKEN}@github.com" > /tmp/.git-creds
+          chmod 600 /tmp/.git-creds
+
+          # Add fork as remote
+          git remote add fork https://github.com/edithatogo/staged-recipes.git
 
           git checkout -b mars-earth-${VERSION}
 
@@ -115,7 +123,7 @@ jobs:
           git add recipes/mars-earth/
           git commit -m "mars-earth ${VERSION}"
 
-          git push origin mars-earth-${VERSION}
+          git push fork mars-earth-${VERSION}
 
           gh pr create \
             --repo conda-forge/staged-recipes \
