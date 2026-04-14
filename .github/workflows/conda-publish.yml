@@ -101,7 +101,7 @@ jobs:
           VERSION: ${{ steps.tag.outputs.version }}
           SHA256: ${{ steps.sha.outputs.sha256 }}
         run: |
-          git clone --depth 1 https://github.com/conda-forge/staged-recipes.git /tmp/staged-recipes
+          git clone --depth 1 https://${GH_TOKEN}@github.com/edithatogo/staged-recipes.git /tmp/staged-recipes
           cd /tmp/staged-recipes
 
           git config user.name "github-actions[bot]"
