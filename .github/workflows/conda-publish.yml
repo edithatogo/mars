@@ -6,6 +6,13 @@ name: Publish to conda-forge
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (e.g., 1.0.3)'
+        required: true
+        default: '1.0.3'
+        type: string
 
 permissions:
   contents: read
@@ -18,7 +25,12 @@ jobs:
 
       - name: Get release tag
         id: tag
-        run: echo "version=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            echo "version=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Compute SHA256
         run: |
