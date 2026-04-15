@@ -3,10 +3,11 @@
 ## Phase 0: Baseline Measurement
 [checkpoint: pending]
 
-- [ ] Task: Measure current ruff strictness level
-    - [ ] Count current ruff violations (auto-fixable vs manual)
-    - [ ] Document which rule categories are enabled/disabled
-    - [ ] Record violations by file for prioritization
+- [x] Task: Measure current ruff strictness level
+    - [x] Count current ruff violations (auto-fixable vs manual)
+    - [x] Document which rule categories are enabled/disabled
+    - [x] Record violations by file for prioritization
+    - [x] Capture baseline snapshot in `baseline.md`
 - [ ] Task: Measure current mypy strictness level
     - [ ] Run mypy in current config, count errors
     - [ ] Run mypy --strict, count errors
@@ -36,28 +37,29 @@
 - [ ] Task: Run `ruff check . --fix` and verify no regressions
 - [ ] Task: Automated Phase Review & Progression (Phase 1)
 
-## Phase 2: Mypy Strict Mode
+## Phase 2: Ty Strict Mode (replacing mypy)
 [checkpoint: pending]
 
-- [ ] Task: Incrementally enable mypy strict mode
-    - [ ] Start with `--ignore-missing-imports` (already set)
-    - [ ] Enable `disallow_untyped_defs` — fix violations module by module
-    - [ ] Enable `disallow_incomplete_defs` — fix violations
-    - [ ] Enable `check_untyped_defs` — fix violations
-    - [ ] Enable `disallow_untyped_decorators` — fix violations
-    - [ ] Enable `no_implicit_optional` — fix violations
-    - [ ] Enable `strict_optional` — fix violations
-    - [ ] Enable `warn_return_any` — fix violations
-    - [ ] Enable `warn_unused_ignores` — clean up stale `# type: ignore`
+- [ ] Task: Configure ty for strict mode
+    - [ ] Add ty to pyproject.toml dev dependencies
+    - [ ] Create `ty.toml` or configure in pyproject.toml
+    - [ ] Remove mypy.ini (no longer needed)
+    - [ ] Remove mypy from CI workflows, add ty
+- [ ] Task: Fix ty errors incrementally (65 diagnostics)
+    - [ ] Fix `invalid-assignment` — use `Optional[T]` or `T | None` where None is valid
+    - [ ] Fix `invalid-parameter-default` — make default-None parameters `Optional[T]`
+    - [ ] Fix `unsupported-operator` — replace `X | None` with `Optional[X]` or `"X | None"` for py39
+    - [ ] Fix `invalid-type-form` — replace `any` with `Any` from typing
+    - [ ] Fix `not-subscriptable` / `unresolved-attribute` — add None guards before subscripting
+    - [ ] Fix `invalid-argument-type` — add None guards or widen parameter types
+    - [ ] Fix `invalid-return-type` — widen return types where None can be returned
+    - [ ] Run `ty check pymars/` until zero diagnostics
 - [ ] Task: Add type annotations to untyped modules
     - [ ] Add return types to all public functions
     - [ ] Add parameter types to all public functions
     - [ ] Add type annotations to class attributes
     - [ ] Use `typing` module imports (Optional, Union, List, Dict, etc.)
     - [ ] Use `collections.abc` imports (Iterator, Mapping, etc.)
-- [ ] Task: Add `# type: ignore` only where truly necessary
-    - [ ] Document each `# type: ignore` with reason comment
-    - [ ] Minimize scope (per-line, not per-file)
 - [ ] Task: Automated Phase Review & Progression (Phase 2)
 
 ## Phase 3: Test Coverage >90%
