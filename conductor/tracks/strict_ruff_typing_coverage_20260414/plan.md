@@ -8,11 +8,11 @@
     - [x] Document which rule categories are enabled/disabled
     - [x] Record violations by file for prioritization
     - [x] Capture baseline snapshot in `baseline.md`
-- [x] Task: Measure current mypy strictness level
+- [x] Task: Measure current mypy strictness level [ceee702]
     - [x] Run mypy in current config, count errors
     - [x] Run mypy --strict, count errors
     - [x] Identify files with most type errors
-- [x] Task: Measure current test coverage
+- [x] Task: Measure current test coverage [ceee702]
     - [x] Run pytest --cov and record per-module coverage
     - [x] Identify modules below 90%
     - [x] Identify uncovered lines/functions
