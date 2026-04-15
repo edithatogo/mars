@@ -96,6 +96,27 @@ Currently ignored rule groups and codes:
   - `pymars/_record.py`: 4
   - `pymars/cli.py`: 4
 
+## Mypy Strict Mode
+
+- Total errors: 181
+- Files with the most errors:
+  - `pymars/earth.py`: 50
+  - `pymars/_forward.py`: 22
+  - `pymars/_sklearn_compat.py`: 20
+  - `pymars/_pruning.py`: 19
+  - `pymars/_basis.py`: 16
+  - `pymars/explain.py`: 13
+  - `pymars/_categorical.py`: 9
+  - `pymars/glm.py`: 6
+  - `pymars/cli.py`: 5
+  - `pymars/demos/advanced_example.py`: 5
+  - `pymars/_missing.py`: 4
+  - `pymars/_record.py`: 4
+- Strict-mode-specific themes:
+  - Wrapper classes inherit from imported sklearn base classes that are still typed as `Any`.
+  - Several public methods and helpers are still missing explicit parameter and return annotations.
+  - Optional values in basis/forward code still need more explicit narrowing in hot paths.
+
 ## Coverage
 
 - Overall coverage: `66.81%`
