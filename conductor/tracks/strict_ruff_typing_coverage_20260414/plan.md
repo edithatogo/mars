@@ -3,7 +3,7 @@
 ## Phase 0: Baseline Measurement
 [checkpoint: pending]
 
-- [x] Task: Measure current ruff strictness level
+- [x] Task: Measure current ruff strictness level [7ad4a42]
     - [x] Count current ruff violations (auto-fixable vs manual)
     - [x] Document which rule categories are enabled/disabled
     - [x] Record violations by file for prioritization
