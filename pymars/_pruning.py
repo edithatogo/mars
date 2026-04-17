@@ -7,6 +7,7 @@ using a criterion like Generalized Cross-Validation (GCV).
 """
 
 import logging
+from typing import Optional
 
 import numpy as np
 
