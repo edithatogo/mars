@@ -3,7 +3,7 @@ from __future__ import annotations
 # Pure Python Earth (Multivariate Adaptive Regression Splines)
 # Inspired by py-earth: https://github.com/scikit-learn-contrib/py-earth
 
-__version__ = "1.0.3"
+__version__ = "1.0.4"
 
 # Alias for py-earth compatibility (user can do this in their own code if they prefer)
 # import pymars as earth

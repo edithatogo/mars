@@ -1,6 +1,6 @@
 [project]
 name = "mars-earth"
-version = "1.0.3"
+version = "1.0.4"
 description = "A Pure Python Implementation of Multivariate Adaptive Regression Splines"
 readme = "README.md"
 authors = [
