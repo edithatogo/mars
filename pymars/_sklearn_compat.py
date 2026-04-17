@@ -14,9 +14,7 @@ scikit-learn's Estimator API.
 import logging
 
 import numpy as np
-from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
+from sklearn.base import BaseEstimator, RegressorMixin
 
 # from sklearn.utils.validation import check_X_y, check_array, check_is_fitted # Will use these in fit/predict
 # from sklearn.utils.multiclass import unique_labels # For classifiers
@@ -333,17 +331,6 @@ class EarthClassifier(ClassifierMixin, BaseEstimator):  # Corrected Mixin Order
         # TODO: Add specific classifier params like C for LogisticRegression if classifier is None
     ):
 
-    def __init__(
-        self,
-        max_degree: int = 1,
-        penalty: float = 3.0,
-        max_terms: int = None,
-        minspan_alpha: float = 0.0,
-        endspan_alpha: float = 0.0,
-        allow_linear: bool = True,
-        classifier=None,  # Allow user to pass a classifier instance
-        # TODO: Add specific classifier params like C for LogisticRegression if classifier is None
-    ):
         super().__init__()
 
         self.max_degree = max_degree

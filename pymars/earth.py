@@ -3,7 +3,6 @@ The main Earth class, coordinating the model fitting process.
 """
 
 import logging
-from typing import List, Optional
 
 import numpy as np
 from sklearn.base import BaseEstimator, RegressorMixin
