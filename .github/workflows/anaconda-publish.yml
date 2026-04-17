@@ -110,6 +110,57 @@ jobs:
               - edithatogo
           RECIPE
 
+      - name: Resolve Anaconda credentials
+        id: auth
+        shell: bash
+        env:
+          PRIMARY_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+          SECONDARY_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+          ANACONDA_USER_VAR: ${{ vars.ANACONDA_USER }}
+        run: |
+          set -euo pipefail
+
+          selected_token=""
+          selected_secret_name=""
+
+          if [ -n "${PRIMARY_TOKEN:-}" ]; then
+            selected_token="$PRIMARY_TOKEN"
+            selected_secret_name="ANACONDA_TOKEN"
+          elif [ -n "${SECONDARY_TOKEN:-}" ]; then
+            selected_token="$SECONDARY_TOKEN"
+            selected_secret_name="ANACONDA_API_TOKEN"
+          fi
+
+          if [ -n "$selected_token" ]; then
+            echo "::add-mask::$selected_token"
+            echo "token_present=true" >> "$GITHUB_OUTPUT"
+            echo "token_name=$selected_secret_name" >> "$GITHUB_OUTPUT"
+            echo "token=$selected_token" >> "$GITHUB_OUTPUT"
+          else
+            echo "token_present=false" >> "$GITHUB_OUTPUT"
+            echo "token_name=none" >> "$GITHUB_OUTPUT"
+          fi
+
+          if [ -n "${ANACONDA_USER_VAR:-}" ]; then
+            echo "user=$ANACONDA_USER_VAR" >> "$GITHUB_OUTPUT"
+          else
+            echo "user=${GITHUB_REPOSITORY_OWNER}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Validate Anaconda credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ "${{ steps.auth.outputs.token_present }}" != "true" ]; then
+            echo "No Anaconda token was exposed to the workflow."
+            echo "Checked secrets: ANACONDA_TOKEN, ANACONDA_API_TOKEN."
+            exit 1
+          fi
+
+          echo "Using secret ${{ steps.auth.outputs.token_name }} for Anaconda upload."
+          echo "Target Anaconda user/channel: ${{ steps.auth.outputs.user }}."
+
       - name: Build package
         shell: bash -l {0}
         env:
@@ -121,12 +172,12 @@ jobs:
       - name: Upload package to Anaconda.org
         shell: bash -l {0}
         env:
-          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN || secrets.ANACONDA_API_TOKEN }}
-          ANACONDA_USER: ${{ vars.ANACONDA_USER || github.repository_owner }}
+          ANACONDA_TOKEN: ${{ steps.auth.outputs.token }}
+          ANACONDA_USER: ${{ steps.auth.outputs.user }}
           VERSION: ${{ steps.tag.outputs.version }}
         run: |
           if [ -z "$ANACONDA_TOKEN" ]; then
-            echo "Missing ANACONDA_TOKEN or ANACONDA_API_TOKEN secret."
+            echo "Missing Anaconda token after credential resolution."
             exit 1
           fi
 

@@ -94,9 +94,48 @@ jobs:
               - edithatogo
           RECIPE
 
+      - name: Resolve conda-forge credentials
+        id: auth
+        shell: bash
+        env:
+          PAT: ${{ secrets.CONDA_FORGE_PAT }}
+        run: |
+          set -euo pipefail
+
+          if [ -n "${PAT:-}" ]; then
+            echo "::add-mask::$PAT"
+            echo "token_present=true" >> "$GITHUB_OUTPUT"
+            echo "token=$PAT" >> "$GITHUB_OUTPUT"
+          else
+            echo "token_present=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Validate conda-forge token presence
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ "${{ steps.auth.outputs.token_present }}" != "true" ]; then
+            echo "Secret CONDA_FORGE_PAT is not available to this workflow."
+            exit 1
+          fi
+
+      - name: Validate staged-recipes fork access
+        shell: bash
+        env:
+          GH_TOKEN: ${{ steps.auth.outputs.token }}
+        run: |
+          set -euo pipefail
+
+          if ! git ls-remote "https://x-access-token:${GH_TOKEN}@github.com/edithatogo/staged-recipes.git" >/dev/null 2>&1; then
+            echo "CONDA_FORGE_PAT is present but cannot access edithatogo/staged-recipes."
+            echo "The token must be able to push to the staged-recipes fork used for PR creation."
+            exit 1
+          fi
+
       - name: Clone staged-recipes and create PR
         env:
-          GH_TOKEN: ${{ secrets.CONDA_FORGE_PAT }}
+          GH_TOKEN: ${{ steps.auth.outputs.token }}
           VERSION: ${{ steps.tag.outputs.version }}
           SHA256: ${{ steps.sha.outputs.sha256 }}
         run: |
