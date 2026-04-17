@@ -121,12 +121,12 @@ jobs:
       - name: Upload package to Anaconda.org
         shell: bash -l {0}
         env:
-          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN || secrets.ANACONDA_API_TOKEN }}
+          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN || secrets.ANACONDA_API_TOKEN || secrets.CONDA_FORGE_PAT }}
           ANACONDA_USER: ${{ vars.ANACONDA_USER || github.repository_owner }}
           VERSION: ${{ steps.tag.outputs.version }}
         run: |
           if [ -z "$ANACONDA_TOKEN" ]; then
-            echo "Missing ANACONDA_TOKEN (or ANACONDA_API_TOKEN) secret."
+            echo "Missing ANACONDA_TOKEN, ANACONDA_API_TOKEN, or CONDA_FORGE_PAT secret."
             exit 1
           fi
 
