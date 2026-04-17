@@ -41,7 +41,7 @@ class ForwardPasser:
         self.y_train = None
         self.n_samples = 0
         self.n_features = 0
-        self.current_basis_functions: list[BasisFunction] = []
+        self.current_basis_functions: List[BasisFunction] = []
         self.current_B_matrix = None
         self.current_coefficients = None
         self.current_rss = np.inf

@@ -37,7 +37,7 @@ class PruningPasser:
         self.X_fit_original = None
 
         self.best_gcv_so_far = np.inf
-        self.best_basis_functions_so_far: list[BasisFunction] = []
+        self.best_basis_functions_so_far: List[BasisFunction] = []
         self.best_coeffs_so_far: np.ndarray = None
 
     def _calculate_rss_and_coeffs(
