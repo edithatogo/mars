@@ -1,5 +1,5 @@
 import json
-import os
+from pathlib import Path
 
 import numpy as np
 
@@ -32,17 +32,17 @@ def generate_friedman1(n_samples=100, n_features=10, noise=0.1, random_state=0):
 # --- Helper Functions ---
 def save_results(library_name, dataset_name, params, results):
     """Save the results of a model to a JSON file."""
-    if not os.path.exists("comparison_results"):
-        os.makedirs("comparison_results")
-    filename = f"comparison_results/{library_name}_{dataset_name}_{params}.json"
-    with open(filename, "w") as f:
+    if not Path("comparison_results").exists():
+        Path("comparison_results").mkdir(parents=True)
+    filename = Path(f"comparison_results/{library_name}_{dataset_name}_{params}.json")
+    with filename.open("w") as f:
         json.dump(results, f, indent=4)
 
 
 def load_results(library_name, dataset_name, params):
     """Load the results of a model from a JSON file."""
-    filename = f"comparison_results/{library_name}_{dataset_name}_{params}.json"
-    with open(filename) as f:
+    filename = Path(f"comparison_results/{library_name}_{dataset_name}_{params}.json")
+    with filename.open() as f:
         return json.load(f)
 
 
@@ -69,21 +69,19 @@ def run_pyearth_placeholder(X, y, params):
     Placeholder function for running py-earth.
     In a real scenario, this would be run in a separate environment.
     """
+    del X, y, params
     print("--- Running py-earth (placeholder) ---")
     print(
         "In a real scenario, you would run the py-earth model here and save the results."
     )
     # As a placeholder, we'll just create an empty results dictionary.
     # In a real test, you would populate this with actual results from py-earth.
-    results = {
+    return {
         "predictions": [],
         "basis_functions": [],
         "coefficients": [],
         "feature_importances": [],
     }
-    # In a real test, you would save the results to a file.
-    # save_results("pyearth", "friedman1", str(params), results)
-    return results
 
 
 # --- Comparison ---

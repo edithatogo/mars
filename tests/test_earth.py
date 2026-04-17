@@ -395,6 +395,7 @@ def test_scrub_input_data_imputation():
 
 def test_earth_nb_subsets_calculation_mocked_record(capsys):
     """Test nb_subsets calculation with a mocked record pruning trace."""
+    del capsys
     X = np.array([[1, 10], [2, 20], [3, 30]])  # 2 features
     y = np.array([1, 2, 3])
 

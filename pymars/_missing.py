@@ -6,14 +6,21 @@ the Missing Data Imputation (MDI) method or treating missing as a distinct value
 This module will house such functionalities.
 """
 
+from __future__ import annotations
+
 import logging
+from typing import Any, cast
 
 import numpy as np
 
 logger = logging.getLogger(__name__)
 
 
-def handle_missing_X(X, strategy="mean", allow_missing_for_some_strategies=False):
+def handle_missing_X(
+    X: Any,
+    strategy: str = "mean",
+    allow_missing_for_some_strategies: bool = False,
+) -> np.ndarray:
     """
     Handle missing values in the input feature matrix X.
 
@@ -43,7 +50,7 @@ def handle_missing_X(X, strategy="mean", allow_missing_for_some_strategies=False
         for some advanced handling but not returned by default by this basic version.
     """
     if not isinstance(X, np.ndarray):
-        X = np.asarray(X)
+        X = cast(np.ndarray, np.asarray(X))
 
     if not np.issubdtype(X.dtype, np.number):
         # If X is not numeric (e.g. object array due to mixed types or strings)
@@ -55,14 +62,14 @@ def handle_missing_X(X, strategy="mean", allow_missing_for_some_strategies=False
     nan_present = np.isnan(X).any()
 
     if not nan_present:
-        return X
+        return cast(np.ndarray, X)
 
     if strategy == "error":
         raise ValueError("Input X contains NaN values and strategy is 'error'.")
 
     if strategy == "pass_through":
         if allow_missing_for_some_strategies:
-            return X  # Basis functions must be able to handle NaNs
+            return cast(np.ndarray, X)  # Basis functions must be able to handle NaNs
         raise ValueError(
             "Strategy 'pass_through' for NaNs requires model to be configured to allow missing values."
         )
@@ -84,35 +91,37 @@ def handle_missing_X(X, strategy="mean", allow_missing_for_some_strategies=False
         if not nan_mask_col.any():
             continue
 
+        fill_value: float
         if strategy == "mean":
-            fill_value = np.nanmean(col)
+            fill_value = float(np.nanmean(col))
         elif strategy == "median":
-            fill_value = np.nanmedian(col)
+            fill_value = float(np.nanmedian(col))
         elif strategy == "most_frequent":
             # Simple approach for most_frequent with numbers
             # For categorical, a more robust method (e.g., scipy.stats.mode) is needed
             unique_vals, counts = np.unique(col[~nan_mask_col], return_counts=True)
             if unique_vals.size > 0:
-                fill_value = unique_vals[np.argmax(counts)]
+                fill_value = float(unique_vals[np.argmax(counts)])
             else:  # All values were NaN
-                fill_value = 0  # Or some other default
+                fill_value = 0.0  # Or some other default
         else:
             raise ValueError(f"Unknown missing value strategy: {strategy}")
 
-        col[nan_mask_col] = fill_value
+        col = col.astype(float, copy=False)
+        col[nan_mask_col] = float(fill_value)
 
     if was_1d and X_processed.shape[1] == 1:
         X_processed = X_processed.ravel()  # Convert back to 1D if original was 1D
 
-    return X_processed
+    return cast(np.ndarray, X_processed)
 
 
 def handle_missing_y(
-    y,
-    strategy="mean",
-    allow_missing_for_some_strategies=False,
-    problem_type="regression",
-):
+    y: Any,
+    strategy: str | None = "mean",
+    allow_missing_for_some_strategies: bool = False,
+    problem_type: str = "regression",
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Handle missing values in the target variable y.
 
@@ -140,12 +149,13 @@ def handle_missing_y(
         Boolean mask indicating which samples were NaN (if strategy involves imputation).
         If 'remove_samples', this indicates removed samples.
     """
+    del allow_missing_for_some_strategies
     if not isinstance(y, np.ndarray):
-        y = np.asarray(y)
+        y = cast(np.ndarray, np.asarray(y))
 
     nan_mask = np.isnan(y)
     if not nan_mask.any():
-        return y, nan_mask  # No NaNs
+        return cast(np.ndarray, y), cast(np.ndarray, nan_mask)  # No NaNs
 
     if strategy is None:  # Determine default based on problem type
         strategy = "mean" if problem_type == "regression" else "error"
@@ -157,30 +167,31 @@ def handle_missing_y(
         # This strategy implies X also needs to be filtered.
         # The function calling this should handle that synchronization.
         # Here, we just return the filtered y and the mask of what *was* NaN.
-        return y[~nan_mask], nan_mask
+        return cast(np.ndarray, y[~nan_mask]), cast(np.ndarray, nan_mask)
 
-    y_processed = np.copy(y)
+    y_processed = cast(np.ndarray, np.copy(y))
 
+    fill_value: Any
     if strategy == "mean":
         if problem_type == "classification":
             raise ValueError("Cannot use 'mean' imputation for classification target.")
-        fill_value = np.nanmean(y_processed)
+        fill_value = float(np.nanmean(y_processed))
     elif strategy == "median":
         if problem_type == "classification":
             raise ValueError(
                 "Cannot use 'median' imputation for classification target."
             )
-        fill_value = np.nanmedian(y_processed)
+        fill_value = float(np.nanmedian(y_processed))
     elif strategy == "most_frequent":
         unique_vals, counts = np.unique(y_processed[~nan_mask], return_counts=True)
         if unique_vals.size > 0:
-            fill_value = unique_vals[np.argmax(counts)]
+            fill_value = float(unique_vals[np.argmax(counts)])
         else:  # All values were NaN
             fill_value = (
-                0
+                0.0
                 if problem_type == "regression"
                 else (
-                    y_processed.dtype.type(0)
+                    float(y_processed.dtype.type(0))
                     if np.issubdtype(y_processed.dtype, np.integer)
                     else 0.0
                 )
@@ -189,4 +200,4 @@ def handle_missing_y(
         raise ValueError(f"Unknown missing value strategy for y: {strategy}")
 
     y_processed[nan_mask] = fill_value
-    return y_processed, nan_mask
+    return y_processed, cast(np.ndarray, nan_mask)

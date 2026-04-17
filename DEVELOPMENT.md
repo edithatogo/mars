@@ -63,9 +63,9 @@ ruff format pymars tests
 ruff check pymars tests
 ```
 
-3. **Type checking**: Use MyPy
+3. **Type checking**: Use ty
 ```bash
-mypy pymars/
+ty check pymars/
 ```
 
 4. **Testing**: All code must have appropriate tests

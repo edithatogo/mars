@@ -5,11 +5,16 @@ This can include details about the forward pass (terms added, RSS at each step)
 and the pruning pass (terms removed, GCV at each step).
 """
 
+from __future__ import annotations
+
 import logging
+from typing import Any
 
 import numpy as np
 
 logger = logging.getLogger(__name__)
+
+from ._basis import BasisFunction
 
 
 class EarthRecord:
@@ -17,17 +22,22 @@ class EarthRecord:
     Stores information about the fitting process of an Earth model.
     """
 
-    def __init__(self, X, y, earth_model_instance):
-        self.model_params = (
+    def __init__(self, X: np.ndarray, y: np.ndarray, earth_model_instance: Any):
+        del y
+        self.model_params: dict[str, Any] = (
             earth_model_instance.__dict__.copy()
         )  # Store initial model params
         self.n_samples = X.shape[0]
         self.n_features = X.shape[1]
 
         # Forward pass tracking
-        self.fwd_basis_ = []  # List of lists: basis functions at each step of fwd pass
-        self.fwd_coeffs_ = []  # List of arrays: coefficients at each step
-        self.fwd_rss_ = []  # List of floats: RSS at each step
+        self.fwd_basis_: list[
+            list[BasisFunction]
+        ] = []  # List of lists: basis functions at each step of fwd pass
+        self.fwd_coeffs_: list[
+            np.ndarray
+        ] = []  # List of arrays: coefficients at each step
+        self.fwd_rss_: list[float] = []  # List of floats: RSS at each step
 
         # Pruning pass tracking
         # These will store the sequence of models considered during pruning.
@@ -38,13 +48,15 @@ class EarthRecord:
         self.pruning_trace_rss_: list[float] = []
 
         # Final selected model details (can be set after pruning)
-        self.final_basis_: list[BasisFunction] = None
-        self.final_coeffs_ = None
-        self.final_gcv_ = None
-        self.final_rss_ = None
-        self.final_mse_ = None  # MSE of the final model on training data
+        self.final_basis_: list[BasisFunction] | None = None
+        self.final_coeffs_: np.ndarray | None = None
+        self.final_gcv_: float | None = None
+        self.final_rss_: float | None = None
+        self.final_mse_: float | None = None  # MSE of the final model on training data
 
-    def log_forward_pass_step(self, basis_functions, coefficients, rss):
+    def log_forward_pass_step(
+        self, basis_functions: list[BasisFunction], coefficients: np.ndarray, rss: float
+    ) -> None:
         """Log a step in the forward pass."""
         self.fwd_basis_.append(list(basis_functions))  # Store copies
         self.fwd_coeffs_.append(np.copy(coefficients))
@@ -52,11 +64,11 @@ class EarthRecord:
 
     def log_pruning_step(
         self,
-        basis_functions: list["BasisFunction"],
+        basis_functions: list[BasisFunction],
         coefficients: np.ndarray,
         gcv: float,
         rss: float,
-    ):  # Renamed
+    ) -> None:  # Renamed
         """
         Log a model state (basis functions, coefficients, GCV, RSS) encountered
         during the pruning pass sequence. This is typically called for each model size
@@ -74,7 +86,14 @@ class EarthRecord:
         self.pruning_trace_gcv_.append(gcv)
         self.pruning_trace_rss_.append(rss)
 
-    def set_final_model(self, basis_functions, coefficients, gcv, rss, mse):
+    def set_final_model(
+        self,
+        basis_functions: list[BasisFunction],
+        coefficients: np.ndarray,
+        gcv: float,
+        rss: float,
+        mse: float,
+    ) -> None:
         """Set the details of the final pruned model."""
         self.final_basis_ = list(basis_functions)
         self.final_coeffs_ = np.copy(coefficients)
@@ -82,7 +101,7 @@ class EarthRecord:
         self.final_rss_ = rss
         self.final_mse_ = mse
 
-    def __str__(self):
+    def __str__(self) -> str:
         summary = ["Earth Model Fit Record"]
         summary.append("=" * len(summary[0]))
         summary.append(

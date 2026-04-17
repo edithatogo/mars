@@ -7,8 +7,11 @@ This module will define various types of basis functions, such as:
 - Linear functions
 """
 
+from __future__ import annotations
+
 import logging
 from abc import ABC, abstractmethod
+from typing import Any, cast
 
 import numpy as np
 
@@ -25,16 +28,20 @@ class BasisFunction(ABC):
     a string representation and its degree.
     """
 
-    def __init__(self, name: str = "BasisFunction"):
+    def __init__(self, name: str = "BasisFunction") -> None:
         self._name = name
         # Attributes common to many basis functions, but not all will use them directly.
         # Subclasses will define how these are used.
-        self.variable_idx: int = (
+        self.variable_idx: int | None = (
             None  # Index of the feature used by this basis function (if applicable)
         )
-        self.knot_val: float = None  # Knot value for hinge functions (if applicable)
-        self.parent1: BasisFunction = None  # First parent for interaction terms
-        self.parent2: BasisFunction = None  # Second parent for interaction terms (not used in current 1-parent model)
+        self.knot_val: float | None = (
+            None  # Knot value for hinge functions (if applicable)
+        )
+        self.parent1: BasisFunction | None = None  # First parent for interaction terms
+        self.parent2: BasisFunction | None = (
+            None  # Second parent for interaction terms (not used in current 1-parent model)
+        )
         self.is_linear_term: bool = (
             False  # Indicates if the *newest* component is linear
         )
@@ -72,14 +79,14 @@ class BasisFunction(ABC):
         numpy.ndarray of shape (n_samples,)
             The transformed values.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def __str__(self) -> str:
         """
         Return a human-readable string representation of the basis function.
         """
-        pass
+        raise NotImplementedError
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -95,27 +102,27 @@ class BasisFunction(ABC):
         - A linear term (e.g., x) if treated as a special case, also degree 1.
         - An interaction term (product of two degree-1 terms) has degree 2.
         """
-        pass
+        raise NotImplementedError
 
     def get_name(self) -> str:
         """Get the name of the basis function (can be auto-generated or custom)."""
         return self._name
 
-    def _set_name(self, name: str):
+    def _set_name(self, name: str) -> None:
         """Set the name, typically used by subclasses during init."""
         self._name = name
 
     # Optional: Methods to explicitly set properties if not done in init by subclasses
     def _set_properties(
         self,
-        variable_idx: int = None,
-        knot_val: float = None,
-        parent1: "BasisFunction" = None,
-        parent2: "BasisFunction" = None,
+        variable_idx: int | None = None,
+        knot_val: float | None = None,
+        parent1: BasisFunction | None = None,
+        parent2: BasisFunction | None = None,
         is_linear: bool = False,
         is_hinge: bool = False,
         involved_variables: frozenset[int] = frozenset(),
-    ):
+    ) -> None:
         self.variable_idx = variable_idx
         self.knot_val = knot_val
         self.parent1 = parent1
@@ -131,7 +138,7 @@ class BasisFunction(ABC):
         """
         Return True if the basis function is a constant (intercept) term.
         """
-        pass
+        raise NotImplementedError
 
 
 class ConstantBasisFunction(BasisFunction):
@@ -141,7 +148,7 @@ class ConstantBasisFunction(BasisFunction):
     Its degree is 0.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(name="Intercept")
         self._set_properties(
             is_linear=False, is_hinge=False, involved_variables=frozenset()
@@ -166,12 +173,13 @@ class ConstantBasisFunction(BasisFunction):
         numpy.ndarray of shape (n_samples,)
             An array containing ones.
         """
+        del missing_mask
         if not isinstance(
             X_processed, np.ndarray
         ):  # Corrected: removed the erroneous check for 'X'
             raise TypeError("Input X_processed must be a numpy array.")
         if X_processed.ndim == 1 or X_processed.ndim == 2:
-            return np.ones(X_processed.shape[0])
+            return cast(np.ndarray, np.ones(X_processed.shape[0]))
         raise ValueError("Input X_processed must be 1D or 2D.")
 
     def __str__(self) -> str:
@@ -198,8 +206,8 @@ class HingeBasisFunction(BasisFunction):
         variable_idx: int,
         knot_val: float,
         is_right_hinge: bool = True,
-        variable_name: str = None,
-        parent_bf: "BasisFunction" = None,
+        variable_name: str | None = None,
+        parent_bf: BasisFunction | None = None,
     ):
         # Determine name based on properties
         self.variable_name = variable_name if variable_name else f"x{variable_idx}"
@@ -214,7 +222,7 @@ class HingeBasisFunction(BasisFunction):
 
         super().__init__(name=name_str)
 
-        parent_involved_vars = frozenset()
+        parent_involved_vars: frozenset[int] = frozenset()
         if parent_bf:
             parent_involved_vars = parent_bf.get_involved_variables()
         current_involved_vars = parent_involved_vars.union({variable_idx})
@@ -274,9 +282,9 @@ class HingeBasisFunction(BasisFunction):
                 X_processed, missing_mask
             )  # Recursive call
             # NaN propagation happens if either parent_transformed or current_term_values is NaN
-            return parent_transformed * current_term_values
+            return cast(np.ndarray, parent_transformed * current_term_values)
         # This is a simple hinge (degree 1)
-        return current_term_values
+        return cast(np.ndarray, current_term_values)
 
     def __str__(self) -> str:
         # The name is already constructed in __init__ to handle interactions properly.
@@ -305,9 +313,9 @@ class CategoricalBasisFunction(BasisFunction):
     def __init__(
         self,
         variable_idx: int,
-        category: any,
-        variable_name: str = None,
-        parent_bf: "BasisFunction" = None,
+        category: Any,
+        variable_name: str | None = None,
+        parent_bf: BasisFunction | None = None,
     ):
         self.category = category
         self.variable_name = variable_name if variable_name else f"x{variable_idx}"
@@ -319,7 +327,7 @@ class CategoricalBasisFunction(BasisFunction):
 
         super().__init__(name=name_str)
 
-        parent_involved_vars = frozenset()
+        parent_involved_vars: frozenset[int] = frozenset()
         if parent_bf:
             parent_involved_vars = parent_bf.get_involved_variables()
         current_involved_vars = parent_involved_vars.union({variable_idx})
@@ -357,8 +365,8 @@ class CategoricalBasisFunction(BasisFunction):
 
         if self.parent1:  # This is an interaction term
             parent_transformed = self.parent1.transform(X_processed, missing_mask)
-            return parent_transformed * current_term_values
-        return current_term_values
+            return cast(np.ndarray, parent_transformed * current_term_values)
+        return cast(np.ndarray, current_term_values)
 
     def __str__(self) -> str:
         return self.get_name()
@@ -388,8 +396,8 @@ class LinearBasisFunction(BasisFunction):
     def __init__(
         self,
         variable_idx: int,
-        variable_name: str = None,
-        parent_bf: "BasisFunction" = None,
+        variable_name: str | None = None,
+        parent_bf: BasisFunction | None = None,
     ):
         self.variable_name = variable_name if variable_name else f"x{variable_idx}"
         name_str = ""
@@ -399,7 +407,7 @@ class LinearBasisFunction(BasisFunction):
 
         super().__init__(name=name_str)
 
-        parent_involved_vars = frozenset()
+        parent_involved_vars: frozenset[int] = frozenset()
         if parent_bf:
             parent_involved_vars = parent_bf.get_involved_variables()
         current_involved_vars = parent_involved_vars.union({variable_idx})
@@ -448,9 +456,9 @@ class LinearBasisFunction(BasisFunction):
             parent_transformed = self.parent1.transform(
                 X_processed, missing_mask
             )  # Recursive call
-            return parent_transformed * current_term_values
+            return cast(np.ndarray, parent_transformed * current_term_values)
         # This is a simple linear term (degree 1)
-        return current_term_values
+        return cast(np.ndarray, current_term_values)
 
     def __str__(self) -> str:
         return self.get_name()
@@ -496,14 +504,20 @@ class InteractionBasisFunction(BasisFunction):
     def transform(
         self, X_processed: np.ndarray, missing_mask: np.ndarray
     ) -> np.ndarray:
-        return self.parent1.transform(
-            X_processed, missing_mask
-        ) * self.parent2.transform(X_processed, missing_mask)
+        assert self.parent1 is not None
+        assert self.parent2 is not None
+        return cast(
+            np.ndarray,
+            self.parent1.transform(X_processed, missing_mask)
+            * self.parent2.transform(X_processed, missing_mask),
+        )
 
     def __str__(self) -> str:
         return self.get_name()
 
     def degree(self) -> int:
+        assert self.parent1 is not None
+        assert self.parent2 is not None
         return self.parent1.degree() + self.parent2.degree()
 
     def is_constant(self) -> bool:
@@ -516,7 +530,7 @@ class MissingnessBasisFunction(BasisFunction):
     Its degree is 1. It does not interact with parent functions for degree calculation.
     """
 
-    def __init__(self, variable_idx: int, variable_name: str = None):
+    def __init__(self, variable_idx: int, variable_name: str | None = None):
         self.variable_name = variable_name if variable_name else f"x{variable_idx}"
         name_str = f"is_missing({self.variable_name})"
 
@@ -550,6 +564,7 @@ class MissingnessBasisFunction(BasisFunction):
         numpy.ndarray of shape (n_samples,)
             An array of 0s and 1s.
         """
+        del X_processed
         if not isinstance(missing_mask, np.ndarray):
             raise TypeError("Input missing_mask must be a numpy array.")
         if missing_mask.ndim != 2:

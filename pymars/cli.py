@@ -1,8 +1,13 @@
+from __future__ import annotations
+
 """Command line interface for pymars."""
 
 import argparse
+import importlib
 import logging
 import pickle
+from pathlib import Path
+from typing import Any, cast
 
 from . import Earth, __version__
 
@@ -73,10 +78,10 @@ def main() -> None:
         parser.print_help()
 
 
-def fit_model(args) -> None:
+def fit_model(args: argparse.Namespace) -> None:
     """Fit an Earth model from command line arguments."""
     # Import pandas only when needed
-    import pandas as pd
+    pd = cast(Any, importlib.import_module("pandas"))
 
     # Load data
     data = pd.read_csv(args.input)
@@ -94,27 +99,28 @@ def fit_model(args) -> None:
     if args.max_terms is not None:
         model_params["max_terms"] = args.max_terms
 
-    earth = Earth(**model_params)
+    earth: Any = Earth(**model_params)
     earth.fit(X, y)
 
     # Save model
-    with open(args.output_model, "wb") as f:
+    with Path(args.output_model).open("wb") as f:
         pickle.dump(earth, f)
 
     print(f"Model fitted and saved to {args.output_model}")
-    print(f"Number of selected basis functions: {len(earth.basis_)}")
+    basis_functions = earth.basis_ or []
+    print(f"Number of selected basis functions: {len(basis_functions)}")
     print(f"GCV score: {earth.gcv_:.4f}")
     print(f"R² score: {earth.score(X, y):.4f}")
 
 
-def make_predictions(args) -> None:
+def make_predictions(args: argparse.Namespace) -> None:
     """Make predictions with a fitted model."""
     # Import pandas only when needed
-    import pandas as pd
+    pd = cast(Any, importlib.import_module("pandas"))
 
     # Load model
-    with open(args.model, "rb") as f:
-        model = pickle.load(f)
+    with Path(args.model).open("rb") as f:
+        model: Any = pickle.load(f)
 
     # Load input data
     data = pd.read_csv(args.input)
@@ -130,14 +136,14 @@ def make_predictions(args) -> None:
     print(f"Predictions made and saved to {args.output}")
 
 
-def score_model(args) -> None:
+def score_model(args: argparse.Namespace) -> None:
     """Score a fitted model."""
     # Import pandas only when needed
-    import pandas as pd
+    pd = cast(Any, importlib.import_module("pandas"))
 
     # Load model
-    with open(args.model, "rb") as f:
-        model = pickle.load(f)
+    with Path(args.model).open("rb") as f:
+        model: Any = pickle.load(f)
 
     # Load data
     data = pd.read_csv(args.input)

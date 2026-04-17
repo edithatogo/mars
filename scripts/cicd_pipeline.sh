@@ -19,8 +19,8 @@ pip install ruff
 ruff check pymars tests
 ruff format --check pymars tests
 
-echo "3. Running type checking with MyPy..."
-mypy pymars/
+echo "3. Running type checking with ty..."
+ty check pymars/
 
 echo "4. Running tests with coverage..."
 python -m pytest tests/ --cov=pymars --cov-report=term-missing

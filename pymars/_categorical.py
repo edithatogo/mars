@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 """Utilities for handling categorical features."""
 
 from collections import Counter
+from typing import Any, cast
 
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
@@ -9,11 +12,11 @@ from sklearn.preprocessing import LabelEncoder
 class CategoricalImputer:
     """Simple imputer and label encoder for categorical features."""
 
-    def __init__(self):
-        self.encoders = {}
-        self.most_frequent_ = {}
+    def __init__(self) -> None:
+        self.encoders: dict[int, LabelEncoder] = {}
+        self.most_frequent_: dict[int, Any | None] = {}
 
-    def fit(self, X, categorical_features):
+    def fit(self, X: Any, categorical_features: list[int]) -> CategoricalImputer:
         X_arr = np.asarray(X, dtype=object)
         if X_arr.ndim == 1:
             X_arr = X_arr.reshape(-1, 1)
@@ -35,7 +38,7 @@ class CategoricalImputer:
             self.encoders[idx] = le
         return self
 
-    def transform(self, X):
+    def transform(self, X: Any) -> np.ndarray:
         X_arr = np.asarray(X, dtype=object).copy()
         if X_arr.ndim == 1:
             X_arr = X_arr.reshape(-1, 1)
@@ -51,11 +54,11 @@ class CategoricalImputer:
                     enc = le.transform([self.most_frequent_[idx]])[0]
                 new_col.append(float(enc))
             X_arr[:, idx] = np.array(new_col, dtype=float)
-        return np.asarray(X_arr, dtype=float)
+        return cast(np.ndarray, np.asarray(X_arr, dtype=float))
 
-    def fit_transform(self, X, categorical_features):
+    def fit_transform(self, X: Any, categorical_features: list[int]) -> np.ndarray:
         return self.fit(X, categorical_features).transform(X)
 
     @staticmethod
-    def _is_missing(value):
+    def _is_missing(value: Any) -> bool:
         return value is None or (isinstance(value, float) and np.isnan(value))

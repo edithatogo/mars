@@ -5,8 +5,11 @@ This module can contain helper functions used across different modules,
 such as input validation, specific calculations not tied to a class, etc.
 """
 
+from __future__ import annotations
+
 # Standard library imports
 import logging
+from typing import Any, cast
 
 import numpy as np
 
@@ -19,13 +22,13 @@ logger = logging.getLogger(__name__)
 
 
 def check_array(
-    array,
-    ensure_2d=False,
-    allow_nd=False,
-    ensure_min_samples=1,
-    ensure_min_features=1,
-    allow_missing=False,
-):
+    array: Any,
+    ensure_2d: bool = False,
+    allow_nd: bool = False,
+    ensure_min_samples: int = 1,
+    ensure_min_features: int = 1,
+    allow_missing: bool = False,
+) -> np.ndarray:
     """
     Rudimentary input validation for an array.
     Inspired by sklearn.utils.validation.check_array.
@@ -57,7 +60,7 @@ def check_array(
             f"Found array with {array.shape[1]} feature(s), but a minimum of {ensure_min_features} is required."
         )
 
-    return array
+    return cast(np.ndarray, array)
 
 
 # ``check_X_y`` was formerly implemented here as a lightweight alternative to
@@ -84,20 +87,14 @@ def gcv_penalty_cost_effective_parameters(
     Returns:
         The calculated effective number of parameters.
     """
+    del num_samples
     if num_terms == 0:
         return 0.0
 
     # py-earth style: effective_num_parameters = num_terms + penalty * num_knots
     # Here, num_knots corresponds to num_hinge_terms (as each hinge pair comes from one knot,
     # and linear terms are not penalized in this way).
-    effective_params = float(num_terms + penalty * num_hinge_terms)
-
-    # Cap effective parameters to be less than num_samples to keep GCV formula stable.
-    # If effective_params == num_samples, denominator in GCV is 0.
-    # If effective_params > num_samples, (1 - eff/N)^2 can be negative if not careful, or GCV is meaningless.
-    # We ensure it's at most num_samples - EPSILON effectively by how calculate_gcv handles it.
-    # For this function, just return the calculated value; calculate_gcv handles the num_samples check.
-    return effective_params
+    return float(num_terms + penalty * num_hinge_terms)
 
 
 def calculate_gcv(rss: float, num_samples: int, num_effective_params: float) -> float:
@@ -117,5 +114,4 @@ def calculate_gcv(rss: float, num_samples: int, num_effective_params: float) -> 
     if denominator < 1e-9:  # Effectively zero
         return np.inf
 
-    gcv = rss / (num_samples * denominator)
-    return gcv
+    return rss / (num_samples * denominator)

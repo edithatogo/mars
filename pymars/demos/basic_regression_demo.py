@@ -1,6 +1,7 @@
 """Basic regression demonstration using :class:`EarthRegressor`."""
 
 import logging
+from typing import Any
 
 import numpy as np
 from sklearn.metrics import mean_squared_error
@@ -31,12 +32,14 @@ def main() -> None:
     )
     logger.info("Generated data: X shape %s, y shape %s", X.shape, y.shape)
 
-    model = EarthRegressor(max_degree=1, penalty=3.0, max_terms=20)
+    model: Any = EarthRegressor(max_degree=1, penalty=3.0, max_terms=20)
     model.fit(X_train, y_train)
     logger.info("Model fitting complete.")
 
-    if hasattr(model, "earth_") and hasattr(model.earth_, "summary"):
-        model.earth_.summary()
+    if hasattr(model, "earth_"):
+        summary = getattr(model.earth_, "summary", None)
+        if callable(summary):
+            summary()
 
     y_pred = model.predict(X_test)
     mse = mean_squared_error(y_test, y_pred)

@@ -19,9 +19,9 @@
 
 ## Code Quality
 - **ruff** - Fast Python linter (replaces flake8, pyflakes, isort)
-- **black** - Code formatting
+- **ruff format** - Code formatting
 - **isort** - Import sorting (handled by ruff)
-- **mypy** - Static type checking
+- **ty** - Static type checking
 
 ## Security & Mutation Testing
 - **bandit** - Security linting

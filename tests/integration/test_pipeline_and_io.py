@@ -90,10 +90,10 @@ class TestFileIOIntegration:
         model.fit(X, y)
 
         model_path = tmp_path / "model.pkl"
-        with open(model_path, "wb") as f:
+        with model_path.open("wb") as f:
             pickle.dump(model, f)
 
-        with open(model_path, "rb") as f:
+        with model_path.open("rb") as f:
             loaded_model = pickle.load(f)
 
         predictions_original = model.predict(X)

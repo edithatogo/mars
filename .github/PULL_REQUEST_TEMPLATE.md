@@ -20,9 +20,9 @@
 
 - [ ] Unit tests pass locally
 - [ ] Integration tests pass (if applicable)
-- [ ] Code coverage meets requirements (>80%)
+- [ ] Code coverage meets requirements (>90%)
 - [ ] No ruff/linting violations
-- [ ] mypy type checking passes
+- [ ] ty type checking passes
 
 ## Checklist
 

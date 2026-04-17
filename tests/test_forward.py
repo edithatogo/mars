@@ -325,7 +325,7 @@ def test_get_allowable_knot_values(simple_data):
     passer_inter_minspan.n_samples, passer_inter_minspan.n_features = X.shape
     passer_inter_minspan.missing_mask = np.zeros_like(X, dtype=bool)
     passer_inter_minspan.X_fit_original = X
-    parent_hinge_interaction.transform = lambda x_arr, mm_arr: np.ones(x_arr.shape[0])
+    parent_hinge_interaction.transform = lambda x_arr, _mm_arr: np.ones(x_arr.shape[0])
     knots_inter_ms = passer_inter_minspan._get_allowable_knot_values(
         X[:, 0], parent_hinge_interaction, 0
     )
@@ -657,6 +657,7 @@ def test_generate_linear_candidates(multi_feature_data):
 
 
 def test_find_best_addition_selects_linear(simple_data):
+    del simple_data
     X_linear = np.array([[1], [2], [3], [4], [5], [6]])
     y_linear = 2 * X_linear[:, 0] + 1
 
@@ -769,12 +770,14 @@ def test_run_adds_linear_interaction_term():
         ):
             has_linear_interaction = True
             break
-        if bf.degree() == 2 and (
-            isinstance(bf, LinearBasisFunction) or isinstance(bf, HingeBasisFunction)
+        if (
+            bf.degree() == 2
+            and isinstance(bf, (LinearBasisFunction, HingeBasisFunction))
+            and bf.parent1
+            and not bf.parent1.is_constant()
         ):
-            if bf.parent1 and not bf.parent1.is_constant():
-                has_linear_interaction = True
-                break
+            has_linear_interaction = True
+            break
     assert has_linear_interaction, "Expected a degree 2 linear interaction term."
 
     if final_coeffs is not None and len(final_bfs) == len(final_coeffs):

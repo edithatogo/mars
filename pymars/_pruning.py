@@ -6,7 +6,10 @@ This module is responsible for removing basis functions from the model
 using a criterion like Generalized Cross-Validation (GCV).
 """
 
+from __future__ import annotations
+
 import logging
+from typing import cast
 
 import numpy as np
 
@@ -28,16 +31,16 @@ class PruningPasser:
     def __init__(self, earth_model: Earth):
         self.model = earth_model
 
-        self.X_train = None  # Will be X_fit_processed
-        self.y_train = None  # Will be y_fit
+        self.X_train: np.ndarray | None = None  # Will be X_fit_processed
+        self.y_train: np.ndarray | None = None  # Will be y_fit
         self.n_samples = 0  # Will be based on X_fit_processed
 
-        self.missing_mask = None
-        self.X_fit_original = None
+        self.missing_mask: np.ndarray | None = None
+        self.X_fit_original: np.ndarray | None = None
 
-        self.best_gcv_so_far = np.inf
+        self.best_gcv_so_far: float = float(np.inf)
         self.best_basis_functions_so_far: list[BasisFunction] = []
-        self.best_coeffs_so_far: np.ndarray = None
+        self.best_coeffs_so_far: np.ndarray | None = None
 
     def _calculate_rss_and_coeffs(
         self, B_matrix: np.ndarray, y_data: np.ndarray
@@ -49,10 +52,10 @@ class PruningPasser:
         """
         if B_matrix is None or B_matrix.shape[1] == 0:
             mean_y = np.mean(y_data)
-            rss = np.sum((y_data - mean_y) ** 2)
+            rss: float = float(np.sum((y_data - mean_y) ** 2))
             num_valid_rows = len(y_data)
             coeffs_for_mean = (
-                np.array([mean_y])
+                cast(np.ndarray, np.array([mean_y]))
                 if (B_matrix is not None and B_matrix.shape[1] == 0)
                 else None
             )
@@ -65,7 +68,7 @@ class PruningPasser:
         if (
             num_valid_rows == 0 or num_valid_rows < B_matrix.shape[1]
         ):  # Not enough data or underdetermined
-            return np.inf, None, 0
+            return float(np.inf), None, 0
 
         B_complete = B_matrix[valid_rows_mask, :]
         y_complete = y_data[
@@ -83,13 +86,13 @@ class PruningPasser:
                 y_pred_complete = B_complete @ coeffs
                 rss = np.sum((y_complete - y_pred_complete) ** 2)
             else:
-                rss = residuals_sum_sq[0]
+                rss = float(residuals_sum_sq[0])
             return rss, coeffs, num_valid_rows
         except np.linalg.LinAlgError as e:
             logger.warning(
                 "LinAlgError in PruningPasser._calculate_rss_and_coeffs: %s", e
             )
-            return np.inf, None, num_valid_rows
+            return float(np.inf), None, num_valid_rows
 
     def _build_basis_matrix(
         self,
@@ -102,7 +105,7 @@ class PruningPasser:
         and a list of basis functions, using the provided missing_mask.
         """
         if not basis_functions:
-            return np.empty((X_data.shape[0], 0))
+            return cast(np.ndarray, np.empty((X_data.shape[0], 0)))
 
         # Preallocate to avoid repeated hstack operations which were shown via
         # profiling to dominate runtime for larger models.
@@ -110,7 +113,7 @@ class PruningPasser:
         B_matrix = np.empty((n_samples, len(basis_functions)), dtype=float)
         for idx, bf in enumerate(basis_functions):
             B_matrix[:, idx] = bf.transform(X_data, missing_mask)
-        return B_matrix
+        return cast(np.ndarray, B_matrix)
 
     def _compute_gcv_for_subset(
         self,
@@ -124,18 +127,20 @@ class PruningPasser:
         Computes GCV, RSS, and coefficients for a given subset of basis functions.
         Returns (gcv, rss, coeffs).
         """
+        del X_fit_original
         if not basis_subset:
             # This case implies an intercept-only model IF an intercept is implicitly assumed
             # or if _calculate_rss_and_coeffs handles B_matrix.shape[1] == 0 by returning intercept.
             # Current _calculate_rss_and_coeffs for empty B_matrix (shape[1]==0) returns mean(y) as coeff.
+            empty_matrix = cast(np.ndarray, np.empty((len(y_fit), 0)))
             rss_empty, coeffs_empty, n_valid_rows_for_empty = (
-                self._calculate_rss_and_coeffs(np.empty((len(y_fit), 0)), y_fit)
+                self._calculate_rss_and_coeffs(empty_matrix, y_fit)
             )  # B_matrix with 0 columns
 
             if (
                 coeffs_empty is None
             ):  # Should not happen with current _calc_rss_and_coeffs for empty B
-                return np.inf, rss_empty, None
+                return float(np.inf), float(rss_empty), None
 
             num_terms_intercept_only = 1  # Intercept
             num_hinge_terms_intercept_only = 0
@@ -150,8 +155,8 @@ class PruningPasser:
                 rss_empty, n_valid_rows_for_empty, effective_params_empty
             )
             return (
-                gcv_empty,
-                rss_empty,
+                float(gcv_empty),
+                float(rss_empty),
                 coeffs_empty,
             )  # coeffs_empty is np.array([np.mean(y_fit)])
 
@@ -164,13 +169,13 @@ class PruningPasser:
         )
 
         if coeffs is None or rss == np.inf or num_valid_rows_for_fit == 0:
-            return np.inf, rss if rss is not None else np.inf, None
+            return float(np.inf), float(rss if rss is not None else np.inf), None
 
         num_model_terms = coeffs.shape[0]  # Actual number of terms in the fitted model
 
         if num_model_terms == 0:
             # This case implies LSTSQ resulted in an empty coefficient array, which means no model.
-            return np.inf, rss, None
+            return float(np.inf), float(rss), None
 
         num_hinge_terms_in_subset = sum(
             isinstance(bf, HingeBasisFunction) for bf in basis_subset
@@ -185,7 +190,7 @@ class PruningPasser:
 
         # The arguments for calculate_gcv are (rss, num_samples, num_effective_params)
         gcv_score = calculate_gcv(rss, num_valid_rows_for_fit, effective_params)
-        return gcv_score, rss, coeffs
+        return float(gcv_score), float(rss), coeffs
 
     def run(
         self,
@@ -204,8 +209,8 @@ class PruningPasser:
         self.n_samples = self.X_train.shape[0]
 
         if not initial_basis_functions:
-            self.best_gcv_so_far = np.inf
-            return [], np.array([]), np.inf
+            self.best_gcv_so_far = float(np.inf)
+            return [], np.array([]), float(np.inf)
 
         current_pruning_sequence_bfs = list(initial_basis_functions)
 
@@ -221,10 +226,11 @@ class PruningPasser:
             logger.warning(
                 "Could not compute GCV for the initial full model from forward pass in PruningPasser."
             )
-            self.best_gcv_so_far = np.inf
-            return initial_basis_functions, initial_coefficients, np.inf
+            self.best_gcv_so_far = float(np.inf)
+            return initial_basis_functions, initial_coefficients, float(np.inf)
 
-        self.best_gcv_so_far = initial_gcv
+        assert initial_gcv is not None
+        self.best_gcv_so_far = float(initial_gcv)
         self.best_basis_functions_so_far = list(current_pruning_sequence_bfs)
         self.best_coeffs_so_far = initial_coeffs_refit
 
@@ -251,7 +257,9 @@ class PruningPasser:
             if len(active_bfs_for_loop) <= min_allowable_terms:
                 break
 
-            gcv_for_removal_candidates = []
+            gcv_for_removal_candidates: list[
+                tuple[float, float, np.ndarray | None, int]
+            ] = []
 
             for i in range(len(active_bfs_for_loop)):
                 bf_to_test_removal = active_bfs_for_loop[i]
@@ -260,7 +268,9 @@ class PruningPasser:
                     isinstance(bf_to_test_removal, ConstantBasisFunction)
                     and len(active_bfs_for_loop) == min_allowable_terms
                 ):
-                    gcv_for_removal_candidates.append((np.inf, np.inf, None, i))
+                    gcv_for_removal_candidates.append(
+                        (float(np.inf), float(np.inf), None, i)
+                    )
                     continue
 
                 temp_basis_subset = [
@@ -268,7 +278,9 @@ class PruningPasser:
                 ]
 
                 if not temp_basis_subset and min_allowable_terms > 0:
-                    gcv_for_removal_candidates.append((np.inf, np.inf, None, i))
+                    gcv_for_removal_candidates.append(
+                        (float(np.inf), float(np.inf), None, i)
+                    )
                     continue
 
                 gcv, rss, coeffs = self._compute_gcv_for_subset(
@@ -278,7 +290,14 @@ class PruningPasser:
                     self.X_fit_original,
                     temp_basis_subset,
                 )
-                gcv_for_removal_candidates.append((gcv, rss, coeffs, i))
+                gcv_for_removal_candidates.append(
+                    (
+                        float(gcv if gcv is not None else np.inf),
+                        float(rss if rss is not None else np.inf),
+                        coeffs,
+                        i,
+                    )
+                )
 
             if not gcv_for_removal_candidates:
                 break
@@ -294,7 +313,7 @@ class PruningPasser:
             active_bfs_for_loop.pop(idx_removed)
 
             if gcv_after_removal < self.best_gcv_so_far:
-                self.best_gcv_so_far = gcv_after_removal
+                self.best_gcv_so_far = float(gcv_after_removal)
                 self.best_basis_functions_so_far = list(active_bfs_for_loop)
                 self.best_coeffs_so_far = coeffs_after_removal
 

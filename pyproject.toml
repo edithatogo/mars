@@ -66,7 +66,7 @@ dev = [
     "diff-cover>=8.0.0",
     # Linting & formatting
     "ruff>=0.4.0",
-    "mypy>=1.8.0",
+    "ty>=0.0.30",
     "pre-commit>=3.6.0",
     # Security
     "bandit>=1.7.6",
@@ -127,7 +127,7 @@ select = [
     "RET",    # return statement analysis
 ]
 ignore = [
-    "ANN",    # Type annotations (handled by mypy)
+    "ANN",    # Type annotations (handled by ty)
     "S101",   # Use of assert (needed in tests)
     "E501",   # Line length (handled by formatter)
     "C901",   # Too complex (handled by mccabe)
@@ -179,31 +179,11 @@ skip-magic-trailing-comma = false
 line-ending = "auto"
 
 # ============================================================
-# mypy configuration (strict mode)
+# ty configuration (strict mode)
 # ============================================================
-[tool.mypy]
-python_version = "3.8"
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = true
-disallow_incomplete_defs = true
-check_untyped_defs = true
-disallow_untyped_decorators = true
-no_implicit_optional = true
-warn_redundant_casts = true
-warn_unused_ignores = true
-warn_no_return = true
-warn_unreachable = true
-strict_equality = true
-
-[[tool.mypy.overrides]]
-module = [
-    "scipy.*",
-    "sklearn.*",
-    "matplotlib.*",
-    "hypothesis.*",
-]
-ignore_missing_imports = true
+[tool.ty.environment]
+python-version = "3.9"
+root = ["."]
 
 # ============================================================
 # pytest configuration
@@ -256,7 +236,7 @@ exclude_lines = [
     "if __name__ == .__main__.:",
     "if TYPE_CHECKING:",
 ]
-fail_under = 80
+fail_under = 90
 show_missing = true
 
 # ============================================================
@@ -297,3 +277,8 @@ tests_dir = "tests/"
 min_rounds = 5
 max_time = 1.0
 timer = "perf_counter"
+
+[dependency-groups]
+dev = [
+    "ty>=0.0.30",
+]

@@ -1,7 +1,11 @@
+from __future__ import annotations
+
+from typing import Any
+
 import matplotlib.pyplot as plt
 
 
-def plot_basis_functions(model, X):
+def plot_basis_functions(model: Any, X: Any) -> Any:
     """Plot the transformed basis functions."""
     if not hasattr(model, "basis_"):
         raise ValueError("Model is not fitted")
@@ -13,7 +17,7 @@ def plot_basis_functions(model, X):
     return plt.gca()
 
 
-def plot_residuals(model, X, y):
+def plot_residuals(model: Any, X: Any, y: Any) -> Any:
     """Plot residuals of the fitted model."""
     preds = model.predict(X)
     plt.scatter(preds, y - preds)

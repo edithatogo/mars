@@ -20,11 +20,10 @@ class MockEarth(Earth):
 def simple_pruning_data():
     np.random.seed(42)
     n_samples_fixture = 40  # Increased from 10
-    X_list = []
-    for i in range(n_samples_fixture):
-        # Create more varied data and ensure reasonable range for sin function
-        X_list.append([1 + i * 0.2, 10 + i * 0.3, 5 + i * 0.1])
-    X = np.array(X_list, dtype=float)
+    X = np.array(
+        [[1 + i * 0.2, 10 + i * 0.3, 5 + i * 0.1] for i in range(n_samples_fixture)],
+        dtype=float,
+    )
 
     y = (
         2 * X[:, 0]
@@ -98,6 +97,7 @@ def test_pruning_passer_instantiation():
 
 
 def test_compute_gcv_for_subset(simple_pruning_data, initial_model_for_pruning):
+    del simple_pruning_data
     X, y, initial_bfs, _ = initial_model_for_pruning
     earth_model_penalty3 = MockEarth(penalty=3.0)
     passer = PruningPasser(earth_model_penalty3)

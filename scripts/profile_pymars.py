@@ -2,6 +2,7 @@
 """
 Script to profile the pymars implementation and identify performance bottlenecks.
 """
+
 import cProfile
 import io
 import pstats
@@ -31,7 +32,7 @@ def profile_earth_model():
     # Create a stats object and print top functions
     s = io.StringIO()
     ps = pstats.Stats(pr, stream=s)
-    ps.sort_stats('cumulative')
+    ps.sort_stats("cumulative")
 
     print("Profiling Earth model fitting...")
     print("=" * 50)
@@ -48,12 +49,13 @@ def profile_earth_model():
 
     s2 = io.StringIO()
     ps2 = pstats.Stats(pr2, stream=s2)
-    ps2.sort_stats('cumulative')
+    ps2.sort_stats("cumulative")
 
     print("\\nProfiling Earth model prediction...")
     print("=" * 50)
     ps2.print_stats(10)  # Print top 10 functions
     print(s2.getvalue())
+
 
 def profile_forward_pass():
     """Profile just the forward pass."""
@@ -74,19 +76,20 @@ def profile_forward_pass():
         X_fit_processed=X,
         y_fit=y,
         missing_mask=np.zeros_like(X, dtype=bool),
-        X_fit_original=X
+        X_fit_original=X,
     )
 
     pr.disable()
 
     s = io.StringIO()
     ps = pstats.Stats(pr, stream=s)
-    ps.sort_stats('cumulative')
+    ps.sort_stats("cumulative")
 
     print("Profiling Forward Pass...")
     print("=" * 50)
     ps.print_stats(15)
     print(s.getvalue())
+
 
 def profile_pruning_pass():
     """Profile just the pruning pass."""
@@ -105,7 +108,7 @@ def profile_pruning_pass():
         X_fit_processed=X,
         y_fit=y,
         missing_mask=np.zeros_like(X, dtype=bool),
-        X_fit_original=X
+        X_fit_original=X,
     )
 
     # Now profile pruning pass
@@ -119,19 +122,20 @@ def profile_pruning_pass():
         missing_mask=np.zeros_like(X, dtype=bool),
         initial_basis_functions=fwd_basis_functions,
         initial_coefficients=fwd_coefficients,
-        X_fit_original=X
+        X_fit_original=X,
     )
 
     pr.disable()
 
     s = io.StringIO()
     ps = pstats.Stats(pr, stream=s)
-    ps.sort_stats('cumulative')
+    ps.sort_stats("cumulative")
 
     print("Profiling Pruning Pass...")
     print("=" * 50)
     ps.print_stats(15)
     print(s.getvalue())
+
 
 if __name__ == "__main__":
     print("Starting profiling of pymars components...")

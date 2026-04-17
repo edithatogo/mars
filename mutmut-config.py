@@ -2,10 +2,7 @@
 # This file configures mutmut for pymars
 
 # Paths to include for mutation testing
-paths_to_mutate = [
-    "pymars/*.py",
-    "pymars/*/*.py"
-]
+paths_to_mutate = ["pymars/*.py", "pymars/*/*.py"]
 
 # Paths to exclude from mutation testing
 paths_to_exclude = [

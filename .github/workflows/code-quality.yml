@@ -34,8 +34,8 @@ jobs:
       - name: Run ruff format check
         run: uv run ruff format --check pymars tests
 
-      - name: Run mypy type check
-        run: uv run mypy pymars/ --ignore-missing-imports --no-strict-optional || true
+      - name: Run ty type check
+        run: uv run ty check pymars/
 
       - name: Check for spelling errors
         run: |

@@ -2,6 +2,8 @@
 Advanced example demonstrating complex Earth model usage with interpretability tools.
 """
 
+from typing import Any
+
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.metrics import mean_squared_error, r2_score
@@ -10,7 +12,7 @@ from sklearn.model_selection import train_test_split
 import pymars as earth
 
 
-def advanced_example():
+def advanced_example() -> tuple[Any, float]:
     print("Running advanced pymars example with interpretability...")
 
     # Generate a more complex synthetic dataset
@@ -39,7 +41,7 @@ def advanced_example():
     print(f"Number of features: {n_features}")
 
     # Fit Earth model with feature importance
-    model = earth.Earth(
+    model: Any = earth.Earth(
         max_degree=3,  # Allow higher-order interactions
         penalty=3.0,
         max_terms=20,
@@ -49,7 +51,8 @@ def advanced_example():
     model.fit(X_train, y_train)
 
     print("\nModel summary:")
-    print(f"Number of selected basis functions: {len(model.basis_)}")
+    basis_functions = model.basis_ or []
+    print(f"Number of selected basis functions: {len(basis_functions)}")
     print(f"GCV score: {model.gcv_:.4f}")
 
     # Make predictions
@@ -68,8 +71,10 @@ def advanced_example():
 
     # Show feature importances
     print("\nFeature importances (GCV-based):")
-    for i, importance in enumerate(model.feature_importances_):
-        print(f"  Feature {i}: {importance:.4f}")
+    feature_importances = model.feature_importances_
+    if feature_importances is not None:
+        for i, importance in enumerate(feature_importances):
+            print(f"  Feature {i}: {importance:.4f}")
 
     # Plot predictions vs actual
     fig, axes = plt.subplots(1, 2, figsize=(12, 5))

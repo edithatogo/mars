@@ -1,6 +1,7 @@
 """Basic classification demonstration using :class:`EarthClassifier`."""
 
 import logging
+from typing import Any
 
 import numpy as np
 from sklearn.metrics import accuracy_score, classification_report
@@ -32,12 +33,14 @@ def main() -> None:
     )
     logger.info("Generated data: X shape %s, y shape %s", X.shape, y.shape)
 
-    model = EarthClassifier(max_degree=1, penalty=3.0, max_terms=15)
+    model: Any = EarthClassifier(max_degree=1, penalty=3.0, max_terms=15)
     model.fit(X_train, y_train)
     logger.info("Model fitting complete.")
 
-    if hasattr(model, "earth_") and hasattr(model.earth_, "summary"):
-        model.earth_.summary()
+    if hasattr(model, "earth_"):
+        summary = getattr(model.earth_, "summary", None)
+        if callable(summary):
+            summary()
 
     y_pred = model.predict(X_test)
     acc = accuracy_score(y_test, y_pred)

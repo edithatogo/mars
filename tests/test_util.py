@@ -60,6 +60,18 @@ def test_check_array_nan_handling():
     assert np.isnan(arr[0, 1])
 
 
+def test_check_array_conversion_failure(monkeypatch):
+    from pymars._util import check_array
+
+    def raise_conversion_error(_value):
+        raise RuntimeError("cannot convert")
+
+    monkeypatch.setattr(np, "asarray", raise_conversion_error)
+
+    with pytest.raises(ValueError, match="could not be converted to a NumPy array"):
+        check_array(object())
+
+
 # Tests for GCV calculation components
 def test_gcv_penalty_cost():
     from pymars._util import gcv_penalty_cost_effective_parameters

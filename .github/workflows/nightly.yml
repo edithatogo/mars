@@ -35,7 +35,7 @@ jobs:
         run: uv run pytest tests/ -v --tb=short || true
 
       - name: Run type checks
-        run: uv run mypy pymars/ --ignore-missing-imports || true
+        run: uv run ty check pymars/ || true
 
       - name: Report status
         if: failure()

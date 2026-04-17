@@ -23,11 +23,11 @@ Provide a pure Python, scikit-learn-compatible implementation of the Multivariat
 - **Pure Python:** No C, Cython, or compiled extensions. Cross-platform compatibility is paramount.
 - **Performance:** Optimize Python code for correctness and clarity; accept that pure Python may be slower than compiled alternatives.
 - **Test Coverage:** Maintain high test coverage using pytest, hypothesis (property-based testing), and mutation testing (mutmut).
-- **Code Quality:** Enforce linting (ruff), formatting (black), type checking (mypy), and security checks (bandit, safety).
+- **Code Quality:** Enforce linting (ruff), formatting (ruff format), type checking (ty), and security checks (bandit, safety).
 - **Documentation:** Comprehensive API docs, user guides, and academic paper.
 
 ## Success Metrics
 - Passes scikit-learn's `check_estimator` suite.
-- Achieves >80% code coverage.
+- Achieves >90% code coverage.
 - Published on PyPI with stable releases.
 - Active community contributions and issue resolution.

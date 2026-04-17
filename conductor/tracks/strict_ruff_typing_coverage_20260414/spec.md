@@ -1,7 +1,7 @@
 # Track Specification: Strict Ruff, Strict Typing, >90% Coverage
 
 ## Objective
-Bring the `mars-earth` codebase to production-grade quality by enforcing strict linting (ruff), strict type checking (mypy), and achieving >90% test coverage.
+Bring the `mars-earth` codebase to production-grade quality by enforcing strict linting (ruff), strict type checking (ty), and achieving >90% test coverage.
 
 ## Scope
 - All Python source files in `pymars/`
@@ -16,7 +16,7 @@ Bring the `mars-earth` codebase to production-grade quality by enforcing strict 
 
 ## Success Criteria
 1. **Ruff**: `ruff check pymars/` passes with zero violations (strict rule set)
-2. **Mypy**: `mypy pymars/` passes with zero errors (strict mode)
+2. **Ty**: `ty check pymars/` passes with zero errors (strict mode)
 3. **Coverage**: `pytest --cov=pymars` reports >90% line coverage
 4. **CI**: All quality gate workflows pass on every push
 
@@ -29,11 +29,11 @@ Bring the `mars-earth` codebase to production-grade quality by enforcing strict 
 
 ## Risks
 - **Type annotation debt**: Large codebase may have significant untyped code
-- **False positives**: Some mypy errors may be upstream type stub issues
+- **False positives**: Some type-checking diagnostics may be upstream type stub issues
 - **Coverage gaps**: Some error paths or edge cases may be hard to test
 
 ## Dependencies
 - Ruff (already installed)
-- Mypy (already installed)
+- Ty (already installed)
 - Pytest-cov (already installed)
 - Hypothesis (already installed)

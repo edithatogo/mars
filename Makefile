@@ -28,8 +28,8 @@ test-parallel: ## Run tests in parallel
 lint: ## Run ruff linter
 	uv run ruff check pymars tests
 
-type-check: ## Run mypy type checker
-	uv run mypy pymars/ --ignore-missing-imports
+type-check: ## Run ty type checker
+	uv run ty check pymars/
 
 format: ## Format code with ruff
 	uv run ruff check --fix pymars tests

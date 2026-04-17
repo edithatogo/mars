@@ -5,7 +5,10 @@ This module is responsible for iteratively adding basis functions to the model
 to minimize a criterion (e.g., sum of squared errors).
 """
 
+from __future__ import annotations
+
 import logging
+from typing import cast
 
 import numpy as np
 
@@ -36,31 +39,34 @@ class ForwardPasser:
 
     def __init__(self, earth_model: Earth):
         self.model = earth_model
-        self.X_train = None
-        self.y_train = None
+        self.X_train: np.ndarray | None = None
+        self.y_train: np.ndarray | None = None
         self.n_samples = 0
         self.n_features = 0
         self.current_basis_functions: list[BasisFunction] = []
-        self.current_B_matrix = None
-        self.current_coefficients = None
+        self.current_B_matrix: np.ndarray | None = None
+        self.current_coefficients: np.ndarray | None = None
         self.current_rss = np.inf
-        self._best_candidate_addition = None
-        self._best_new_B_matrix = None
-        self._best_new_coeffs = None
+        self._best_candidate_addition: (
+            tuple[BasisFunction, BasisFunction | None] | None
+        ) = None
+        self._best_new_B_matrix: np.ndarray | None = None
+        self._best_new_coeffs: np.ndarray | None = None
+        self._min_candidate_gcv = np.inf
         self._min_candidate_rss = np.inf
-        self.X_fit_original = None
-        self.missing_mask = None
+        self.X_fit_original: np.ndarray | None = None
+        self.missing_mask: np.ndarray | None = None
         self.categorical_features = self.model.categorical_features
 
     def _calculate_rss_and_coeffs(
         self, B_matrix: np.ndarray, y: np.ndarray, *, drop_nan_rows: bool = True
     ) -> tuple[float, np.ndarray | None, int]:
         if B_matrix is None or B_matrix.shape[1] == 0:
-            mean_y = np.mean(y)
-            rss = np.sum((y - mean_y) ** 2)
+            mean_y = float(np.mean(y))
+            rss: float = float(np.sum((y - mean_y) ** 2))
             num_valid_rows = len(y)
             coeffs_for_mean = (
-                np.array([mean_y])
+                cast(np.ndarray, np.array([mean_y], dtype=float))
                 if (B_matrix is not None and B_matrix.shape[1] == 0)
                 else None
             )
@@ -104,7 +110,7 @@ class ForwardPasser:
         self, X_processed: np.ndarray, basis_functions: list[BasisFunction]
     ) -> np.ndarray:
         if not basis_functions:
-            return np.empty((X_processed.shape[0], 0))
+            return cast(np.ndarray, np.empty((X_processed.shape[0], 0)))
 
         # Preallocate basis matrix for efficiency instead of building a list of
         # arrays and hstacking them (which triggers many temporary allocations
@@ -112,9 +118,11 @@ class ForwardPasser:
         # np.hstack.
         n_samples = X_processed.shape[0]
         B_matrix = np.empty((n_samples, len(basis_functions)), dtype=float)
+        assert self.missing_mask is not None
+        missing_mask = self.missing_mask
         for idx, bf in enumerate(basis_functions):
-            B_matrix[:, idx] = bf.transform(X_processed, self.missing_mask)
-        return B_matrix
+            B_matrix[:, idx] = bf.transform(X_processed, missing_mask)
+        return cast(np.ndarray, B_matrix)
 
     def run(
         self,
@@ -122,7 +130,7 @@ class ForwardPasser:
         y_fit: np.ndarray,
         missing_mask: np.ndarray,
         X_fit_original: np.ndarray,
-    ) -> tuple[list[BasisFunction], np.ndarray]:
+    ) -> tuple[list[BasisFunction], np.ndarray | None]:
         self.X_train = X_fit_processed
         self.y_train = y_fit
         self.missing_mask = missing_mask
@@ -149,7 +157,7 @@ class ForwardPasser:
             logger.warning(
                 "Could not calculate initial coefficients for intercept model."
             )
-            return [], np.array([])
+            return [], cast(np.ndarray, np.array([]))
 
         self.current_coefficients = coeffs
         self.current_rss = rss
@@ -206,7 +214,9 @@ class ForwardPasser:
                 best_cand_valid_rows_mask = ~np.any(
                     np.isnan(self._best_new_B_matrix), axis=1
                 )
-                num_valid_rows_for_best_candidate = np.sum(best_cand_valid_rows_mask)
+                num_valid_rows_for_best_candidate: int = int(
+                    np.sum(best_cand_valid_rows_mask)
+                )
                 if num_valid_rows_for_best_candidate > 0:
                     num_valid_rows_for_gcv_calc = num_valid_rows_for_best_candidate
 
@@ -217,6 +227,7 @@ class ForwardPasser:
             num_hinge_terms_candidate = sum(
                 isinstance(bf, HingeBasisFunction) for bf in candidate_model_terms_list
             )
+            assert self._best_new_B_matrix is not None
             num_total_terms_candidate = self._best_new_B_matrix.shape[
                 1
             ]  # Number of columns in the candidate basis matrix
@@ -276,7 +287,10 @@ class ForwardPasser:
     ) -> tuple[float | None, np.ndarray | None]:
         if not basis_functions:
             # This implies an intercept-only model for GCV calculation purposes
-            rss_intercept_only = np.sum((self.y_train - np.mean(self.y_train)) ** 2)
+            assert self.y_train is not None
+            rss_intercept_only: float = float(
+                np.sum((self.y_train - np.mean(self.y_train)) ** 2)
+            )
             num_terms_intercept = 1
             num_hinge_terms_intercept = 0
             effective_params_intercept = gcv_penalty_cost_effective_parameters(
@@ -288,8 +302,10 @@ class ForwardPasser:
             gcv_intercept = calculate_gcv(
                 rss_intercept_only, self.n_samples, effective_params_intercept
             )
-            return gcv_intercept, np.array([np.mean(self.y_train)])
+            return gcv_intercept, cast(np.ndarray, np.array([np.mean(self.y_train)]))
 
+        assert self.X_train is not None
+        assert self.y_train is not None
         B_matrix = self._build_basis_matrix(self.X_train, basis_functions)
         rss, coeffs, num_valid_rows = self._calculate_rss_and_coeffs(
             B_matrix, self.y_train
@@ -332,6 +348,8 @@ class ForwardPasser:
     def _get_allowable_knot_values(
         self, X_col_original_for_var: np.ndarray, parent_bf: BasisFunction, var_idx: int
     ) -> np.ndarray:
+        assert self.X_train is not None
+        assert self.missing_mask is not None
         n_vars_for_calc = self.n_features
         if n_vars_for_calc == 0:
             n_vars_for_calc = 1
@@ -342,10 +360,7 @@ class ForwardPasser:
         elif self.model.endspan_alpha > 0:
             try:
                 log_arg = self.model.endspan_alpha / n_vars_for_calc
-                if log_arg <= 0:
-                    val = 3.0
-                else:
-                    val = 3.0 - np.log2(log_arg)
+                val = 3.0 if log_arg <= 0 else 3.0 - np.log2(log_arg)
                 endspan_abs = int(round(val))
                 endspan_abs = max(0, endspan_abs)
                 if endspan_abs == 0:
@@ -354,6 +369,7 @@ class ForwardPasser:
                 endspan_abs = 1
 
         count_parent_nonzero_for_minspan = 0  # Initialize for minspan calculation
+        p_parent_active: np.ndarray
         if parent_bf.is_constant():
             p_parent_active = np.ones(self.n_samples, dtype=bool)
             count_parent_nonzero_for_minspan = self.n_samples
@@ -365,59 +381,55 @@ class ForwardPasser:
             count_parent_nonzero_for_minspan = np.sum(p_parent_active)
 
         if count_parent_nonzero_for_minspan == 0:
-            return np.array([])
+            return cast(np.ndarray, np.array([]))
 
         current_var_missing_mask = self.missing_mask[:, var_idx]
         truly_usable_for_knots_mask = p_parent_active & ~current_var_missing_mask
         X_values_for_knots = X_col_original_for_var[truly_usable_for_knots_mask]
 
         if X_values_for_knots.size == 0:
-            return np.array([])
+            return cast(np.ndarray, np.array([]))
 
         unique_sorted_X_active = np.unique(X_values_for_knots)
 
         num_unique_active = len(unique_sorted_X_active)
         if 2 * endspan_abs >= num_unique_active:
-            return np.array([])
+            return cast(np.ndarray, np.array([]))
 
         potential_knots_after_endspan = unique_sorted_X_active[
             endspan_abs : num_unique_active - endspan_abs
         ]
 
         if not potential_knots_after_endspan.size:
-            return np.array([])
+            return cast(np.ndarray, np.array([]))
 
-        if parent_bf.is_constant():  # Additive rule
-            if len(potential_knots_after_endspan) > 1:
-                potential_knots_after_endspan = potential_knots_after_endspan[:-1]
+        if parent_bf.is_constant() and len(potential_knots_after_endspan) > 1:
+            potential_knots_after_endspan = potential_knots_after_endspan[:-1]
 
         if not potential_knots_after_endspan.size:
-            return np.array([])
+            return cast(np.ndarray, np.array([]))
 
         minspan_abs = 0  # This is the 'cooldown' count
         if self.model.minspan >= 0:
             minspan_abs = self.model.minspan
-        elif self.model.minspan_alpha > 0:
+        elif (
+            self.model.minspan_alpha > 0
+            and count_parent_nonzero_for_minspan > 0
+            and n_vars_for_calc > 0
+            and 0 < self.model.minspan_alpha < 1
+        ):
             # count_parent_nonzero_for_minspan is already calculated above based on p_parent_active
-            if (
-                count_parent_nonzero_for_minspan > 0
-                and n_vars_for_calc > 0
-                and 0 < self.model.minspan_alpha < 1
-            ):
-                try:
-                    log_val = np.log(1.0 - self.model.minspan_alpha)
-                    inner_term = (
-                        -(1.0 / (n_vars_for_calc * count_parent_nonzero_for_minspan))
-                        * log_val
-                    )
-                    if inner_term <= 0:
-                        min_span_float = 0.0
-                    else:
-                        min_span_float = -np.log2(inner_term) / 2.5
-                    minspan_abs = int(round(min_span_float))
-                    minspan_abs = max(0, minspan_abs)
-                except (ValueError, FloatingPointError):
-                    minspan_abs = 1
+            try:
+                log_val = np.log(1.0 - self.model.minspan_alpha)
+                inner_term = (
+                    -(1.0 / (n_vars_for_calc * count_parent_nonzero_for_minspan))
+                    * log_val
+                )
+                min_span_float = 0.0 if inner_term <= 0 else -np.log2(inner_term) / 2.5
+                minspan_abs = int(round(min_span_float))
+                minspan_abs = max(0, minspan_abs)
+            except (ValueError, FloatingPointError):
+                minspan_abs = 1
 
         final_allowable_knots = []
         minspan_countdown = 0
@@ -427,7 +439,7 @@ class ForwardPasser:
                 continue
             final_allowable_knots.append(knot_candidate_val)
             minspan_countdown = max(0, minspan_abs - 1)
-        return np.array(final_allowable_knots)
+        return cast(np.ndarray, np.array(final_allowable_knots))
 
     def _generate_candidates(self) -> list[tuple[BasisFunction, BasisFunction | None]]:
         candidate_additions: list[tuple[BasisFunction, BasisFunction | None]] = []
@@ -456,6 +468,7 @@ class ForwardPasser:
                                 variable_idx=var_idx, parent_bf=parent_bf
                             )
                             candidate_additions.append((linear_candidate, None))
+                    assert self.X_fit_original is not None
                     potential_knots = self._get_allowable_knot_values(
                         self.X_fit_original[:, var_idx], parent_bf, var_idx
                     )
@@ -475,6 +488,7 @@ class ForwardPasser:
                         candidate_additions.append((bf_left, bf_right))
                 # Handle categorical features
                 elif self.categorical_features and var_idx in self.categorical_features:
+                    assert self.X_fit_original is not None
                     col_vals = self.X_fit_original[:, var_idx]
                     if self.missing_mask is not None:
                         col_vals = col_vals[~self.missing_mask[:, var_idx]]
@@ -487,6 +501,7 @@ class ForwardPasser:
 
         # Generate MissingnessBasisFunction candidates if allow_missing is True
         if self.model.allow_missing and self.missing_mask is not None:
+            assert self.missing_mask is not None
             # Check if any variable is already used by a MissingnessBasisFunction
             # This is to prevent adding duplicate is_missing(varX) terms.
             # A MissingnessBasisFunction does not interact with a parent for its base definition.
@@ -528,7 +543,7 @@ class ForwardPasser:
 
         return candidate_additions
 
-    def _find_best_candidate_addition(self):
+    def _find_best_candidate_addition(self) -> None:
         self._min_candidate_rss = self.current_rss
         self._min_candidate_gcv = np.inf
         self._best_candidate_addition = None
@@ -555,6 +570,7 @@ class ForwardPasser:
             if bf2_or_None is not None:
                 terms_to_add.append(bf2_or_None)
             temp_basis_list = self.current_basis_functions + terms_to_add
+            assert self.X_train is not None
             B_candidate = self._build_basis_matrix(self.X_train, temp_basis_list)
 
             if B_candidate.shape[1] == 0:
@@ -569,6 +585,7 @@ class ForwardPasser:
             ):
                 drop_nans = False
 
+            assert self.y_train is not None
             rss_candidate, coeffs_candidate, num_valid_rows_candidate = (
                 self._calculate_rss_and_coeffs(
                     B_candidate, self.y_train, drop_nan_rows=drop_nans
