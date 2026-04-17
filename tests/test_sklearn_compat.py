@@ -5,9 +5,11 @@ Unit tests for the scikit-learn compatibility layer in pymars._sklearn_compat
 import numpy as np
 import pytest
 from sklearn.exceptions import NotFittedError
+from sklearn.svm import SVC
 from sklearn.utils.estimator_checks import check_estimator
 
 from pymars._sklearn_compat import (
+    EarthClassifier,
     EarthRegressor,  # EarthClassifier will be tested separately
 )
 

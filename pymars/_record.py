@@ -6,6 +6,7 @@ and the pruning pass (terms removed, GCV at each step).
 """
 
 import logging
+from typing import List
 
 import numpy as np
 
@@ -32,13 +33,13 @@ class EarthRecord:
         # Pruning pass tracking
         # These will store the sequence of models considered during pruning.
         # Each element corresponds to a model of a certain size.
-        self.pruning_trace_basis_functions_: list[list[BasisFunction]] = []
-        self.pruning_trace_coeffs_: list[np.ndarray] = []
-        self.pruning_trace_gcv_: list[float] = []
-        self.pruning_trace_rss_: list[float] = []
+        self.pruning_trace_basis_functions_: List[List[BasisFunction]] = []
+        self.pruning_trace_coeffs_: List[np.ndarray] = []
+        self.pruning_trace_gcv_: List[float] = []
+        self.pruning_trace_rss_: List[float] = []
 
         # Final selected model details (can be set after pruning)
-        self.final_basis_: list[BasisFunction] = None
+        self.final_basis_: List[BasisFunction] = None
         self.final_coeffs_ = None
         self.final_gcv_ = None
         self.final_rss_ = None
