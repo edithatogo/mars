@@ -35,6 +35,7 @@ The goal of this phase is to improve the performance of `pymars` and optimize th
 *   **Optimize the code for speed.** Apply pure Python algorithmic improvements guided by profiling results.
 *   **Optimize the code for memory usage.** This will involve using memory profiling tools to identify memory usage issues.
 *   **Profiling results so far:** Using `cProfile` on the forward and pruning passes revealed that repeatedly constructing basis matrices with `np.hstack` dominated runtime and memory usage. The implementation now preallocates the basis matrix and fills it column‑wise, reducing allocations and improving speed.
+*   **Latest profiling follow-up:** A fresh profiling pass on 2026-04-18 shows the remaining dominant cost is in forward-pass candidate evaluation, specifically repeated basis-matrix reconstruction in `_build_basis_matrix` together with repeated `numpy.linalg.lstsq` solves in `_calculate_rss_and_coeffs`. No additional low-risk optimization was merged from that pass because the explored memoization approach did not produce a clear end-to-end runtime improvement.
 
 ## Feature Matrix
 

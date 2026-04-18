@@ -138,3 +138,33 @@ Packaging and release automation were driven to a stable end state.
 * Future brand-new versions will still require either:
   * a corrected `CONDA_FORGE_PAT`, or
   * a repeat of the manual staged-recipes PR process.
+
+---
+
+## 2026-04-18 Profiling Follow-up
+
+**Summary:**
+
+Validated the repository again after the release work and completed the last open
+performance-profiling follow-up item without merging any risky optimisation.
+
+**Validation:**
+
+* `uv run ruff check pymars tests` passed.
+* `uv run ty check pymars/` passed.
+* `uv run pytest -q` passed with `175 passed, 3 skipped`.
+
+**Profiling Findings:**
+
+* `scripts/profile_pymars.py` still shows the forward pass as the dominant cost centre.
+* The main remaining hotspot is candidate evaluation in `pymars._forward.ForwardPasser`:
+  * repeated `_build_basis_matrix(...)` calls during candidate scoring
+  * repeated `_calculate_rss_and_coeffs(...)` least-squares solves via `numpy.linalg.lstsq`
+* Prediction and pruning remain comparatively cheap.
+
+**Decision:**
+
+* A memoization-based optimisation for basis evaluation was explored and validated,
+  but not kept.
+* It changed the internal call profile without delivering a clear end-to-end runtime
+  improvement, so it was reverted to avoid unnecessary complexity and regression risk.

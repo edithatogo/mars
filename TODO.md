@@ -39,4 +39,4 @@ These items form the bulk of the work for Phase&nbsp;2 and will bring `pymars` c
 
 *   [x] Profile and optimize the code for speed using Python-level improvements and algorithmic optimizations; avoid Cython or native extensions. Initial profiling with `cProfile` showed excessive allocations when building basis matrices.
 *   [x] Optimize the code for memory usage. Basis matrix construction now uses preallocated arrays instead of `np.hstack`.
-*   [ ] Continue profiling to identify additional hotspots.
+*   [x] Continue profiling to identify additional hotspots. Latest profiling confirms the forward pass is still dominated by repeated candidate basis-matrix builds and `numpy.linalg.lstsq` solves during candidate scoring.
