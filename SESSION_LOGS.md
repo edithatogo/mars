@@ -168,3 +168,56 @@ performance-profiling follow-up item without merging any risky optimisation.
   but not kept.
 * It changed the internal call profile without delivering a clear end-to-end runtime
   improvement, so it was reverted to avoid unnecessary complexity and regression risk.
+
+---
+
+## 2026-04-18 Release Verification Follow-up
+
+**Summary:**
+
+Verified the post-release state end-to-end against the current `main` checkout and
+recorded the exact package publication status across PyPI, Anaconda.org, and
+conda-forge.
+
+**Repository State:**
+
+* Current local `main` is clean and synced with `origin/main`.
+* Current HEAD: `19f4b92` (`19f4b92be81869eae0b96fadb6031b72e120030e`).
+* Repository validation on the current checkout passed again:
+  * `uv run ruff check pymars tests`
+  * `uv run ty check pymars/`
+  * `uv run pytest -q`
+  * Result: `175 passed, 3 skipped`
+
+**Packaging State:**
+
+* PyPI:
+  * Confirmed `mars-earth==1.0.4` is live.
+  * Published artifacts present:
+    * `mars_earth-1.0.4-py3-none-any.whl`
+    * `mars_earth-1.0.4.tar.gz`
+* Anaconda.org:
+  * Confirmed successful workflow run `24596198520`.
+  * Verified the workflow built `mars-earth-1.0.4-py_0.conda` and uploaded it successfully.
+  * Verified upload destination:
+    * `https://anaconda.org/doughnut/mars-earth`
+  * Important clarification:
+    * earlier checks against the `edithatogo` namespace were misleading
+      because the token resolves to the `doughnut` Anaconda account
+* conda-forge:
+  * Staged-recipes PR remains open:
+    * `https://github.com/conda-forge/staged-recipes/pull/33010`
+  * The PR is healthy and passing checks.
+  * It is still waiting on conda-forge maintainer review/merge.
+
+**Additional Release Automation Fixes Verified:**
+
+* GitHub Actions workflows on the current branch are green after correcting the
+  Codecov action input in `.github/workflows/ci.yml` from `file:` to `files:`.
+* The repository-side release automation is no longer the active blocker for the
+  current release line.
+
+**Current Remaining External Blocker:**
+
+* The only remaining incomplete distribution path is final conda-forge publication,
+  which depends on maintainers merging staged-recipes PR `#33010`.
