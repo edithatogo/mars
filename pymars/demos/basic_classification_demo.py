@@ -44,7 +44,7 @@ def main() -> None:
 
     y_pred = model.predict(X_test)
     acc = accuracy_score(y_test, y_pred)
-    report = classification_report(y_test, y_pred)
+    report = classification_report(y_test, y_pred, zero_division=0)
     logger.info("Evaluation on Test Set:")
     logger.info("  Accuracy: %.4f", acc)
     logger.info("\nClassification Report:\n%s", report)
