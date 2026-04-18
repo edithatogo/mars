@@ -105,3 +105,36 @@ to the workflow.
 1. Add or expose an Anaconda token to the workflow under `ANACONDA_TOKEN` or `ANACONDA_API_TOKEN`.
 2. Replace or fix `CONDA_FORGE_PAT` if workflow-based conda-forge automation is still desired.
 3. Monitor conda-forge staged-recipes PR `#33010` until merged.
+
+---
+
+## 2026-04-18 Packaging Follow-up
+
+**Summary:**
+
+Packaging and release automation were driven to a stable end state.
+
+**Resolved:**
+
+1. `ANACONDA_API_TOKEN` is now exposed to the GitHub Actions workflow.
+2. `Publish to Anaconda.org` was fixed and now succeeds.
+   * Root cause 1: the token was missing from the repo's Actions secret scope during earlier runs.
+   * Root cause 2: the workflow incorrectly defaulted the upload user to the GitHub repository owner (`edithatogo`), which is not the Anaconda.org account for the token.
+   * Fix: the workflow now uploads as the explicit `ANACONDA_USER` only when that variable is set; otherwise it lets the token owner account be inferred by the Anaconda CLI.
+3. `Publish to conda-forge` was hardened.
+   * The workflow now checks for an already-open staged-recipes PR before attempting push/PR creation.
+   * The workflow now performs a real push-capability validation instead of relying on a public `git ls-remote` access check.
+
+**External State:**
+
+* PyPI: `mars-earth==1.0.4` is live.
+* Anaconda.org: publish workflow completed successfully (`24596198520`).
+* conda-forge: staged-recipes PR is open and healthy: `conda-forge/staged-recipes#33010`.
+
+**Current Limitation:**
+
+* `CONDA_FORGE_PAT` still does not appear to be a valid GitHub HTTPS push token for first-time automated staged-recipes submissions.
+* This does not block the current release because the staged-recipes PR already exists and passes checks.
+* Future brand-new versions will still require either:
+  * a corrected `CONDA_FORGE_PAT`, or
+  * a repeat of the manual staged-recipes PR process.
