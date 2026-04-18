@@ -143,8 +143,10 @@ jobs:
 
           if [ -n "${ANACONDA_USER_VAR:-}" ]; then
             echo "user=$ANACONDA_USER_VAR" >> "$GITHUB_OUTPUT"
+            echo "user_present=true" >> "$GITHUB_OUTPUT"
           else
-            echo "user=${GITHUB_REPOSITORY_OWNER}" >> "$GITHUB_OUTPUT"
+            echo "user=" >> "$GITHUB_OUTPUT"
+            echo "user_present=false" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Validate Anaconda credentials
@@ -159,7 +161,11 @@ jobs:
           fi
 
           echo "Using secret ${{ steps.auth.outputs.token_name }} for Anaconda upload."
-          echo "Target Anaconda user/channel: ${{ steps.auth.outputs.user }}."
+          if [ "${{ steps.auth.outputs.user_present }}" = "true" ]; then
+            echo "Target Anaconda user/channel: ${{ steps.auth.outputs.user }}."
+          else
+            echo "Target Anaconda user/channel will be inferred from the token owner."
+          fi
 
       - name: Build package
         shell: bash -l {0}
@@ -187,4 +193,8 @@ jobs:
             exit 1
           fi
 
-          anaconda -t "$ANACONDA_TOKEN" upload --user "$ANACONDA_USER" --force "$package_file"
+          if [ -n "$ANACONDA_USER" ]; then
+            anaconda -t "$ANACONDA_TOKEN" upload --user "$ANACONDA_USER" --force "$package_file"
+          else
+            anaconda -t "$ANACONDA_TOKEN" upload --force "$package_file"
+          fi
