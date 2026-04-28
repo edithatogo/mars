@@ -8,25 +8,31 @@
       
       
       
+        <link rel="canonical" href="https://edithatogo.github.io/pymars/binding_abi_contract/">
       
+      
+        <link rel="prev" href="../binding_backend_decisions/">
+      
+      
+        <link rel="next" href="../ci_quality/">
       
       
         
       
       
-      <link rel="icon" href="/pymars/assets/images/favicon.png">
+      <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>pymars Documentation</title>
+        <title>Binding ABI and API Contract - pymars Documentation</title>
       
     
     
-      <link rel="stylesheet" href="/pymars/assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="/pymars/assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -45,7 +51,7 @@
       
     
     
-    <script>__md_scope=new URL("/pymars/",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -69,6 +75,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#binding-abi-and-api-contract" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -81,7 +92,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="/pymars/." title="pymars Documentation" class="md-header__button md-logo" aria-label="pymars Documentation" data-md-component="logo">
+    <a href=".." title="pymars Documentation" class="md-header__button md-logo" aria-label="pymars Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -101,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              
+              Binding ABI and API Contract
             
           </span>
         </div>
@@ -217,7 +228,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="/pymars/." title="pymars Documentation" class="md-nav__button md-logo" aria-label="pymars Documentation" data-md-component="logo">
+    <a href=".." title="pymars Documentation" class="md-nav__button md-logo" aria-label="pymars Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -247,7 +258,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/." class="md-nav__link">
+      <a href=".." class="md-nav__link">
         
   
   
@@ -274,7 +285,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/installation/" class="md-nav__link">
+      <a href="../installation/" class="md-nav__link">
         
   
   
@@ -301,7 +312,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/usage/" class="md-nav__link">
+      <a href="../usage/" class="md-nav__link">
         
   
   
@@ -328,7 +339,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/model_spec/" class="md-nav__link">
+      <a href="../model_spec/" class="md-nav__link">
         
   
   
@@ -355,7 +366,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/rust_core/" class="md-nav__link">
+      <a href="../rust_core/" class="md-nav__link">
         
   
   
@@ -382,7 +393,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/training_core_migration/" class="md-nav__link">
+      <a href="../training_core_migration/" class="md-nav__link">
         
   
   
@@ -409,7 +420,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/training_orchestration_inventory/" class="md-nav__link">
+      <a href="../training_orchestration_inventory/" class="md-nav__link">
         
   
   
@@ -436,7 +447,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/bindings/" class="md-nav__link">
+      <a href="../bindings/" class="md-nav__link">
         
   
   
@@ -463,7 +474,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/binding_release/" class="md-nav__link">
+      <a href="../binding_release/" class="md-nav__link">
         
   
   
@@ -490,7 +501,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/binding_backend_decisions/" class="md-nav__link">
+      <a href="../binding_backend_decisions/" class="md-nav__link">
         
   
   
@@ -514,10 +525,37 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="/pymars/binding_abi_contract/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Binding ABI and API Contract
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -533,6 +571,81 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ownership-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ownership Rules
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#null-nan-and-missingness-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Null, NaN, and Missingness Rules
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Rules
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#semver-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SemVer Rules
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#binding-validation-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Binding Validation Rules
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -544,7 +657,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/ci_quality/" class="md-nav__link">
+      <a href="../ci_quality/" class="md-nav__link">
         
   
   
@@ -571,7 +684,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/remaining_roadmap/" class="md-nav__link">
+      <a href="../remaining_roadmap/" class="md-nav__link">
         
   
   
@@ -598,7 +711,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/conformance/" class="md-nav__link">
+      <a href="../conformance/" class="md-nav__link">
         
   
   
@@ -625,7 +738,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/api/" class="md-nav__link">
+      <a href="../api/" class="md-nav__link">
         
   
   
@@ -652,7 +765,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/design/" class="md-nav__link">
+      <a href="../design/" class="md-nav__link">
         
   
   
@@ -679,7 +792,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/requirements/" class="md-nav__link">
+      <a href="../requirements/" class="md-nav__link">
         
   
   
@@ -706,7 +819,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/tasks/" class="md-nav__link">
+      <a href="../tasks/" class="md-nav__link">
         
   
   
@@ -780,7 +893,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/tutorials/basic/" class="md-nav__link">
+      <a href="../tutorials/basic/" class="md-nav__link">
         
   
   
@@ -808,7 +921,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/tutorials/advanced/" class="md-nav__link">
+      <a href="../tutorials/advanced/" class="md-nav__link">
         
   
   
@@ -843,7 +956,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/performance_optimization_plan/" class="md-nav__link">
+      <a href="../performance_optimization_plan/" class="md-nav__link">
         
   
   
@@ -870,7 +983,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/robustness_improvement_plan/" class="md-nav__link">
+      <a href="../robustness_improvement_plan/" class="md-nav__link">
         
   
   
@@ -907,6 +1020,71 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ownership-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ownership Rules
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#null-nan-and-missingness-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Null, NaN, and Missingness Rules
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Rules
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#semver-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SemVer Rules
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#binding-validation-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Binding Validation Rules
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -919,8 +1097,72 @@
               
               <article class="md-content__inner md-typeset">
                 
-  <h1>404 - Not found</h1>
+                  
 
+
+  
+  
+
+
+<h1 id="binding-abi-and-api-contract">Binding ABI and API Contract</h1>
+<p>The Rust-backed binding track uses a single compatibility contract across all
+host languages.</p>
+<h2 id="ownership-rules">Ownership Rules</h2>
+<ul>
+<li>The Rust core owns the shared computational semantics.</li>
+<li>Host-language wrappers own local parsing, native data conversion, and package
+  lifecycle management.</li>
+<li>Exposed buffers, handles, and strings must have a documented release path.</li>
+<li>Wrappers must not require callers to manage internal Rust allocation details
+  directly unless the binding API documents that ownership explicitly.</li>
+</ul>
+<h2 id="null-nan-and-missingness-rules">Null, NaN, and Missingness Rules</h2>
+<ul>
+<li>Numeric missing values are represented as <code>NaN</code> at the Rust boundary.</li>
+<li>Host-language <code>null</code>/<code>None</code> values should be converted to <code>NaN</code> where the
+  binding supports numeric replay semantics.</li>
+<li>Categorical values must follow the documented encoding for the relevant
+  contract version.</li>
+<li>Unsupported or ambiguous missingness cases must fail with a category-stable
+  error instead of guessing.</li>
+</ul>
+<h2 id="error-rules">Error Rules</h2>
+<ul>
+<li>Shared errors are categorized using the existing <code>MarsError</code> categories.</li>
+<li>Host languages may map those categories to idiomatic exceptions, but the
+  category name must remain visible in the message or error metadata.</li>
+<li>New error categories are breaking changes unless introduced through a versioned
+  contract update.</li>
+</ul>
+<h2 id="semver-rules">SemVer Rules</h2>
+<ul>
+<li>Breaking ABI/API changes require a major version bump.</li>
+<li>Non-breaking additions should preserve existing function names, error
+  categories, and fixture behavior.</li>
+<li>Host-language wrappers may version independently, but they must not claim
+  compatibility beyond the shared Rust contract they actually implement.</li>
+</ul>
+<h2 id="binding-validation-rules">Binding Validation Rules</h2>
+<ul>
+<li>All bindings must validate <code>ModelSpec</code> before evaluation.</li>
+<li>Runtime-only packages must reject training operations with a stable
+  unsupported-feature error until training support is implemented.</li>
+<li>Fixture conformance must run at the source-package level and, where feasible,
+  on built artifacts.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
               </article>
             </div>
           
@@ -988,10 +1230,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "/pymars/", "features": [], "search": "/pymars/assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="/pymars/assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>

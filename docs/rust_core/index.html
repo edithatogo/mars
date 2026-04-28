@@ -8,25 +8,31 @@
       
       
       
+        <link rel="canonical" href="https://edithatogo.github.io/pymars/rust_core/">
       
+      
+        <link rel="prev" href="../model_spec/">
+      
+      
+        <link rel="next" href="../training_core_migration/">
       
       
         
       
       
-      <link rel="icon" href="/pymars/assets/images/favicon.png">
+      <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>pymars Documentation</title>
+        <title>Rust Core - pymars Documentation</title>
       
     
     
-      <link rel="stylesheet" href="/pymars/assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="/pymars/assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -45,7 +51,7 @@
       
     
     
-    <script>__md_scope=new URL("/pymars/",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -69,6 +75,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#rust-core-architecture" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -81,7 +92,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="/pymars/." title="pymars Documentation" class="md-header__button md-logo" aria-label="pymars Documentation" data-md-component="logo">
+    <a href=".." title="pymars Documentation" class="md-header__button md-logo" aria-label="pymars Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -101,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              
+              Rust Core
             
           </span>
         </div>
@@ -217,7 +228,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="/pymars/." title="pymars Documentation" class="md-nav__button md-logo" aria-label="pymars Documentation" data-md-component="logo">
+    <a href=".." title="pymars Documentation" class="md-nav__button md-logo" aria-label="pymars Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -247,7 +258,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/." class="md-nav__link">
+      <a href=".." class="md-nav__link">
         
   
   
@@ -274,7 +285,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/installation/" class="md-nav__link">
+      <a href="../installation/" class="md-nav__link">
         
   
   
@@ -301,7 +312,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/usage/" class="md-nav__link">
+      <a href="../usage/" class="md-nav__link">
         
   
   
@@ -328,7 +339,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/model_spec/" class="md-nav__link">
+      <a href="../model_spec/" class="md-nav__link">
         
   
   
@@ -352,10 +363,37 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="/pymars/rust_core/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rust Core
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -371,6 +409,92 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ownership-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ownership Model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#module-migration-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module Migration Order
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modelspec-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ModelSpec Boundary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-semantics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Semantics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#minimum-rust-crate-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Minimum Rust Crate API
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#binding-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Binding Boundary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -382,7 +506,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/training_core_migration/" class="md-nav__link">
+      <a href="../training_core_migration/" class="md-nav__link">
         
   
   
@@ -409,7 +533,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/training_orchestration_inventory/" class="md-nav__link">
+      <a href="../training_orchestration_inventory/" class="md-nav__link">
         
   
   
@@ -436,7 +560,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/bindings/" class="md-nav__link">
+      <a href="../bindings/" class="md-nav__link">
         
   
   
@@ -463,7 +587,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/binding_release/" class="md-nav__link">
+      <a href="../binding_release/" class="md-nav__link">
         
   
   
@@ -490,7 +614,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/binding_backend_decisions/" class="md-nav__link">
+      <a href="../binding_backend_decisions/" class="md-nav__link">
         
   
   
@@ -517,7 +641,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/binding_abi_contract/" class="md-nav__link">
+      <a href="../binding_abi_contract/" class="md-nav__link">
         
   
   
@@ -544,7 +668,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/ci_quality/" class="md-nav__link">
+      <a href="../ci_quality/" class="md-nav__link">
         
   
   
@@ -571,7 +695,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/remaining_roadmap/" class="md-nav__link">
+      <a href="../remaining_roadmap/" class="md-nav__link">
         
   
   
@@ -598,7 +722,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/conformance/" class="md-nav__link">
+      <a href="../conformance/" class="md-nav__link">
         
   
   
@@ -625,7 +749,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/api/" class="md-nav__link">
+      <a href="../api/" class="md-nav__link">
         
   
   
@@ -652,7 +776,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/design/" class="md-nav__link">
+      <a href="../design/" class="md-nav__link">
         
   
   
@@ -679,7 +803,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/requirements/" class="md-nav__link">
+      <a href="../requirements/" class="md-nav__link">
         
   
   
@@ -706,7 +830,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/tasks/" class="md-nav__link">
+      <a href="../tasks/" class="md-nav__link">
         
   
   
@@ -780,7 +904,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/tutorials/basic/" class="md-nav__link">
+      <a href="../tutorials/basic/" class="md-nav__link">
         
   
   
@@ -808,7 +932,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/tutorials/advanced/" class="md-nav__link">
+      <a href="../tutorials/advanced/" class="md-nav__link">
         
   
   
@@ -843,7 +967,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/performance_optimization_plan/" class="md-nav__link">
+      <a href="../performance_optimization_plan/" class="md-nav__link">
         
   
   
@@ -870,7 +994,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/pymars/robustness_improvement_plan/" class="md-nav__link">
+      <a href="../robustness_improvement_plan/" class="md-nav__link">
         
   
   
@@ -907,6 +1031,82 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ownership-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ownership Model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#module-migration-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module Migration Order
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modelspec-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ModelSpec Boundary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-semantics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Semantics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#minimum-rust-crate-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Minimum Rust Crate API
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#binding-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Binding Boundary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -919,8 +1119,110 @@
               
               <article class="md-content__inner md-typeset">
                 
-  <h1>404 - Not found</h1>
+                  
 
+
+  
+  
+
+
+<h1 id="rust-core-architecture">Rust Core Architecture</h1>
+<p><code>mars</code> is moving toward a shared Rust computational core with language bindings
+for Python, R, Julia, Rust, C#, Go, and TypeScript.</p>
+<p>The current Python implementation remains the compatibility baseline for the
+public API. The existing <code>rust-runtime</code> crate is the first executable consumer
+of the portable <code>ModelSpec</code> contract and should evolve into the shared core.</p>
+<h2 id="ownership-model">Ownership Model</h2>
+<p>The Rust core owns behavior that must be identical across language bindings:</p>
+<ul>
+<li><code>ModelSpec</code> parsing and validation</li>
+<li>basis-term representation</li>
+<li>basis-matrix evaluation</li>
+<li>prediction from coefficients and evaluated basis terms</li>
+<li>shared numerical error semantics</li>
+<li>eventually forward-pass candidate evaluation, pruning, and fitted-model export</li>
+</ul>
+<p>The Python package owns behavior that is specific to the Python ecosystem:</p>
+<ul>
+<li>scikit-learn estimator classes</li>
+<li>Python import compatibility such as <code>import pymars as earth</code></li>
+<li>NumPy/pandas input normalization</li>
+<li>plotting and explanation helpers</li>
+<li>Python CLI ergonomics</li>
+</ul>
+<p>Each additional binding owns its host-language API shape, packaging, and
+conversion into the Rust core boundary.</p>
+<h2 id="module-migration-order">Module Migration Order</h2>
+<p>The Rust core should absorb functionality in this order:</p>
+<ol>
+<li>Stable runtime replay: validation, <code>design_matrix</code>, and <code>predict</code>.</li>
+<li>Runtime error typing and fixture-backed conformance harness.</li>
+<li>Basis-term evaluation internals currently mirrored in Python.</li>
+<li>Rust-backed runtime bindings for Python, R, Julia, Rust, C#, Go, and TypeScript.</li>
+<li>Fitted-model export/import normalization.</li>
+<li>Forward-pass candidate scoring.</li>
+<li>Pruning and GCV selection.</li>
+<li>Full fitting orchestration.</li>
+<li>Cross-language training APIs where each ecosystem can support them safely.</li>
+</ol>
+<p>This order keeps the public Python API stable while moving shared deterministic
+behavior into Rust behind existing tests.</p>
+<h2 id="modelspec-boundary">ModelSpec Boundary</h2>
+<p><code>ModelSpec</code> remains the artifact contract across packages and languages.</p>
+<p>Rust structs are implementation types for that contract; they are not allowed to
+change artifact semantics independently of the documented <code>spec_version</code> rules.
+Host-language wrappers should convert their native table/vector inputs into the
+Rust core's row-major evaluation input and should return native outputs without
+changing prediction semantics.</p>
+<h2 id="error-semantics">Error Semantics</h2>
+<p>All bindings should expose the same error categories, even if host-language
+exception types differ:</p>
+<ul>
+<li>malformed artifact</li>
+<li>unsupported artifact version</li>
+<li>missing required field</li>
+<li>unsupported basis term</li>
+<li>feature-count mismatch</li>
+<li>invalid categorical encoding</li>
+<li>numerical evaluation failure</li>
+</ul>
+<p>Rust should define these categories first. Bindings should translate them into
+idiomatic errors while preserving category names and actionable messages.</p>
+<h2 id="minimum-rust-crate-api">Minimum Rust Crate API</h2>
+<p>The stable Rust core API should expose at least:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">load_model_spec_str</span><span class="p">(</span><span class="n">raw</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="kt">str</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">Result</span><span class="o">&lt;</span><span class="n">ModelSpec</span><span class="o">&gt;</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">load_model_spec_path</span><span class="p">(</span><span class="n">path</span><span class="p">:</span><span class="w"> </span><span class="nc">impl</span><span class="w"> </span><span class="nb">AsRef</span><span class="o">&lt;</span><span class="n">Path</span><span class="o">&gt;</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">Result</span><span class="o">&lt;</span><span class="n">ModelSpec</span><span class="o">&gt;</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">validate_model_spec</span><span class="p">(</span><span class="n">spec</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">ModelSpec</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">Result</span><span class="o">&lt;</span><span class="p">()</span><span class="o">&gt;</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">design_matrix</span><span class="p">(</span><span class="n">spec</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">ModelSpec</span><span class="p">,</span><span class="w"> </span><span class="n">rows</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="p">[</span><span class="nb">Vec</span><span class="o">&lt;</span><span class="kt">f64</span><span class="o">&gt;</span><span class="p">])</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">Result</span><span class="o">&lt;</span><span class="nb">Vec</span><span class="o">&lt;</span><span class="nb">Vec</span><span class="o">&lt;</span><span class="kt">f64</span><span class="o">&gt;&gt;&gt;</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">predict</span><span class="p">(</span><span class="n">spec</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">ModelSpec</span><span class="p">,</span><span class="w"> </span><span class="n">rows</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="p">[</span><span class="nb">Vec</span><span class="o">&lt;</span><span class="kt">f64</span><span class="o">&gt;</span><span class="p">])</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">Result</span><span class="o">&lt;</span><span class="nb">Vec</span><span class="o">&lt;</span><span class="kt">f64</span><span class="o">&gt;&gt;</span>
+</code></pre></div>
+<p>As fitting migrates, the core should add separate APIs for training inputs and
+fitted artifact export rather than overloading the replay API.</p>
+<h2 id="binding-boundary">Binding Boundary</h2>
+<p>Bindings should be thin. They should:</p>
+<ul>
+<li>handle package installation and native data conversion</li>
+<li>call the Rust core for shared computation</li>
+<li>expose idiomatic names and types for the host ecosystem</li>
+<li>run the shared conformance fixtures in CI</li>
+</ul>
+<p>Bindings should not reimplement basis semantics, model validation, or prediction
+math independently unless they are explicitly experimental or pre-release.
+Stable package publication is blocked until runtime bindings use the Rust core
+or the remaining fallback is documented and tested.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
               </article>
             </div>
           
@@ -988,10 +1290,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "/pymars/", "features": [], "search": "/pymars/assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="/pymars/assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>
