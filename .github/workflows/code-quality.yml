@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [main]
 
+concurrency:
+  group: code-quality-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -36,6 +40,12 @@ jobs:
 
       - name: Run ty type check
         run: uv run ty check pymars/
+
+      - name: Build documentation
+        run: uv run mkdocs build --strict
+
+      - name: Build Python package
+        run: uv build
 
       - name: Check for spelling errors
         run: |

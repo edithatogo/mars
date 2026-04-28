@@ -8,8 +8,13 @@ on:
   schedule:
     - cron: '0 0 * * 1'  # Weekly
 
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
+  pull-requests: read
   security-events: write
 
 jobs:
@@ -18,6 +23,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
+
+      - name: Dependency review
+        if: github.event_name == 'pull_request'
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: moderate
 
       - name: Install uv
         uses: astral-sh/setup-uv@v4

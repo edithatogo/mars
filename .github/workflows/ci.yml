@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [main]
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -41,7 +45,7 @@ jobs:
 
       - name: Run tests
         run: |
-          uv run pytest tests/ -q --tb=short -x
+          uv run pytest tests/ -q --tb=short -x --cov-fail-under=80
 
       - name: Upload coverage to Codecov
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'

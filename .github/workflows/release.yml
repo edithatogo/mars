@@ -5,6 +5,10 @@ on:
     tags:
       - 'v*'
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 permissions:
   contents: write
   id-token: write
@@ -12,6 +16,8 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    environment:
+      name: production
 
     steps:
       - uses: actions/checkout@v4

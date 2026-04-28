@@ -53,7 +53,7 @@ benchmark: ## Run benchmarks
 	uv run pytest tests/test_benchmark.py -v --benchmark-only
 
 profile: ## Run Scalene profiler
-	uv run python -m scalene pymars/earth.py -- --profile
+	uv run scalene run scripts/profile_earth.py
 
 dist: ## Build distribution packages
 	uv build

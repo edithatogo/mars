@@ -1,21 +1,19 @@
-name: Profiling
+name: Mutation Testing
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'pymars/**/*.py'
+  schedule:
+    - cron: '0 3 * * 0'
   workflow_dispatch:
 
 concurrency:
-  group: profiling-${{ github.ref }}
+  group: mutation-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
-  profile:
+  mutmut:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,25 +23,23 @@ jobs:
         uses: astral-sh/setup-uv@v4
         with:
           enable-cache: true
+          cache-dependency-glob: uv.lock
 
       - name: Set up Python 3.12
         run: uv python install 3.12
 
       - name: Install dependencies
-        run: uv sync --extra dev --extra profiling
+        run: uv sync --extra dev
 
-      - name: Run Scalene profiler
-        run: make profile || true
-
-      - name: Run py-spy on demo
+      - name: Run mutmut
         run: |
-          uv run py-spy record -o flame_graph.svg -- python -m pymars.demos.basic_regression_demo || true
+          uv run mutmut run | tee mutmut.log || true
+          uv run mutmut results | tee -a mutmut.log || true
 
-      - name: Upload profiling results
+      - name: Upload mutation report
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: profiling-results
-          path: |
-            flame_graph.svg
+          name: mutmut-report
+          path: mutmut.log
           retention-days: 30

@@ -2,33 +2,36 @@
 
 ## Phase 0: CI Inventory and Required Check Policy
 
-- [ ] Task: Inventory existing workflows and local validation commands
-    - [ ] Map each language package to its CI command
-    - [ ] Identify missing lint, format, type, security, package, and docs checks
-    - [ ] Document required versus advisory checks
-- [ ] Task: Define branch and release protection policy
-    - [ ] Document required PR checks
-    - [ ] Document protected release environments and manual approval gates
-    - [ ] Document least-privilege workflow permission expectations
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 0: CI Inventory and Required Check Policy' (Protocol in workflow.md)
+- [x] Task: Inventory existing workflows and local validation commands
+    - [x] Map each language package to its CI command
+    - [x] Identify missing lint, format, type, security, package, and docs checks
+    - [x] Document required versus advisory checks
+- [x] Task: Define branch and release protection policy
+    - [x] Document required PR checks
+    - [x] Document protected release environments and manual approval gates
+    - [x] Document least-privilege workflow permission expectations
+- [x] Task: Conductor - Automated Review and Checkpoint 'Phase 0: CI Inventory and Required Check Policy' (Protocol in workflow.md)
 
 ## Phase 1: Language Quality Gates
 
-- [ ] Task: Add or harden Python quality gates
-    - [ ] Verify tests, docs build, formatting/linting, type checking, and package build checks
-    - [ ] Keep sklearn compatibility tests in CI
-    - [ ] Add coverage reporting or threshold policy where practical
-- [ ] Task: Add or harden Rust quality gates
-    - [ ] Run `cargo fmt --check`, `cargo clippy`, `cargo test`, and `cargo package`
-    - [ ] Add fixture conformance to Rust CI
+- [~] Task: Add or harden Python quality gates
+    - [x] Verify tests, docs build, formatting/linting, type checking, and package build checks
+    - [x] Keep sklearn compatibility tests in CI
+    - [x] Add coverage reporting or threshold policy where practical
+- [~] Task: Add or harden Rust quality gates
+    - [x] Run `cargo fmt --check`, `cargo clippy`, `cargo test`, and `cargo package`
+    - [x] Add fixture conformance to Rust CI
     - [ ] Add dependency audit or deny policy where practical
-- [ ] Task: Add or harden binding language quality gates
-    - [ ] Add Go format/test/module checks
-    - [ ] Add TypeScript test/package checks
-    - [ ] Add R build/check entrypoints
-    - [ ] Add Julia test/package hygiene checks
-    - [ ] Add C# format/build/test/pack checks for .NET 11
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 1: Language Quality Gates' (Protocol in workflow.md)
+- [x] Task: Add advisory mutation and profiling checks
+    - [x] Add mutmut scheduled workflow
+    - [x] Add Scalene and py-spy profiling workflow
+- [x] Task: Add or harden binding language quality gates
+    - [x] Add Go format/test/module checks
+    - [x] Add TypeScript test/package checks
+    - [x] Add R build/check entrypoints
+    - [x] Add Julia test/package hygiene checks
+    - [x] Add C# format/build/test/pack checks for .NET 11
+- [~] Task: Conductor - Automated Review and Checkpoint 'Phase 1: Language Quality Gates' (Protocol in workflow.md)
 
 ## Phase 2: Cross-Platform and Artifact Smoke Tests
 
@@ -36,10 +39,10 @@
     - [ ] Add Linux, macOS, and Windows matrix coverage where the binding mechanism requires native binaries
     - [ ] Cache Rust and language package artifacts with safe cache keys
     - [ ] Keep fast PR checks separate from heavier release checks
-- [ ] Task: Add install-from-built-artifact smoke tests
+- [~] Task: Add install-from-built-artifact smoke tests
     - [ ] Install Python wheels or sdists before smoke tests
-    - [ ] Install NuGet, npm, R, Julia, Go, and Rust package artifacts where feasible
-    - [ ] Run a shared conformance smoke fixture against installed artifacts
+    - [x] Install NuGet, npm, R, Julia, Go, and Rust package artifacts where feasible
+    - [x] Run a shared conformance smoke fixture against installed artifacts
 - [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 2: Cross-Platform and Artifact Smoke Tests' (Protocol in workflow.md)
 
 ## Phase 3: Security and Supply-Chain Automation

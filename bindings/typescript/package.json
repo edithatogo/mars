@@ -4,10 +4,9 @@
   "type": "module",
   "description": "Portable runtime replay for mars ModelSpec artifacts",
   "license": "Apache-2.0",
-  "readme": "README.md",
   "repository": {
     "type": "git",
-    "url": "https://github.com/edithatogo/mars.git",
+    "url": "git+https://github.com/edithatogo/mars.git",
     "directory": "bindings/typescript"
   },
   "exports": {
@@ -22,5 +21,15 @@
   },
   "scripts": {
     "test": "node --test"
-  }
+  },
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "keywords": [],
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/edithatogo/mars/issues"
+  },
+  "homepage": "https://github.com/edithatogo/mars#readme"
 }
