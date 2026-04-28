@@ -14,11 +14,11 @@
 
 ## Phase 1: Rust Forward-Pass Orchestration
 
-- [ ] Task: Implement Rust forward-pass orchestration
-    - [ ] Generate candidate hinge and interaction terms from normalized rows
-    - [ ] Apply max-terms, max-degree, minspan/endspan, and stopping rules
-    - [ ] Preserve deterministic candidate ordering and tie handling
-    - [ ] Fit coefficients for each accepted basis set
+- [x] Task: Implement Rust forward-pass orchestration [1cc6430]
+    - [x] Generate candidate hinge and interaction terms from normalized rows
+    - [x] Apply max-terms, max-degree, minspan/endspan, and stopping rules
+    - [x] Preserve deterministic candidate ordering and tie handling
+    - [x] Fit coefficients for each accepted basis set
 - [ ] Task: Validate Rust forward-pass parity
     - [ ] Run Rust fixture tests for forward-pass structure and coefficients
     - [ ] Add regression fixtures for deterministic tie cases
