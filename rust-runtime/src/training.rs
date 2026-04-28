@@ -343,8 +343,40 @@ pub fn forward_pass(
     //    - Select best candidate (lowest GCV)
     //    - Add to basis set
     // 3. Return ForwardPassResult with basis_terms, coefficients, rss, gcv
-
+    
     Err(MarsError::NotYetImplemented(
         "forward_pass not yet implemented".to_string(),
     ))
 }
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct PruningResult {
+    pub basis_terms: Vec<BasisTermSpec>,
+    pub coefficients: Vec<f64>,
+    pub rss: f64,
+    pub gcv: f64,
+}
+
+/// Run pruning orchestration
+/// This is a placeholder - full implementation will be added in subsequent tasks
+pub fn prune_model(
+    _x: &[Vec<f64>],
+    _y: &[f64],
+    _sample_weight: Option<&[f64]>,
+    _basis_terms: &[BasisTermSpec],
+    _coefficients: &[f64],
+    _params: &TrainingParams,
+) -> MarsResult<PruningResult> {
+    // TODO: Implement pruning
+    // 1. Start with full forward-pass model
+    // 2. Loop through subsets (remove one term at a time):
+    //    - Score subset using score_pruning_subset
+    //    - Track model with lowest GCV
+    // 3. Refit coefficients for selected subset
+    // 4. Return PruningResult with final basis_terms, coefficients, rss, gcv
+    
+    Err(MarsError::NotYetImplemented(
+        "prune_model not yet implemented".to_string(),
+    ))
+}
+
