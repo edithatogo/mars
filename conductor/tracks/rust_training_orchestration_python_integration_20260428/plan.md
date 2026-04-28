@@ -35,7 +35,7 @@
     - [x] Add Rust tests that run `predict` from exported specs
     - [x] Add Python tests that load Rust-exported specs through the shared runtime
     - [x] Verify conformance fixtures remain stable
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 2: Rust Pruning and Final Model Export' (Protocol in workflow.md)
+- [~] Task: Conductor - Automated Review and Checkpoint 'Phase 2: Rust Pruning and Final Model Export' (Protocol in workflow.md)
 
 ## Phase 3: Python Estimator Integration
 
