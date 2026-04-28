@@ -6,10 +6,10 @@
     - [x] Map Python forward-pass, pruning, coefficient fitting, and export code to Rust equivalents
     - [x] Identify unsupported edge cases before implementation starts
     - [x] Document the selected Rust training API boundary
-- [ ] Task: Create failing Rust training-orchestration fixtures
-    - [ ] Add Python-generated baseline fixtures for representative fits
-    - [ ] Add Rust tests that assert the full fit/export path matches those fixtures
-    - [ ] Include sample-weight and interaction coverage
+- [x] Task: Create failing Rust training-orchestration fixtures [e7579ac]
+    - [x] Add Python-generated baseline fixtures for representative fits
+    - [x] Add Rust tests that assert the full fit/export path matches those fixtures
+    - [x] Include sample-weight and interaction coverage
 - [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 0: Baseline and Architecture Lock' (Protocol in workflow.md)
 
 ## Phase 1: Rust Forward-Pass Orchestration
