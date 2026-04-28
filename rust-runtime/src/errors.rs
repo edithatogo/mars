@@ -16,6 +16,7 @@ pub enum MarsError {
     },
     InvalidCategoricalEncoding(String),
     NumericalEvaluationFailure(String),
+    NotYetImplemented(String),
 }
 
 impl MarsError {
@@ -28,6 +29,7 @@ impl MarsError {
             Self::FeatureCountMismatch { .. } => "feature-count mismatch",
             Self::InvalidCategoricalEncoding(_) => "invalid categorical encoding",
             Self::NumericalEvaluationFailure(_) => "numerical evaluation failure",
+            Self::NotYetImplemented(_) => "not yet implemented",
         }
     }
 }
@@ -40,7 +42,8 @@ impl Display for MarsError {
             | Self::MissingRequiredField(message)
             | Self::UnsupportedBasisTerm(message)
             | Self::InvalidCategoricalEncoding(message)
-            | Self::NumericalEvaluationFailure(message) => {
+            | Self::NumericalEvaluationFailure(message)
+            | Self::NotYetImplemented(message) => {
                 write!(f, "{}: {}", self.category(), message)
             }
             Self::FeatureCountMismatch {

@@ -1,4 +1,38 @@
 use crate::errors::{MarsError, MarsResult};
+use crate::model_spec::BasisTermSpec;
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct TrainingParams {
+    pub max_terms: usize,
+    pub max_degree: usize,
+    pub penalty: f64,
+    pub minspan: f64,
+    pub endspan: f64,
+    pub threshold: f64,
+    pub feature_names: Option<Vec<String>>,
+}
+
+impl Default for TrainingParams {
+    fn default() -> Self {
+        Self {
+            max_terms: 21,
+            max_degree: 1,
+            penalty: 3.0,
+            minspan: 0.0,
+            endspan: 0.0,
+            threshold: 0.001,
+            feature_names: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct ForwardPassResult {
+    pub basis_terms: Vec<BasisTermSpec>,
+    pub coefficients: Vec<f64>,
+    pub rss: f64,
+    pub gcv: f64,
+}
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct LeastSquaresFit {
@@ -276,4 +310,41 @@ fn solve_linear_system(mut matrix: Vec<Vec<f64>>, mut rhs: Vec<f64>) -> MarsResu
         }
     }
     Ok(rhs)
+}
+
+/// Generate candidate hinge terms from current basis functions
+/// This is a placeholder - full implementation will be added in subsequent tasks
+pub fn generate_candidates(
+    _x: &[Vec<f64>],
+    _basis_terms: &[BasisTermSpec],
+    _params: &TrainingParams,
+) -> Vec<Vec<f64>> {
+    // TODO: Implement candidate generation
+    // - Generate hinge pairs (max(0, x - knot), max(0, knot - x))
+    // - Apply minspan/endspan constraints
+    // - Consider interaction terms up to max_degree
+    // - Return candidate columns for evaluation
+    vec![]
+}
+
+/// Run forward-pass orchestration
+/// This is a placeholder - full implementation will be added in subsequent tasks
+pub fn forward_pass(
+    _x: &[Vec<f64>],
+    _y: &[f64],
+    _sample_weight: Option<&[f64]>,
+    _params: &TrainingParams,
+) -> MarsResult<ForwardPassResult> {
+    // TODO: Implement forward pass
+    // 1. Start with intercept term
+    // 2. Loop until max_terms reached or no improvement:
+    //    - Generate candidates
+    //    - Score each candidate using score_candidate
+    //    - Select best candidate (lowest GCV)
+    //    - Add to basis set
+    // 3. Return ForwardPassResult with basis_terms, coefficients, rss, gcv
+
+    Err(MarsError::NotYetImplemented(
+        "forward_pass not yet implemented".to_string(),
+    ))
 }
