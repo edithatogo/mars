@@ -39,10 +39,10 @@
 
 ## Phase 3: Python Estimator Integration
 
-- [ ] Task: Add controlled Python routing to the Rust training core
-    - [ ] Add feature-gated or environment-gated Rust training invocation
-    - [ ] Preserve current `Earth` constructor parameters and sklearn behavior
-    - [ ] Keep Python fallback available for unsupported cases
+- [x] Task: Add controlled Python routing to the Rust training core [58f1860]
+    - [x] Add feature-gated or environment-gated Rust training invocation
+    - [x] Preserve current `Earth` constructor parameters and sklearn behavior
+    - [x] Keep Python fallback available for unsupported cases
 - [ ] Task: Validate sklearn and artifact compatibility
     - [ ] Run estimator compatibility tests with Python fallback
     - [ ] Run targeted estimator tests with Rust routing enabled
