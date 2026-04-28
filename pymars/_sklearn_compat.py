@@ -18,6 +18,7 @@ from typing import Any, cast
 
 import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
+from sklearn.utils.validation import has_fit_parameter
 
 # from sklearn.utils.validation import check_X_y, check_array, check_is_fitted # Will use these in fit/predict
 # from sklearn.utils.multiclass import unique_labels # For classifiers
@@ -143,7 +144,9 @@ class EarthRegressor(RegressorMixin, BaseEstimator):
         # will be initialized in the fit() method, as per scikit-learn convention
         # to pass check_no_attributes_set_in_init from check_estimator.
 
-    def fit(self, X: Any, y: Any) -> EarthRegressor:
+    def fit(
+        self, X: Any, y: Any, sample_weight: Any | None = None
+    ) -> EarthRegressor:
         """
         Fit the Earth regressor to the training data.
 
@@ -190,7 +193,7 @@ class EarthRegressor(RegressorMixin, BaseEstimator):
         )
 
         # Fit the internal Earth model
-        earth.fit(X_validated, y_validated)
+        earth.fit(X_validated, y_validated, sample_weight=sample_weight)
         self.earth_ = earth
 
         # Copy fitted attributes from the core model to the wrapper
@@ -365,7 +368,9 @@ class EarthClassifier(ClassifierMixin, BaseEstimator):
         # Fitted attributes (like self.basis_, self.classes_, self.n_features_in_,
         # self.is_fitted_, self.classifier_) will be initialized in the fit() method.
 
-    def fit(self, X: Any, y: Any) -> EarthClassifier:
+    def fit(
+        self, X: Any, y: Any, sample_weight: Any | None = None
+    ) -> EarthClassifier:
         """
         Fit the Earth classifier to the training data.
 
@@ -438,7 +443,7 @@ class EarthClassifier(ClassifierMixin, BaseEstimator):
         # if MARS had an unsupervised mode).
         # For now, we pass y_validated. If it's label-encoded (0, 1, 2...), it might work for GCV.
         # This is an area that might need refinement based on how well CoreEarth handles categorical-like y.
-        earth.fit(X_validated, y_numeric_for_earth)
+        earth.fit(X_validated, y_numeric_for_earth, sample_weight=sample_weight)
         self.earth_ = earth
         self.basis_ = self.earth_.basis_
 
@@ -476,7 +481,19 @@ class EarthClassifier(ClassifierMixin, BaseEstimator):
         else:  # User provided a classifier instance
             classifier = clone(self.classifier)  # Clone to ensure fresh state
 
-        classifier.fit(X_transformed, y_original_labels)
+        if sample_weight is not None and has_fit_parameter(classifier, "sample_weight"):
+            classifier.fit(
+                X_transformed,
+                y_original_labels,
+                sample_weight=sample_weight,
+            )
+        else:
+            if sample_weight is not None:
+                logger.warning(
+                    "Internal classifier %s does not accept sample_weight; weights were ignored at the classification layer.",
+                    classifier.__class__.__name__,
+                )
+            classifier.fit(X_transformed, y_original_labels)
         self.classifier_ = classifier  # Fit classifier on original (validated) labels
 
         self.is_fitted_ = True

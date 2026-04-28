@@ -1,0 +1,5 @@
+export(design_matrix)
+export(load_model_spec)
+export(predict_model)
+export(validate_model_spec)
+importFrom(jsonlite, fromJSON)

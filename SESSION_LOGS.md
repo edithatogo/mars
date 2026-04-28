@@ -221,3 +221,227 @@ conda-forge.
 
 * The only remaining incomplete distribution path is final conda-forge publication,
   which depends on maintainers merging staged-recipes PR `#33010`.
+
+---
+
+## 2026-04-19 Runtime and Roadmap Hardening
+
+**Summary:**
+
+Introduced a slightly more explicit portable runtime surface and aligned the repo's
+planning documents with the actual state of the codebase and the broader
+multi-language direction.
+
+**Changes:**
+
+1. Added runtime file helpers:
+   * `pymars.save_model(...)`
+   * `pymars.load_model(...)`
+2. Added `ModelSpec` validation:
+   * validates supported schema version
+   * validates presence of required top-level fields
+3. Added tests for:
+   * runtime save/load round-trip
+   * invalid model-spec version rejection
+4. Updated roadmap and TODO:
+   * corrected the prior overstatement that `sample_weight` was already implemented
+   * added explicit phases for runtime portability, maturity hardening, and broader language bindings
+5. Updated docs:
+   * expanded design guidance around training vs portable-model vs runtime layers
+   * documented the new runtime API surface
+   * aligned MkDocs metadata more closely with the current project naming and package URLs
+
+---
+
+## 2026-04-19 Weighted Fitting Support
+
+**Summary:**
+
+Implemented end-to-end `sample_weight` support in the core `Earth` fit path and
+the sklearn-compatible wrappers, then updated tests and planning docs to reflect
+the new state precisely.
+
+**Changes:**
+
+1. Added weighted least-squares support in:
+   * `ForwardPasser._calculate_rss_and_coeffs(...)`
+   * `PruningPasser._calculate_rss_and_coeffs(...)`
+2. Threaded `sample_weight` through:
+   * `Earth.fit(...)`
+   * `ForwardPasser.run(...)`
+   * `PruningPasser.run(...)`
+   * `EarthRegressor.fit(...)`
+   * `EarthClassifier.fit(...)`
+3. Updated intercept-only and fallback model handling so weighted means, RSS,
+   and MSE are computed correctly.
+4. Added tests covering:
+   * weighted least-squares coefficient equivalence
+   * `EarthRegressor.fit(..., sample_weight=...)`
+   * weighted-fit behavior changing the learned regressor
+   * `EarthClassifier.fit(..., sample_weight=...)`
+5. Updated roadmap/TODO/docs:
+   * marked baseline `sample_weight` support as implemented
+   * explicitly called out the remaining duplication-equivalence gap in
+     estimator-check semantics
+
+**Validation:**
+
+* `uv run ruff check pymars tests`
+* `uv run pytest -q tests/test_forward.py tests/test_sklearn_compat.py`
+* `uv run pytest -q`
+
+---
+
+## 2026-04-19 Weighted Model-Selection Equivalence
+
+**Summary:**
+
+Completed the remaining `sample_weight` hardening work so weighted fitting now
+behaves duplication-equivalently under sklearn's estimator checks, including the
+`weight == 0` case behaving like row removal.
+
+**Changes:**
+
+1. Updated forward-pass heuristics to use effective weighted sample counts for:
+   * GCV complexity calculations
+   * default `max_terms` limits
+   * parent-activity counts used by `minspan` logic
+2. Filtered zero-weight rows out of knot and categorical candidate generation so
+   candidate search matches repeated/removed-row semantics.
+3. Updated pruning-pass GCV bookkeeping to use weighted valid-row counts
+   consistently.
+4. Removed the temporary sklearn expected-failure exemptions for
+   `check_sample_weight_equivalence_on_dense_data`.
+5. Refreshed tests and roadmap/docs to reflect that the duplication-equivalence
+   gap is now closed.
+
+**Validation:**
+
+* `uv run ruff check pymars tests`
+* `uv run pytest -q tests/test_sklearn_compat.py -k 'check_estimator or sample_weight'`
+* `uv run pytest -q`
+
+---
+
+## 2026-04-19 Portable Model Contract Fixtures
+
+**Summary:**
+
+Added a checked-in `ModelSpec` fixture, tightened loader validation, and
+documented the schema contract so persistence compatibility is now enforced by
+artifact-backed tests instead of only round-tripping live models.
+
+**Changes:**
+
+1. Added structural validation for portable model specs:
+   * top-level type checks
+   * required container-type checks
+   * coefficient/basis-term cardinality checks
+   * basis-term `kind` validation
+2. Added checked-in fixture:
+   * `tests/fixtures/model_spec_v1.json`
+3. Added compatibility tests covering:
+   * loading a historical checked-in `1.0` fixture
+   * stable probe predictions from that fixture
+   * loading specs from both path and raw JSON text
+   * explicit rejection of malformed contract violations
+4. Added dedicated documentation:
+   * `docs/model_spec.md`
+   * navigation links from the docs home and usage pages
+5. Updated roadmap/TODO to mark schema-contract documentation and persistence
+   fixture coverage complete.
+
+**Validation:**
+
+* `uv run ruff check pymars tests`
+* `uv run pytest -q tests/test_model_spec.py`
+* `uv run pytest -q`
+
+---
+
+## 2026-04-20 Deterministic Numerical Regression Fixtures
+
+**Summary:**
+
+Added checked-in regression fixtures for representative `Earth` fits so the
+current implementation has stable numerical lockfiles for forward and prediction
+behavior without depending on external MARS packages as validation oracles.
+
+**Changes:**
+
+1. Added fixture-backed coverage for two representative models:
+   * a simple 1D piecewise-linear regression case
+   * a mixed 3D interaction case
+2. Locked down the following outputs in tests:
+   * basis-function strings
+   * fitted coefficients
+   * probe predictions
+   * `gcv_`, `rss_`, and `mse_`
+3. Added checked-in fixture data:
+   * `tests/fixtures/reference_regression_cases.json`
+4. Added the corresponding regression test:
+   * `tests/test_reference_regression.py`
+5. Validated the repo after the addition:
+   * `uv run ruff check pymars tests`
+   * `uv run pytest -q tests/test_reference_regression.py`
+   * `uv run pytest -q`
+
+**Validation Direction:**
+
+* `py-earth` and R `earth` remain historical/API references, not required
+  implementation or validation dependencies.
+* The reference path is the pure Python trainer plus checked-in estimator
+  fixtures and portable `ModelSpec` fixtures.
+* Cross-runtime confidence comes from replaying those portable fixtures in
+  non-Python runtimes, currently the Rust reference runtime.
+
+---
+
+## 2026-04-27 Reference Validation Track Realignment
+
+**Summary:**
+
+Realigned the reference regression validation track with the project goal:
+`mars` is a pure Python training implementation moving toward a portable
+runtime contract, not a wrapper around or test harness for `py-earth` or R
+`earth`.
+
+**Changes:**
+
+1. Marked the reference validation track complete because the required
+   validation surface now exists:
+   * frozen Python fitted-model regression cases
+   * portable `ModelSpec` fixtures
+   * Rust runtime parity tests for `validate`, `design_matrix`, and `predict`
+2. Replaced the stale external-package blocker with the current validation
+   authority:
+   * Python remains the compatibility baseline while Rust becomes the core
+   * `ModelSpec` is the cross-runtime contract
+   * Rust is the current foreign-language reference consumer
+3. Updated user-facing design/model-spec docs to state that `py-earth` and R
+   `earth` are historical/API references, not required validation gates.
+
+---
+
+## 2026-04-27 Rust Core Direction
+
+**Summary:**
+
+Updated the product and planning documents to make the intended architecture
+explicit: `mars` should move toward a shared Rust computational core surfaced
+through Python, R, Julia, Rust, C#, Go, and TypeScript APIs.
+
+**Changes:**
+
+1. Updated the product definition and user-facing docs:
+   * current Python implementation remains the compatibility baseline
+   * Rust replay prototype is the seed of the shared core
+   * language bindings are target products, not incidental future consumers
+2. Added a new Conductor track:
+   * `Rust core and multi-language bindings`
+3. Defined planned phases for:
+   * Rust core ownership and crate boundaries
+   * runtime consolidation
+   * Python binding strategy
+   * R, Julia, Rust, C#, Go, and TypeScript package surfaces
+   * shared conformance testing across bindings

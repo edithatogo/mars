@@ -179,6 +179,36 @@ def test_calculate_rss_and_coeffs(simple_data):
     assert num_valid_sing == len(y)
 
 
+def test_calculate_rss_and_coeffs_with_sample_weight(simple_data):
+    X, y = simple_data
+    sample_weight = np.array([1.0, 1.0, 1.0, 8.0, 8.0])
+    earth_model = MockEarth()
+    passer = ForwardPasser(earth_model)
+    passer.missing_mask = np.zeros_like(X, dtype=bool)
+
+    bf_const = ConstantBasisFunction()
+    bf_hinge = HingeBasisFunction(variable_idx=0, knot_val=2.5, variable_name="x0_k2.5")
+    B_two = passer._build_basis_matrix(X, [bf_const, bf_hinge])
+    rss_weighted, coeffs_weighted, num_valid = passer._calculate_rss_and_coeffs(
+        B_two,
+        y,
+        sample_weight=sample_weight,
+    )
+
+    sqrt_weight = np.sqrt(sample_weight)
+    manual_coeffs, _, _, _ = np.linalg.lstsq(
+        B_two * sqrt_weight[:, np.newaxis],
+        y * sqrt_weight,
+        rcond=None,
+    )
+    manual_rss = np.sum(sample_weight * (y - (B_two @ manual_coeffs)) ** 2)
+
+    assert np.isclose(num_valid, np.sum(sample_weight))
+    assert coeffs_weighted is not None
+    assert np.allclose(coeffs_weighted, manual_coeffs)
+    assert np.isclose(rss_weighted, manual_rss)
+
+
 def test_find_best_addition_simple_original(simple_data):
     X, y = simple_data
     earth_model = MockEarth(max_degree=1, endspan_alpha=0.0, max_terms=10)
@@ -187,6 +217,7 @@ def test_find_best_addition_simple_original(simple_data):
     passer.X_train = X
     passer.y_train = y.ravel()
     passer.n_samples, passer.n_features = X.shape
+    passer.effective_n_samples = float(passer.n_samples)
     passer.missing_mask = np.zeros_like(X, dtype=bool)
     passer.X_fit_original = X
 
@@ -672,6 +703,7 @@ def test_find_best_addition_selects_linear(simple_data):
     passer.X_train = X_linear
     passer.y_train = y_linear.ravel()
     passer.n_samples, passer.n_features = X_linear.shape
+    passer.effective_n_samples = float(passer.n_samples)
     passer.missing_mask = np.zeros_like(X_linear, dtype=bool)
     passer.X_fit_original = X_linear
 

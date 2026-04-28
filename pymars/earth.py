@@ -11,6 +11,7 @@ import numpy as np
 from sklearn.base import BaseEstimator, RegressorMixin
 
 from ._basis import ConstantBasisFunction  # Used in fallbacks
+from ._model_spec import model_to_spec, spec_to_json, spec_to_model
 from ._util import (
     calculate_gcv,
     gcv_penalty_cost_effective_parameters,
@@ -194,7 +195,7 @@ class Earth(BaseEstimator, RegressorMixin):
             B_matrix[:, idx] = bf.transform(X_processed, missing_mask)
         return cast(np.ndarray, B_matrix)
 
-    def fit(self, X: Any, y: Any) -> Earth:
+    def fit(self, X: Any, y: Any, sample_weight: Any | None = None) -> Earth:
         """
         Fit the Earth model to the training data.
 
@@ -213,7 +214,7 @@ class Earth(BaseEstimator, RegressorMixin):
         # Import necessary modules here to avoid circular dependencies at module level
         # and to keep them local to fit if they are only used here.
         import numpy as np
-        from sklearn.utils.validation import check_X_y
+        from sklearn.utils.validation import _check_sample_weight, check_X_y
 
         from ._forward import ForwardPasser
         from ._pruning import PruningPasser
@@ -230,6 +231,17 @@ class Earth(BaseEstimator, RegressorMixin):
             multi_output=False,
             y_numeric=True,
         )
+        sample_weight_validated = None
+        if sample_weight is not None:
+            sample_weight_validated = _check_sample_weight(
+                sample_weight,
+                X,
+                dtype=np.float64,
+            )
+            if np.any(sample_weight_validated < 0):
+                raise ValueError("sample_weight must be non-negative.")
+            if float(np.sum(sample_weight_validated)) <= 0.0:
+                raise ValueError("sample_weight must sum to a positive value.")
 
         X_processed, missing_mask, y_processed = self._scrub_input_data(X, y)
         self.X_original_ = (
@@ -246,6 +258,15 @@ class Earth(BaseEstimator, RegressorMixin):
         self.record_ = EarthRecord(
             X_processed, y_processed, self
         )  # Use processed data for record
+        if hasattr(X, "columns"):
+            self.feature_names_in_ = np.asarray(X.columns, dtype=object)
+        else:
+            self.feature_names_in_ = np.asarray(
+                [f"x{i}" for i in range(X_processed.shape[1])], dtype=object
+            )
+        self.n_features_in_ = X_processed.shape[1]
+        self.record_.feature_names_in_ = self.feature_names_in_
+        self.record_.model_params["feature_names_in_"] = self.feature_names_in_
 
         # Forward Pass
         forward_passer = ForwardPasser(
@@ -257,6 +278,7 @@ class Earth(BaseEstimator, RegressorMixin):
             y_fit=y_processed,
             missing_mask=missing_mask,
             X_fit_original=self.X_original_,  # For knot selection on non-missing original values
+            sample_weight=sample_weight_validated,
         )
         assert fwd_coefficients is not None
 
@@ -284,7 +306,12 @@ class Earth(BaseEstimator, RegressorMixin):
                 # For now, assume if B_final is built, it's on valid data for this very basic model
                 self.coef_, _, _, _ = np.linalg.lstsq(B_final, y_processed, rcond=None)
             else:
-                self.coef_ = np.array([np.mean(y_processed)])
+                intercept = (
+                    float(np.mean(y_processed))
+                    if sample_weight_validated is None
+                    else float(np.average(y_processed, weights=sample_weight_validated))
+                )
+                self.coef_ = np.array([intercept])
                 self.basis_ = [cast(Any, ConstantBasisFunction())]
                 B_final = self._build_basis_matrix(
                     X_processed, self.basis_, missing_mask
@@ -295,11 +322,32 @@ class Earth(BaseEstimator, RegressorMixin):
             # Calculate RSS and MSE for this simple model
             if self.coef_ is not None and B_final.shape[1] > 0:
                 y_pred_train = B_final @ self.coef_
-                self.rss_ = np.sum((y - y_pred_train) ** 2)
-                self.mse_ = self.rss_ / len(y)
+                if sample_weight_validated is None:
+                    self.rss_ = float(np.sum((y_processed - y_pred_train) ** 2))
+                    self.mse_ = self.rss_ / len(y_processed)
+                else:
+                    self.rss_ = float(
+                        np.sum(
+                            sample_weight_validated
+                            * (y_processed - y_pred_train) ** 2
+                        )
+                    )
+                    self.mse_ = self.rss_ / float(np.sum(sample_weight_validated))
             else:  # Should not be reached if intercept is forced
-                self.rss_ = np.sum((y - np.mean(y)) ** 2)
-                self.mse_ = self.rss_ / len(y)
+                intercept = (
+                    float(np.mean(y_processed))
+                    if sample_weight_validated is None
+                    else float(np.average(y_processed, weights=sample_weight_validated))
+                )
+                residuals = y_processed - intercept
+                if sample_weight_validated is None:
+                    self.rss_ = float(np.sum(residuals**2))
+                    self.mse_ = self.rss_ / len(y_processed)
+                else:
+                    self.rss_ = float(
+                        np.sum(sample_weight_validated * residuals**2)
+                    )
+                    self.mse_ = self.rss_ / float(np.sum(sample_weight_validated))
 
             return self
 
@@ -312,6 +360,7 @@ class Earth(BaseEstimator, RegressorMixin):
             initial_basis_functions=fwd_basis_functions,
             initial_coefficients=fwd_coefficients,
             X_fit_original=self.X_original_,
+            sample_weight=sample_weight_validated,
         )
         self.basis_ = pruned_bfs
         self.coef_ = pruned_coeffs
@@ -336,22 +385,45 @@ class Earth(BaseEstimator, RegressorMixin):
                 valid_pred_idx = ~np.isnan(y_pred_train)
                 # y_processed should be all finite based on _scrub_y
 
-                self.rss_ = np.sum(
-                    (y_processed[valid_pred_idx] - y_pred_train[valid_pred_idx]) ** 2
-                )
-                if np.sum(valid_pred_idx) > 0:
-                    self.mse_ = self.rss_ / np.sum(valid_pred_idx)
-                else:  # Should not happen if model is valid and y_processed is not empty
-                    self.mse_ = np.inf
+                if sample_weight_validated is None:
+                    self.rss_ = float(
+                        np.sum(
+                            (y_processed[valid_pred_idx] - y_pred_train[valid_pred_idx]) ** 2
+                        )
+                    )
+                    if np.sum(valid_pred_idx) > 0:
+                        self.mse_ = self.rss_ / np.sum(valid_pred_idx)
+                    else:  # Should not happen if model is valid and y_processed is not empty
+                        self.mse_ = np.inf
+                else:
+                    valid_weights = sample_weight_validated[valid_pred_idx]
+                    self.rss_ = float(
+                        np.sum(
+                            valid_weights
+                            * (y_processed[valid_pred_idx] - y_pred_train[valid_pred_idx]) ** 2
+                        )
+                    )
+                    if float(np.sum(valid_weights)) > 0.0:
+                        self.mse_ = self.rss_ / float(np.sum(valid_weights))
+                    else:
+                        self.mse_ = np.inf
             else:
                 # Fallback logic (similar to before, but use processed y)
                 self._set_fallback_model(
-                    X_processed, y_processed, missing_mask, pruning_passer
+                    X_processed,
+                    y_processed,
+                    missing_mask,
+                    pruning_passer,
+                    sample_weight=sample_weight_validated,
                 )
 
         else:
             self._set_fallback_model(
-                X_processed, y_processed, missing_mask, pruning_passer
+                X_processed,
+                y_processed,
+                missing_mask,
+                pruning_passer,
+                sample_weight=sample_weight_validated,
             )
 
         # Calculate feature importances if requested
@@ -556,19 +628,31 @@ class Earth(BaseEstimator, RegressorMixin):
         y_processed: np.ndarray,
         missing_mask: np.ndarray,
         pruning_passer_instance_for_gcv_calc: Any,
+        sample_weight: np.ndarray | None = None,
     ) -> None:
         """Set an intercept-only model and compute its RSS, MSE and GCV."""
         del X_processed, missing_mask, pruning_passer_instance_for_gcv_calc
 
         # Intercept-only basis and coefficient
         self.basis_ = [cast(Any, ConstantBasisFunction())]
-        intercept = float(np.mean(y_processed))
+        intercept = (
+            float(np.mean(y_processed))
+            if sample_weight is None
+            else float(np.average(y_processed, weights=sample_weight))
+        )
         self.coef_ = np.array([intercept])
 
         # Compute RSS and MSE without constructing a basis matrix
         residuals = y_processed - intercept
-        self.rss_ = float(np.sum(residuals**2))
-        self.mse_ = self.rss_ / len(y_processed) if len(y_processed) else np.inf
+        if sample_weight is None:
+            self.rss_ = float(np.sum(residuals**2))
+            self.mse_ = self.rss_ / len(y_processed) if len(y_processed) else np.inf
+            n_samples_for_gcv = len(y_processed)
+        else:
+            self.rss_ = float(np.sum(sample_weight * residuals**2))
+            weight_sum = float(np.sum(sample_weight))
+            self.mse_ = self.rss_ / weight_sum if weight_sum > 0.0 else np.inf
+            n_samples_for_gcv = len(y_processed)
 
         # Compute GCV once using the calculated RSS
         try:
@@ -576,15 +660,64 @@ class Earth(BaseEstimator, RegressorMixin):
                 num_terms=1,
                 num_hinge_terms=0,
                 penalty=self.penalty,
-                num_samples=len(y_processed),
+                num_samples=n_samples_for_gcv,
             )
-            gcv_score = calculate_gcv(self.rss_, len(y_processed), eff_params)
+            gcv_score = calculate_gcv(self.rss_, n_samples_for_gcv, eff_params)
         except Exception as exc:  # pragma: no cover - safety net
             logger.warning("Fallback GCV calculation failed: %s", exc)
             gcv_score = np.inf
 
         # Ensure self.gcv_ is set even if computation fails
         self.gcv_ = gcv_score if np.isfinite(gcv_score) else np.inf
+
+    def _prepare_prediction_data(self, X: Any) -> tuple[np.ndarray, np.ndarray]:
+        """Validate and preprocess input for prediction/runtime paths."""
+        from sklearn.utils.validation import check_array
+
+        record = self.record_
+        if record is None:
+            raise ValueError("Model record is not available despite the model being fitted.")
+
+        X_checked = check_array(
+            X,
+            dtype=None,
+            ensure_all_finite=not self.allow_missing,
+        )
+        X_predict_obj = X_checked.astype(object, copy=False)
+
+        predict_missing_mask = np.zeros_like(X_predict_obj, dtype=bool)
+        for j in range(X_predict_obj.shape[1]):
+            col = X_predict_obj[:, j]
+            predict_missing_mask[:, j] = np.array(
+                [
+                    (val is None) or (isinstance(val, float) and np.isnan(val))
+                    for val in col
+                ]
+            )
+
+        if self.categorical_imputer_ is not None:
+            X_predict_obj = self.categorical_imputer_.transform(X_predict_obj)
+
+        X_predict_orig = np.asarray(X_predict_obj, dtype=float)
+        if (
+            hasattr(record, "n_features")
+            and X_predict_orig.shape[1] != record.n_features
+        ):
+            raise ValueError(
+                f"X has {X_predict_orig.shape[1]} features, but Earth model was trained with {record.n_features} features."
+            )
+
+        X_predict_processed = (
+            X_predict_orig.copy() if np.any(predict_missing_mask) else X_predict_orig
+        )
+        if np.any(predict_missing_mask):
+            if not self.allow_missing:
+                raise ValueError(
+                    "Input X for predict contains NaN values and allow_missing was False during fit."
+                )
+            X_predict_processed[predict_missing_mask] = 0.0
+
+        return X_predict_processed, predict_missing_mask
 
     def predict(self, X: Any) -> np.ndarray:
         """
@@ -600,9 +733,6 @@ class Earth(BaseEstimator, RegressorMixin):
         y_pred : array of shape (n_samples,)
         The predicted values. (Multi-output not currently supported for predict).
         """
-        import numpy as np  # Local import for predict
-        from sklearn.utils.validation import check_array
-
         record = self.record_
 
         if not self.fitted_:
@@ -621,54 +751,7 @@ class Earth(BaseEstimator, RegressorMixin):
                 "Model record is not available despite the model being fitted."
             )
 
-        # Validate and convert input using scikit-learn utilities.
-        X_checked = check_array(
-            X,
-            dtype=None,
-            ensure_all_finite=not self.allow_missing,
-        )
-
-        X_predict_obj = X_checked.astype(object, copy=False)
-
-        predict_missing_mask = np.zeros_like(X_predict_obj, dtype=bool)
-        for j in range(X_predict_obj.shape[1]):
-            col = X_predict_obj[:, j]
-            predict_missing_mask[:, j] = np.array(
-                [
-                    (val is None) or (isinstance(val, float) and np.isnan(val))
-                    for val in col
-                ]
-            )
-
-        if (
-            hasattr(self, "categorical_imputer_")
-            and self.categorical_imputer_ is not None
-        ):
-            X_predict_obj = self.categorical_imputer_.transform(X_predict_obj)
-
-        X_predict_orig = np.asarray(X_predict_obj, dtype=float)
-
-        # Check feature consistency with training data (e.g. self.n_features_in_ if stored)
-        if (
-            hasattr(record, "n_features")
-            and X_predict_orig.shape[1] != record.n_features
-        ):
-            raise ValueError(
-                f"X has {X_predict_orig.shape[1]} features, but Earth model was trained with {record.n_features} features."
-            )
-
-        # retain original missing mask for zero filling
-        X_predict_processed = (
-            X_predict_orig.copy() if np.any(predict_missing_mask) else X_predict_orig
-        )
-        if np.any(predict_missing_mask):
-            if not self.allow_missing:
-                raise ValueError(
-                    "Input X for predict contains NaN values and allow_missing was False during fit."
-                )
-            X_predict_processed[predict_missing_mask] = (
-                0.0  # Zero-fill for basis transform
-            )
+        X_predict_processed, predict_missing_mask = self._prepare_prediction_data(X)
 
         if not basis:  # Should be caught by above, but as a safeguard
             # If model is truly empty (e.g. only intercept and it got removed, though fit tries to prevent this)
@@ -704,6 +787,28 @@ class Earth(BaseEstimator, RegressorMixin):
         # y_pred can contain NaNs if basis functions resulted in NaNs for some rows.
         # The user of predict() will have to handle these NaNs if they occur.
         return cast(np.ndarray, y_pred)
+
+    def get_model_spec(self) -> dict[str, Any]:
+        """Return a versioned portable model specification."""
+        return model_to_spec(self)
+
+    def export_model(self, format: str = "json") -> dict[str, Any] | str:
+        """Export the fitted model as a portable spec."""
+        spec = self.get_model_spec()
+        if format == "dict":
+            return spec
+        if format == "json":
+            return spec_to_json(spec)
+        raise ValueError("format must be 'json' or 'dict'")
+
+    @classmethod
+    def from_model(cls, payload: dict[str, Any] | str) -> Earth:
+        """Rebuild an Earth estimator from a portable model spec."""
+        if isinstance(payload, str):
+            import json
+
+            payload = cast(dict[str, Any], json.loads(payload))
+        return cast(Earth, spec_to_model(payload, cls))
 
     # Remove the duplicate _transform_X_to_basis_matrix, as _build_basis_matrix is now the one.
     # def _transform_X_to_basis_matrix(self, X, basis_functions):

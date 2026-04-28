@@ -1,0 +1,26 @@
+{
+  "name": "@mars-earth/runtime",
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Portable runtime replay for mars ModelSpec artifacts",
+  "license": "Apache-2.0",
+  "readme": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/edithatogo/mars.git",
+    "directory": "bindings/typescript"
+  },
+  "exports": {
+    ".": "./src/runtime.js"
+  },
+  "files": [
+    "README.md",
+    "src"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "track_id": "rust_training_orchestration_python_integration_20260428",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-04-28T07:33:35Z",
+  "updated_at": "2026-04-28T07:33:35Z",
+  "description": "Complete Rust training orchestration and integrate it behind the Python estimator API"
+}

@@ -1,0 +1,8 @@
+{
+  "track_id": "release_readiness_registry_governance_20260428",
+  "type": "chore",
+  "status": "new",
+  "created_at": "2026-04-28T07:33:35Z",
+  "updated_at": "2026-04-28T07:33:35Z",
+  "description": "Prepare registry ownership, release governance, dry-runs, and blocker tracking before package publication"
+}

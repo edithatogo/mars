@@ -1,0 +1,8 @@
+{
+  "track_id": "cross_language_training_api_bindings_20260428",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-04-28T07:33:35Z",
+  "updated_at": "2026-04-28T07:33:35Z",
+  "description": "Expose Rust training APIs through Python, R, Julia, Rust, C#, Go, and TypeScript bindings"
+}

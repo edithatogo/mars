@@ -1,0 +1,134 @@
+name: Publish Bindings
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: Binding package to publish
+        required: true
+        type: choice
+        options:
+          - rust
+          - typescript
+          - csharp
+          - r
+          - julia
+          - go
+          - python
+      dry_run:
+        description: Run publish checks without publishing
+        required: true
+        default: true
+        type: boolean
+  push:
+    tags:
+      - "bindings-*"
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish-rust:
+    if: github.event_name == 'workflow_dispatch' && inputs.package == 'rust'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo package
+        working-directory: rust-runtime
+      - name: Publish to crates.io
+        if: inputs.dry_run == false
+        run: cargo publish --token "$CARGO_REGISTRY_TOKEN"
+        working-directory: rust-runtime
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+
+  publish-typescript:
+    if: github.event_name == 'workflow_dispatch' && inputs.package == 'typescript'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+      - run: npm test
+        working-directory: bindings/typescript
+      - run: npm pack --dry-run
+        working-directory: bindings/typescript
+      - name: Publish to npm
+        if: inputs.dry_run == false
+        run: npm publish --access public
+        working-directory: bindings/typescript
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-csharp:
+    if: github.event_name == 'workflow_dispatch' && inputs.package == 'csharp'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "11.0.x"
+          dotnet-quality: "preview"
+      - run: dotnet test MarsRuntime.Tests/MarsRuntime.Tests.csproj
+        working-directory: bindings/csharp
+      - run: dotnet pack --configuration Release
+        working-directory: bindings/csharp
+      - name: Publish to NuGet
+        if: inputs.dry_run == false
+        run: dotnet nuget push "bin/Release/*.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json
+        working-directory: bindings/csharp
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+
+  publish-r:
+    if: github.event_name == 'workflow_dispatch' && inputs.package == 'r'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: r-lib/actions/setup-r@v2
+      - run: install.packages(c("jsonlite", "rcmdcheck"), repos = "https://cloud.r-project.org")
+        shell: Rscript {0}
+      - run: R CMD build bindings/r
+      - name: Publish note
+        run: echo "R publishing is expected through r-universe first, then CRAN submission after manual maintainer review."
+
+  publish-julia:
+    if: github.event_name == 'workflow_dispatch' && inputs.package == 'julia'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: "1.10"
+      - run: julia --project=bindings/julia -e 'using Pkg; Pkg.instantiate(); Pkg.test()'
+      - name: Publish note
+        run: echo "Julia publishing should use Registrator.jl into the General registry after maintainer approval."
+
+  publish-go:
+    if: github.event_name == 'workflow_dispatch' && inputs.package == 'go'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+      - run: go test ./...
+        working-directory: bindings/go
+      - name: Publish note
+        run: echo "Go modules publish through repository tags. Create a semver tag for the module path after CI passes."
+
+  publish-python:
+    if: github.event_name == 'workflow_dispatch' && inputs.package == 'python'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v4
+      - run: uv python install 3.12
+      - run: uv sync --extra dev
+      - run: uv run pytest -q tests/test_model_spec.py tests/test_binding_conformance.py
+      - name: Publish note
+        run: echo "Python publishing remains handled by the existing release workflow for mars-earth on PyPI."

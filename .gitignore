@@ -111,6 +111,24 @@ venv.bak/
 # mkdocs documentation
 /site
 
+# Rust build outputs
+**/target/
+
+# .NET build outputs
+**/bin/
+**/obj/
+
+# Julia package test manifests are generated during local validation
+bindings/julia/Manifest.toml
+
+# Node package outputs
+**/node_modules/
+**/*.tgz
+
+# R package build outputs
+*.tar.gz
+*.Rcheck/
+
 # mypy
 .mypy_cache/
 .dmypy.json
@@ -127,4 +145,3 @@ tests/**/*.pyc
 
 # Comparison result artifacts
 comparison_results/*.json
-

@@ -89,6 +89,34 @@ def test_earth_regressor_fit(reg_data):
     assert reg.mse_ is not None
 
 
+def test_earth_regressor_fit_accepts_sample_weight(reg_data):
+    X, y = reg_data
+    sample_weight = np.ones_like(y)
+    sample_weight[-10:] = 25.0
+    reg = EarthRegressor(max_terms=7, penalty=0)
+    reg.fit(X, y, sample_weight=sample_weight)
+
+    assert reg.is_fitted_ is True
+    assert reg.coef_ is not None
+
+
+def test_earth_regressor_sample_weight_changes_fit():
+    X = np.array(
+        [[0.0], [1.0], [2.0], [3.0], [10.0], [11.0], [12.0], [13.0]],
+        dtype=float,
+    )
+    y = np.array([0.0, 0.2, 0.1, 0.0, 20.0, 20.2, 19.8, 20.0], dtype=float)
+    sample_weight = np.array([1.0, 1.0, 1.0, 1.0, 40.0, 40.0, 40.0, 40.0])
+
+    unweighted = EarthRegressor(max_terms=3, penalty=0).fit(X, y)
+    weighted = EarthRegressor(max_terms=3, penalty=0).fit(
+        X, y, sample_weight=sample_weight
+    )
+
+    probe = np.array([[10.5]], dtype=float)
+    assert weighted.predict(probe)[0] > unweighted.predict(probe)[0]
+
+
 def test_earth_regressor_predict_before_fit(reg_data):
     """Test predict before fit raises NotFittedError."""
     X, _ = reg_data
@@ -167,8 +195,8 @@ def test_earth_regressor_get_set_params(reg_data):
 # @pytest.mark.xfail(reason="check_estimator is very strict, may require further refinements to Earth/Pymars internals")
 def test_earth_regressor_check_estimator():
     """Run scikit-learn's check_estimator tests."""
-    # Some checks in check_estimator might require specific behaviors or attributes
-    # not yet fully implemented (e.g., handling of sample_weight, sparse matrices, specific error messages).
+    # Some checks in check_estimator still require explicitly documented
+    # non-support or stricter contract handling (for example sparse inputs).
     # We can skip specific checks by name if they are problematic and understood.
     # For example: check_estimator(EarthRegressor(), skip_tests=['check_sample_weights_invariance'])
 
@@ -256,6 +284,17 @@ def test_earth_classifier_instantiation_custom_classifier():
     assert clf.classifier is my_svc
     # self.classifier_ is only created in fit.
     assert not hasattr(clf, "classifier_")
+
+
+def test_earth_classifier_fit_accepts_sample_weight(clf_data):
+    X, y = clf_data
+    sample_weight = np.ones_like(y, dtype=float)
+    sample_weight[:10] = 10.0
+    clf = EarthClassifier(max_terms=5)
+    clf.fit(X, y, sample_weight=sample_weight)
+
+    assert clf.is_fitted_ is True
+    assert hasattr(clf, "classifier_")
 
 
 def test_earth_classifier_fit(clf_data):

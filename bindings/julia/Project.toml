@@ -1,0 +1,17 @@
+name = "MarsRuntime"
+uuid = "dd07e42f-8d4e-4e9e-9c0b-000000000001"
+version = "0.0.0"
+authors = ["Dylan A Mordaunt"]
+
+[deps]
+JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
+
+[compat]
+JSON = "0.21"
+julia = "1.9"

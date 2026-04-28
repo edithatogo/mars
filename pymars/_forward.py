@@ -42,6 +42,7 @@ class ForwardPasser:
         self.X_train: np.ndarray | None = None
         self.y_train: np.ndarray | None = None
         self.n_samples = 0
+        self.effective_n_samples = 0.0
         self.n_features = 0
         self.current_basis_functions: list[BasisFunction] = []
         self.current_B_matrix: np.ndarray | None = None
@@ -56,15 +57,26 @@ class ForwardPasser:
         self._min_candidate_rss = np.inf
         self.X_fit_original: np.ndarray | None = None
         self.missing_mask: np.ndarray | None = None
+        self.sample_weight: np.ndarray | None = None
         self.categorical_features = self.model.categorical_features
 
     def _calculate_rss_and_coeffs(
-        self, B_matrix: np.ndarray, y: np.ndarray, *, drop_nan_rows: bool = True
-    ) -> tuple[float, np.ndarray | None, int]:
+        self,
+        B_matrix: np.ndarray,
+        y: np.ndarray,
+        sample_weight: np.ndarray | None = None,
+        *,
+        drop_nan_rows: bool = True,
+    ) -> tuple[float, np.ndarray | None, float]:
         if B_matrix is None or B_matrix.shape[1] == 0:
-            mean_y = float(np.mean(y))
-            rss: float = float(np.sum((y - mean_y) ** 2))
-            num_valid_rows = len(y)
+            if sample_weight is None:
+                mean_y = float(np.mean(y))
+                rss: float = float(np.sum((y - mean_y) ** 2))
+                num_valid_rows = float(len(y))
+            else:
+                mean_y = float(np.average(y, weights=sample_weight))
+                rss = float(np.sum(sample_weight * (y - mean_y) ** 2))
+                num_valid_rows = float(np.sum(sample_weight))
             coeffs_for_mean = (
                 cast(np.ndarray, np.array([mean_y], dtype=float))
                 if (B_matrix is not None and B_matrix.shape[1] == 0)
@@ -80,13 +92,19 @@ class ForwardPasser:
                 valid_rows_mask = ~np.any(np.isnan(B_matrix), axis=1)
                 B_complete = B_matrix[valid_rows_mask]
                 y = y[valid_rows_mask]
+                if sample_weight is not None:
+                    sample_weight = sample_weight[valid_rows_mask]
             else:
                 B_complete = B_matrix
         else:
             # Treat NaNs as zeros.  This is useful when evaluating missingness
             # candidates so that rows with NaNs are still considered.
             B_complete = np.nan_to_num(B_matrix, nan=0.0)
-        num_valid_rows = B_complete.shape[0]
+        num_valid_rows = (
+            float(np.sum(sample_weight))
+            if sample_weight is not None
+            else float(B_complete.shape[0])
+        )
 
         if num_valid_rows == 0:
             return np.inf, None, 0
@@ -94,14 +112,22 @@ class ForwardPasser:
         try:
             if B_complete.ndim == 1:
                 B_complete = B_complete.reshape(-1, 1)
-            coeffs, residuals_sum_sq, rank, s = np.linalg.lstsq(
-                B_complete, y, rcond=None
-            )
-            if residuals_sum_sq.size == 0 or rank < B_complete.shape[1]:
+            if sample_weight is not None:
+                sqrt_weight = np.sqrt(sample_weight)
+                B_solved = B_complete * sqrt_weight[:, np.newaxis]
+                y_solved = y * sqrt_weight
+                coeffs, _, rank, _ = np.linalg.lstsq(B_solved, y_solved, rcond=None)
                 y_pred_complete = B_complete @ coeffs
-                rss = np.sum((y - y_pred_complete) ** 2)
+                rss = float(np.sum(sample_weight * (y - y_pred_complete) ** 2))
             else:
-                rss = residuals_sum_sq[0]
+                coeffs, residuals_sum_sq, rank, _ = np.linalg.lstsq(
+                    B_complete, y, rcond=None
+                )
+                if residuals_sum_sq.size == 0 or rank < B_complete.shape[1]:
+                    y_pred_complete = B_complete @ coeffs
+                    rss = float(np.sum((y - y_pred_complete) ** 2))
+                else:
+                    rss = float(residuals_sum_sq[0])
             return rss, coeffs, num_valid_rows
         except np.linalg.LinAlgError:
             return np.inf, None, num_valid_rows
@@ -124,17 +150,26 @@ class ForwardPasser:
             B_matrix[:, idx] = bf.transform(X_processed, missing_mask)
         return cast(np.ndarray, B_matrix)
 
+    def _get_effective_n_samples(self) -> float:
+        return (
+            self.effective_n_samples
+            if self.effective_n_samples > 0
+            else float(self.n_samples)
+        )
+
     def run(
         self,
         X_fit_processed: np.ndarray,
         y_fit: np.ndarray,
         missing_mask: np.ndarray,
         X_fit_original: np.ndarray,
+        sample_weight: np.ndarray | None = None,
     ) -> tuple[list[BasisFunction], np.ndarray | None]:
         self.X_train = X_fit_processed
         self.y_train = y_fit
         self.missing_mask = missing_mask
         self.X_fit_original = X_fit_original
+        self.sample_weight = sample_weight
 
         if self.y_train.ndim > 1 and self.y_train.shape[1] > 1:
             raise ValueError(
@@ -143,6 +178,12 @@ class ForwardPasser:
         self.y_train = self.y_train.ravel()
 
         self.n_samples, self.n_features = self.X_train.shape
+        self.effective_n_samples = (
+            float(np.sum(self.sample_weight))
+            if self.sample_weight is not None
+            else float(self.n_samples)
+        )
+        effective_n_samples = self._get_effective_n_samples()
 
         intercept_bf = ConstantBasisFunction()
         self.current_basis_functions = [intercept_bf]
@@ -151,7 +192,9 @@ class ForwardPasser:
         )
 
         rss, coeffs, _ = self._calculate_rss_and_coeffs(
-            self.current_B_matrix, self.y_train
+            self.current_B_matrix,
+            self.y_train,
+            sample_weight=self.sample_weight,
         )  # Unpack 3
         if coeffs is None:
             logger.warning(
@@ -174,7 +217,8 @@ class ForwardPasser:
         max_terms_for_loop = self.model.max_terms
         if max_terms_for_loop is None:
             max_terms_for_loop = min(
-                self.n_samples - 1, max(21, 2 * self.n_features + 1)
+                max(1, int(np.floor(effective_n_samples)) - 1),
+                max(21, 2 * self.n_features + 1),
             )
 
         logger.info(
@@ -209,13 +253,15 @@ class ForwardPasser:
                 self.current_basis_functions
             )
 
-            num_valid_rows_for_gcv_calc = self.n_samples  # Default
+            num_valid_rows_for_gcv_calc = effective_n_samples  # Default
             if self._best_new_B_matrix is not None:
                 best_cand_valid_rows_mask = ~np.any(
                     np.isnan(self._best_new_B_matrix), axis=1
                 )
-                num_valid_rows_for_best_candidate: int = int(
+                num_valid_rows_for_best_candidate = float(
                     np.sum(best_cand_valid_rows_mask)
+                    if self.sample_weight is None
+                    else np.sum(self.sample_weight[best_cand_valid_rows_mask])
                 )
                 if num_valid_rows_for_best_candidate > 0:
                     num_valid_rows_for_gcv_calc = num_valid_rows_for_best_candidate
@@ -288,27 +334,38 @@ class ForwardPasser:
         if not basis_functions:
             # This implies an intercept-only model for GCV calculation purposes
             assert self.y_train is not None
-            rss_intercept_only: float = float(
-                np.sum((self.y_train - np.mean(self.y_train)) ** 2)
-            )
+            if self.sample_weight is None:
+                intercept = float(np.mean(self.y_train))
+                rss_intercept_only = float(
+                    np.sum((self.y_train - intercept) ** 2)
+                )
+            else:
+                intercept = float(np.average(self.y_train, weights=self.sample_weight))
+                rss_intercept_only = float(
+                    np.sum(self.sample_weight * (self.y_train - intercept) ** 2)
+                )
             num_terms_intercept = 1
             num_hinge_terms_intercept = 0
             effective_params_intercept = gcv_penalty_cost_effective_parameters(
                 num_terms_intercept,
                 num_hinge_terms_intercept,
                 self.model.penalty,
-                self.n_samples,
+                self._get_effective_n_samples(),
             )
             gcv_intercept = calculate_gcv(
-                rss_intercept_only, self.n_samples, effective_params_intercept
+                rss_intercept_only,
+                self._get_effective_n_samples(),
+                effective_params_intercept,
             )
-            return gcv_intercept, cast(np.ndarray, np.array([np.mean(self.y_train)]))
+            return gcv_intercept, cast(np.ndarray, np.array([intercept]))
 
         assert self.X_train is not None
         assert self.y_train is not None
         B_matrix = self._build_basis_matrix(self.X_train, basis_functions)
         rss, coeffs, num_valid_rows = self._calculate_rss_and_coeffs(
-            B_matrix, self.y_train
+            B_matrix,
+            self.y_train,
+            sample_weight=self.sample_weight,
         )
 
         if rss == np.inf or coeffs is None or num_valid_rows == 0:
@@ -350,6 +407,9 @@ class ForwardPasser:
     ) -> np.ndarray:
         assert self.X_train is not None
         assert self.missing_mask is not None
+        positive_weight_mask = (
+            self.sample_weight > 0 if self.sample_weight is not None else None
+        )
         n_vars_for_calc = self.n_features
         if n_vars_for_calc == 0:
             n_vars_for_calc = 1
@@ -372,13 +432,25 @@ class ForwardPasser:
         p_parent_active: np.ndarray
         if parent_bf.is_constant():
             p_parent_active = np.ones(self.n_samples, dtype=bool)
-            count_parent_nonzero_for_minspan = self.n_samples
+            if positive_weight_mask is not None:
+                p_parent_active &= positive_weight_mask
+            count_parent_nonzero_for_minspan = (
+                self._get_effective_n_samples()
+                if self.sample_weight is not None
+                else float(self.n_samples)
+            )
         else:
             parent_transform = parent_bf.transform(
                 self.X_train, self.missing_mask
             )  # Use self.X_train (X_processed) and self.missing_mask
             p_parent_active = (parent_transform != 0) & (~np.isnan(parent_transform))
-            count_parent_nonzero_for_minspan = np.sum(p_parent_active)
+            if positive_weight_mask is not None:
+                p_parent_active &= positive_weight_mask
+            count_parent_nonzero_for_minspan = (
+                float(np.sum(self.sample_weight[p_parent_active]))
+                if self.sample_weight is not None
+                else float(np.sum(p_parent_active))
+            )
 
         if count_parent_nonzero_for_minspan == 0:
             return cast(np.ndarray, np.array([]))
@@ -490,8 +562,14 @@ class ForwardPasser:
                 elif self.categorical_features and var_idx in self.categorical_features:
                     assert self.X_fit_original is not None
                     col_vals = self.X_fit_original[:, var_idx]
+                    valid_rows = np.ones(col_vals.shape[0], dtype=bool)
                     if self.missing_mask is not None:
-                        col_vals = col_vals[~self.missing_mask[:, var_idx]]
+                        valid_rows &= ~self.missing_mask[:, var_idx]
+                    if self.sample_weight is not None:
+                        valid_rows &= self.sample_weight > 0
+                    col_vals = col_vals[valid_rows]
+                    if col_vals.size == 0:
+                        continue
                     unique_categories = np.unique(col_vals)
                     for category in unique_categories:
                         categorical_candidate = CategoricalBasisFunction(
@@ -521,6 +599,8 @@ class ForwardPasser:
 
                 if np.any(
                     self.missing_mask[:, var_idx]
+                    if self.sample_weight is None
+                    else (self.missing_mask[:, var_idx] & (self.sample_weight > 0))
                 ):  # If this feature has any missing values
                     var_name = None
                     if (
@@ -557,7 +637,8 @@ class ForwardPasser:
         max_terms_for_loop = self.model.max_terms
         if max_terms_for_loop is None:
             max_terms_for_loop = min(
-                self.n_samples - 1, max(21, 2 * self.n_features + 1)
+                max(1, int(np.floor(self._get_effective_n_samples())) - 1),
+                max(21, 2 * self.n_features + 1),
             )
 
         remaining_capacity = max_terms_for_loop - len(self.current_basis_functions)
@@ -576,7 +657,7 @@ class ForwardPasser:
             if B_candidate.shape[1] == 0:
                 continue
             # Use n_samples (from processed X) for this check, num_valid_rows from _calc_rss_... will handle actual fit data size
-            if B_candidate.shape[1] >= self.n_samples:
+            if B_candidate.shape[1] >= self._get_effective_n_samples():
                 continue
 
             drop_nans = True
@@ -588,7 +669,10 @@ class ForwardPasser:
             assert self.y_train is not None
             rss_candidate, coeffs_candidate, num_valid_rows_candidate = (
                 self._calculate_rss_and_coeffs(
-                    B_candidate, self.y_train, drop_nan_rows=drop_nans
+                    B_candidate,
+                    self.y_train,
+                    sample_weight=self.sample_weight,
+                    drop_nan_rows=drop_nans,
                 )
             )
 

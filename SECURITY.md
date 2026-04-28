@@ -12,7 +12,7 @@
 We take the security of mars seriously. If you discover a security vulnerability, please follow these steps:
 
 1. **Do NOT open a public issue.**
-2. Email the maintainer directly at: [security contact]
+2. Email the maintainer directly at: `dylan@mordaunt.dev`
 3. Include the following in your report:
    - Description of the vulnerability
    - Steps to reproduce
@@ -34,10 +34,9 @@ We take the security of mars seriously. If you discover a security vulnerability
 
 ## Security Measures
 
-This project implements:
-- Automated dependency vulnerability scanning via GitHub Security Advisories
-- OSV-Scanner for comprehensive vulnerability detection
+This project currently implements:
 - Bandit for static security analysis
 - Safety for dependency vulnerability checking
-- SBOM generation for every release (CycloneDX format)
-- Signed releases using cosign
+- GitHub-hosted workflow automation for CI and release validation
+
+Future hardening work may add SBOM generation, release signing, and provenance once those controls are implemented end-to-end.

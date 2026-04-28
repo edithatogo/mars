@@ -1,7 +1,7 @@
-site_name: mars Documentation
-site_url: https://edithatogo.github.io/mars/
-repo_url: https://github.com/edithatogo/mars
-repo_name: edithatogo/mars
+site_name: pymars Documentation
+site_url: https://edithatogo.github.io/pymars/
+repo_url: https://github.com/edithatogo/pymars
+repo_name: edithatogo/pymars
 edit_uri: edit/main/docs/
 theme:
   name: material
@@ -20,21 +20,28 @@ theme:
         name: Switch to light mode
 
 nav:
-  - Home: docs/index.md
-  - Installation: docs/installation.md
-  - Usage: docs/usage.md
-  - API Reference: docs/api.md
-  - Design: docs/design.md
-  - Requirements: docs/requirements.md
-  - Tasks: docs/tasks.md
+  - Home: index.md
+  - Installation: installation.md
+  - Usage: usage.md
+  - Model Spec: model_spec.md
+  - Rust Core: rust_core.md
+  - Training Core Migration: training_core_migration.md
+  - Training Orchestration Inventory: training_orchestration_inventory.md
+  - Bindings: bindings.md
+  - Binding Release: binding_release.md
+  - Binding Backend Decisions: binding_backend_decisions.md
+  - Binding ABI and API Contract: binding_abi_contract.md
+  - Remaining Roadmap: remaining_roadmap.md
+  - Conformance: conformance.md
+  - API Reference: api.md
+  - Design: design.md
+  - Requirements: requirements.md
+  - Tasks: tasks.md
   - Tutorials:
-    - Basic: docs/tutorials/basic.md
-    - Advanced: docs/tutorials/advanced.md
-  - Performance: docs/performance_optimization_plan.md
-  - Robustness: docs/robustness_improvement_plan.md
-  - Contributing: CONTRIBUTING.md
-  - Changelog: CHANGELOG.md
-
+    - Basic: tutorials/basic.md
+    - Advanced: tutorials/advanced.md
+  - Performance: performance_optimization_plan.md
+  - Robustness: robustness_improvement_plan.md
 plugins:
   - search
 
@@ -53,6 +60,6 @@ extra:
     - icon: fontawesome/brands/github
       link: https://github.com/edithatogo/mars
     - icon: fontawesome/brands/python
-      link: https://pypi.org/project/mars/
+      link: https://pypi.org/project/mars-earth/
 
 copyright: Copyright &copy; 2026 Dylan A Mordaunt. Licensed under Apache License, Version 2.0

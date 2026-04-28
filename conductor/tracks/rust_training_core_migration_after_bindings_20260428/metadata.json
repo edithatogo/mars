@@ -1,0 +1,9 @@
+{
+  "track_id": "rust_training_core_migration_after_bindings_20260428",
+  "title": "Rust training core migration after bindings",
+  "status": "completed",
+  "created_at": "2026-04-28T00:00:00Z",
+  "updated_at": "2026-04-28T00:00:00Z",
+  "type": "feature",
+  "priority": "medium"
+}

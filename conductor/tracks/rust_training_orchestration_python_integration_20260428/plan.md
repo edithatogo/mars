@@ -10,7 +10,7 @@
     - [x] Add Python-generated baseline fixtures for representative fits
     - [x] Add Rust tests that assert the full fit/export path matches those fixtures
     - [x] Include sample-weight and interaction coverage
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 0: Baseline and Architecture Lock' (Protocol in workflow.md)
+- [~] Task: Conductor - Automated Review and Checkpoint 'Phase 0: Baseline and Architecture Lock' (Protocol in workflow.md)
 
 ## Phase 1: Rust Forward-Pass Orchestration
 

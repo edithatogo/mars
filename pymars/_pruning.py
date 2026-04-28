@@ -34,26 +34,36 @@ class PruningPasser:
         self.X_train: np.ndarray | None = None  # Will be X_fit_processed
         self.y_train: np.ndarray | None = None  # Will be y_fit
         self.n_samples = 0  # Will be based on X_fit_processed
+        self.effective_n_samples = 0.0
 
         self.missing_mask: np.ndarray | None = None
         self.X_fit_original: np.ndarray | None = None
+        self.sample_weight: np.ndarray | None = None
 
         self.best_gcv_so_far: float = float(np.inf)
         self.best_basis_functions_so_far: list[BasisFunction] = []
         self.best_coeffs_so_far: np.ndarray | None = None
 
     def _calculate_rss_and_coeffs(
-        self, B_matrix: np.ndarray, y_data: np.ndarray
-    ) -> tuple[float, np.ndarray | None, int]:
+        self,
+        B_matrix: np.ndarray,
+        y_data: np.ndarray,
+        sample_weight: np.ndarray | None = None,
+    ) -> tuple[float, np.ndarray | None, float]:
         """
         Calculates RSS, coefficients, and num_valid_rows, considering NaNs in B_matrix.
         y_data is assumed finite.
         Returns (rss, coeffs, num_valid_rows). (np.inf, None, 0) on error/no valid rows.
         """
         if B_matrix is None or B_matrix.shape[1] == 0:
-            mean_y = np.mean(y_data)
-            rss: float = float(np.sum((y_data - mean_y) ** 2))
-            num_valid_rows = len(y_data)
+            if sample_weight is None:
+                mean_y = float(np.mean(y_data))
+                rss: float = float(np.sum((y_data - mean_y) ** 2))
+                num_valid_rows = float(len(y_data))
+            else:
+                mean_y = float(np.average(y_data, weights=sample_weight))
+                rss = float(np.sum(sample_weight * (y_data - mean_y) ** 2))
+                num_valid_rows = float(np.sum(sample_weight))
             coeffs_for_mean = (
                 cast(np.ndarray, np.array([mean_y]))
                 if (B_matrix is not None and B_matrix.shape[1] == 0)
@@ -63,7 +73,7 @@ class PruningPasser:
 
         # Identify rows with no NaNs in B_matrix (y_data is already finite)
         valid_rows_mask = ~np.any(np.isnan(B_matrix), axis=1)
-        num_valid_rows = np.sum(valid_rows_mask)
+        num_valid_rows = float(np.sum(valid_rows_mask))
 
         if (
             num_valid_rows == 0 or num_valid_rows < B_matrix.shape[1]
@@ -74,19 +84,30 @@ class PruningPasser:
         y_complete = y_data[
             valid_rows_mask
         ]  # y_data is already 1D from PruningPasser.run
+        if sample_weight is not None:
+            sample_weight = sample_weight[valid_rows_mask]
+            num_valid_rows = float(np.sum(sample_weight))
 
         try:
             # B_complete should be 2D here because B_matrix.shape[1] > 0
             # and num_valid_rows >= B_matrix.shape[1]
-            coeffs, residuals_sum_sq, rank, s = np.linalg.lstsq(
-                B_complete, y_complete, rcond=None
-            )
-
-            if residuals_sum_sq.size == 0 or rank < B_complete.shape[1]:
+            if sample_weight is not None:
+                sqrt_weight = np.sqrt(sample_weight)
+                B_solved = B_complete * sqrt_weight[:, np.newaxis]
+                y_solved = y_complete * sqrt_weight
+                coeffs, _, rank, _ = np.linalg.lstsq(B_solved, y_solved, rcond=None)
                 y_pred_complete = B_complete @ coeffs
-                rss = np.sum((y_complete - y_pred_complete) ** 2)
+                rss = float(np.sum(sample_weight * (y_complete - y_pred_complete) ** 2))
             else:
-                rss = float(residuals_sum_sq[0])
+                coeffs, residuals_sum_sq, rank, _ = np.linalg.lstsq(
+                    B_complete, y_complete, rcond=None
+                )
+
+                if residuals_sum_sq.size == 0 or rank < B_complete.shape[1]:
+                    y_pred_complete = B_complete @ coeffs
+                    rss = float(np.sum((y_complete - y_pred_complete) ** 2))
+                else:
+                    rss = float(residuals_sum_sq[0])
             return rss, coeffs, num_valid_rows
         except np.linalg.LinAlgError as e:
             logger.warning(
@@ -134,7 +155,11 @@ class PruningPasser:
             # Current _calculate_rss_and_coeffs for empty B_matrix (shape[1]==0) returns mean(y) as coeff.
             empty_matrix = cast(np.ndarray, np.empty((len(y_fit), 0)))
             rss_empty, coeffs_empty, n_valid_rows_for_empty = (
-                self._calculate_rss_and_coeffs(empty_matrix, y_fit)
+                self._calculate_rss_and_coeffs(
+                    empty_matrix,
+                    y_fit,
+                    sample_weight=self.sample_weight,
+                )
             )  # B_matrix with 0 columns
 
             if (
@@ -149,10 +174,16 @@ class PruningPasser:
                 num_terms_intercept_only,
                 num_hinge_terms_intercept_only,
                 self.model.penalty,
-                n_valid_rows_for_empty,
+                self.effective_n_samples
+                if self.sample_weight is not None
+                else n_valid_rows_for_empty,
             )
             gcv_empty = calculate_gcv(
-                rss_empty, n_valid_rows_for_empty, effective_params_empty
+                rss_empty,
+                self.effective_n_samples
+                if self.sample_weight is not None
+                else n_valid_rows_for_empty,
+                effective_params_empty,
             )
             return (
                 float(gcv_empty),
@@ -165,7 +196,9 @@ class PruningPasser:
         B_subset = self._build_basis_matrix(X_fit_processed, basis_subset, missing_mask)
 
         rss, coeffs, num_valid_rows_for_fit = self._calculate_rss_and_coeffs(
-            B_subset, y_fit
+            B_subset,
+            y_fit,
+            sample_weight=self.sample_weight,
         )
 
         if coeffs is None or rss == np.inf or num_valid_rows_for_fit == 0:
@@ -200,13 +233,20 @@ class PruningPasser:
         X_fit_original: np.ndarray,
         initial_basis_functions: list[BasisFunction],
         initial_coefficients: np.ndarray,
+        sample_weight: np.ndarray | None = None,
     ) -> tuple[list[BasisFunction], np.ndarray, float]:
 
         self.X_train = X_fit_processed
         self.y_train = y_fit.ravel()
         self.missing_mask = missing_mask
         self.X_fit_original = X_fit_original
+        self.sample_weight = sample_weight
         self.n_samples = self.X_train.shape[0]
+        self.effective_n_samples = (
+            float(np.sum(self.sample_weight))
+            if self.sample_weight is not None
+            else float(self.n_samples)
+        )
 
         if not initial_basis_functions:
             self.best_gcv_so_far = float(np.inf)

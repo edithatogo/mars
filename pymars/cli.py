@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import importlib
+import json
 import logging
 import pickle
 from pathlib import Path
@@ -12,6 +13,29 @@ from typing import Any, cast
 from . import Earth, __version__
 
 logger = logging.getLogger(__name__)
+
+
+def _save_model(model: Any, output_path: str) -> str:
+    """Save a fitted model as JSON spec when possible, else pickle."""
+    path = Path(output_path)
+    if path.suffix.lower() == ".json" and hasattr(model, "export_model"):
+        path.write_text(cast(str, model.export_model(format="json")))
+        return "json"
+
+    with path.open("wb") as file_obj:
+        pickle.dump(model, file_obj)
+    return "pickle"
+
+
+def _load_model(model_path: str) -> Any:
+    """Load a portable JSON model spec or a legacy pickle model."""
+    path = Path(model_path)
+    if path.suffix.lower() == ".json":
+        payload = json.loads(path.read_text())
+        return Earth.from_model(payload)
+
+    with path.open("rb") as file_obj:
+        return pickle.load(file_obj)
 
 
 def main() -> None:
@@ -28,7 +52,9 @@ def main() -> None:
     fit_parser.add_argument("--input", required=True, help="Input data file (CSV)")
     fit_parser.add_argument("--target", required=True, help="Target column name")
     fit_parser.add_argument(
-        "--output-model", required=True, help="Output model file (pickle)"
+        "--output-model",
+        required=True,
+        help="Output model file (.json preferred, .pkl for legacy pickle)",
     )
     fit_parser.add_argument(
         "--max-degree",
@@ -50,9 +76,7 @@ def main() -> None:
     predict_parser = subparsers.add_parser(
         "predict", help="Make predictions with a fitted model"
     )
-    predict_parser.add_argument(
-        "--model", required=True, help="Input model file (pickle)"
-    )
+    predict_parser.add_argument("--model", required=True, help="Input model file")
     predict_parser.add_argument("--input", required=True, help="Input data file (CSV)")
     predict_parser.add_argument(
         "--output", required=True, help="Output predictions file (CSV)"
@@ -60,9 +84,7 @@ def main() -> None:
 
     # Score command
     score_parser = subparsers.add_parser("score", help="Score a fitted model")
-    score_parser.add_argument(
-        "--model", required=True, help="Input model file (pickle)"
-    )
+    score_parser.add_argument("--model", required=True, help="Input model file")
     score_parser.add_argument("--input", required=True, help="Input data file (CSV)")
     score_parser.add_argument("--target", required=True, help="Target column name")
 
@@ -102,11 +124,9 @@ def fit_model(args: argparse.Namespace) -> None:
     earth: Any = Earth(**model_params)
     earth.fit(X, y)
 
-    # Save model
-    with Path(args.output_model).open("wb") as f:
-        pickle.dump(earth, f)
+    saved_as = _save_model(earth, args.output_model)
 
-    print(f"Model fitted and saved to {args.output_model}")
+    print(f"Model fitted and saved to {args.output_model} ({saved_as})")
     basis_functions = earth.basis_ or []
     print(f"Number of selected basis functions: {len(basis_functions)}")
     print(f"GCV score: {earth.gcv_:.4f}")
@@ -118,9 +138,7 @@ def make_predictions(args: argparse.Namespace) -> None:
     # Import pandas only when needed
     pd = cast(Any, importlib.import_module("pandas"))
 
-    # Load model
-    with Path(args.model).open("rb") as f:
-        model: Any = pickle.load(f)
+    model = _load_model(args.model)
 
     # Load input data
     data = pd.read_csv(args.input)
@@ -141,9 +159,7 @@ def score_model(args: argparse.Namespace) -> None:
     # Import pandas only when needed
     pd = cast(Any, importlib.import_module("pandas"))
 
-    # Load model
-    with Path(args.model).open("rb") as f:
-        model: Any = pickle.load(f)
+    model = _load_model(args.model)
 
     # Load data
     data = pd.read_csv(args.input)

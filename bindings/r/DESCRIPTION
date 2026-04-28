@@ -1,0 +1,9 @@
+Package: marsruntime
+Title: Portable mars Runtime Replay
+Version: 0.0.0
+Authors@R: person("Dylan", "A Mordaunt", email = "dylan@mordaunt.dev", role = c("aut", "cre"))
+Description: Thin R runtime surface for replaying portable mars ModelSpec artifacts.
+License: Apache License (>= 2)
+Encoding: UTF-8
+Imports:
+    jsonlite

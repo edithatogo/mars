@@ -1,0 +1,39 @@
+{
+  "spec_version": "1.0",
+  "model_type": "regression",
+  "feature_schema": {
+    "n_features": 2,
+    "feature_names": ["x0", "x1"],
+    "categorical": [false, false]
+  },
+  "params": {},
+  "basis_terms": [
+    {"kind": "constant"},
+    {"kind": "linear", "variable_idx": 0, "variable_name": "x0"},
+    {
+      "kind": "hinge",
+      "variable_idx": 0,
+      "variable_name": "x0",
+      "knot_val": 2.0,
+      "is_right_hinge": true
+    },
+    {"kind": "missingness", "variable_idx": 1, "variable_name": "x1"},
+    {
+      "kind": "interaction",
+      "parent1": {
+        "kind": "hinge",
+        "variable_idx": 0,
+        "variable_name": "x0",
+        "knot_val": 2.0,
+        "is_right_hinge": true
+      },
+      "parent2": {
+        "kind": "missingness",
+        "variable_idx": 1,
+        "variable_name": "x1"
+      }
+    }
+  ],
+  "coefficients": [1.0, 0.5, 2.0, -1.5, 3.0],
+  "intercept": 0.0
+}
