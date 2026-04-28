@@ -6,51 +6,51 @@
     - [ ] Evaluate Python, R, Julia, C#, Go, and TypeScript binding mechanisms
     - [ ] Decide whether the shared boundary is C ABI, PyO3/maturin, WebAssembly, or a mixed strategy
     - [ ] Update `tech-stack.md` with selected tools before implementation
-- [~] Task: Define ABI/API compatibility rules
+- [x] Task: Define ABI/API compatibility rules
     - [ ] Define allocation, release, and ownership rules
     - [ ] Define null, NaN, missingness, and categorical encoding behavior
     - [ ] Define stable error codes, error payloads, and SemVer compatibility expectations
-- [ ] Task: Add failing cross-language Rust-core conformance checks
-    - [ ] Extend the manifest to distinguish Rust-backed tests from MVP replay tests
-    - [ ] Add failure expectations for languages still using duplicated replay logic
-    - [ ] Document required local toolchains
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 0: Binding Architecture Decision' (Protocol in workflow.md)
+- [x] Task: Add failing cross-language Rust-core conformance checks
+    - [x] Extend the manifest to distinguish Rust-backed tests from MVP replay tests
+    - [x] Add failure expectations for languages still using duplicated replay logic
+    - [x] Document required local toolchains
+- [x] Task: Conductor - Automated Review and Checkpoint 'Phase 0: Binding Architecture Decision' (Protocol in workflow.md)
 
 ## Phase 1: Stable Rust Foreign Interface
 
-- [ ] Task: Implement the shared Rust foreign interface
-    - [ ] Expose validate, design-matrix, and predict operations through the selected boundary
-    - [ ] Define stable error codes and message payloads
-    - [ ] Define ownership, allocation, and release rules
-- [ ] Task: Validate Rust interface safety
-    - [ ] Add Rust tests for malformed artifacts, unsupported versions, feature mismatches, and NaN/null behavior
-    - [ ] Add sanitizer or leak-oriented checks where feasible
-    - [ ] Document the ABI/API contract for binding authors
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 1: Stable Rust Foreign Interface' (Protocol in workflow.md)
+- [x] Task: Implement the shared Rust foreign interface
+    - [x] Expose validate, design-matrix, and predict operations through the selected boundary
+    - [x] Define stable error codes and message payloads
+    - [x] Define ownership, allocation, and release rules
+- [x] Task: Validate Rust interface safety
+    - [x] Add Rust tests for malformed artifacts, unsupported versions, feature mismatches, and NaN/null behavior
+    - [x] Add sanitizer or leak-oriented checks where feasible
+    - [x] Document the ABI/API contract for binding authors
+- [x] Task: Conductor - Automated Review and Checkpoint 'Phase 1: Stable Rust Foreign Interface' (Protocol in workflow.md)
 
 ## Phase 2: Python and Rust Package Integration
 
-- [ ] Task: Wire Python to the Rust runtime/core
-    - [ ] Add build configuration for the selected Python binding mechanism
-    - [ ] Route runtime replay calls through Rust where available
-    - [ ] Preserve sklearn estimator behavior and fallback support
-- [ ] Task: Harden the Rust crate as the native binding source
-    - [ ] Keep the crate API idiomatic for Rust users
-    - [ ] Verify `cargo test`, `cargo package`, and conformance tests
-    - [ ] Update Rust package documentation
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 2: Python and Rust Package Integration' (Protocol in workflow.md)
+- [x] Task: Wire Python to the Rust runtime/core
+    - [x] Add build configuration for the selected Python binding mechanism
+    - [x] Route runtime replay calls through Rust where available
+    - [x] Preserve sklearn estimator behavior and fallback support
+- [x] Task: Harden the Rust crate as the native binding source
+    - [x] Keep the crate API idiomatic for Rust users
+    - [x] Verify `cargo test`, `cargo package`, and conformance tests
+    - [x] Update Rust package documentation
+- [x] Task: Conductor - Automated Review and Checkpoint 'Phase 2: Python and Rust Package Integration' (Protocol in workflow.md)
 
 ## Phase 3: R, Julia, C#, and Go Bindings
 
-- [ ] Task: Replace R and Julia replay logic with Rust-backed calls
-    - [ ] Preserve current public function names
-    - [ ] Translate Rust errors into idiomatic host-language errors
-    - [ ] Run shared fixtures from each package test entrypoint
-- [ ] Task: Replace C# and Go replay logic with Rust-backed calls
-    - [ ] Preserve package APIs and type safety
-    - [ ] Validate ownership and memory-release rules
-    - [ ] Run shared fixtures from each package test entrypoint
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 3: R, Julia, C#, and Go Bindings' (Protocol in workflow.md)
+- [x] Task: Replace R and Julia replay logic with Rust-backed calls
+    - [x] Preserve current public function names
+    - [x] Translate Rust errors into idiomatic host-language errors
+    - [x] Run shared fixtures from each package test entrypoint
+- [x] Task: Replace C# and Go replay logic with Rust-backed calls
+    - [x] Preserve package APIs and type safety
+    - [x] Validate ownership and memory-release rules
+    - [x] Run shared fixtures from each package test entrypoint
+- [x] Task: Conductor - Automated Review and Checkpoint 'Phase 3: R, Julia, C#, and Go Bindings' (Protocol in workflow.md)
 
 ## Phase 4: TypeScript Binding
 

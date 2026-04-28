@@ -1,14 +1,14 @@
 use serde::Deserialize;
 use serde_json::Value;
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct FeatureSchema {
     pub n_features: Option<usize>,
     #[serde(default)]
     pub feature_names: Vec<String>,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct BasisTermSpec {
     pub kind: String,
     pub variable_idx: Option<usize>,
@@ -22,7 +22,7 @@ pub struct BasisTermSpec {
     pub parent2: Option<Box<BasisTermSpec>>,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct ModelSpec {
     pub spec_version: String,
     pub params: Value,

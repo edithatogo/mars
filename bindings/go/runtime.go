@@ -1,10 +1,16 @@
 package pymars
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"math"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"runtime"
+	"strings"
 )
 
 type FeatureSchema struct {
@@ -13,7 +19,7 @@ type FeatureSchema struct {
 }
 
 type BasisTerm struct {
-	Kind         string          `json:"kind"`
+	Kind        string          `json:"kind"`
 	VariableIdx *int            `json:"variable_idx"`
 	KnotVal     *float64        `json:"knot_val"`
 	IsRight     *bool           `json:"is_right_hinge"`
@@ -45,10 +51,217 @@ func Validate(spec *ModelSpec) error {
 	if spec == nil {
 		return errors.New("malformed artifact: model spec is nil")
 	}
+	if ok, err := tryValidateWithRust(spec); ok {
+		return nil
+	} else if err != nil {
+		return err
+	}
+	return validatePure(spec)
+}
+
+func DesignMatrix(spec *ModelSpec, rows [][]float64) ([][]float64, error) {
+	if ok, matrix, err := tryDesignMatrixWithRust(spec, rows); ok {
+		return matrix, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return designMatrixPure(spec, rows)
+}
+
+func Predict(spec *ModelSpec, rows [][]float64) ([]float64, error) {
+	if ok, predictions, err := tryPredictWithRust(spec, rows); ok {
+		return predictions, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return predictPure(spec, rows)
+}
+
+func tryValidateWithRust(spec *ModelSpec) (bool, error) {
+	_, available, err := invokeRustRuntime("validate", spec, nil)
+	return available, err
+}
+
+func tryDesignMatrixWithRust(spec *ModelSpec, rows [][]float64) (bool, [][]float64, error) {
+	payload, available, err := invokeRustRuntime("design-matrix", spec, rows)
+	if !available || err != nil {
+		return available, nil, err
+	}
+	var raw [][]*float64
+	if err := json.Unmarshal(payload, &raw); err != nil {
+		return true, nil, fmt.Errorf("failed to parse Rust runtime output: %w", err)
+	}
+	return true, runtimeMatrixToFloat(raw), nil
+}
+
+func tryPredictWithRust(spec *ModelSpec, rows [][]float64) (bool, []float64, error) {
+	payload, available, err := invokeRustRuntime("predict", spec, rows)
+	if !available || err != nil {
+		return available, nil, err
+	}
+	var raw []*float64
+	if err := json.Unmarshal(payload, &raw); err != nil {
+		return true, nil, fmt.Errorf("failed to parse Rust runtime output: %w", err)
+	}
+	return true, runtimeVectorToFloat(raw), nil
+}
+
+func invokeRustRuntime(command string, spec *ModelSpec, rows [][]float64) ([]byte, bool, error) {
+	binary := rustRuntimeBinary()
+	if binary == "" {
+		return nil, false, nil
+	}
+
+	specPath, cleanupSpec, ok := writeTempJSON(spec)
+	if !ok {
+		return nil, false, nil
+	}
+	defer cleanupSpec()
+
+	var rowsPath string
+	var cleanupRows func()
+	if rows != nil {
+		var okRows bool
+		rowsPath, cleanupRows, okRows = writeTempJSON(nullableRows(rows))
+		if !okRows {
+			return nil, false, nil
+		}
+		defer cleanupRows()
+	}
+
+	args := []string{command, "--spec-file", specPath}
+	if rowsPath != "" {
+		args = append(args, "--rows-file", rowsPath)
+	}
+
+	cmd := exec.Command(binary, args...)
+	var stdout bytes.Buffer
+	var stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+
+	if err := cmd.Run(); err != nil {
+		if errors.Is(err, exec.ErrNotFound) {
+			return nil, false, nil
+		}
+		var exitErr *exec.ExitError
+		if errors.As(err, &exitErr) {
+			message := strings.TrimSpace(stderr.String())
+			if message == "" {
+				message = exitErr.Error()
+			}
+			return nil, true, errors.New(message)
+		}
+		return nil, false, nil
+	}
+
+	return stdout.Bytes(), true, nil
+}
+
+func rustRuntimeBinary() string {
+	if envBinary := os.Getenv("MARS_RUNTIME_BIN"); envBinary != "" {
+		if fileExists(envBinary) {
+			return envBinary
+		}
+	}
+
+	start, err := os.Getwd()
+	if err != nil {
+		return ""
+	}
+
+	for dir := filepath.Clean(start); ; dir = filepath.Dir(dir) {
+		for _, candidate := range candidateRuntimeBinaries(dir) {
+			if fileExists(candidate) {
+				return candidate
+			}
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+	}
+
+	return ""
+}
+
+func candidateRuntimeBinaries(root string) []string {
+	name := "mars-runtime-cli"
+	if runtime.GOOS == "windows" {
+		name += ".exe"
+	}
+	return []string{
+		filepath.Join(root, "rust-runtime", "target", "debug", name),
+		filepath.Join(root, "rust-runtime", "target", "release", name),
+	}
+}
+
+func fileExists(path string) bool {
+	info, err := os.Stat(path)
+	return err == nil && !info.IsDir()
+}
+
+func writeTempJSON(value any) (string, func(), bool) {
+	raw, err := json.Marshal(value)
+	if err != nil {
+		return "", func() {}, false
+	}
+	file, err := os.CreateTemp("", "mars-runtime-*.json")
+	if err != nil {
+		return "", func() {}, false
+	}
+	if _, err := file.Write(raw); err != nil {
+		file.Close()
+		os.Remove(file.Name())
+		return "", func() {}, false
+	}
+	if err := file.Close(); err != nil {
+		os.Remove(file.Name())
+		return "", func() {}, false
+	}
+	return file.Name(), func() { os.Remove(file.Name()) }, true
+}
+
+func nullableRows(rows [][]float64) [][]*float64 {
+	out := make([][]*float64, len(rows))
+	for i, row := range rows {
+		out[i] = make([]*float64, len(row))
+		for j, value := range row {
+			if math.IsNaN(value) {
+				continue
+			}
+			v := value
+			out[i][j] = &v
+		}
+	}
+	return out
+}
+
+func runtimeMatrixToFloat(rows [][]*float64) [][]float64 {
+	out := make([][]float64, len(rows))
+	for i, row := range rows {
+		out[i] = runtimeVectorToFloat(row)
+	}
+	return out
+}
+
+func runtimeVectorToFloat(values []*float64) []float64 {
+	out := make([]float64, len(values))
+	for i, value := range values {
+		if value == nil {
+			out[i] = math.NaN()
+		} else {
+			out[i] = *value
+		}
+	}
+	return out
+}
+
+func validatePure(spec *ModelSpec) error {
 	if spec.SpecVersion == "" || len(spec.SpecVersion) < 3 || spec.SpecVersion[1] != '.' {
 		return errors.New("malformed artifact: spec_version must be '<major>.<minor>'")
 	}
-	if spec.SpecVersion[0] != '1' {
+	if !strings.HasPrefix(spec.SpecVersion, "1.") {
 		return fmt.Errorf("unsupported artifact version: %s", spec.SpecVersion)
 	}
 	if len(spec.BasisTerms) != len(spec.Coefficients) {
@@ -67,11 +280,11 @@ func Validate(spec *ModelSpec) error {
 	return nil
 }
 
-func DesignMatrix(spec *ModelSpec, rows [][]float64) ([][]float64, error) {
-	if err := Validate(spec); err != nil {
+func designMatrixPure(spec *ModelSpec, rows [][]float64) ([][]float64, error) {
+	if err := validatePure(spec); err != nil {
 		return nil, err
 	}
-	if err := validateRows(spec, rows); err != nil {
+	if err := validateRowsPure(spec, rows); err != nil {
 		return nil, err
 	}
 	matrix := make([][]float64, len(rows))
@@ -88,8 +301,8 @@ func DesignMatrix(spec *ModelSpec, rows [][]float64) ([][]float64, error) {
 	return matrix, nil
 }
 
-func Predict(spec *ModelSpec, rows [][]float64) ([]float64, error) {
-	matrix, err := DesignMatrix(spec, rows)
+func predictPure(spec *ModelSpec, rows [][]float64) ([]float64, error) {
+	matrix, err := designMatrixPure(spec, rows)
 	if err != nil {
 		return nil, err
 	}
@@ -148,7 +361,7 @@ func validateVariableIdx(spec *ModelSpec, variableIdx *int, basisIdx int) error 
 	return nil
 }
 
-func validateRows(spec *ModelSpec, rows [][]float64) error {
+func validateRowsPure(spec *ModelSpec, rows [][]float64) error {
 	if spec.FeatureSchema.NFeatures == nil {
 		return nil
 	}

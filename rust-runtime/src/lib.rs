@@ -18,7 +18,9 @@
 //! not by host-language wrapper behavior.
 
 pub mod errors;
+pub mod foreign;
 pub mod model_spec;
+pub mod python;
 pub mod runtime;
 pub mod training;
 

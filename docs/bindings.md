@@ -11,11 +11,12 @@ Python remains the compatibility baseline.
 - Preserve `pymars.Earth`, `EarthRegressor`, `EarthClassifier`, `EarthCV`, and
   `GLMEarth` import behavior.
 - Keep scikit-learn compatibility in Python wrappers.
-- Route portable runtime helpers through Rust first.
+- Route portable runtime helpers through the Rust extension first when the
+  model spec is supported by the shared ABI, and fall back to the Python
+  implementation for unsupported replay shapes.
 - Move fitting internals behind the same public estimator API once the Rust core
   reaches parity.
-- Prefer `maturin`/PyO3 for extension packaging when the project is ready to
-  ship Rust-backed wheels.
+- Package the extension with `maturin`/PyO3.
 
 ## Rust
 
@@ -47,7 +48,8 @@ The Julia package should expose a type-stable wrapper around the Rust core.
 The C# package should target .NET consumers that need embedded prediction and
 eventual fitting.
 
-- Use a stable native or generated interop boundary.
+- Current runtime replay is bridged through the Rust CLI while native interop
+  is prepared.
 - Expose strongly typed model and prediction APIs.
 - Preserve error categories from the Rust core.
 
@@ -56,6 +58,8 @@ eventual fitting.
 The Go package should prioritize service embedding and simple deployment.
 
 - Expose model loading, validation, design-matrix evaluation, and prediction.
+- Current runtime replay is bridged through the Rust CLI while native interop
+  is prepared.
 - Keep data conversion explicit and allocation behavior predictable.
 - Preserve fixture-backed parity with Rust.
 

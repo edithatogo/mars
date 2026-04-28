@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from bindings.conformance.runner import (
     DEFAULT_MANIFEST,
     load_manifest,
@@ -34,6 +36,19 @@ def test_manifest_declares_runtime_and_training_binding_modes() -> None:
         "runtime_rust_backed": {"status": "planned"},
         "training_rust_backed": {"status": "planned"},
     }
+
+
+@pytest.mark.parametrize("removed_mode", ["runtime_rust_backed", "training_rust_backed"])
+def test_manifest_requires_future_binding_modes(
+    tmp_path: Path, removed_mode: str
+) -> None:
+    payload = json.loads(DEFAULT_MANIFEST.read_text())
+    del payload["binding_modes"][removed_mode]
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(json.dumps(payload))
+
+    with pytest.raises(AssertionError, match=removed_mode):
+        load_manifest(manifest_path)
 
 
 def test_binding_output_validation_accepts_expected_fixture_values(

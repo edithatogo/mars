@@ -3,6 +3,10 @@
 This directory defines the shared runtime replay contract for language
 bindings.
 
+The manifest also distinguishes current `runtime_mvp` coverage from the planned
+`runtime_rust_backed` and `training_rust_backed` modes so future Rust-backed
+packages can be wired without changing the fixture corpus shape.
+
 Bindings consume `manifest.json`, load each `model_spec`, evaluate the fixture
 `probe`, and emit parity output JSON:
 

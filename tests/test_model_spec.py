@@ -156,6 +156,82 @@ def test_runtime_validate_rejects_invalid_payload():
         runtime.validate(payload)
 
 
+def test_runtime_uses_rust_backend_for_supported_specs(monkeypatch):
+    spec = runtime.load_model_spec(MODEL_SPEC_V1_PATH)
+    probe = np.array([[0.0, 0.0, 0.1], [0.8, -0.5, 0.6]], dtype=float)
+    calls: list[tuple[str, object]] = []
+
+    class DummyRustBackend:
+        def validate_model_spec_json(self, spec_json: str) -> None:
+            calls.append(("validate", spec_json))
+
+        def design_matrix_json(
+            self, spec_json: str, rows: list[list[float]]
+        ) -> list[list[float]]:
+            calls.append(("design_matrix", rows))
+            return [[1.0, 2.0], [3.0, 4.0]]
+
+        def predict_json(
+            self, spec_json: str, rows: list[list[float]]
+        ) -> list[float]:
+            calls.append(("predict", rows))
+            return [5.0, 6.0]
+
+    monkeypatch.setattr(runtime, "_rust_backend", DummyRustBackend())
+    monkeypatch.setattr(runtime, "_spec_is_rust_runtime_compatible", lambda spec: True)
+
+    assert runtime.validate(spec) == spec
+    np.testing.assert_allclose(runtime.design_matrix(spec, probe), [[1.0, 2.0], [3.0, 4.0]])
+    np.testing.assert_allclose(runtime.predict(spec, probe), [5.0, 6.0])
+
+    assert [name for name, _payload in calls] == [
+        "validate",
+        "design_matrix",
+        "predict",
+    ]
+
+
+def test_runtime_falls_back_to_python_when_rust_backend_is_incompatible(monkeypatch):
+    spec = runtime.load_model_spec(MODEL_SPEC_V1_PATH)
+    probe = np.array([[0.0, 0.0, 0.1], [0.8, -0.5, 0.6]], dtype=float)
+    model = runtime.load_model(spec)
+    X_processed, missing_mask = model._prepare_prediction_data(probe)
+    expected_design_matrix = model._build_basis_matrix(
+        X_processed, model.basis_, missing_mask
+    )
+    expected_prediction = model.predict(probe)
+    calls: list[tuple[str, object]] = []
+
+    class DummyRustBackend:
+        def validate_model_spec_json(self, spec_json: str) -> None:
+            calls.append(("validate", spec_json))
+
+        def design_matrix_json(
+            self, spec_json: str, rows: list[list[float]]
+        ) -> list[list[float]]:
+            calls.append(("design_matrix", rows))
+            return [[999.0]]
+
+        def predict_json(
+            self, spec_json: str, rows: list[list[float]]
+        ) -> list[float]:
+            calls.append(("predict", rows))
+            return [999.0]
+
+    monkeypatch.setattr(runtime, "_rust_backend", DummyRustBackend())
+    monkeypatch.setattr(runtime, "_spec_is_rust_runtime_compatible", lambda spec: False)
+
+    assert runtime.validate(spec) == spec
+    np.testing.assert_allclose(
+        runtime.design_matrix(spec, probe),
+        expected_design_matrix,
+        equal_nan=True,
+    )
+    np.testing.assert_allclose(runtime.predict(spec, probe), expected_prediction)
+
+    assert calls == []
+
+
 def test_validate_model_spec_rejects_unsupported_major_version():
     payload = runtime.load_model_spec(MODEL_SPEC_V1_PATH)
     payload["spec_version"] = "2.0"

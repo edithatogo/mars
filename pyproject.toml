@@ -86,8 +86,12 @@ dev = [
 mars = "pymars.cli:main"
 
 [build-system]
-requires = ["setuptools>=61", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["maturin>=1.8.0"]
+build-backend = "maturin"
+
+[tool.maturin]
+manifest-path = "rust-runtime/Cargo.toml"
+python-source = "."
 
 [tool.setuptools]
 packages = ["pymars", "pymars.demos"]

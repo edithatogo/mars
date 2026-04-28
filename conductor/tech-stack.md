@@ -16,8 +16,7 @@
 
 ## Rust Binding Strategy
 - **PyO3 / maturin** - Python extension mechanism for Rust-backed estimator and runtime integration
-- **extendr** - R binding bridge for Rust-backed package surfaces
-- **C ABI + cbindgen / cgo / PInvoke / Julia `ccall`** - Shared foreign-function boundary for Go, C#, and Julia wrappers
+- **Rust CLI bridge** - Temporary runtime bridge for R, Julia, C#, and Go while native interop is prepared
 - **wasm-bindgen / WebAssembly** - TypeScript runtime surface where a portable browser/Node package is preferable
 
 ## Optional Dependencies
