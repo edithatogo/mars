@@ -1,0 +1,102 @@
+{
+  "spec_version": "1.0",
+  "model_type": "Earth",
+  "module_version": null,
+  "params": {
+    "max_degree": 1,
+    "penalty": 3.0,
+    "max_terms": 5,
+    "minspan_alpha": 0.0,
+    "endspan_alpha": 0.0,
+    "minspan": -1,
+    "endspan": -1,
+    "allow_linear": true,
+    "allow_missing": false,
+    "feature_importance_type": null,
+    "categorical_features": []
+  },
+  "feature_schema": {
+    "n_features": 1,
+    "feature_names": [
+      "x0"
+    ]
+  },
+  "basis_terms": [
+    {
+      "kind": "constant",
+      "variable_idx": null,
+      "variable_name": null,
+      "knot_val": null,
+      "is_right_hinge": null,
+      "category": null,
+      "gcv_score": 0.0,
+      "rss_score": 0.0,
+      "parent1": null,
+      "parent2": null
+    },
+    {
+      "kind": "linear",
+      "variable_idx": 0,
+      "variable_name": "x0",
+      "knot_val": null,
+      "is_right_hinge": null,
+      "category": null,
+      "gcv_score": 9.33333333333333,
+      "rss_score": 48.0,
+      "parent1": {
+        "kind": "constant",
+        "variable_idx": null,
+        "variable_name": null,
+        "knot_val": null,
+        "is_right_hinge": null,
+        "category": null,
+        "gcv_score": 0.0,
+        "rss_score": 0.0,
+        "parent1": null,
+        "parent2": null
+      },
+      "parent2": null
+    }
+  ],
+  "coefficients": [
+    0.9999999999999988,
+    1.9999999999999993
+  ],
+  "metrics": {
+    "rss": 4.172334631520508e-29,
+    "mse": 5.9604780450292966e-30,
+    "gcv": 1.1682536968257421e-29
+  },
+  "categorical_imputer": null,
+  "X": [
+    [
+      0
+    ],
+    [
+      1
+    ],
+    [
+      2
+    ],
+    [
+      3
+    ],
+    [
+      4
+    ]
+  ],
+  "y": [
+    1,
+    3,
+    5,
+    7,
+    9
+  ],
+  "sample_weight": [
+    1,
+    2,
+    1,
+    2,
+    1
+  ]
+}
