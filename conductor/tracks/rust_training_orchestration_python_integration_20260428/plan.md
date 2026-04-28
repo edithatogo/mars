@@ -27,10 +27,10 @@
 
 ## Phase 2: Rust Pruning and Final Model Export
 
-- [ ] Task: Implement Rust pruning orchestration
-    - [ ] Score pruning subsets with GCV and weighted RSS
-    - [ ] Refit coefficients after selected basis pruning
-    - [ ] Export final fitted state as `ModelSpec`
+- [x] Task: Implement Rust pruning orchestration [d9a05a8]
+    - [x] Score pruning subsets with GCV and weighted RSS
+    - [x] Refit coefficients after selected basis pruning
+    - [x] Export final fitted state as `ModelSpec`
 - [ ] Task: Validate exported models through replay fixtures
     - [ ] Add Rust tests that run `predict` from exported specs
     - [ ] Add Python tests that load Rust-exported specs through the shared runtime
