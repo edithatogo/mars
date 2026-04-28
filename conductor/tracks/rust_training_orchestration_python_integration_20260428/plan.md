@@ -19,10 +19,10 @@
     - [x] Apply max-terms, max-degree, minspan/endspan, and stopping rules
     - [x] Preserve deterministic candidate ordering and tie handling
     - [x] Fit coefficients for each accepted basis set
-- [ ] Task: Validate Rust forward-pass parity
-    - [ ] Run Rust fixture tests for forward-pass structure and coefficients
-    - [ ] Add regression fixtures for deterministic tie cases
-    - [ ] Update migration docs with any bounded numerical differences
+- [x] Task: Validate Rust forward-pass parity [2a170d5]
+    - [x] Run Rust fixture tests for forward-pass structure and coefficients
+    - [x] Add regression fixtures for deterministic tie cases
+    - [x] Update migration docs with any bounded numerical differences
 - [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 1: Rust Forward-Pass Orchestration' (Protocol in workflow.md)
 
 ## Phase 2: Rust Pruning and Final Model Export
