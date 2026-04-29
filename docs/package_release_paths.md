@@ -6,8 +6,8 @@ release-rehearsal workflow.
 
 `mars-earth` is the public project brand for the whole package family. Where an
 ecosystem requires a concrete package or module identifier, that identifier
-should still be presented as a `mars-earth`-derived name whenever the registry
-allows it.
+stays ecosystem-native, while the docs and release metadata should keep the
+shared `mars-earth` brand visible.
 
 ## Release Criteria
 
@@ -43,7 +43,7 @@ allows it.
 ### Rust
 
 - Registry: crates.io.
-- Package name: `mars-earth-runtime`.
+- Package name: `pymars-runtime`.
 - Release path: `cargo package` followed by `cargo publish` with
   `CARGO_REGISTRY_TOKEN` once ownership is confirmed.
 - Rehearse with `cargo package --allow-dirty --list` and `cargo package`.
@@ -65,7 +65,7 @@ allows it.
 
 - Registry: r-universe first, then CRAN when the package is ready for formal
   submission.
-- Package name: `mars-earth` family release artifact.
+- Package name: `marsruntime`.
 - Release path: build the source tarball, inspect package contents, and follow
   maintainer review before CRAN submission.
 - Rehearse with `R CMD build`, local install, and conformance tests.
@@ -73,14 +73,14 @@ allows it.
 ### Julia
 
 - Registry: Julia General via Registrator.jl.
-- Package name: `MarsEarth`.
+- Package name: `MarsRuntime`.
 - Release path: register after UUID, metadata, and API stability are confirmed.
 - Rehearse with `Pkg.instantiate()`, `Pkg.status()`, and `Pkg.test()`.
 
 ### C#
 
 - Registry: NuGet.
-- Package name: `MarsEarth.Runtime`.
+- Package name: `MarsRuntime`.
 - Release path: `dotnet pack` followed by `dotnet nuget push` with
   `NUGET_API_KEY` once the protected release environment is approved.
 - Rehearse with `dotnet test`, `dotnet pack`, and install-from-nupkg smoke
