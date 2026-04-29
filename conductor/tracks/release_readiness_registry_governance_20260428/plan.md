@@ -14,7 +14,7 @@
     - [ ] Confirm crates.io owner and crate name status
     - [ ] Confirm npm organization/package ownership and token status
     - [ ] Confirm NuGet package ID and API key status
-    - [ ] Confirm Go module path and tag strategy
+    - [x] Confirm Go module path and tag strategy
     - [ ] Confirm R r-universe/CRAN and Julia General submission requirements
 - [x] Task: Confirm repository-side release wiring
     - [x] Confirm PyPI publish config points at `mars-earth`

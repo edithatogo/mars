@@ -28,7 +28,7 @@ names remain ecosystem-native when a registry or toolchain requires them.
 | crates.io `pymars-runtime` | Owner/token not confirmed in this inventory | Confirm crate owner and registry token | Open | 2026-04-28 |
 | npm `@mars-earth/runtime` | Token and organization ownership not confirmed in this inventory | Confirm npm org and publish token | Open | 2026-04-28 |
 | NuGet `MarsRuntime` | API key and package ID ownership not confirmed in this inventory | Confirm package ID ownership and API key | Open | 2026-04-28 |
-| Go module path | Signed tag strategy not yet confirmed in this inventory | Confirm module path and tagging policy | Open | 2026-04-28 |
+| Go module path | Repository-controlled, tag-based release path documented in this inventory | Confirm module path and tagging policy | Documented | 2026-04-29 |
 | R `marsruntime` | r-universe / CRAN requirements not confirmed in this inventory | Confirm submission path and maintainer review steps | Open | 2026-04-28 |
 | Julia `MarsRuntime` | General registry / Registrator path not confirmed in this inventory | Confirm registry path and UUID/review requirements | Open | 2026-04-28 |
 
