@@ -55,3 +55,4 @@ uv
 Vale
 write-good
 toolchain
+namespace
