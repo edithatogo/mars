@@ -5,8 +5,9 @@ surface, and known release blockers across the supported language packages.
 It is the working inventory for the release-readiness and registry-governance
 tracks.
 
-The public project brand is `mars-earth`. Language-specific package and module
-names remain ecosystem-native when a registry or toolchain requires them.
+All packages belong to the `mars-earth` family. The registry/package IDs below
+are the ecosystem-specific identifiers used where a registry requires a
+concrete name.
 
 ## Package Matrix
 

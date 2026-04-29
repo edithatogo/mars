@@ -12,10 +12,10 @@ capture the remaining registry inputs from the maintainer.
 To move the remaining publication gates forward, the maintainer needs to
 confirm or configure:
 
-- crates.io ownership and the `CARGO_REGISTRY_TOKEN` for `pymars-runtime`
+- crates.io ownership and the `CARGO_REGISTRY_TOKEN` for `mars-earth-runtime`
 - npm ownership and the `NPM_TOKEN` for `@mars-earth/runtime`
-- NuGet ownership and the `NUGET_API_KEY` for `MarsRuntime`
-- the R release path through r-universe and CRAN
+- NuGet ownership and the `NUGET_API_KEY` for `MarsEarth.Runtime`
+- the R release path for the `mars-earth` family through r-universe and CRAN
 - the Julia release path through Registrator.jl and the General registry
 - the Go tag-signing and release-tag policy
 

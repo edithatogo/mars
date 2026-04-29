@@ -4,10 +4,10 @@ This page documents the package-manager-specific release paths for the current
 binding surface. It is the policy source for the publication track and the
 release-rehearsal workflow.
 
-`mars-earth` is the public project brand. Where an ecosystem requires a
-language-native package or module name, that identifier remains in place while
-the release notes, docs, and registry metadata should still present the shared
-project brand consistently.
+`mars-earth` is the public project brand for the whole package family. Where an
+ecosystem requires a concrete package or module identifier, that identifier
+should still be presented as a `mars-earth`-derived name whenever the registry
+allows it.
 
 ## Release Criteria
 
@@ -43,7 +43,7 @@ project brand consistently.
 ### Rust
 
 - Registry: crates.io.
-- Package name: `pymars-runtime`.
+- Package name: `mars-earth-runtime`.
 - Release path: `cargo package` followed by `cargo publish` with
   `CARGO_REGISTRY_TOKEN` once ownership is confirmed.
 - Rehearse with `cargo package --allow-dirty --list` and `cargo package`.
@@ -65,7 +65,7 @@ project brand consistently.
 
 - Registry: r-universe first, then CRAN when the package is ready for formal
   submission.
-- Package name: `marsruntime`.
+- Package name: `mars-earth` family release artifact.
 - Release path: build the source tarball, inspect package contents, and follow
   maintainer review before CRAN submission.
 - Rehearse with `R CMD build`, local install, and conformance tests.
@@ -73,14 +73,14 @@ project brand consistently.
 ### Julia
 
 - Registry: Julia General via Registrator.jl.
-- Package name: `MarsRuntime`.
+- Package name: `MarsEarth`.
 - Release path: register after UUID, metadata, and API stability are confirmed.
 - Rehearse with `Pkg.instantiate()`, `Pkg.status()`, and `Pkg.test()`.
 
 ### C#
 
 - Registry: NuGet.
-- Package name: `MarsRuntime`.
+- Package name: `MarsEarth.Runtime`.
 - Release path: `dotnet pack` followed by `dotnet nuget push` with
   `NUGET_API_KEY` once the protected release environment is approved.
 - Rehearse with `dotnet test`, `dotnet pack`, and install-from-nupkg smoke
