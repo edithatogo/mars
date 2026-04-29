@@ -1,6 +1,6 @@
 # Implementation Plan
 
-## Phase 0: Registry and Ownership Inventory
+## Phase 0: Registry and Ownership Inventory [checkpoint: dd2bbec]
 
 - [x] Task: Audit public package-name availability
     - [x] Confirm PyPI `mars-earth` exists and note the `pymars` namespace collision
@@ -25,7 +25,7 @@
     - [x] Record owner, action, status, and date for each external blocker
     - [x] Distinguish automation blockers from maintainer-approval blockers
     - [x] Add the table to release documentation
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 0: Registry and Ownership Inventory' (Protocol in workflow.md)
+- [x] Task: Conductor - Automated Review and Checkpoint 'Phase 0: Registry and Ownership Inventory' (Protocol in workflow.md) [with blockers]
 
 ## Phase 1: Package Metadata and Artifact Contents [checkpoint: fa376e1]
 
