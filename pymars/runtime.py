@@ -2,6 +2,7 @@ from __future__ import annotations
 
 """Spec-driven runtime helpers for portable pymars models."""
 
+import contextlib
 import os
 from pathlib import Path
 from typing import Any, cast
@@ -10,8 +11,8 @@ import numpy as np
 
 from ._model_spec import (
     model_to_spec,
-    spec_to_json,
     spec_from_json,
+    spec_to_json,
     validate_model_spec,
 )
 from .earth import Earth
@@ -57,10 +58,8 @@ def validate(spec_or_path: dict[str, Any] | str | Path) -> dict[str, Any]:
     """Validate and return a portable model spec."""
     spec = load_model_spec(spec_or_path)
     if _rust_backend is not None and _spec_is_rust_runtime_compatible(spec):
-        try:
+        with contextlib.suppress(Exception):
             _rust_backend.validate_model_spec_json(spec_to_json(spec))
-        except Exception:
-            pass
     validate_model_spec(spec)
     return spec
 
@@ -142,7 +141,7 @@ def predict(spec_or_path: dict[str, Any] | str | Path, X: Any) -> np.ndarray:
         except (TypeError, ValueError):
             rows = None
         if rows is not None:
-            try:
+            with contextlib.suppress(Exception):
                 return cast(
                     np.ndarray,
                     np.asarray(
@@ -150,8 +149,6 @@ def predict(spec_or_path: dict[str, Any] | str | Path, X: Any) -> np.ndarray:
                         dtype=float,
                     ),
                 )
-            except Exception:
-                pass
     model = load_model(spec)
     return cast(np.ndarray, model.predict(X))
 
@@ -165,7 +162,7 @@ def design_matrix(spec_or_path: dict[str, Any] | str | Path, X: Any) -> np.ndarr
         except (TypeError, ValueError):
             rows = None
         if rows is not None:
-            try:
+            with contextlib.suppress(Exception):
                 return cast(
                     np.ndarray,
                     np.asarray(
@@ -173,8 +170,6 @@ def design_matrix(spec_or_path: dict[str, Any] | str | Path, X: Any) -> np.ndarr
                         dtype=float,
                     ),
                 )
-            except Exception:
-                pass
     model = load_model(spec)
     X_processed, missing_mask = model._prepare_prediction_data(X)
     basis = model.basis_
