@@ -662,6 +662,114 @@
   
   
     <li class="md-nav__item">
+      <a href="../supply_chain.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supply Chain Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release_checklist.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release_inventory.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../package_release_paths.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Package Release Paths
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../remaining_roadmap/" class="md-nav__link">
         
   
@@ -832,10 +940,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_19" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_23" >
         
           
-          <label class="md-nav__link" for="__nav_19" id="__nav_19_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_23" id="__nav_23_label" tabindex="0">
             
   
   
@@ -853,8 +961,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_19_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_19">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_23_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_23">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1075,7 +1183,7 @@
 <tr>
 <td>Python</td>
 <td>PyPI</td>
-<td>Existing trusted publishing or PyPI token for <code>mars-earth</code></td>
+<td>Trusted publishing via GitHub Actions for <code>mars-earth</code></td>
 </tr>
 <tr>
 <td>Rust</td>
@@ -1113,7 +1221,12 @@
 <p><code>bindings-ci.yml</code> validates the runtime replay surface for every binding family.
 <code>bindings-publish.yml</code> provides manual publish scaffolding. The publish workflow
 defaults to dry-run behavior and should not be used for real publication until
-registry ownership, credentials, and versioning policies are confirmed.</p>
+registry ownership, credentials, and versioning policies are confirmed.
+<code>release-rehearsal.yml</code> runs the non-publishing release rehearsal, uploads
+candidate artifacts for inspection, and exercises install-from-artifact smoke
+tests where the ecosystem supports them.
+The release workflows also generate provenance attestations for built
+artifacts where GitHub supports them.</p>
 <h2 id="release-rule">Release Rule</h2>
 <p>Do not publish stable runtime packages until Rust-backed bindings pass
 conformance and duplicated MVP replay logic is removed, isolated as a tested
@@ -1123,6 +1236,12 @@ training-capable language bindings pass shared training conformance.</p>
 <p>Release readiness is separate from publication. Registry ownership, credentials,
 protected environments, version policy, dry-run artifacts, and external blockers
 must be resolved or recorded before a publish workflow runs.</p>
+<p>The current registry and parity inventory is tracked in
+<a href="release_inventory.md">Release and Parity Inventory</a>.
+The package-manager-specific release paths and policy live in
+<a href="package_release_paths.md">Package Release Paths</a>.
+The maintainer release checklist lives in
+<a href="release_checklist.md">Release Checklist</a>.</p>
 
 
 
