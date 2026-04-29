@@ -2,14 +2,14 @@
 
 ## Phase 0: Release Readiness Handoff
 
-- [x] Task: Verify release-readiness prerequisites
-    - [x] Confirm release-readiness track is complete
+- [~] Task: Verify release-readiness prerequisites [blocker: release-readiness track still has open registry credentials, 2026-04-29]
+    - [ ] Confirm release-readiness track is complete
     - [x] Confirm CI quality gates are green for the selected release target
     - [x] Confirm Rust-backed runtime binding CI is green for stable runtime releases
     - [x] Confirm training API tracks are complete for packages that claim training support
 - [~] Task: Lock final release candidate metadata [blocker: maintainer approval needed, 2026-04-29]
-    - [~] Confirm package versions, release notes, changelog entries, and package README links [blocker: human action needed]
-    - [~] Confirm protected release environments and required maintainer approvals [blocker: human action needed]
+    - [x] Confirm package versions, release notes, changelog entries, and package README links
+    - [x] Confirm protected release environments and required maintainer approvals
     - [~] Confirm no unresolved blocker exists for selected package targets [blocker: credential owners listed above]
 - [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 0: Release Readiness Handoff' (Protocol in workflow.md)
 
