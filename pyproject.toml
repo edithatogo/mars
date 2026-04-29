@@ -129,6 +129,16 @@ select = [
     "PTH",    # use pathlib instead of os.path
     "FLY",    # use f-strings
     "RET",    # return statement analysis
+    "D",      # pydocstyle
+    "N",      # pep8-naming
+    "C4",     # flake8-comprehensions
+    "TCH",    # flake8-type-checking
+    "FA",     # flake8-future-annotations
+    "Q",      # flake8-quotes
+    "EM",     # flake8-errmsg
+    "TRY",    # tryceratops
+    "FURB",   # refurb
+    "PIE",    # flake8-pie
 ]
 ignore = [
     "ANN",    # Type annotations (handled by ty)
@@ -137,29 +147,57 @@ ignore = [
     "C901",   # Too complex (handled by mccabe)
     "RUF013", # Implicit Optional (requires extensive code changes)
     "RUF012", # Mutable class attributes should be annotated
-    "RUF059", # Unused unpacked variable
-    "ARG",    # Unused arguments (requires API changes)
-    "PTH",    # Use pathlib (requires refactoring)
     "BLE001", # Blind except (existing code pattern)
-    "RET",    # Return statement analysis
     "UP006",  # Use builtin type annotation
     "UP035",  # Deprecated import
-    "PERF",   # Performance (requires refactoring)
-    "SIM102", # Nested if statements
-    "SIM108", # Use ternary operator
-    "SIM101", # Duplicate isinstance
-    "RUF043", # Regex pattern
-    "RUF015", # Access first element
-    "RUF046", # Unnecessary cast
-    "E701",   # Multiple statements on one line (legacy code)
+    "PERF203",# try-except-inner (perf)
     "F841",   # Local variable assigned but unused
     "F821",   # Undefined name (forward references in type hints)
     "E402",   # Module level import not at top of file
     "B904",   # Raise from err (legacy code pattern)
     "S301",   # Pickle unsafe (needed for model serialization)
-    "W293",   # Blank line whitespace (trivial)
     "B007",   # Unused loop variable (test code)
     "E702",   # Multiple statements on one line (semicolon) (test code)
+    "D100",   # Missing docstring in public module (tracked elsewhere)
+    "D104",   # Missing docstring in public package
+    "D105",   # Missing docstring in magic method
+    "D107",   # Missing docstring in __init__
+    "D200",   # One-line docstring should fit on one line (formatter handles)
+    "D205",   # Missing blank line after docstring summary (style, handled manually)
+    "D203",   # 1 blank line required before class docstring (inconsistent with formatter)
+    "D204",   # 1 blank line required after class docstring (inconsistent with formatter)
+    "D212",   # Multi-line docstring summary should start at first line (inconsistent with formatter)
+    "D213",   # Multi-line docstring summary should start at second line (inconsistent with formatter)
+    "D400",   # First line should end with a period (style preference)
+    "D401",   # First line should be in imperative mood (style preference)
+    "D402",   # First line should not be a function signature
+    "D404",   # First word of the docstring should not be This
+    "D405",   # Section name should be properly capitalized
+    "D406",   # Section name should end with a newline
+    "D407",   # Section name should be underlined
+    "D408",   # Section underline should be in line length
+    "D409",   # Section underline should be in line length
+    "D410",   # Section blank line
+    "D411",   # Section blank line
+    "D412",   # Section blank line
+    "D413",   # Section blank line
+    "D414",   # Section has no content
+    "D415",   # Section punctuation
+    "D416",   # Section name should be in quotes
+    "D417",   # Missing argument descriptions in docstring
+    "PYI041", # Redundant `self` type in `__init__` parameter (typing convention)
+    "N802",   # Function name should be lowercase (C compat functions)
+    "N803",   # Argument name should be lowercase (X is sklearn convention)
+    "N806",   # Variable in function should be lowercase (test code)
+    "N815",   # Variable in class scope should be lowercase
+    "TRY300", # try-consider-else (style preference)
+    "TRY002", # Create your own exception
+    "TRY003", # Avoid specifying long messages outside exception class
+    "EM101",  # Exception must not use a string literal (assign to variable)
+    "EM102",  # Exception must not use a f-string literal (assign to variable)
+    "FURB113", # Reimplemented builtin
+    "PERF",   # Performance (requires refactoring)
+    "PTH",    # Use pathlib (requires refactoring)
 ]
 
 fixable = ["ALL"]

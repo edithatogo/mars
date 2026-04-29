@@ -179,7 +179,7 @@ class ConstantBasisFunction(BasisFunction):
         ):  # Corrected: removed the erroneous check for 'X'
             raise TypeError("Input X_processed must be a numpy array.")
         if X_processed.ndim == 1 or X_processed.ndim == 2:
-            return cast(np.ndarray, np.ones(X_processed.shape[0]))
+            return cast("np.ndarray", np.ones(X_processed.shape[0]))
         raise ValueError("Input X_processed must be 1D or 2D.")
 
     def __str__(self) -> str:
@@ -210,7 +210,7 @@ class HingeBasisFunction(BasisFunction):
         parent_bf: BasisFunction | None = None,
     ):
         # Determine name based on properties
-        self.variable_name = variable_name if variable_name else f"x{variable_idx}"
+        self.variable_name = variable_name or f"x{variable_idx}"
         name_str = ""
         if parent_bf:
             name_str += f"({parent_bf!s}) * "
@@ -282,9 +282,9 @@ class HingeBasisFunction(BasisFunction):
                 X_processed, missing_mask
             )  # Recursive call
             # NaN propagation happens if either parent_transformed or current_term_values is NaN
-            return cast(np.ndarray, parent_transformed * current_term_values)
+            return cast("np.ndarray", parent_transformed * current_term_values)
         # This is a simple hinge (degree 1)
-        return cast(np.ndarray, current_term_values)
+        return cast("np.ndarray", current_term_values)
 
     def __str__(self) -> str:
         # The name is already constructed in __init__ to handle interactions properly.
@@ -318,7 +318,7 @@ class CategoricalBasisFunction(BasisFunction):
         parent_bf: BasisFunction | None = None,
     ):
         self.category = category
-        self.variable_name = variable_name if variable_name else f"x{variable_idx}"
+        self.variable_name = variable_name or f"x{variable_idx}"
 
         name_str = ""
         if parent_bf:
@@ -365,8 +365,8 @@ class CategoricalBasisFunction(BasisFunction):
 
         if self.parent1:  # This is an interaction term
             parent_transformed = self.parent1.transform(X_processed, missing_mask)
-            return cast(np.ndarray, parent_transformed * current_term_values)
-        return cast(np.ndarray, current_term_values)
+            return cast("np.ndarray", parent_transformed * current_term_values)
+        return cast("np.ndarray", current_term_values)
 
     def __str__(self) -> str:
         return self.get_name()
@@ -399,7 +399,7 @@ class LinearBasisFunction(BasisFunction):
         variable_name: str | None = None,
         parent_bf: BasisFunction | None = None,
     ):
-        self.variable_name = variable_name if variable_name else f"x{variable_idx}"
+        self.variable_name = variable_name or f"x{variable_idx}"
         name_str = ""
         if parent_bf:
             name_str += f"({parent_bf!s}) * "
@@ -456,9 +456,9 @@ class LinearBasisFunction(BasisFunction):
             parent_transformed = self.parent1.transform(
                 X_processed, missing_mask
             )  # Recursive call
-            return cast(np.ndarray, parent_transformed * current_term_values)
+            return cast("np.ndarray", parent_transformed * current_term_values)
         # This is a simple linear term (degree 1)
-        return cast(np.ndarray, current_term_values)
+        return cast("np.ndarray", current_term_values)
 
     def __str__(self) -> str:
         return self.get_name()
@@ -500,7 +500,7 @@ class InteractionBasisFunction(BasisFunction):
         assert self.parent1 is not None
         assert self.parent2 is not None
         return cast(
-            np.ndarray,
+            "np.ndarray",
             self.parent1.transform(X_processed, missing_mask)
             * self.parent2.transform(X_processed, missing_mask),
         )
@@ -524,7 +524,7 @@ class MissingnessBasisFunction(BasisFunction):
     """
 
     def __init__(self, variable_idx: int, variable_name: str | None = None):
-        self.variable_name = variable_name if variable_name else f"x{variable_idx}"
+        self.variable_name = variable_name or f"x{variable_idx}"
         name_str = f"is_missing({self.variable_name})"
 
         super().__init__(name=name_str)

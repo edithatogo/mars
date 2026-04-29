@@ -9,13 +9,15 @@ using a criterion like Generalized Cross-Validation (GCV).
 from __future__ import annotations
 
 import logging
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 import numpy as np
 
 from ._basis import BasisFunction, ConstantBasisFunction, HingeBasisFunction
 from ._util import calculate_gcv, gcv_penalty_cost_effective_parameters
-from .earth import Earth  # For type hinting
+
+if TYPE_CHECKING:
+    from .earth import Earth
 
 logger = logging.getLogger(__name__)
 
@@ -65,7 +67,7 @@ class PruningPasser:
                 rss = float(np.sum(sample_weight * (y_data - mean_y) ** 2))
                 num_valid_rows = float(np.sum(sample_weight))
             coeffs_for_mean = (
-                cast(np.ndarray, np.array([mean_y]))
+                cast("np.ndarray", np.array([mean_y]))
                 if (B_matrix is not None and B_matrix.shape[1] == 0)
                 else None
             )
@@ -108,12 +110,13 @@ class PruningPasser:
                     rss = float(np.sum((y_complete - y_pred_complete) ** 2))
                 else:
                     rss = float(residuals_sum_sq[0])
-            return rss, coeffs, num_valid_rows
         except np.linalg.LinAlgError as e:
             logger.warning(
                 "LinAlgError in PruningPasser._calculate_rss_and_coeffs: %s", e
             )
             return float(np.inf), None, num_valid_rows
+        else:
+            return rss, coeffs, num_valid_rows
 
     def _build_basis_matrix(
         self,
@@ -126,7 +129,7 @@ class PruningPasser:
         and a list of basis functions, using the provided missing_mask.
         """
         if not basis_functions:
-            return cast(np.ndarray, np.empty((X_data.shape[0], 0)))
+            return cast("np.ndarray", np.empty((X_data.shape[0], 0)))
 
         # Preallocate to avoid repeated hstack operations which were shown via
         # profiling to dominate runtime for larger models.
@@ -134,7 +137,7 @@ class PruningPasser:
         B_matrix = np.empty((n_samples, len(basis_functions)), dtype=float)
         for idx, bf in enumerate(basis_functions):
             B_matrix[:, idx] = bf.transform(X_data, missing_mask)
-        return cast(np.ndarray, B_matrix)
+        return cast("np.ndarray", B_matrix)
 
     def _compute_gcv_for_subset(
         self,
@@ -153,7 +156,7 @@ class PruningPasser:
             # This case implies an intercept-only model IF an intercept is implicitly assumed
             # or if _calculate_rss_and_coeffs handles B_matrix.shape[1] == 0 by returning intercept.
             # Current _calculate_rss_and_coeffs for empty B_matrix (shape[1]==0) returns mean(y) as coeff.
-            empty_matrix = cast(np.ndarray, np.empty((len(y_fit), 0)))
+            empty_matrix = cast("np.ndarray", np.empty((len(y_fit), 0)))
             rss_empty, coeffs_empty, n_valid_rows_for_empty = (
                 self._calculate_rss_and_coeffs(
                     empty_matrix,

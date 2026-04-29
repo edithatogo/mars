@@ -89,11 +89,11 @@ def fit_model(model: Earth, X: Any, y: Any, sample_weight: Any | None = None) ->
         return None
     try:
         rows = _coerce_rows_for_rust(X)
-        y_values = cast(list[float], np.asarray(y, dtype=float).reshape(-1).tolist())
+        y_values = cast("list[float]", np.asarray(y, dtype=float).reshape(-1).tolist())
         weights = None
         if sample_weight is not None:
             weights = cast(
-                list[float], np.asarray(sample_weight, dtype=float).reshape(-1).tolist()
+                "list[float]", np.asarray(sample_weight, dtype=float).reshape(-1).tolist()
             )
         feature_names = getattr(model, "feature_names_in_", None)
         feature_names_list = None
@@ -117,7 +117,7 @@ def fit_model(model: Earth, X: Any, y: Any, sample_weight: Any | None = None) ->
             },
         }
         trained_spec_json = _rust_backend.fit_model_json(
-            spec_to_json(cast(dict[str, Any], payload))
+            spec_to_json(cast("dict[str, Any]", payload))
         )
     except Exception:
         return None
@@ -125,7 +125,7 @@ def fit_model(model: Earth, X: Any, y: Any, sample_weight: Any | None = None) ->
     from ._model_spec import spec_to_model
 
     trained_model = spec_to_model(
-        cast(dict[str, Any], spec_from_json(cast(str, trained_spec_json))), Earth
+        cast("dict[str, Any]", spec_from_json(cast("str", trained_spec_json))), Earth
     )
     trained_model.feature_importance_type = model.feature_importance_type
     model.__dict__.update(trained_model.__dict__)
@@ -143,14 +143,14 @@ def predict(spec_or_path: dict[str, Any] | str | Path, X: Any) -> np.ndarray:
         if rows is not None:
             with contextlib.suppress(Exception):
                 return cast(
-                    np.ndarray,
+                    "np.ndarray",
                     np.asarray(
                         _rust_backend.predict_json(spec_to_json(spec), rows),
                         dtype=float,
                     ),
                 )
     model = load_model(spec)
-    return cast(np.ndarray, model.predict(X))
+    return cast("np.ndarray", model.predict(X))
 
 
 def design_matrix(spec_or_path: dict[str, Any] | str | Path, X: Any) -> np.ndarray:
@@ -164,7 +164,7 @@ def design_matrix(spec_or_path: dict[str, Any] | str | Path, X: Any) -> np.ndarr
         if rows is not None:
             with contextlib.suppress(Exception):
                 return cast(
-                    np.ndarray,
+                    "np.ndarray",
                     np.asarray(
                         _rust_backend.design_matrix_json(spec_to_json(spec), rows),
                         dtype=float,
@@ -218,4 +218,4 @@ def _coerce_rows_for_rust(X: Any) -> list[list[float]]:
     rows = np.asarray(X, dtype=float)
     if rows.ndim != 2:
         raise ValueError("X must be a 2D array-like input for runtime evaluation.")
-    return cast(list[list[float]], rows.tolist())
+    return cast("list[list[float]]", rows.tolist())

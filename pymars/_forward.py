@@ -8,7 +8,7 @@ to minimize a criterion (e.g., sum of squared errors).
 from __future__ import annotations
 
 import logging
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 import numpy as np
 
@@ -24,7 +24,9 @@ from ._util import (  # For GCV calculations
     calculate_gcv,
     gcv_penalty_cost_effective_parameters,
 )
-from .earth import Earth  # For type hinting
+
+if TYPE_CHECKING:
+    from .earth import Earth
 
 logger = logging.getLogger(__name__)
 
@@ -78,7 +80,7 @@ class ForwardPasser:
                 rss = float(np.sum(sample_weight * (y - mean_y) ** 2))
                 num_valid_rows = float(np.sum(sample_weight))
             coeffs_for_mean = (
-                cast(np.ndarray, np.array([mean_y], dtype=float))
+                cast("np.ndarray", np.array([mean_y], dtype=float))
                 if (B_matrix is not None and B_matrix.shape[1] == 0)
                 else None
             )
@@ -128,15 +130,16 @@ class ForwardPasser:
                     rss = float(np.sum((y - y_pred_complete) ** 2))
                 else:
                     rss = float(residuals_sum_sq[0])
-            return rss, coeffs, num_valid_rows
         except np.linalg.LinAlgError:
             return np.inf, None, num_valid_rows
+        else:
+            return rss, coeffs, num_valid_rows
 
     def _build_basis_matrix(
         self, X_processed: np.ndarray, basis_functions: list[BasisFunction]
     ) -> np.ndarray:
         if not basis_functions:
-            return cast(np.ndarray, np.empty((X_processed.shape[0], 0)))
+            return cast("np.ndarray", np.empty((X_processed.shape[0], 0)))
 
         # Preallocate basis matrix for efficiency instead of building a list of
         # arrays and hstacking them (which triggers many temporary allocations
@@ -148,7 +151,7 @@ class ForwardPasser:
         missing_mask = self.missing_mask
         for idx, bf in enumerate(basis_functions):
             B_matrix[:, idx] = bf.transform(X_processed, missing_mask)
-        return cast(np.ndarray, B_matrix)
+        return cast("np.ndarray", B_matrix)
 
     def _get_effective_n_samples(self) -> float:
         return (
@@ -200,7 +203,7 @@ class ForwardPasser:
             logger.warning(
                 "Could not calculate initial coefficients for intercept model."
             )
-            return [], cast(np.ndarray, np.array([]))
+            return [], cast("np.ndarray", np.array([]))
 
         self.current_coefficients = coeffs
         self.current_rss = rss
@@ -357,7 +360,7 @@ class ForwardPasser:
                 self._get_effective_n_samples(),
                 effective_params_intercept,
             )
-            return gcv_intercept, cast(np.ndarray, np.array([intercept]))
+            return gcv_intercept, cast("np.ndarray", np.array([intercept]))
 
         assert self.X_train is not None
         assert self.y_train is not None
@@ -421,7 +424,7 @@ class ForwardPasser:
             try:
                 log_arg = self.model.endspan_alpha / n_vars_for_calc
                 val = 3.0 if log_arg <= 0 else 3.0 - np.log2(log_arg)
-                endspan_abs = int(round(val))
+                endspan_abs = round(val)
                 endspan_abs = max(0, endspan_abs)
                 if endspan_abs == 0:
                     endspan_abs = 1
@@ -453,33 +456,33 @@ class ForwardPasser:
             )
 
         if count_parent_nonzero_for_minspan == 0:
-            return cast(np.ndarray, np.array([]))
+            return cast("np.ndarray", np.array([]))
 
         current_var_missing_mask = self.missing_mask[:, var_idx]
         truly_usable_for_knots_mask = p_parent_active & ~current_var_missing_mask
         X_values_for_knots = X_col_original_for_var[truly_usable_for_knots_mask]
 
         if X_values_for_knots.size == 0:
-            return cast(np.ndarray, np.array([]))
+            return cast("np.ndarray", np.array([]))
 
         unique_sorted_X_active = np.unique(X_values_for_knots)
 
         num_unique_active = len(unique_sorted_X_active)
         if 2 * endspan_abs >= num_unique_active:
-            return cast(np.ndarray, np.array([]))
+            return cast("np.ndarray", np.array([]))
 
         potential_knots_after_endspan = unique_sorted_X_active[
             endspan_abs : num_unique_active - endspan_abs
         ]
 
         if not potential_knots_after_endspan.size:
-            return cast(np.ndarray, np.array([]))
+            return cast("np.ndarray", np.array([]))
 
         if parent_bf.is_constant() and len(potential_knots_after_endspan) > 1:
             potential_knots_after_endspan = potential_knots_after_endspan[:-1]
 
         if not potential_knots_after_endspan.size:
-            return cast(np.ndarray, np.array([]))
+            return cast("np.ndarray", np.array([]))
 
         minspan_abs = 0  # This is the 'cooldown' count
         if self.model.minspan >= 0:
@@ -498,7 +501,7 @@ class ForwardPasser:
                     * log_val
                 )
                 min_span_float = 0.0 if inner_term <= 0 else -np.log2(inner_term) / 2.5
-                minspan_abs = int(round(min_span_float))
+                minspan_abs = round(min_span_float)
                 minspan_abs = max(0, minspan_abs)
             except (ValueError, FloatingPointError):
                 minspan_abs = 1
@@ -511,7 +514,7 @@ class ForwardPasser:
                 continue
             final_allowable_knots.append(knot_candidate_val)
             minspan_countdown = max(0, minspan_abs - 1)
-        return cast(np.ndarray, np.array(final_allowable_knots))
+        return cast("np.ndarray", np.array(final_allowable_knots))
 
     def _generate_candidates(self) -> list[tuple[BasisFunction, BasisFunction | None]]:
         candidate_additions: list[tuple[BasisFunction, BasisFunction | None]] = []

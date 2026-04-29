@@ -60,7 +60,7 @@ def check_array(
             f"Found array with {array.shape[1]} feature(s), but a minimum of {ensure_min_features} is required."
         )
 
-    return cast(np.ndarray, array)
+    return cast("np.ndarray", array)
 
 
 # ``check_X_y`` was formerly implemented here as a lightweight alternative to

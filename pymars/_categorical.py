@@ -54,7 +54,7 @@ class CategoricalImputer:
                     enc = le.transform([self.most_frequent_[idx]])[0]
                 new_col.append(float(enc))
             X_arr[:, idx] = np.array(new_col, dtype=float)
-        return cast(np.ndarray, np.asarray(X_arr, dtype=float))
+        return cast("np.ndarray", np.asarray(X_arr, dtype=float))
 
     def fit_transform(self, X: Any, categorical_features: list[int]) -> np.ndarray:
         return self.fit(X, categorical_features).transform(X)

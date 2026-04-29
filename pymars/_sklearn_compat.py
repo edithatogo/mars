@@ -248,7 +248,7 @@ class EarthRegressor(RegressorMixin, BaseEstimator):
 
         # Delegate prediction to the internal Earth model
         earth: Any = self.earth_
-        return cast(np.ndarray, earth.predict(X_validated))
+        return cast("np.ndarray", earth.predict(X_validated))
 
     # score method is inherited from RegressorMixin, which calculates R^2 score.
     # No need to override unless a different default scoring behavior is desired.
@@ -535,7 +535,7 @@ class EarthClassifier(ClassifierMixin, BaseEstimator):
                 "EarthClassifier.basis_ is empty. Predictions might be based on original features if fit handled this."
             )
             return cast(
-                np.ndarray, X_validated
+                "np.ndarray", X_validated
             )  # Fallback if fit decided to use original X
 
         # Since X_validated is assumed to be NaN-free by this point (due to check_array),
@@ -560,7 +560,7 @@ class EarthClassifier(ClassifierMixin, BaseEstimator):
                 "Transformed features matrix is empty despite basis functions existing."
             )
 
-        return cast(np.ndarray, X_transformed)
+        return cast("np.ndarray", X_transformed)
 
     def predict(self, X: Any) -> np.ndarray:
         """
@@ -578,7 +578,7 @@ class EarthClassifier(ClassifierMixin, BaseEstimator):
         """
         X_transformed = self._transform_X_for_classifier(X)
         classifier: Any = self.classifier_
-        return cast(np.ndarray, classifier.predict(X_transformed))
+        return cast("np.ndarray", classifier.predict(X_transformed))
 
     def predict_proba(self, X: Any) -> np.ndarray:
         """
@@ -606,7 +606,7 @@ class EarthClassifier(ClassifierMixin, BaseEstimator):
             )
         X_transformed = self._transform_X_for_classifier(X)
         classifier: Any = self.classifier_
-        return cast(np.ndarray, classifier.predict_proba(X_transformed))
+        return cast("np.ndarray", classifier.predict_proba(X_transformed))
 
     def score(self, X: Any, y: Any, sample_weight: Any | None = None) -> float:
         """

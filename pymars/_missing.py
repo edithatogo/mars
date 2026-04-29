@@ -50,7 +50,7 @@ def handle_missing_X(
         for some advanced handling but not returned by default by this basic version.
     """
     if not isinstance(X, np.ndarray):
-        X = cast(np.ndarray, np.asarray(X))
+        X = cast("np.ndarray", np.asarray(X))
 
     if not np.issubdtype(X.dtype, np.number):
         # If X is not numeric (e.g. object array due to mixed types or strings)
@@ -62,14 +62,14 @@ def handle_missing_X(
     nan_present = np.isnan(X).any()
 
     if not nan_present:
-        return cast(np.ndarray, X)
+        return cast("np.ndarray", X)
 
     if strategy == "error":
         raise ValueError("Input X contains NaN values and strategy is 'error'.")
 
     if strategy == "pass_through":
         if allow_missing_for_some_strategies:
-            return cast(np.ndarray, X)  # Basis functions must be able to handle NaNs
+            return cast("np.ndarray", X)  # Basis functions must be able to handle NaNs
         raise ValueError(
             "Strategy 'pass_through' for NaNs requires model to be configured to allow missing values."
         )
@@ -113,7 +113,7 @@ def handle_missing_X(
     if was_1d and X_processed.shape[1] == 1:
         X_processed = X_processed.ravel()  # Convert back to 1D if original was 1D
 
-    return cast(np.ndarray, X_processed)
+    return cast("np.ndarray", X_processed)
 
 
 def handle_missing_y(
@@ -151,11 +151,11 @@ def handle_missing_y(
     """
     del allow_missing_for_some_strategies
     if not isinstance(y, np.ndarray):
-        y = cast(np.ndarray, np.asarray(y))
+        y = cast("np.ndarray", np.asarray(y))
 
     nan_mask = np.isnan(y)
     if not nan_mask.any():
-        return cast(np.ndarray, y), cast(np.ndarray, nan_mask)  # No NaNs
+        return cast("np.ndarray", y), cast("np.ndarray", nan_mask)  # No NaNs
 
     if strategy is None:  # Determine default based on problem type
         strategy = "mean" if problem_type == "regression" else "error"
@@ -167,9 +167,9 @@ def handle_missing_y(
         # This strategy implies X also needs to be filtered.
         # The function calling this should handle that synchronization.
         # Here, we just return the filtered y and the mask of what *was* NaN.
-        return cast(np.ndarray, y[~nan_mask]), cast(np.ndarray, nan_mask)
+        return cast("np.ndarray", y[~nan_mask]), cast("np.ndarray", nan_mask)
 
-    y_processed = cast(np.ndarray, np.copy(y))
+    y_processed = cast("np.ndarray", np.copy(y))
 
     fill_value: Any
     if strategy == "mean":
@@ -200,4 +200,4 @@ def handle_missing_y(
         raise ValueError(f"Unknown missing value strategy for y: {strategy}")
 
     y_processed[nan_mask] = fill_value
-    return y_processed, cast(np.ndarray, nan_mask)
+    return y_processed, cast("np.ndarray", nan_mask)

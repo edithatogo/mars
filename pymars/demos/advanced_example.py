@@ -13,6 +13,7 @@ import pymars as earth
 
 
 def advanced_example() -> tuple[Any, float]:
+    """Run an advanced pymars example with interpretability output."""
     print("Running advanced pymars example with interpretability...")
 
     # Generate a more complex synthetic dataset
@@ -77,7 +78,7 @@ def advanced_example() -> tuple[Any, float]:
             print(f"  Feature {i}: {importance:.4f}")
 
     # Plot predictions vs actual
-    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+    _fig, axes = plt.subplots(1, 2, figsize=(12, 5))
 
     axes[0].scatter(y_train, y_train_pred, alpha=0.6)
     axes[0].plot(
@@ -105,7 +106,7 @@ def advanced_example() -> tuple[Any, float]:
     # Use interpretability tools if available
     try:
         # Plot partial dependence for first 3 features
-        fig, axes = earth.plot_partial_dependence(
+        _fig, axes = earth.plot_partial_dependence(
             model,
             X_train,
             features=[0, 1, 2],

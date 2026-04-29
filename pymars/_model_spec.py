@@ -31,7 +31,7 @@ _MODEL_SPEC_SUPPORTED_MAJOR_VERSION = 1
 def _parse_model_spec_version(spec_version: Any) -> tuple[int, int]:
     """Parse a portable model spec version string."""
     if not isinstance(spec_version, str):
-        raise ValueError(
+        raise TypeError(
             "Model spec field 'spec_version' must be a '<major>.<minor>' string."
         )
 
@@ -47,7 +47,7 @@ def _parse_model_spec_version(spec_version: Any) -> tuple[int, int]:
 def validate_model_spec(payload: dict[str, Any]) -> dict[str, Any]:
     """Validate a portable model spec payload."""
     if not isinstance(payload, dict):
-        raise ValueError("Model spec payload must be a JSON object.")
+        raise TypeError("Model spec payload must be a JSON object.")
 
     spec_version = payload.get("spec_version")
     major_version, _minor_version = _parse_model_spec_version(spec_version)
@@ -67,13 +67,13 @@ def validate_model_spec(payload: dict[str, Any]) -> dict[str, Any]:
         )
 
     if not isinstance(payload["params"], dict):
-        raise ValueError("Model spec field 'params' must be an object.")
+        raise TypeError("Model spec field 'params' must be an object.")
     if not isinstance(payload["feature_schema"], dict):
-        raise ValueError("Model spec field 'feature_schema' must be an object.")
+        raise TypeError("Model spec field 'feature_schema' must be an object.")
     if not isinstance(payload["basis_terms"], list):
-        raise ValueError("Model spec field 'basis_terms' must be an array.")
+        raise TypeError("Model spec field 'basis_terms' must be an array.")
     if not isinstance(payload["coefficients"], list):
-        raise ValueError("Model spec field 'coefficients' must be an array.")
+        raise TypeError("Model spec field 'coefficients' must be an array.")
 
     feature_schema = payload["feature_schema"]
     n_features = feature_schema.get("n_features")
@@ -89,7 +89,7 @@ def validate_model_spec(payload: dict[str, Any]) -> dict[str, Any]:
 
     for idx, term in enumerate(payload["basis_terms"]):
         if not isinstance(term, dict):
-            raise ValueError(f"Basis term at index {idx} must be an object.")
+            raise TypeError(f"Basis term at index {idx} must be an object.")
         kind = term.get("kind")
         if not isinstance(kind, str) or not kind:
             raise ValueError(
@@ -116,7 +116,7 @@ class BasisTermSpec:
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize the basis term spec to a dictionary."""
-        payload = {
+        return {
             "kind": self.kind,
             "variable_idx": self.variable_idx,
             "variable_name": self.variable_name,
@@ -128,7 +128,6 @@ class BasisTermSpec:
             "parent1": self.parent1.to_dict() if self.parent1 is not None else None,
             "parent2": self.parent2.to_dict() if self.parent2 is not None else None,
         }
-        return payload
 
     @classmethod
     def from_dict(cls, payload: dict[str, Any]) -> BasisTermSpec:
@@ -203,21 +202,21 @@ def basis_function_from_spec(term_spec: BasisTermSpec) -> BasisFunction:
         basis_function = ConstantBasisFunction()
     elif term_spec.kind == "hinge":
         basis_function = HingeBasisFunction(
-            variable_idx=cast(int, term_spec.variable_idx),
-            knot_val=cast(float, term_spec.knot_val),
+            variable_idx=cast("int", term_spec.variable_idx),
+            knot_val=cast("float", term_spec.knot_val),
             is_right_hinge=bool(term_spec.is_right_hinge),
             variable_name=term_spec.variable_name,
             parent_bf=parent1,
         )
     elif term_spec.kind == "linear":
         basis_function = LinearBasisFunction(
-            variable_idx=cast(int, term_spec.variable_idx),
+            variable_idx=cast("int", term_spec.variable_idx),
             variable_name=term_spec.variable_name,
             parent_bf=parent1,
         )
     elif term_spec.kind == "categorical":
         basis_function = CategoricalBasisFunction(
-            variable_idx=cast(int, term_spec.variable_idx),
+            variable_idx=cast("int", term_spec.variable_idx),
             category=term_spec.category,
             variable_name=term_spec.variable_name,
             parent_bf=parent1,
@@ -228,7 +227,7 @@ def basis_function_from_spec(term_spec: BasisTermSpec) -> BasisFunction:
         basis_function = InteractionBasisFunction(parent1, parent2)
     elif term_spec.kind == "missingness":
         basis_function = MissingnessBasisFunction(
-            variable_idx=cast(int, term_spec.variable_idx),
+            variable_idx=cast("int", term_spec.variable_idx),
             variable_name=term_spec.variable_name,
         )
     else:  # pragma: no cover - defensive branch for invalid spec payloads
@@ -386,4 +385,4 @@ def spec_to_json(payload: dict[str, Any]) -> str:
 
 def spec_from_json(payload: str) -> dict[str, Any]:
     """Parse a JSON model spec payload."""
-    return validate_model_spec(cast(dict[str, Any], json.loads(payload)))
+    return validate_model_spec(cast("dict[str, Any]", json.loads(payload)))

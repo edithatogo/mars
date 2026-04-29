@@ -16,6 +16,7 @@ class GLMEarth(EarthRegressor):
         self.family = family
 
     def fit(self, X: Any, y: Any) -> GLMEarth:
+        """Fit the GLM Earth model to training data."""
         super().fit(X, y)
         X_proc, mask, _ = self.earth_._scrub_input_data(X, y)
         basis = self.basis_
@@ -31,6 +32,7 @@ class GLMEarth(EarthRegressor):
         return self
 
     def predict(self, X: Any) -> np.ndarray:
+        """Predict target values using the fitted GLM Earth model."""
         X_proc, mask, _ = self.earth_._scrub_input_data(X, np.zeros(len(X)))
         basis = self.basis_
         if basis is None:
@@ -38,5 +40,5 @@ class GLMEarth(EarthRegressor):
         B = self.earth_._build_basis_matrix(X_proc, basis, mask)
         pred = self.glm_.predict(B)
         if self.family == "logistic":
-            return cast(np.ndarray, (pred > 0.5).astype(int))
-        return cast(np.ndarray, pred)
+            return cast("np.ndarray", (pred > 0.5).astype(int))
+        return cast("np.ndarray", pred)

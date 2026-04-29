@@ -183,7 +183,7 @@ class Earth(BaseEstimator, RegressorMixin):
         Centralized helper method.
         """
         if not basis_functions:
-            return cast(np.ndarray, np.empty((X_processed.shape[0], 0)))
+            return cast("np.ndarray", np.empty((X_processed.shape[0], 0)))
 
         # Preallocate basis matrix to reduce memory allocations. Profiling
         # revealed that constructing lists of arrays and calling np.hstack for
@@ -192,7 +192,7 @@ class Earth(BaseEstimator, RegressorMixin):
         B_matrix = np.empty((n_samples, len(basis_functions)), dtype=float)
         for idx, bf in enumerate(basis_functions):
             B_matrix[:, idx] = bf.transform(X_processed, missing_mask)
-        return cast(np.ndarray, B_matrix)
+        return cast("np.ndarray", B_matrix)
 
     def fit(self, X: Any, y: Any, sample_weight: Any | None = None) -> Earth:
         """
@@ -306,13 +306,13 @@ class Earth(BaseEstimator, RegressorMixin):
             logger.warning("Forward pass returned no basis functions.")
             # Set a model that predicts mean of y, or handle as error
             self.basis_ = (
-                [cast(Any, ConstantBasisFunction())]
+                [cast("Any", ConstantBasisFunction())]
                 if ConstantBasisFunction not in [type(bf) for bf in fwd_basis_functions]
                 else fwd_basis_functions
             )
             if not self.basis_:  # if fwd_basis_functions was also empty
                 self.basis_ = [
-                    cast(Any, ConstantBasisFunction())
+                    cast("Any", ConstantBasisFunction())
                 ]  # Ensure at least an intercept for predict
 
             # Use X_processed and missing_mask for this potential build
@@ -328,7 +328,7 @@ class Earth(BaseEstimator, RegressorMixin):
                     else float(np.average(y_processed, weights=sample_weight_validated))
                 )
                 self.coef_ = np.array([intercept])
-                self.basis_ = [cast(Any, ConstantBasisFunction())]
+                self.basis_ = [cast("Any", ConstantBasisFunction())]
                 B_final = self._build_basis_matrix(
                     X_processed, self.basis_, missing_mask
                 )
@@ -603,7 +603,7 @@ class Earth(BaseEstimator, RegressorMixin):
         if self.categorical_features:
             from ._categorical import CategoricalImputer
 
-            self.categorical_imputer_ = cast(Any, CategoricalImputer()).fit(
+            self.categorical_imputer_ = cast("Any", CategoricalImputer()).fit(
                 X_obj, self.categorical_features
             )
             X_processed_obj = self.categorical_imputer_.transform(X_obj)
@@ -644,7 +644,7 @@ class Earth(BaseEstimator, RegressorMixin):
         del X_processed, missing_mask, pruning_passer_instance_for_gcv_calc
 
         # Intercept-only basis and coefficient
-        self.basis_ = [cast(Any, ConstantBasisFunction())]
+        self.basis_ = [cast("Any", ConstantBasisFunction())]
         intercept = (
             float(np.mean(y_processed))
             if sample_weight is None
@@ -770,10 +770,10 @@ class Earth(BaseEstimator, RegressorMixin):
                 record, "y_mean_"
             ):  # Assuming y_mean_ is stored by EarthRecord or fit
                 return cast(
-                    np.ndarray, np.full(X_predict_processed.shape[0], record.y_mean_)
+                    "np.ndarray", np.full(X_predict_processed.shape[0], record.y_mean_)
                 )
             # Fallback if no mean stored (should not happen in normal operation)
-            return cast(np.ndarray, np.zeros(X_predict_processed.shape[0]))
+            return cast("np.ndarray", np.zeros(X_predict_processed.shape[0]))
 
         B_pred = self._build_basis_matrix(
             X_predict_processed, basis, predict_missing_mask
@@ -787,7 +787,7 @@ class Earth(BaseEstimator, RegressorMixin):
                 and len(coef) == 1
             ):
                 return cast(
-                    np.ndarray, np.full(X_predict_processed.shape[0], coef[0])
+                    "np.ndarray", np.full(X_predict_processed.shape[0], coef[0])
                 )  # Predict intercept
             raise ValueError(
                 f"Shape mismatch between transformed X for predict ({B_pred.shape}) and coefficients ({coef.shape})."
@@ -796,7 +796,7 @@ class Earth(BaseEstimator, RegressorMixin):
         y_pred = B_pred @ coef
         # y_pred can contain NaNs if basis functions resulted in NaNs for some rows.
         # The user of predict() will have to handle these NaNs if they occur.
-        return cast(np.ndarray, y_pred)
+        return cast("np.ndarray", y_pred)
 
     def predict_interval(
         self, X: Any, alpha: float = 0.05
@@ -846,8 +846,8 @@ class Earth(BaseEstimator, RegressorMixin):
         if isinstance(payload, str):
             import json
 
-            payload = cast(dict[str, Any], json.loads(payload))
-        return cast(Earth, spec_to_model(payload, cls))
+            payload = cast("dict[str, Any]", json.loads(payload))
+        return cast("Earth", spec_to_model(payload, cls))
 
     def summary(self) -> str | None:
         """
@@ -967,9 +967,7 @@ class Earth(BaseEstimator, RegressorMixin):
 
         output = [
             "Feature Importances ({type})".format(
-                type=self.feature_importance_type
-                if self.feature_importance_type
-                else "N/A"
+                type=self.feature_importance_type or "N/A"
             )
         ]
         output.append("-------------------------------------")
@@ -1002,7 +1000,7 @@ class Earth(BaseEstimator, RegressorMixin):
         """Return estimator parameters for compatibility with scikit-learn."""
         # BaseEstimator implements get_params using introspection of __init__
         # signature, which covers all hyperparameters stored as attributes.
-        return cast(dict[str, Any], super().get_params(deep=deep))
+        return cast("dict[str, Any]", super().get_params(deep=deep))
 
     def set_params(self, **params: Any) -> Earth:
         """Set estimator parameters for compatibility with scikit-learn."""

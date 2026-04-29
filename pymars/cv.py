@@ -1,11 +1,13 @@
 from __future__ import annotations
 
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any, cast
 
-import numpy as np
 from sklearn.model_selection import cross_val_score
 
 from .earth import Earth
+
+if TYPE_CHECKING:
+    import numpy as np
 
 
 class EarthCV:
@@ -19,7 +21,8 @@ class EarthCV:
         self.scoring = scoring
 
     def score(self, X: Any, y: Any) -> np.ndarray:
+        """Return cross-validated scores for the configured Earth model."""
         return cast(
-            np.ndarray,
+            "np.ndarray",
             cross_val_score(self.estimator, X, y, cv=self.cv, scoring=self.scoring),
         )

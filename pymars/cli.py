@@ -19,7 +19,7 @@ def _save_model(model: Any, output_path: str) -> str:
     """Save a fitted model as JSON spec when possible, else pickle."""
     path = Path(output_path)
     if path.suffix.lower() == ".json" and hasattr(model, "export_model"):
-        path.write_text(cast(str, model.export_model(format="json")))
+        path.write_text(cast("str", model.export_model(format="json")))
         return "json"
 
     with path.open("wb") as file_obj:
@@ -103,7 +103,7 @@ def main() -> None:
 def fit_model(args: argparse.Namespace) -> None:
     """Fit an Earth model from command line arguments."""
     # Import pandas only when needed
-    pd = cast(Any, importlib.import_module("pandas"))
+    pd = cast("Any", importlib.import_module("pandas"))
 
     # Load data
     data = pd.read_csv(args.input)
@@ -136,7 +136,7 @@ def fit_model(args: argparse.Namespace) -> None:
 def make_predictions(args: argparse.Namespace) -> None:
     """Make predictions with a fitted model."""
     # Import pandas only when needed
-    pd = cast(Any, importlib.import_module("pandas"))
+    pd = cast("Any", importlib.import_module("pandas"))
 
     model = _load_model(args.model)
 
@@ -157,7 +157,7 @@ def make_predictions(args: argparse.Namespace) -> None:
 def score_model(args: argparse.Namespace) -> None:
     """Score a fitted model."""
     # Import pandas only when needed
-    pd = cast(Any, importlib.import_module("pandas"))
+    pd = cast("Any", importlib.import_module("pandas"))
 
     model = _load_model(args.model)
 

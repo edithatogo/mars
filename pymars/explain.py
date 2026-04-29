@@ -4,13 +4,14 @@ from __future__ import annotations
 Advanced interpretability features for Earth models.
 """
 
-from typing import Any, Sequence
+from typing import TYPE_CHECKING, Any, Sequence
 
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.inspection import partial_dependence
 
-from .earth import Earth
+if TYPE_CHECKING:
+    from .earth import Earth
 
 
 def _normalize_axes(axes: Any) -> list[Any]:

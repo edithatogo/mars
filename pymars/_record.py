@@ -8,13 +8,15 @@ and the pruning pass (terms removed, GCV at each step).
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
 logger = logging.getLogger(__name__)
 
-from ._basis import BasisFunction
+
+if TYPE_CHECKING:
+    from ._basis import BasisFunction
 
 
 class EarthRecord:
