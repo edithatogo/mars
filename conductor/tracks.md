@@ -34,7 +34,7 @@ The remaining-track dependency gates are summarized in
   *Link: [./tracks/ci_quality_automation_hardening_20260428/](./tracks/ci_quality_automation_hardening_20260428/)*
 - [~] **Track: Prepare release readiness and registry governance**
   *Link: [./tracks/release_readiness_registry_governance_20260428/](./tracks/release_readiness_registry_governance_20260428/)*
-- [~] **Track: Advance Rust training orchestration and Python integration**
+- [x] **Track: Advance Rust training orchestration and Python integration**
   *Link: [./tracks/rust_training_orchestration_python_integration_20260428/](./tracks/rust_training_orchestration_python_integration_20260428/)*
 - [~] **Track: Expose Rust training APIs through all language bindings**
   *Link: [./tracks/cross_language_training_api_bindings_20260428/](./tracks/cross_language_training_api_bindings_20260428/)*
