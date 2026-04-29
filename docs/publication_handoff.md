@@ -23,6 +23,15 @@ readiness to actual publication.
 - Reply with the Go tag policy if you want the release flow to enforce a
   specific signing or review rule.
 
+## Open The Pages
+
+- [crates.io: `pymars-runtime`](https://crates.io/crates/pymars-runtime)
+- [npm: `@mars-earth/runtime`](https://www.npmjs.com/package/@mars-earth/runtime)
+- [NuGet: `MarsRuntime`](https://www.nuget.org/packages/MarsRuntime)
+- [Registrator.jl Web UI](https://juliaregistries.github.io/Registrator.jl/stable/webui/)
+- [CRAN](https://cran.r-project.org/)
+- [r-universe](https://r-universe.dev/search)
+
 ## Once Set
 
 - I can update the release inventory and publication track to mark the
