@@ -54,3 +54,4 @@ ty
 uv
 Vale
 write-good
+toolchain
