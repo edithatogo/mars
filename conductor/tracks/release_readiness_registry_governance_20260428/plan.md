@@ -9,13 +9,13 @@
     - [x] Confirm NuGet `MarsRuntime` is not publicly registered yet
     - [x] Confirm Go module path is controlled by repository tags rather than a registry
     - [x] Confirm R `marsruntime` and Julia `MarsRuntime` remain release targets rather than published registry packages
-- [ ] Task: Confirm registry ownership and credential status
+- [~] Task: Confirm registry ownership and credential status [blocker: need human credential verification, 2026-04-29]
     - [x] Confirm PyPI project ownership and trusted publishing or token status
-    - [ ] Confirm crates.io owner and crate name status
-    - [ ] Confirm npm organization/package ownership and token status
-    - [ ] Confirm NuGet package ID and API key status
+    - [~] Confirm crates.io owner and crate name status [blocker: human action needed, 2026-04-29]
+    - [~] Confirm npm organization/package ownership and token status [blocker: human action needed, 2026-04-29]
+    - [~] Confirm NuGet package ID and API key status [blocker: human action needed, 2026-04-29]
     - [x] Confirm Go module path and tag strategy
-    - [ ] Confirm R r-universe/CRAN and Julia General submission requirements
+    - [~] Confirm R r-universe/CRAN and Julia General submission requirements [blocker: human action needed, 2026-04-29]
 - [x] Task: Confirm repository-side release wiring
     - [x] Confirm PyPI publish config points at `mars-earth`
     - [x] Confirm crates.io, npm, and NuGet workflows reference release secrets
