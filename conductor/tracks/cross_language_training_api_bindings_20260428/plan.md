@@ -12,7 +12,7 @@
     - [x] Extend conformance runner to distinguish runtime and training suites
 - [x] Task: Conductor - Automated Review and Checkpoint 'Phase 0: Training Binding API Design' (Protocol in workflow.md)
 
-## Phase 1: Python and Rust Training Surfaces
+## Phase 1: Python and Rust Training Surfaces [checkpoint: a5c67ba]
 
 - [x] Task: Expose Rust training through Python
     - [x] Preserve sklearn-compatible `Earth.fit`
@@ -22,7 +22,7 @@
     - [x] Add idiomatic Rust training entrypoints
     - [x] Add Rust docs and examples
     - [x] Verify cargo tests and package checks
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 1: Python and Rust Training Surfaces' (Protocol in workflow.md)
+- [x] Task: Conductor - Automated Review and Checkpoint 'Phase 1: Python and Rust Training Surfaces' (Protocol in workflow.md)
 
 ## Phase 2: R, Julia, C#, and Go Training Surfaces
 
