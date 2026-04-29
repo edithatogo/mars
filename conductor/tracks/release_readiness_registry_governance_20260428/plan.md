@@ -61,7 +61,7 @@
     - [x] Ensure failed conformance blocks release rehearsal success
 - [x] Task: Conductor - Automated Review and Checkpoint 'Phase 2: Release Rehearsal Workflow' (Protocol in workflow.md)
 
-## Phase 3: Release Documentation and Policy
+## Phase 3: Release Documentation and Policy [checkpoint: 5795166]
 
 - [x] Task: Document release policy
     - [x] Define pre-release versus stable release criteria
