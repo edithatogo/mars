@@ -24,7 +24,7 @@
     - [x] Verify cargo tests and package checks
 - [x] Task: Conductor - Automated Review and Checkpoint 'Phase 1: Python and Rust Training Surfaces' (Protocol in workflow.md)
 
-## Phase 2: R, Julia, C#, and Go Training Surfaces
+## Phase 2: R, Julia, C#, and Go Training Surfaces [checkpoint: 9fa0a7c]
 
 - [x] Task: Add R and Julia training APIs
     - [x] Preserve idiomatic package naming and data conversion
@@ -38,7 +38,7 @@
     - [x] Run shared training conformance fixtures
     - [x] Expose C# training through `Runtime.FitModel` and the Rust CLI `fit` subcommand
     - [x] Expose Go training through `FitModel` and the Rust CLI `fit` subcommand
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 2: R, Julia, C#, and Go Training Surfaces' (Protocol in workflow.md)
+- [x] Task: Conductor - Automated Review and Checkpoint 'Phase 2: R, Julia, C#, and Go Training Surfaces' (Protocol in workflow.md)
 
 ## Phase 3: TypeScript Training Surface
 
