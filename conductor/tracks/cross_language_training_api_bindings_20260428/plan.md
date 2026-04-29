@@ -40,7 +40,7 @@
     - [x] Expose Go training through `FitModel` and the Rust CLI `fit` subcommand
 - [x] Task: Conductor - Automated Review and Checkpoint 'Phase 2: R, Julia, C#, and Go Training Surfaces' (Protocol in workflow.md)
 
-## Phase 3: TypeScript Training Surface
+## Phase 3: TypeScript Training Surface [checkpoint: 731252e]
 
 - [x] Task: Add TypeScript training support or runtime-only declaration
     - [x] Implement training through the selected Rust-backed mechanism if feasible
@@ -50,7 +50,7 @@
     - [x] Run runtime conformance
     - [x] Run training conformance or expected unsupported-feature tests
     - [x] Run npm package checks
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 3: TypeScript Training Surface' (Protocol in workflow.md)
+- [x] Task: Conductor - Automated Review and Checkpoint 'Phase 3: TypeScript Training Surface' (Protocol in workflow.md)
 
 ## Phase 4: Cross-Language Documentation and CI
 
