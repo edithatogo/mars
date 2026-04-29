@@ -52,7 +52,7 @@
     - [x] Run npm package checks
 - [x] Task: Conductor - Automated Review and Checkpoint 'Phase 3: TypeScript Training Surface' (Protocol in workflow.md)
 
-## Phase 4: Cross-Language Documentation and CI
+## Phase 4: Cross-Language Documentation and CI [checkpoint: ecf68a1]
 
 - [x] Task: Update docs and examples
     - [x] Add train/predict/export examples for each training-capable language
@@ -62,4 +62,4 @@
     - [x] Add training conformance jobs per supported package
     - [x] Keep runtime conformance jobs separate
     - [x] Run package dry-runs after training API changes
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 4: Cross-Language Documentation and CI' (Protocol in workflow.md)
+- [x] Task: Conductor - Automated Review and Checkpoint 'Phase 4: Cross-Language Documentation and CI' (Protocol in workflow.md)
