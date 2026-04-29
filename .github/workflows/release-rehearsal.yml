@@ -22,8 +22,15 @@ on:
         default: true
         type: boolean
 
+concurrency:
+  group: release-rehearsal-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
+  id-token: write
+  attestations: write
+  artifact-metadata: write
 
 jobs:
   rust-core:
@@ -47,6 +54,13 @@ jobs:
       - name: Build Rust package crate
         run: cargo package --allow-dirty
         working-directory: rust-runtime
+
+      - name: Generate Rust provenance attestation
+        uses: actions/attest@v4
+        with:
+          subject-path: |
+            rust-runtime/target/debug/mars-runtime-cli
+            rust-runtime/target/package/*.crate
 
       - name: Upload Rust runtime CLI
         uses: actions/upload-artifact@v7
@@ -92,6 +106,11 @@ jobs:
 
       - name: Build Python distribution
         run: uv build
+
+      - name: Generate Python provenance attestation
+        uses: actions/attest@v4
+        with:
+          subject-path: dist/*
 
       - name: Inspect Python artifacts
         run: |
@@ -161,6 +180,11 @@ jobs:
           fi
         working-directory: bindings/typescript
 
+      - name: Generate TypeScript provenance attestation
+        uses: actions/attest@v4
+        with:
+          subject-path: bindings/typescript/*.tgz
+
       - name: Upload TypeScript release artifacts
         uses: actions/upload-artifact@v7
         with:
@@ -219,6 +243,11 @@ jobs:
           fi
         working-directory: bindings/csharp
 
+      - name: Generate C# provenance attestation
+        uses: actions/attest@v4
+        with:
+          subject-path: bindings/csharp/bin/Release/*.nupkg
+
       - name: Upload C# release artifacts
         uses: actions/upload-artifact@v7
         with:
@@ -263,6 +292,11 @@ jobs:
             Rscript -e "library(marsruntime, lib.loc = '$libdir')"
           fi
         working-directory: bindings/r
+
+      - name: Generate R provenance attestation
+        uses: actions/attest@v4
+        with:
+          subject-path: bindings/r/marsruntime_*.tar.gz
 
       - name: Upload R release artifacts
         uses: actions/upload-artifact@v7

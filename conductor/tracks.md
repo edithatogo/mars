@@ -28,10 +28,10 @@ The remaining-track dependency gates are summarized in
   *Link: [./tracks/portable_runtime_binding_mvps_20260428/](./tracks/portable_runtime_binding_mvps_20260428/)*
 - [x] **Track: Rust training core migration after bindings**
   *Link: [./tracks/rust_training_core_migration_after_bindings_20260428/](./tracks/rust_training_core_migration_after_bindings_20260428/)*
-- [~] **Track: Replace MVP replay bindings with Rust-backed language bindings**
-  *Link: [./tracks/rust_backed_language_bindings_20260428/](./tracks/rust_backed_language_bindings_20260428/)*
-- [~] **Track: Harden CI/CD, quality gates, security checks, and automation**
-  *Link: [./tracks/ci_quality_automation_hardening_20260428/](./tracks/ci_quality_automation_hardening_20260428/)*
+- [x] **Track: Replace MVP replay bindings with Rust-backed language bindings**
+  *Link: [./archive/rust_backed_language_bindings_20260428/](./archive/rust_backed_language_bindings_20260428/)*
+- [x] **Track: Harden CI/CD, quality gates, security checks, and automation**
+  *Link: [./archive/ci_quality_automation_hardening_20260428/](./archive/ci_quality_automation_hardening_20260428/)*
 - [~] **Track: Prepare release readiness and registry governance**
   *Link: [./tracks/release_readiness_registry_governance_20260428/](./tracks/release_readiness_registry_governance_20260428/)*
 - [x] **Track: Advance Rust training orchestration and Python integration**

@@ -4,9 +4,9 @@ Thank you for your interest in improving **pymars**! The project is a pure Pytho
 
 ## Coding Standards
 
-- **Pure Python only.** No C or Cython extensions are accepted.
+- **Pure Python only.** No compiled extensions are accepted.
 - Focus on correctness and clarity first; optimize Python code only when needed.
-- **Scikit-learn compatibility** is mandatory. Estimators should:
+- **scikit-learn compatibility** is mandatory. Estimators should:
   - inherit from `sklearn.base.BaseEstimator` (and `RegressorMixin` or `ClassifierMixin` as appropriate),
   - implement `fit`, `predict`, `score`, `get_params`, and `set_params`,
   - validate inputs with `sklearn.utils.validation.check_X_y` and `check_array`,
@@ -17,8 +17,8 @@ Thank you for your interest in improving **pymars**! The project is a pure Pytho
   import pymars as earth
   model = earth.Earth()
   ```
-- Follow **PEP 8** and use type hints. Document modules, classes, functions, and methods with clear docstrings explaining *why* things are done.
-- Run a linter such as **Flake8** or **Pylint** to catch style issues.
+- Follow **PEP 8** and use type hints. Document modules, classes, functions, and methods with clear documentation explaining *why* things are done.
+- Run a linter such as `ruff` to catch style issues.
 - Write comments that focus on reasoning and motivation rather than line-by-line explanations.
 - Aim for minimal dependencies (typically NumPy and SciPy). List them in `requirements.txt` and `pyproject.toml`.
 
@@ -30,6 +30,42 @@ Thank you for your interest in improving **pymars**! The project is a pure Pytho
   ```bash
   pip install -r requirements.txt && pytest
   ```
+
+## CI Parity
+
+Run the same checks locally when practical before opening a pull request:
+
+```bash
+uv run pytest tests/ -q --tb=short -x --cov-fail-under=80
+uv run pytest -q tests/test_binding_conformance.py tests/test_model_spec.py
+uv run pytest -q tests/test_python_routing.py tests/test_rust_compatibility.py tests/test_model_spec.py
+uv run ruff check pymars tests
+uv run ruff format --check pymars tests
+uv run ty check pymars/
+uv run mkdocs build --strict
+vale --config .vale.ini README.md docs/
+cargo fmt --check --manifest-path rust-runtime/Cargo.toml
+cargo test --manifest-path rust-runtime/Cargo.toml --test fixture_tests --test foreign_tests --test training_fixture_tests
+cargo clippy --manifest-path rust-runtime/Cargo.toml -- -D warnings
+go test ./...
+npm test --prefix bindings/typescript
+Rscript tests/conformance.R
+julia --project=bindings/julia -e 'using Pkg; Pkg.instantiate(); Pkg.test()'
+dotnet test bindings/csharp/MarsRuntime.Tests/MarsRuntime.Tests.csproj
+```
+
+## Failure Triage
+
+- If a workflow fails, rerun the matching local command and compare it with the
+  diagnostic artifacts uploaded by CI.
+- For code-quality failures, inspect the `code-quality-diagnostics` artifact.
+- For release rehearsal failures, inspect the uploaded package lists and smoke
+  test output in the release artifacts.
+- For dependency or security failures, review dependency-review, Bandit, Safety,
+  and `cargo audit` output before changing code.
+- If the failure is isolated to one binding, rerun the binding-specific smoke
+  test first and only touch the shared Rust runtime if the issue reproduces
+  there.
 
 ## Workflow for New Features or Bug Fixes
 

@@ -16,6 +16,8 @@ permissions:
 jobs:
   code-quality:
     runs-on: ubuntu-latest
+    env:
+      CI_LOG_DIR: .ci-diagnostics
 
     steps:
       - uses: actions/checkout@v6
@@ -32,17 +34,31 @@ jobs:
       - name: Install dependencies
         run: uv sync --extra dev
 
+      - name: Run Python tests with coverage threshold
+        run: |
+          mkdir -p "$CI_LOG_DIR"
+          set -o pipefail
+          uv run pytest tests/ -q --tb=short -x --cov-fail-under=80 | tee "$CI_LOG_DIR/pytest.log"
+
       - name: Run ruff check
-        run: uv run ruff check pymars tests
+        run: |
+          set -o pipefail
+          uv run ruff check pymars tests | tee "$CI_LOG_DIR/ruff-check.log"
 
       - name: Run ruff format check
-        run: uv run ruff format --check pymars tests
+        run: |
+          set -o pipefail
+          uv run ruff format --check pymars tests | tee "$CI_LOG_DIR/ruff-format.log"
 
       - name: Run ty type check
-        run: uv run ty check pymars/
+        run: |
+          set -o pipefail
+          uv run ty check pymars/ | tee "$CI_LOG_DIR/ty.log"
 
       - name: Build documentation
-        run: uv run mkdocs build --strict
+        run: |
+          set -o pipefail
+          uv run mkdocs build --strict | tee "$CI_LOG_DIR/mkdocs.log"
 
       - name: Run Vale prose lint
         uses: errata-ai/vale-action@v2.1.1
@@ -59,3 +75,11 @@ jobs:
         run: |
           uv tool install codespell || pip install codespell
           codespell pymars tests README.md CONTRIBUTING.md || echo "Spelling check completed with warnings"
+
+      - name: Upload diagnostic logs
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: code-quality-diagnostics
+          path: .ci-diagnostics/*
+          retention-days: 7
