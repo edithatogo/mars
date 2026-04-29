@@ -1,6 +1,6 @@
 # Implementation Plan
 
-## Phase 0: Training Binding API Design
+## Phase 0: Training Binding API Design [checkpoint: 5abca8a]
 
 - [x] Task: Define shared training API contract
     - [x] Specify input shape, sample weights, feature metadata, hyperparameters, and output artifacts
@@ -10,7 +10,7 @@
     - [x] Create shared fixture cases for fit, predict, and export
     - [x] Add expected failures for runtime-only package modes
     - [x] Extend conformance runner to distinguish runtime and training suites
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 0: Training Binding API Design' (Protocol in workflow.md)
+- [x] Task: Conductor - Automated Review and Checkpoint 'Phase 0: Training Binding API Design' (Protocol in workflow.md)
 
 ## Phase 1: Python and Rust Training Surfaces
 
