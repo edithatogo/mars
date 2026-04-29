@@ -2,7 +2,7 @@
   "name": "@mars-earth/runtime",
   "version": "0.0.0",
   "type": "module",
-  "description": "Portable runtime replay for mars ModelSpec artifacts; runtime-only, no training API",
+  "description": "Portable runtime replay for mars ModelSpec artifacts with Rust CLI acceleration; runtime-only, no training API",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",

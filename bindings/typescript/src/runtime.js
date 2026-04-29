@@ -1,3 +1,19 @@
+import { mkdtempSync, readFileSync, rmSync, writeFileSync, existsSync } from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { spawnSync } from "node:child_process";
+import {
+  evaluateBasis,
+  validatePure,
+  validateRowsPure,
+} from "./runtime.pure.js";
+
+const moduleDir = path.dirname(fileURLToPath(import.meta.url));
+const repoRoot = path.resolve(moduleDir, "../../..");
+
+class RustRuntimeUnavailableError extends Error {}
+
 export function loadModelSpec(raw) {
   const spec = typeof raw === "string" ? JSON.parse(raw) : raw;
   validate(spec);
@@ -11,100 +27,122 @@ export function fitModel() {
 }
 
 export function validate(spec) {
-  if (!spec || typeof spec !== "object") {
-    throw new Error("malformed artifact: model spec must be an object");
+  const binary = rustRuntimeBinary();
+  if (binary) {
+    try {
+      invokeRustRuntime("validate", spec, null, binary);
+      return;
+    } catch (error) {
+      if (!(error instanceof RustRuntimeUnavailableError)) {
+        throw error;
+      }
+    }
   }
-  if (!/^\d+\.\d+$/.test(spec.spec_version ?? "")) {
-    throw new Error("malformed artifact: spec_version must be '<major>.<minor>'");
-  }
-  if (!spec.spec_version.startsWith("1.")) {
-    throw new Error(`unsupported artifact version: ${spec.spec_version}`);
-  }
-  if (!Array.isArray(spec.basis_terms) || !Array.isArray(spec.coefficients)) {
-    throw new Error("malformed artifact: basis_terms and coefficients are required");
-  }
-  if (spec.basis_terms.length !== spec.coefficients.length) {
-    throw new Error("malformed artifact: coefficients length must match basis_terms");
-  }
-  spec.basis_terms.forEach((basis, index) => validateBasis(spec, basis, index));
+  validatePure(spec);
 }
 
 export function designMatrix(spec, rows) {
-  validate(spec);
-  validateRows(spec, rows);
+  const binary = rustRuntimeBinary();
+  if (binary) {
+    try {
+      return invokeRustRuntime("design-matrix", spec, rows, binary);
+    } catch (error) {
+      if (!(error instanceof RustRuntimeUnavailableError)) {
+        throw error;
+      }
+    }
+  }
+  validatePure(spec);
+  validateRowsPure(spec, rows);
   return rows.map((row) => spec.basis_terms.map((basis) => evaluateBasis(basis, row)));
 }
 
 export function predict(spec, rows) {
+  const binary = rustRuntimeBinary();
+  if (binary) {
+    try {
+      return invokeRustRuntime("predict", spec, rows, binary);
+    } catch (error) {
+      if (!(error instanceof RustRuntimeUnavailableError)) {
+        throw error;
+      }
+    }
+  }
   return designMatrix(spec, rows).map((row) =>
     row.reduce((total, value, index) => total + value * spec.coefficients[index], 0),
   );
 }
 
-function validateRows(spec, rows) {
-  const nFeatures = spec.feature_schema?.n_features;
-  if (nFeatures == null) return;
-  rows.forEach((row, index) => {
-    if (row.length !== nFeatures) {
-      throw new Error(
-        `feature-count mismatch: row ${index} has ${row.length} features, expected ${nFeatures}`,
-      );
+function invokeRustRuntime(command, spec, rows = null, binary = rustRuntimeBinary()) {
+  if (!binary) {
+    throw new Error("Rust runtime binary is not available");
+  }
+
+  const tmpdir = mkdtempSync(path.join(os.tmpdir(), "mars-ts-"));
+  const specFile = path.join(tmpdir, "spec.json");
+  writeFileSync(specFile, JSON.stringify(spec));
+
+  const args = [command, "--spec-file", specFile];
+  if (rows != null) {
+    const rowsFile = path.join(tmpdir, "rows.json");
+    writeFileSync(rowsFile, JSON.stringify(nullableRows(rows)));
+    args.push("--rows-file", rowsFile);
+  }
+
+  try {
+    const result = spawnSync(binary, args, { encoding: "utf8" });
+    if (result.error) {
+      if (result.error.code === "ENOENT" || result.error.code === "EACCES") {
+        throw new RustRuntimeUnavailableError(
+          `Rust runtime binary is not available: ${result.error.message}`,
+        );
+      }
+      throw new Error(`failed to execute Rust runtime: ${result.error.message}`);
     }
-  });
+    if (result.status !== 0) {
+      const message = (result.stderr || result.stdout || "").trim();
+      throw new Error(message || `Rust runtime command failed: ${command}`);
+    }
+
+    if (command === "validate") {
+      return true;
+    }
+    const payload = JSON.parse(result.stdout || "null");
+    if (command === "design-matrix") {
+      return normalizeMatrix(payload);
+    }
+    if (command === "predict") {
+      return normalizeVector(payload);
+    }
+    return payload;
+  } finally {
+    rmSync(tmpdir, { recursive: true, force: true });
+  }
 }
 
-function validateBasis(spec, basis, index) {
-  if (!basis.kind) throw new Error(`missing required field: basis term ${index} has empty kind`);
-  if (["linear", "hinge", "categorical", "missingness"].includes(basis.kind)) {
-    validateVariableIdx(spec, basis.variable_idx, index);
+function rustRuntimeBinary() {
+  const envBinary = process.env.MARS_RUNTIME_BIN ?? "";
+  const candidates = [
+    envBinary,
+    path.resolve(repoRoot, "rust-runtime/target/debug/mars-runtime-cli"),
+    path.resolve(repoRoot, "rust-runtime/target/release/mars-runtime-cli"),
+  ];
+  for (const candidate of candidates) {
+    if (candidate && existsSync(candidate)) {
+      return candidate;
+    }
   }
-  if (basis.kind === "hinge" && (basis.knot_val == null || basis.is_right_hinge == null)) {
-    throw new Error("missing required field: hinge requires knot_val and is_right_hinge");
-  }
-  if (basis.kind === "categorical" && basis.category == null) {
-    throw new Error("missing required field: categorical requires category");
-  }
-  if (basis.kind === "interaction" && (!basis.parent1 || !basis.parent2)) {
-    throw new Error("missing required field: interaction requires parent1 and parent2");
-  }
-  if (!["constant", "linear", "hinge", "categorical", "interaction", "missingness"].includes(basis.kind)) {
-    throw new Error(`unsupported basis term: ${basis.kind}`);
-  }
+  return "";
 }
 
-function validateVariableIdx(spec, variableIdx, basisIdx) {
-  if (variableIdx == null) throw new Error("missing required field: basis term requires variable_idx");
-  const nFeatures = spec.feature_schema?.n_features;
-  if (nFeatures != null && variableIdx >= nFeatures) {
-    throw new Error(`malformed artifact: basis term ${basisIdx} references variable outside feature count`);
-  }
+function nullableRows(rows) {
+  return rows.map((row) => row.map((value) => (Number.isNaN(value) ? null : value)));
 }
 
-function evaluateBasis(basis, row) {
-  switch (basis.kind) {
-    case "constant":
-      return 1;
-    case "linear":
-      return row[basis.variable_idx];
-    case "hinge": {
-      const value = row[basis.variable_idx];
-      return basis.is_right_hinge
-        ? Math.max(value - basis.knot_val, 0)
-        : Math.max(basis.knot_val - value, 0);
-    }
-    case "categorical": {
-      const value = row[basis.variable_idx];
-      if (Number.isNaN(value)) return Number.NaN;
-      return value === basis.category ? 1 : 0;
-    }
-    case "interaction": {
-      const left = evaluateBasis(basis.parent1, row);
-      const right = evaluateBasis(basis.parent2, row);
-      return Number.isNaN(left) || Number.isNaN(right) ? Number.NaN : left * right;
-    }
-    case "missingness":
-      return Number.isNaN(row[basis.variable_idx]) ? 1 : 0;
-    default:
-      throw new Error(`unsupported basis term: ${basis.kind}`);
-  }
+function normalizeMatrix(payload) {
+  return payload.map((row) => normalizeVector(row));
+}
+
+function normalizeVector(payload) {
+  return payload.map((value) => (value === null ? Number.NaN : Number(value)));
 }

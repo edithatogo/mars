@@ -1,11 +1,9 @@
 """Tests for Phase 0 Task 2: Create failing Rust training-orchestration fixtures."""
 
 import json
-import os
 from pathlib import Path
 
 import numpy as np
-import pytest
 
 from pymars import Earth
 

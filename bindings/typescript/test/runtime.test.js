@@ -5,6 +5,7 @@ import test from "node:test";
 import { designMatrix, fitModel, loadModelSpec, predict } from "../src/runtime.js";
 
 const fixturesDir = path.resolve("../../tests/fixtures");
+const rustRuntimeBin = process.env.MARS_RUNTIME_BIN ?? "";
 
 test("matches checked-in runtime portability fixtures", async () => {
   const files = await readdir(fixturesDir);
@@ -32,6 +33,22 @@ test("declares training as unsupported", () => {
     /training is not supported in @mars-earth\/runtime/i,
   );
 });
+
+test(
+  "prefers Rust runtime when a binary is available",
+  { skip: !rustRuntimeBin },
+  () => {
+    const spec = loadModelSpec({
+      spec_version: "1.0",
+      params: {},
+      feature_schema: { n_features: 1, feature_names: ["x"] },
+      basis_terms: [{ kind: "constant" }],
+      coefficients: [2],
+    });
+    assertNestedClose(designMatrix(spec, [[0], [1]]), [[1], [1]]);
+    assertNestedClose(predict(spec, [[0], [1]]), [2, 2]);
+  },
+);
 
 async function readJson(file) {
   return JSON.parse(await readFile(file, "utf8"));

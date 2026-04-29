@@ -54,28 +54,28 @@
 
 ## Phase 4: TypeScript Binding
 
-- [ ] Task: Replace TypeScript replay logic with a Rust-backed package
-    - [ ] Implement the selected Rust-backed TypeScript mechanism
-    - [ ] Support Node-based fixture tests
-    - [ ] Document browser support only if the chosen mechanism supports it
-- [ ] Task: Validate package ergonomics
-    - [ ] Run `npm test`
-    - [ ] Run `npm pack --dry-run`
-    - [ ] Verify exported module shape and README examples
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 4: TypeScript Binding' (Protocol in workflow.md)
+- [x] Task: Replace TypeScript replay logic with a Rust-backed package
+    - [x] Implement the selected Rust-backed TypeScript mechanism
+    - [x] Support Node-based fixture tests
+    - [x] Document browser support only if the chosen mechanism supports it
+- [x] Task: Validate package ergonomics
+    - [x] Run `npm test`
+    - [x] Run `npm pack --dry-run`
+    - [x] Verify exported module shape and README examples
+- [x] Task: Conductor - Automated Review and Checkpoint 'Phase 4: TypeScript Binding' (Protocol in workflow.md)
 
 ## Phase 5: Binding CI Consolidation
 
-- [ ] Task: Update CI for Rust-backed bindings
-    - [ ] Build the Rust core before language test jobs
-    - [ ] Cache language toolchains and Rust artifacts safely
-    - [ ] Run conformance for every supported language
-- [ ] Task: Add built-artifact installation smoke tests
-    - [ ] Build local package artifacts for each supported language
-    - [ ] Install artifacts into clean temporary environments where feasible
-    - [ ] Run a shared conformance smoke fixture from installed packages
-- [ ] Task: Remove or isolate duplicated replay logic
-    - [ ] Delete replaced host-language replay implementations where practical
-    - [ ] Mark any retained fallback paths as temporary and tested
-    - [ ] Update binding docs with the new architecture
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 5: Binding CI Consolidation' (Protocol in workflow.md)
+- [x] Task: Update CI for Rust-backed bindings
+    - [x] Build the Rust core before language test jobs
+    - [x] Cache language toolchains and Rust artifacts safely
+    - [x] Run conformance for every supported language
+- [x] Task: Add built-artifact installation smoke tests
+    - [x] Build local package artifacts for each supported language
+    - [x] Install artifacts into clean temporary environments where feasible
+    - [x] Run a shared conformance smoke fixture from installed packages
+- [x] Task: Remove or isolate duplicated replay logic
+    - [x] Delete replaced host-language replay implementations where practical
+    - [x] Mark any retained fallback paths as temporary and tested
+    - [x] Update binding docs with the new architecture
+- [x] Task: Conductor - Automated Review and Checkpoint 'Phase 5: Binding CI Consolidation' (Protocol in workflow.md)

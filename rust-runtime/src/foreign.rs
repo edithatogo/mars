@@ -90,6 +90,10 @@ impl MarsModelSpecHandle {
     }
 }
 
+/// # Safety
+///
+/// `handle` must be a pointer previously returned by this module or null. It
+/// must not be freed more than once.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn mars_model_spec_free(handle: *mut MarsModelSpecHandle) {
     if !handle.is_null() {
@@ -97,6 +101,10 @@ pub unsafe extern "C" fn mars_model_spec_free(handle: *mut MarsModelSpecHandle) 
     }
 }
 
+/// # Safety
+///
+/// `error` must point to a valid `MarsForeignError` allocated by the caller or
+/// be null. Any owned message pointer inside it must come from this module.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn mars_foreign_error_free(error: *mut MarsForeignError) {
     if error.is_null() {
@@ -108,6 +116,10 @@ pub unsafe extern "C" fn mars_foreign_error_free(error: *mut MarsForeignError) {
     }
 }
 
+/// # Safety
+///
+/// `matrix` must point to a valid `MarsForeignMatrix` allocated by this module
+/// or be null. Any owned buffer inside it must come from this module.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn mars_foreign_matrix_free(matrix: *mut MarsForeignMatrix) {
     if matrix.is_null() {
@@ -122,6 +134,10 @@ pub unsafe extern "C" fn mars_foreign_matrix_free(matrix: *mut MarsForeignMatrix
     }
 }
 
+/// # Safety
+///
+/// `vector` must point to a valid `MarsForeignVector` allocated by this module
+/// or be null. Any owned buffer inside it must come from this module.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn mars_foreign_vector_free(vector: *mut MarsForeignVector) {
     if vector.is_null() {
@@ -134,6 +150,10 @@ pub unsafe extern "C" fn mars_foreign_vector_free(vector: *mut MarsForeignVector
     }
 }
 
+/// # Safety
+///
+/// `json`, `out_handle`, and `out_error` must be valid pointers when non-null
+/// and `out_handle` must be writable.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn mars_model_spec_from_json(
     json: *const c_char,
@@ -180,6 +200,10 @@ pub unsafe extern "C" fn mars_model_spec_from_json(
     }
 }
 
+/// # Safety
+///
+/// `handle` and `out_error` must be valid pointers when non-null. `handle`
+/// must point to a model spec previously returned by this module.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn mars_model_spec_validate(
     handle: *const MarsModelSpecHandle,
@@ -202,6 +226,11 @@ pub unsafe extern "C" fn mars_model_spec_validate(
     }
 }
 
+/// # Safety
+///
+/// `handle`, `rows`, `out_matrix`, and `out_error` must be valid pointers when
+/// non-null. `rows` must reference at least `n_rows * n_cols` contiguous `f64`
+/// values.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn mars_model_spec_design_matrix(
     handle: *const MarsModelSpecHandle,
@@ -230,6 +259,11 @@ pub unsafe extern "C" fn mars_model_spec_design_matrix(
     }
 }
 
+/// # Safety
+///
+/// `handle`, `rows`, `out_vector`, and `out_error` must be valid pointers when
+/// non-null. `rows` must reference at least `n_rows * n_cols` contiguous `f64`
+/// values.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn mars_model_spec_predict(
     handle: *const MarsModelSpecHandle,

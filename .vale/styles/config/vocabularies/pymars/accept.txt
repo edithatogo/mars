@@ -19,12 +19,14 @@ SciPy
 TypeScript
 API
 APIs
+automerge
 clippy
 cooldown
 gcv
 importances
 interop
 interpretability
+lockfile
 mars
 mutmut
 nb_subsets
@@ -34,6 +36,7 @@ repo
 rss
 runtimes
 rollout
+semver
 sklearn
 venv
 WASM

@@ -5,8 +5,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from pymars import Earth
-from pymars import runtime
+from pymars import Earth, runtime
 
 
 def test_rust_training_bridge_uses_compiled_backend(monkeypatch: pytest.MonkeyPatch) -> None:

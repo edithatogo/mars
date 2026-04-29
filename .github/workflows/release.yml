@@ -12,6 +12,8 @@ concurrency:
 permissions:
   contents: write
   id-token: write
+  attestations: write
+  artifact-metadata: write
 
 jobs:
   release:
@@ -34,6 +36,11 @@ jobs:
 
       - name: Build package
         run: uv build
+
+      - name: Generate provenance attestation
+        uses: actions/attest@v4
+        with:
+          subject-path: dist/*
 
       # ── Publish to TestPyPI first (non-blocking gate) ──
       - name: Publish to TestPyPI

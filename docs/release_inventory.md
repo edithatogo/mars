@@ -57,6 +57,8 @@ The public registry-name audit has been run against the current package set.
 
 - Confirm external registry ownership and publishing credentials for each
   package manager.
+- Use the [Release Checklist](release_checklist.md) to record the manual
+  confirmations and to fill in any remaining blocker rows.
 - Decide whether the next release line will keep package versions aligned or
   allow per-ecosystem version skew.
 - Define the logging contract for each binding surface and document it in the

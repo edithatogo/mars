@@ -24,6 +24,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - uses: dtolnay/rust-toolchain@stable
+
       - name: Dependency review
         if: github.event_name == 'pull_request'
         uses: actions/dependency-review-action@v4
@@ -46,6 +48,12 @@ jobs:
 
       - name: Run Safety check
         run: uv run safety check --json --output safety-report.json || true
+
+      - name: Install cargo-audit
+        run: cargo install cargo-audit --locked
+
+      - name: Run cargo audit
+        run: cargo audit
 
       - name: Upload security reports
         if: always()

@@ -47,8 +47,10 @@ release-rehearsal workflow.
 
 - Registry: npm.
 - Package name: `@mars-earth/runtime`.
-- Release scope: runtime-only for now; training is intentionally unsupported
-  in this package line until a WASM or native training surface is designed.
+- Release scope: runtime-only for now; the package uses Rust CLI acceleration
+  where a built binary is available and keeps a JavaScript fallback for
+  compatibility. Training is intentionally unsupported in this package line
+  until a separate training surface is designed.
 - Release path: `npm pack --dry-run`, artifact inspection, and `npm publish`
   with `NODE_AUTH_TOKEN`.
 - Rehearse with `npm test`, `npm pack --dry-run`, and install-from-tarball

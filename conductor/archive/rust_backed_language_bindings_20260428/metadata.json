@@ -3,6 +3,6 @@
   "type": "feature",
   "status": "in_progress",
   "created_at": "2026-04-28T07:33:35Z",
-  "updated_at": "2026-04-28T13:11:37Z",
+  "updated_at": "2026-04-29T10:52:23Z",
   "description": "Replace MVP replay bindings with thin bindings backed by the central Rust core"
 }

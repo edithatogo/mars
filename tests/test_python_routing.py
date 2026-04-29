@@ -5,8 +5,7 @@ from pathlib import Path
 
 import numpy as np
 
-from pymars import Earth
-from pymars import runtime
+from pymars import Earth, runtime
 
 
 def test_public_rust_training_flag_is_not_exposed_yet() -> None:

@@ -1,7 +1,5 @@
 """Tests for Phase 0 Task 1: Inventory of Python training orchestration and Rust primitives."""
 
-import json
-import os
 from pathlib import Path
 
 

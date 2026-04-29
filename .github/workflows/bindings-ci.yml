@@ -21,11 +21,17 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@stable
 
+      - uses: Swatinem/rust-cache@v2
+
       - name: Build Rust runtime CLI
         run: cargo build --manifest-path rust-runtime/Cargo.toml --bin mars-runtime-cli
 
       - name: Run Rust format check
         run: cargo fmt --check
+        working-directory: rust-runtime
+
+      - name: Run Rust clippy
+        run: cargo clippy -- -D warnings
         working-directory: rust-runtime
 
       - name: Run Rust targeted tests
@@ -43,11 +49,38 @@ jobs:
           path: rust-runtime/target/debug/mars-runtime-cli
           retention-days: 7
 
+  rust-core-cross-platform:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Build Rust runtime CLI
+        run: cargo build --manifest-path rust-runtime/Cargo.toml --bin mars-runtime-cli
+
+      - name: Run Rust format check
+        run: cargo fmt --check
+        working-directory: rust-runtime
+
+      - name: Run Rust targeted tests
+        run: cargo test --test fixture_tests --test foreign_tests --test training_fixture_tests
+        working-directory: rust-runtime
+
+      - name: Run Rust package check
+        run: cargo package --allow-dirty
+        working-directory: rust-runtime
+
   python:
     runs-on: ubuntu-latest
     needs: rust-core
     env:
       MARS_RUNTIME_BIN: ${{ github.workspace }}/.ci-artifacts/mars-runtime-cli
+      WHEEL_PYTHON: ${{ github.workspace }}/.ci-wheel-env/bin/python
     steps:
       - uses: actions/checkout@v6
 
@@ -66,6 +99,28 @@ jobs:
       - run: uv python install 3.12
 
       - run: uv sync --extra dev
+
+      - name: Build and install the Python wheel
+        run: |
+          rm -f dist/*
+          uv build
+          wheel=$(find dist -maxdepth 1 -name '*.whl' -print -quit)
+          uv run python -m venv .ci-wheel-env
+          .ci-wheel-env/bin/python -m pip install "$wheel"
+
+      - name: Smoke test installed Python wheel
+        run: |
+          cd /tmp
+          "$WHEEL_PYTHON" - <<'PY'
+          import numpy as np
+          from pymars import Earth
+
+          model = Earth(max_terms=5, max_degree=1, penalty=3.0)
+          fitted = model.fit(np.array([[0.0], [1.0], [2.0]]), np.array([1.0, 3.0, 5.0]))
+          assert fitted is model
+          predictions = model.predict(np.array([[0.0], [1.0], [2.0]]))
+          np.testing.assert_allclose(predictions, np.array([1.0, 3.0, 5.0]), atol=1e-12)
+          PY
 
       - run: uv run pytest -q tests/test_binding_conformance.py tests/test_model_spec.py
 
@@ -90,6 +145,44 @@ jobs:
 
       - run: go test ./...
         working-directory: bindings/go
+
+      - name: Smoke test Go module from a temp consumer
+        run: |
+          tmpdir=$(mktemp -d)
+          cat > "$tmpdir/go.mod" <<EOF
+          module example.com/mars-smoke
+
+          go 1.22
+
+          require github.com/edithatogo/mars/bindings/go v0.0.0
+
+          replace github.com/edithatogo/mars/bindings/go => $GITHUB_WORKSPACE/bindings/go
+          EOF
+          cat > "$tmpdir/smoke_test.go" <<'EOF'
+          package smoke
+
+          import (
+            "testing"
+
+            pymars "github.com/edithatogo/mars/bindings/go"
+          )
+
+          func TestSmoke(t *testing.T) {
+            specJSON := []byte(`{"spec_version":"1.0","params":{},"feature_schema":{"n_features":1,"feature_names":["x"]},"basis_terms":[{"kind":"constant"}],"coefficients":[2]}`)
+            spec, err := pymars.LoadModelSpec(specJSON)
+            if err != nil {
+              t.Fatalf("load model spec: %v", err)
+            }
+            predictions, err := pymars.Predict(spec, [][]float64{{0}})
+            if err != nil {
+              t.Fatalf("predict: %v", err)
+            }
+            if len(predictions) != 1 || predictions[0] != 2 {
+              t.Fatalf("unexpected predictions: %#v", predictions)
+            }
+          }
+          EOF
+          (cd "$tmpdir" && go test ./...)
 
   typescript:
     runs-on: ubuntu-latest
@@ -116,7 +209,7 @@ jobs:
       - run: npm pack --dry-run
         working-directory: bindings/typescript
 
-      - name: Smoke test packed TypeScript runtime
+      - name: Smoke test packed TypeScript tarball
         run: |
           tarball=$(npm pack)
           tmpdir=$(mktemp -d)

@@ -304,9 +304,10 @@ fn solve_linear_system(mut matrix: Vec<Vec<f64>>, mut rhs: Vec<f64>) -> MarsResu
         rhs.swap(pivot_idx, best_row);
 
         let pivot = matrix[pivot_idx][pivot_idx];
-        for col in pivot_idx..n {
-            matrix[pivot_idx][col] /= pivot;
+        for value in matrix[pivot_idx].iter_mut().skip(pivot_idx) {
+            *value /= pivot;
         }
+        let pivot_row = matrix[pivot_idx].clone();
         rhs[pivot_idx] /= pivot;
 
         for row_idx in 0..n {
@@ -314,8 +315,12 @@ fn solve_linear_system(mut matrix: Vec<Vec<f64>>, mut rhs: Vec<f64>) -> MarsResu
                 continue;
             }
             let factor = matrix[row_idx][pivot_idx];
-            for col in pivot_idx..n {
-                matrix[row_idx][col] -= factor * matrix[pivot_idx][col];
+            for (value, pivot_value) in matrix[row_idx]
+                .iter_mut()
+                .skip(pivot_idx)
+                .zip(pivot_row.iter().skip(pivot_idx))
+            {
+                *value -= factor * pivot_value;
             }
             rhs[row_idx] -= factor * rhs[pivot_idx];
         }
@@ -602,11 +607,7 @@ fn generate_candidate_additions(
     let n_features = x.first().map_or(0, Vec::len);
     let mut candidates = Vec::new();
 
-    let categorical_features = params
-        .categorical_features
-        .as_ref()
-        .map(|values| values.as_slice())
-        .unwrap_or(&[]);
+    let categorical_features = params.categorical_features.as_deref().unwrap_or(&[]);
 
     for parent in basis_terms {
         if term_degree(parent) >= params.max_degree {

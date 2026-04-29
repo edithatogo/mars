@@ -6,7 +6,6 @@ import json
 from pathlib import Path
 
 import pytest
-
 from bindings.conformance.runner import (
     DEFAULT_MANIFEST,
     load_manifest,

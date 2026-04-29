@@ -1,7 +1,9 @@
 """Script to generate Python baseline fixtures for training orchestration."""
 
 import json
+
 import numpy as np
+
 from pymars import Earth
 
 
