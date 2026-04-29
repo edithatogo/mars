@@ -10,7 +10,7 @@
     - [x] Confirm Go module path is controlled by repository tags rather than a registry
     - [x] Confirm R `marsruntime` and Julia `MarsRuntime` remain release targets rather than published registry packages
 - [ ] Task: Confirm registry ownership and credential status
-    - [ ] Confirm PyPI project ownership and trusted publishing or token status
+    - [x] Confirm PyPI project ownership and trusted publishing or token status
     - [ ] Confirm crates.io owner and crate name status
     - [ ] Confirm npm organization/package ownership and token status
     - [ ] Confirm NuGet package ID and API key status
