@@ -1239,6 +1239,8 @@
 surface, and known release blockers across the supported language packages.
 It is the working inventory for the release-readiness and registry-governance
 tracks.</p>
+<p>The public project brand is <code>mars-earth</code>. Language-specific package and module
+names remain ecosystem-native when a registry or toolchain requires them.</p>
 <h2 id="package-matrix">Package Matrix</h2>
 <table>
 <thead>
@@ -1256,7 +1258,7 @@ tracks.</p>
 <td><code>mars-earth</code> / <code>pymars</code> import name</td>
 <td><code>pyproject.toml</code> + <code>pymars/__init__.py</code></td>
 <td><code>logging</code> module in package code and CLI</td>
-<td>Public PyPI project exists; release-ready after registry and credential checks</td>
+<td>Public PyPI project exists; trusted publishing and workflow wiring are already configured</td>
 </tr>
 <tr>
 <td>Rust</td>
@@ -1316,10 +1318,10 @@ tracks.</p>
 <tbody>
 <tr>
 <td>PyPI <code>mars-earth</code></td>
-<td>Trusted publishing or token not confirmed in this inventory</td>
-<td>Confirm registry owner and publishing path</td>
-<td>Open</td>
-<td>2026-04-28</td>
+<td>Confirmed by maintainer; trusted publishing is configured in GitHub Actions</td>
+<td>Document the owner and publishing path as ready for release</td>
+<td>Confirmed</td>
+<td>2026-04-29</td>
 </tr>
 <tr>
 <td>crates.io <code>pymars-runtime</code></td>
@@ -1344,10 +1346,10 @@ tracks.</p>
 </tr>
 <tr>
 <td>Go module path</td>
-<td>Signed tag strategy not yet confirmed in this inventory</td>
+<td>Repository-controlled, tag-based release path documented in this inventory</td>
 <td>Confirm module path and tagging policy</td>
-<td>Open</td>
-<td>2026-04-28</td>
+<td>Documented</td>
+<td>2026-04-29</td>
 </tr>
 <tr>
 <td>R <code>marsruntime</code></td>
@@ -1439,7 +1441,8 @@ tracks.</p>
 <h2 id="next-steps">Next Steps</h2>
 <ul>
 <li>Confirm external registry ownership and publishing credentials for each
-  package manager.</li>
+  package manager, excluding PyPI <code>mars-earth</code>, which is already owned and
+  wired for trusted publishing.</li>
 <li>Use the <a href="../release_checklist/">Release Checklist</a> to record the manual
   confirmations and to fill in any remaining blocker rows.</li>
 <li>Decide whether the next release line will keep package versions aligned or
@@ -1451,7 +1454,8 @@ tracks.</p>
 </ul>
 <h2 id="repository-wiring">Repository Wiring</h2>
 <ul>
-<li>Python release automation already points at <code>mars-earth</code> in <code>pyproject.toml</code>.</li>
+<li>Python release automation already points at <code>mars-earth</code> in <code>pyproject.toml</code>
+  and the GitHub release workflow publishes that distribution name.</li>
 <li>Rust, npm, and NuGet publish jobs already reference the expected secret names
   in GitHub Actions.</li>
 <li>Go release remains tag-driven.</li>
