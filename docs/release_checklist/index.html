@@ -11,7 +11,7 @@
         <link rel="canonical" href="https://edithatogo.github.io/pymars/release_checklist/">
       
       
-        <link rel="prev" href="../supply_chain/">
+        <link rel="prev" href="../publication_handoff/">
       
       
         <link rel="next" href="../release_inventory/">
@@ -606,6 +606,33 @@
       
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../publication_handoff/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Publication Handoff
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
     
   
   
@@ -667,6 +694,17 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#maintainer-inputs-needed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Maintainer Inputs Needed
+      
+    </span>
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#before-a-release-rehearsal" class="md-nav__link">
@@ -951,10 +989,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_23" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_24" >
         
           
-          <label class="md-nav__link" for="__nav_23" id="__nav_23_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_24" id="__nav_24_label" tabindex="0">
             
   
   
@@ -972,8 +1010,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_23_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_23">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_24_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_24">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1127,6 +1165,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#maintainer-inputs-needed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Maintainer Inputs Needed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#before-a-release-rehearsal" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1194,6 +1243,19 @@
 <p>This checklist is for maintainers who are preparing an actual publication run.
 It captures the manual confirmation steps that cannot be inferred safely from
 the repository alone.</p>
+<p>The <a href="../publication_handoff/">Publication Handoff</a> page is the quickest way to
+capture the remaining registry inputs from the maintainer.</p>
+<h2 id="maintainer-inputs-needed">Maintainer Inputs Needed</h2>
+<p>To move the remaining publication gates forward, the maintainer needs to
+confirm or configure:</p>
+<ul>
+<li>crates.io ownership and the <code>CARGO_REGISTRY_TOKEN</code> for <code>pymars-runtime</code></li>
+<li>npm ownership and the <code>NPM_TOKEN</code> for <code>@mars-earth/runtime</code></li>
+<li>NuGet ownership and the <code>NUGET_API_KEY</code> for <code>MarsRuntime</code></li>
+<li>the R release path through r-universe and CRAN</li>
+<li>the Julia release path through Registrator.jl and the General registry</li>
+<li>the Go tag-signing and release-tag policy</li>
+</ul>
 <h2 id="before-a-release-rehearsal">Before a Release Rehearsal</h2>
 <ul>
 <li>Confirm the package family being rehearsed and whether it is runtime-only or
@@ -1209,14 +1271,13 @@ the repository alone.</p>
 <ul>
 <li>Confirm the PyPI project owner and trusted publishing configuration for
   <code>mars-earth</code> if any publishing change is planned.</li>
-<li>Confirm the crates.io owner and publishing token for <code>pymars-runtime</code>.</li>
-<li>Confirm the npm organization/package owner and publish token for
-  <code>@mars-earth/runtime</code>.</li>
-<li>Confirm the NuGet package ID owner and API key for <code>MarsRuntime</code>.</li>
+<li>Confirm the crates.io registry token for <code>pymars-runtime</code> exists.</li>
+<li>Confirm the npm publish token for <code>@mars-earth/runtime</code> exists.</li>
+<li>Confirm the NuGet API key for <code>MarsRuntime</code> exists.</li>
 <li>Confirm the Go module tag-signing and release-tag policy.</li>
-<li>Confirm the R submission path through r-universe and CRAN.</li>
+<li>Confirm the R submission path through r-universe and CRAN is available.</li>
 <li>Confirm the Julia submission path through Registrator.jl and the General
-  registry.</li>
+  registry is available.</li>
 </ul>
 <h2 id="before-publishing">Before Publishing</h2>
 <ul>
