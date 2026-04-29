@@ -49,7 +49,7 @@
     - [x] Add Go module validation
 - [x] Task: Conductor - Automated Review and Checkpoint 'Phase 1: Package Metadata and Artifact Contents' (Protocol in workflow.md)
 
-## Phase 2: Release Rehearsal Workflow
+## Phase 2: Release Rehearsal Workflow [checkpoint: 0957249]
 
 - [x] Task: Implement non-publishing release rehearsal
     - [x] Trigger all package dry-runs from one manual workflow or documented sequence
