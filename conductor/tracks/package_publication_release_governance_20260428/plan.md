@@ -10,7 +10,7 @@
 - [~] Task: Lock final release candidate metadata [blocker: maintainer approval needed, 2026-04-29]
     - [x] Confirm package versions, release notes, changelog entries, and package README links
     - [x] Confirm protected release environments and required maintainer approvals
-    - [~] Confirm no unresolved blocker exists for selected package targets [blocker: credential owners listed above]
+    - [~] Confirm no unresolved blocker exists for selected package targets [blocker: maintainer must provide registry credentials / submission paths]
 - [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 0: Release Readiness Handoff' (Protocol in workflow.md)
 
 ## Phase 1: Automated Registry Publication

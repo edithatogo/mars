@@ -4,6 +4,18 @@ This checklist is for maintainers who are preparing an actual publication run.
 It captures the manual confirmation steps that cannot be inferred safely from
 the repository alone.
 
+## Maintainer Inputs Needed
+
+To move the remaining publication gates forward, the maintainer needs to
+confirm or configure:
+
+- crates.io ownership and the `CARGO_REGISTRY_TOKEN` for `pymars-runtime`
+- npm ownership and the `NPM_TOKEN` for `@mars-earth/runtime`
+- NuGet ownership and the `NUGET_API_KEY` for `MarsRuntime`
+- the R release path through r-universe and CRAN
+- the Julia release path through Registrator.jl and the General registry
+- the Go tag-signing and release-tag policy
+
 ## Before a Release Rehearsal
 
 - Confirm the package family being rehearsed and whether it is runtime-only or
