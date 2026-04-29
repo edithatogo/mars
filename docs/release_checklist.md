@@ -4,6 +4,9 @@ This checklist is for maintainers who are preparing an actual publication run.
 It captures the manual confirmation steps that cannot be inferred safely from
 the repository alone.
 
+The [Publication Handoff](publication_handoff.md) page is the quickest way to
+capture the remaining registry inputs from the maintainer.
+
 ## Maintainer Inputs Needed
 
 To move the remaining publication gates forward, the maintainer needs to

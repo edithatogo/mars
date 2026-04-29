@@ -33,6 +33,7 @@ nav:
   - Binding ABI and API Contract: binding_abi_contract.md
   - CI and Quality Policy: ci_quality.md
   - Supply Chain Security: supply_chain.md
+  - Publication Handoff: publication_handoff.md
   - Release Checklist: release_checklist.md
   - Release Inventory: release_inventory.md
   - Package Release Paths: package_release_paths.md
