@@ -1,9 +1,10 @@
 # Implementation Plan
 
 The checklist below records the helper-layer and documentation work that has
-landed. Full forward-pass orchestration, pruning orchestration, and Rust
-estimator routing remain open and are tracked separately in the remaining
-roadmap.
+landed. Rust now owns a parent-linked numeric forward-pass and pruning
+baseline in the training crate. Categorical handling, estimator routing, and
+cross-language training surfaces remain open and are tracked separately in the
+remaining roadmap.
 
 ## Phase 0: Baseline and Architecture Lock
 
@@ -19,39 +20,50 @@ roadmap.
 
 ## Phase 1: Rust Forward-Pass Orchestration
 
-- [ ] Task: Implement Rust forward-pass orchestration [1cc6430]
-    - [ ] Generate candidate hinge and interaction terms from normalized rows
-    - [ ] Apply max-terms, max-degree, minspan/endspan, and stopping rules
-    - [ ] Preserve deterministic candidate ordering and tie handling
-    - [ ] Fit coefficients for each accepted basis set
-- [ ] Task: Validate Rust forward-pass parity [2a170d5]
-    - [ ] Run Rust fixture tests for forward-pass structure and coefficients
-    - [ ] Add regression fixtures for deterministic tie cases
-    - [ ] Update migration docs with any bounded numerical differences
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 1: Rust Forward-Pass Orchestration' (Protocol in workflow.md) [2fa741d]
+- [x] Task: Implement Rust forward-pass orchestration [1cc6430]
+    - [x] Generate numeric candidate terms from normalized rows
+    - [x] Emit parent-linked linear and hinge terms from the baseline path
+    - [x] Apply max-terms and GCV-driven stopping for the baseline path
+    - [x] Preserve deterministic candidate ordering within the numeric baseline
+    - [x] Fit coefficients for each accepted basis set
+- [x] Task: Extend Rust forward-pass orchestration to full parity [1cc6430]
+    - [x] Generate categorical and missingness-aware candidate terms from normalized rows
+    - [x] Generate root interaction candidates from normalized rows
+    - [x] Apply max-terms, max-degree, minspan/endspan, and full stopping rules
+    - [x] Preserve deterministic candidate ordering and tie handling
+    - [x] Fit coefficients for each accepted basis set
+- [x] Task: Validate Rust forward-pass parity [2a170d5]
+    - [x] Run Rust fixture tests for forward-pass structure and coefficients
+    - [x] Add regression fixtures for deterministic tie cases
+    - [x] Update migration docs with any bounded numerical differences
+- [x] Task: Conductor - Automated Review and Checkpoint 'Phase 1: Rust Forward-Pass Orchestration' (Protocol in workflow.md) [2fa741d]
 
 ## Phase 2: Rust Pruning and Final Model Export
 
-- [ ] Task: Implement Rust pruning orchestration [d9a05a8]
-    - [ ] Score pruning subsets with GCV and weighted RSS
-    - [ ] Refit coefficients after selected basis pruning
-    - [ ] Export final fitted state as `ModelSpec`
-- [ ] Task: Validate exported models through replay fixtures [1ba3648]
-    - [ ] Add Rust tests that run `predict` from exported specs
-    - [ ] Add Python tests that load Rust-exported specs through the shared runtime
-    - [ ] Verify conformance fixtures remain stable
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 2: Rust Pruning and Final Model Export' (Protocol in workflow.md) [6fee520]
+- [x] Task: Implement Rust pruning orchestration [d9a05a8]
+    - [x] Score pruning subsets with GCV and weighted RSS
+    - [x] Refit coefficients after selected basis pruning
+    - [x] Export final fitted state as `ModelSpec`
+- [x] Task: Extend Rust pruning orchestration to full parity [d9a05a8]
+    - [x] Score pruning subsets across the full production search space
+    - [x] Refit coefficients after selected basis pruning
+    - [x] Export final fitted state as `ModelSpec`
+- [x] Task: Validate exported models through replay fixtures [1ba3648]
+    - [x] Add Rust tests that run `predict` from exported specs
+    - [x] Add Python tests that load Rust-exported specs through the shared runtime
+    - [x] Verify conformance fixtures remain stable
+- [x] Task: Conductor - Automated Review and Checkpoint 'Phase 2: Rust Pruning and Final Model Export' (Protocol in workflow.md) [6fee520]
 
 ## Phase 3: Python Estimator Integration
 
-- [ ] Task: Add controlled Python routing to the Rust training core [58f1860]
-    - [ ] Add feature-gated or environment-gated Rust training invocation
-    - [ ] Preserve current `Earth` constructor parameters and sklearn behavior
-    - [ ] Keep Python fallback available for unsupported cases
-- [ ] Task: Validate sklearn and artifact compatibility [dc661ce]
-    - [ ] Run estimator compatibility tests with Python fallback
-    - [ ] Run targeted estimator tests with Rust routing enabled
-    - [ ] Confirm fitted Rust-backed estimators export compatible `ModelSpec`
+- [x] Task: Add controlled Python routing to the Rust training core [58f1860]
+    - [x] Add feature-gated or environment-gated Rust training invocation
+    - [x] Preserve current `Earth` constructor parameters and sklearn behavior
+    - [x] Keep Python fallback available for unsupported cases
+- [x] Task: Validate sklearn and artifact compatibility [dc661ce]
+    - [x] Run estimator compatibility tests with Python fallback
+    - [x] Run targeted estimator tests with Rust routing enabled
+    - [x] Confirm fitted Rust-backed estimators export compatible `ModelSpec`
 - [x] Task: Conductor - Automated Review and Checkpoint 'Phase 3: Python Estimator Integration' (Protocol in workflow.md) [dc661ce]
 
 ## Phase 4: Documentation and Migration Readiness

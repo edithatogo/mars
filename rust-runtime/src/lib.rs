@@ -31,6 +31,7 @@ pub use runtime::{
     validate_model_spec,
 };
 pub use training::{
-    calculate_gcv, effective_parameters, fit_least_squares, score_candidate, score_pruning_subset,
-    CandidateScore, LeastSquaresFit,
+    calculate_gcv, effective_parameters, fit_least_squares, fit_model, forward_pass,
+    model_spec_from_terms, prune_model, score_candidate, score_pruning_subset, CandidateScore,
+    ForwardPassResult, LeastSquaresFit, PruningResult, TrainingParams, TrainingRequest,
 };

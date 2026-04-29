@@ -345,16 +345,32 @@ def spec_to_model(payload: dict[str, Any], earth_cls: type[Any]) -> Any:
     model.rss_ = metrics.get("rss")
     model.mse_ = metrics.get("mse")
     model.gcv_ = metrics.get("gcv")
+    basis_snapshot = list(model.basis_)
+    coefficients_snapshot = np.asarray(model.coef_, dtype=float)
     feature_schema = payload.get("feature_schema", {})
-    model.feature_names_in_ = np.asarray(
+    feature_names = (
         feature_schema.get("feature_names")
-        or [f"x{i}" for i in range(feature_schema.get("n_features", 0))],
+        or [f"x{i}" for i in range(feature_schema.get("n_features", 0))]
+    )
+    model.feature_names_in_ = np.asarray(
+        feature_names,
         dtype=object,
     )
     model.n_features_in_ = int(feature_schema.get("n_features", len(model.feature_names_in_)))
     model.record_ = SimpleNamespace(
+        n_samples=0,
         n_features=model.n_features_in_,
         feature_names_in_=model.feature_names_in_,
+        model_params={"feature_names_in_": model.feature_names_in_},
+        pruning_trace_basis_functions_=[basis_snapshot],
+        pruning_trace_coeffs_=[coefficients_snapshot],
+        pruning_trace_gcv_=[model.gcv_ if model.gcv_ is not None else 0.0],
+        pruning_trace_rss_=[model.rss_ if model.rss_ is not None else 0.0],
+        final_basis_=basis_snapshot,
+        final_coeffs_=coefficients_snapshot,
+        final_gcv_=model.gcv_,
+        final_rss_=model.rss_,
+        final_mse_=model.mse_,
     )
     model.categorical_imputer_ = categorical_imputer_from_spec(
         payload.get("categorical_imputer")

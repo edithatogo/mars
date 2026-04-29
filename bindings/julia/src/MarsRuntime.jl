@@ -2,7 +2,7 @@ module MarsRuntime
 
 using JSON
 
-export load_model_spec, validate_model_spec, design_matrix, predict_model
+export fit_model, load_model_spec, validate_model_spec, design_matrix, predict_model
 
 function load_model_spec(path_or_json::AbstractString)
     raw = isfile(path_or_json) ? read(path_or_json, String) : path_or_json
@@ -20,6 +20,32 @@ function validate_model_spec(spec)
         return true
     end
     return _validate_model_spec_pure(spec)
+end
+
+function fit_model(x, y; max_terms = 21, max_degree = 1, penalty = 3.0,
+                   minspan = 0.0, endspan = 0.0, threshold = 0.001,
+                   allow_linear = true, allow_missing = false,
+                   categorical_features = Int[], feature_names = nothing,
+                   sample_weight = nothing)
+    if !_rust_runtime_available()
+        error("Rust training binary is not available")
+    end
+    spec = _fit_model_rust(
+        x,
+        y;
+        max_terms = max_terms,
+        max_degree = max_degree,
+        penalty = penalty,
+        minspan = minspan,
+        endspan = endspan,
+        threshold = threshold,
+        allow_linear = allow_linear,
+        allow_missing = allow_missing,
+        categorical_features = categorical_features,
+        feature_names = feature_names,
+        sample_weight = sample_weight,
+    )
+    return spec
 end
 
 function design_matrix(spec, rows)
@@ -56,6 +82,44 @@ end
 
 function _predict_rust(spec, rows)
     return _invoke_rust_runtime("predict", spec, rows)
+end
+
+function _fit_model_rust(x, y; max_terms, max_degree, penalty, minspan, endspan,
+                         threshold, allow_linear, allow_missing,
+                         categorical_features, feature_names, sample_weight = nothing)
+    binary = _rust_runtime_binary()
+    binary == "" && error("Rust runtime binary is not available")
+
+    request = Dict(
+        "x" => _json_rows(x),
+        "y" => collect(Float64.(y)),
+        "sample_weight" => sample_weight === nothing ? nothing : collect(Float64.(sample_weight)),
+        "params" => Dict(
+            "max_terms" => Int(max_terms),
+            "max_degree" => Int(max_degree),
+            "penalty" => Float64(penalty),
+            "minspan" => Float64(minspan),
+            "endspan" => Float64(endspan),
+            "threshold" => Float64(threshold),
+            "allow_linear" => Bool(allow_linear),
+            "allow_missing" => Bool(allow_missing),
+            "categorical_features" => collect(Int.(categorical_features)),
+            "feature_names" => feature_names,
+        ),
+    )
+
+    request_file = tempname() * ".json"
+    open(request_file, "w") do io
+        JSON.print(io, request)
+    end
+
+    output = readchomp(Cmd([binary, "fit", "--request-file", request_file]))
+    if isempty(output)
+        error("Rust training command returned no output")
+    end
+    spec = JSON.parse(output)
+    validate_model_spec(spec)
+    return spec
 end
 
 function _invoke_rust_runtime(command, spec, rows)

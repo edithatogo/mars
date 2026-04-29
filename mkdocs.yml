@@ -32,6 +32,8 @@ nav:
   - Binding Backend Decisions: binding_backend_decisions.md
   - Binding ABI and API Contract: binding_abi_contract.md
   - CI and Quality Policy: ci_quality.md
+  - Release Inventory: release_inventory.md
+  - Package Release Paths: package_release_paths.md
   - Remaining Roadmap: remaining_roadmap.md
   - Conformance: conformance.md
   - API Reference: api.md

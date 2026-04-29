@@ -32,6 +32,7 @@ jobs:
   publish-rust:
     if: github.event_name == 'workflow_dispatch' && inputs.package == 'rust'
     runs-on: ubuntu-latest
+    environment: release
     steps:
       - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@stable
@@ -47,6 +48,7 @@ jobs:
   publish-typescript:
     if: github.event_name == 'workflow_dispatch' && inputs.package == 'typescript'
     runs-on: ubuntu-latest
+    environment: release
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v4
@@ -67,6 +69,7 @@ jobs:
   publish-csharp:
     if: github.event_name == 'workflow_dispatch' && inputs.package == 'csharp'
     runs-on: ubuntu-latest
+    environment: release
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-dotnet@v4
@@ -87,6 +90,7 @@ jobs:
   publish-r:
     if: github.event_name == 'workflow_dispatch' && inputs.package == 'r'
     runs-on: ubuntu-latest
+    environment: release
     steps:
       - uses: actions/checkout@v6
       - uses: r-lib/actions/setup-r@v2
@@ -99,6 +103,7 @@ jobs:
   publish-julia:
     if: github.event_name == 'workflow_dispatch' && inputs.package == 'julia'
     runs-on: ubuntu-latest
+    environment: release
     steps:
       - uses: actions/checkout@v6
       - uses: julia-actions/setup-julia@v2
@@ -111,6 +116,7 @@ jobs:
   publish-go:
     if: github.event_name == 'workflow_dispatch' && inputs.package == 'go'
     runs-on: ubuntu-latest
+    environment: release
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-go@v5
@@ -124,6 +130,7 @@ jobs:
   publish-python:
     if: github.event_name == 'workflow_dispatch' && inputs.package == 'python'
     runs-on: ubuntu-latest
+    environment: release
     steps:
       - uses: actions/checkout@v6
       - uses: astral-sh/setup-uv@v4

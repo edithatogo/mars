@@ -36,6 +36,26 @@ type ModelSpec struct {
 	Coefficients  []float64     `json:"coefficients"`
 }
 
+type TrainingParams struct {
+	MaxTerms            int      `json:"max_terms"`
+	MaxDegree           int      `json:"max_degree"`
+	Penalty             float64  `json:"penalty"`
+	Minspan             float64  `json:"minspan"`
+	Endspan             float64  `json:"endspan"`
+	Threshold           float64  `json:"threshold"`
+	AllowLinear         bool     `json:"allow_linear"`
+	AllowMissing        bool     `json:"allow_missing"`
+	CategoricalFeatures []int    `json:"categorical_features,omitempty"`
+	FeatureNames        []string `json:"feature_names,omitempty"`
+}
+
+type TrainingRequest struct {
+	X            [][]float64    `json:"x"`
+	Y            []float64      `json:"y"`
+	SampleWeight []float64      `json:"sample_weight,omitempty"`
+	Params       TrainingParams `json:"params"`
+}
+
 func LoadModelSpec(raw []byte) (*ModelSpec, error) {
 	var spec ModelSpec
 	if err := json.Unmarshal(raw, &spec); err != nil {
@@ -75,6 +95,21 @@ func Predict(spec *ModelSpec, rows [][]float64) ([]float64, error) {
 		return nil, err
 	}
 	return predictPure(spec, rows)
+}
+
+func FitModel(request TrainingRequest) (*ModelSpec, error) {
+	payload, available, err := invokeRustTraining(request)
+	if !available || err != nil {
+		if err != nil {
+			return nil, err
+		}
+		return nil, errors.New("Rust training binary is not available")
+	}
+	spec, err := LoadModelSpec(payload)
+	if err != nil {
+		return nil, err
+	}
+	return spec, nil
 }
 
 func tryValidateWithRust(spec *ModelSpec) (bool, error) {
@@ -133,6 +168,44 @@ func invokeRustRuntime(command string, spec *ModelSpec, rows [][]float64) ([]byt
 	if rowsPath != "" {
 		args = append(args, "--rows-file", rowsPath)
 	}
+
+	cmd := exec.Command(binary, args...)
+	var stdout bytes.Buffer
+	var stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+
+	if err := cmd.Run(); err != nil {
+		if errors.Is(err, exec.ErrNotFound) {
+			return nil, false, nil
+		}
+		var exitErr *exec.ExitError
+		if errors.As(err, &exitErr) {
+			message := strings.TrimSpace(stderr.String())
+			if message == "" {
+				message = exitErr.Error()
+			}
+			return nil, true, errors.New(message)
+		}
+		return nil, false, nil
+	}
+
+	return stdout.Bytes(), true, nil
+}
+
+func invokeRustTraining(request TrainingRequest) ([]byte, bool, error) {
+	binary := rustRuntimeBinary()
+	if binary == "" {
+		return nil, false, nil
+	}
+
+	requestPath, cleanupRequest, ok := writeTempJSON(request)
+	if !ok {
+		return nil, false, nil
+	}
+	defer cleanupRequest()
+
+	args := []string{"fit", "--request-file", requestPath}
 
 	cmd := exec.Command(binary, args...)
 	var stdout bytes.Buffer

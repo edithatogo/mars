@@ -298,9 +298,7 @@ class EarthClassifier(ClassifierMixin, BaseEstimator):
         is used by default. The `random_state` is set for reproducibility.
         Common choices include `LogisticRegression`, `SVC`, `RandomForestClassifier`.
 
-    # TODO: Add other relevant Earth params if they should be exposed directly.
-    # TODO: Add relevant params of the default LogisticRegression (e.g., C, class_weight)
-    #       or allow passing a fully configured classifier instance.
+    # Additional Earth or classifier parameters can be exposed here as support grows.
 
     Attributes
     ----------
@@ -335,7 +333,7 @@ class EarthClassifier(ClassifierMixin, BaseEstimator):
         endspan_alpha: float = 0.0,
         allow_linear: bool = True,
         classifier: Any | None = None,  # Allow user to pass a classifier instance
-        # TODO: Add specific classifier params like C for LogisticRegression if classifier is None
+        # Classifier-specific parameters can be added here when the wrapper exposes them directly.
     ):
 
         super().__init__()

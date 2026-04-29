@@ -2,7 +2,7 @@
   "name": "@mars-earth/runtime",
   "version": "0.0.0",
   "type": "module",
-  "description": "Portable runtime replay for mars ModelSpec artifacts",
+  "description": "Portable runtime replay for mars ModelSpec artifacts; runtime-only, no training API",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -22,12 +22,18 @@
   "scripts": {
     "test": "node --test"
   },
-  "main": "index.js",
+  "main": "./src/runtime.js",
   "directories": {
     "test": "test"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "mars",
+    "modelspec",
+    "runtime",
+    "machine-learning",
+    "regression"
+  ],
+  "author": "Dylan A Mordaunt",
   "bugs": {
     "url": "https://github.com/edithatogo/mars/issues"
   },

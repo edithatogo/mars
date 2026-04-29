@@ -24,6 +24,24 @@ public sealed record ModelSpec(
     [property: JsonPropertyName("basis_terms")] BasisTerm[] BasisTerms,
     [property: JsonPropertyName("coefficients")] double[] Coefficients);
 
+public sealed record TrainingParams(
+    [property: JsonPropertyName("max_terms")] int MaxTerms,
+    [property: JsonPropertyName("max_degree")] int MaxDegree,
+    [property: JsonPropertyName("penalty")] double Penalty,
+    [property: JsonPropertyName("minspan")] double Minspan,
+    [property: JsonPropertyName("endspan")] double Endspan,
+    [property: JsonPropertyName("threshold")] double Threshold,
+    [property: JsonPropertyName("allow_linear")] bool AllowLinear,
+    [property: JsonPropertyName("allow_missing")] bool AllowMissing,
+    [property: JsonPropertyName("categorical_features")] int[]? CategoricalFeatures = null,
+    [property: JsonPropertyName("feature_names")] string[]? FeatureNames = null);
+
+public sealed record TrainingRequest(
+    [property: JsonPropertyName("x")] double[][] X,
+    [property: JsonPropertyName("y")] double[] Y,
+    [property: JsonPropertyName("sample_weight")] double[]? SampleWeight,
+    [property: JsonPropertyName("params")] TrainingParams Params);
+
 public static class Runtime
 {
     public static ModelSpec LoadModelSpec(string json)
@@ -83,6 +101,21 @@ public static class Runtime
             .ToArray();
     }
 
+    public static ModelSpec FitModel(TrainingRequest request)
+    {
+        if (TryFitWithRust(request, out var spec, out var runtimeError))
+        {
+            return spec!;
+        }
+
+        if (runtimeError is not null)
+        {
+            throw runtimeError;
+        }
+
+        throw new InvalidOperationException("Rust training binary is not available");
+    }
+
     private static bool TryValidateWithRust(ModelSpec spec, out InvalidOperationException? runtimeError)
     {
         runtimeError = null;
@@ -124,6 +157,24 @@ public static class Runtime
         var payload = JsonSerializer.Deserialize<double?[]>(stdout)
             ?? throw new InvalidOperationException("Rust runtime returned empty predictions");
         predictions = NormalizeVector(payload);
+        return true;
+    }
+
+    private static bool TryFitWithRust(
+        TrainingRequest request,
+        out ModelSpec? spec,
+        out InvalidOperationException? runtimeError)
+    {
+        spec = null;
+        runtimeError = null;
+        if (!TryRunRustTraining(request, out var stdout, out runtimeError))
+        {
+            return false;
+        }
+
+        spec = JsonSerializer.Deserialize<ModelSpec>(stdout)
+            ?? throw new InvalidOperationException("Rust runtime returned an empty model spec");
+        Validate(spec);
         return true;
     }
 
@@ -200,6 +251,65 @@ public static class Runtime
             {
                 TryDelete(rowsPath);
             }
+        }
+    }
+
+    private static bool TryRunRustTraining(
+        TrainingRequest request,
+        out string stdout,
+        out InvalidOperationException? runtimeError)
+    {
+        stdout = string.Empty;
+        runtimeError = null;
+
+        var binary = FindRustRuntimeBinary();
+        if (binary is null)
+        {
+            return false;
+        }
+
+        var requestPath = WriteTempJson(JsonSerializer.Serialize(request));
+        try
+        {
+            var psi = new ProcessStartInfo
+            {
+                FileName = binary,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+            };
+            psi.ArgumentList.Add("fit");
+            psi.ArgumentList.Add("--request-file");
+            psi.ArgumentList.Add(requestPath);
+
+            using var process = Process.Start(psi);
+            if (process is null)
+            {
+                return false;
+            }
+
+            stdout = process.StandardOutput.ReadToEnd();
+            var stderr = process.StandardError.ReadToEnd();
+            process.WaitForExit();
+
+            if (process.ExitCode != 0)
+            {
+                runtimeError = new InvalidOperationException(string.IsNullOrWhiteSpace(stderr)
+                    ? "Rust runtime command failed: fit"
+                    : stderr.Trim());
+                return false;
+            }
+
+            return true;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.ComponentModel.Win32Exception)
+        {
+            return false;
+        }
+        finally
+        {
+            TryDelete(requestPath);
         }
     }
 

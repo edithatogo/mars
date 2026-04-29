@@ -316,9 +316,7 @@ def test_earth_summary_feature_importances(simple_earth_data, capsys):
     assert "x0" in summary_fi  # Assuming x0 is the feature name for single feature data
     assert ":" in summary_fi  # Check for value separator
 
-    # Test with a different type (currently placeholder, should show warning in summary)
-    # The _calculate_feature_importances prints a warning for unknown types.
-    # This test currently checks if the summary method handles it.
+    # Test with an unsupported type and verify the warning path stays stable.
     model_unknown_fi = Earth(feature_importance_type="unknown_type", max_terms=3)
     model_unknown_fi.fit(X, y)
     summary_unknown = model_unknown_fi.summary_feature_importances()
@@ -389,8 +387,7 @@ def test_scrub_input_data_imputation():
     assert np.array_equal(y_p, y)
 
 
-# TODO: Add tests for predict with missing data once fit is more NaN-aware.
-# TODO: Add tests to check if model actually learns sensibly with NaNs (Phase 1.5/2)
+# Missing-data prediction and learning behavior are tracked in the migration roadmap.
 
 
 def test_earth_nb_subsets_calculation_mocked_record(capsys):
@@ -603,10 +600,7 @@ def test_earth_invalid_feature_importance_type(simple_earth_data, caplog):
     assert any(
         f"feature_importance_type '{invalid_type}'" in msg for msg in warning_msgs
     )
-    assert any(
-        "is not yet fully implemented. Returning zeros for importances." in msg
-        for msg in warning_msgs
-    )
+    assert any("is not implemented. Returning zeros for importances." in msg for msg in warning_msgs)
 
     # Test summary method for this case
     summary_str = model.summary_feature_importances()
@@ -620,6 +614,16 @@ def test_earth_invalid_feature_importance_type(simple_earth_data, caplog):
             "  x0   : 0.0000"  # "x0" + 2 spaces (from padding) + " : 0.0000"
         )
         assert expected_feature_line in summary_str
+
+
+def test_earth_predict_interval_is_explicitly_unsupported(simple_earth_data):
+    """Prediction intervals should fail with a clear supported/unsupported boundary."""
+    X, y = simple_earth_data
+    model = Earth()
+    model.fit(X, y)
+
+    with pytest.raises(NotImplementedError, match="Prediction intervals are not implemented yet"):
+        model.predict_interval(X)
 
 
 if __name__ == "__main__":

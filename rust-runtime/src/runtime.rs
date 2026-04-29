@@ -203,7 +203,18 @@ pub fn evaluate_basis(basis: &BasisTermSpec, row: &[f64]) -> MarsResult<f64> {
                     "linear basis terms require variable_idx".to_string(),
                 )
             })?;
-            Ok(row[variable_idx])
+            let value = row[variable_idx];
+            let value = if let Some(parent) = basis.parent1.as_deref() {
+                let parent_value = evaluate_basis(parent, row)?;
+                if value.is_nan() || parent_value.is_nan() {
+                    f64::NAN
+                } else {
+                    value * parent_value
+                }
+            } else {
+                value
+            };
+            Ok(value)
         }
         "hinge" => {
             let variable_idx = basis.variable_idx.ok_or_else(|| {
@@ -215,11 +226,22 @@ pub fn evaluate_basis(basis: &BasisTermSpec, row: &[f64]) -> MarsResult<f64> {
                 MarsError::MissingRequiredField("hinge basis terms require knot_val".to_string())
             })?;
             let value = row[variable_idx];
-            if basis.is_right_hinge.unwrap_or(true) {
-                Ok((value - knot_val).max(0.0))
+            let value = if basis.is_right_hinge.unwrap_or(true) {
+                (value - knot_val).max(0.0)
             } else {
-                Ok((knot_val - value).max(0.0))
-            }
+                (knot_val - value).max(0.0)
+            };
+            let value = if let Some(parent) = basis.parent1.as_deref() {
+                let parent_value = evaluate_basis(parent, row)?;
+                if value.is_nan() || parent_value.is_nan() {
+                    f64::NAN
+                } else {
+                    value * parent_value
+                }
+            } else {
+                value
+            };
+            Ok(value)
         }
         "categorical" => {
             let variable_idx = basis.variable_idx.ok_or_else(|| {
@@ -229,13 +251,24 @@ pub fn evaluate_basis(basis: &BasisTermSpec, row: &[f64]) -> MarsResult<f64> {
             })?;
             let category = numeric_category_value(basis)?;
             let value = row[variable_idx];
-            if value.is_nan() {
-                Ok(f64::NAN)
+            let value = if value.is_nan() {
+                f64::NAN
             } else if value == category {
-                Ok(1.0)
+                1.0
             } else {
-                Ok(0.0)
-            }
+                0.0
+            };
+            let value = if let Some(parent) = basis.parent1.as_deref() {
+                let parent_value = evaluate_basis(parent, row)?;
+                if value.is_nan() || parent_value.is_nan() {
+                    f64::NAN
+                } else {
+                    value * parent_value
+                }
+            } else {
+                value
+            };
+            Ok(value)
         }
         "interaction" => {
             let left = evaluate_basis(
@@ -266,11 +299,18 @@ pub fn evaluate_basis(basis: &BasisTermSpec, row: &[f64]) -> MarsResult<f64> {
                     "missingness basis terms require variable_idx".to_string(),
                 )
             })?;
-            if row[variable_idx].is_nan() {
-                Ok(1.0)
+            let value: f64 = if row[variable_idx].is_nan() { 1.0 } else { 0.0 };
+            let value = if let Some(parent) = basis.parent1.as_deref() {
+                let parent_value = evaluate_basis(parent, row)?;
+                if value.is_nan() || parent_value.is_nan() {
+                    f64::NAN
+                } else {
+                    value * parent_value
+                }
             } else {
-                Ok(0.0)
-            }
+                value
+            };
+            Ok(value)
         }
         unsupported => Err(MarsError::UnsupportedBasisTerm(format!(
             "unsupported basis kind '{unsupported}'"

@@ -1,0 +1,8 @@
+{
+  "track_id": "operator_facing_diagnostics_and_uncertainty_20260429",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-04-29T00:00:00Z",
+  "updated_at": "2026-04-29T00:00:03Z",
+  "description": "Harden diagnostics, interpretability, and uncertainty-reporting APIs for Earth across Python and the Rust-backed runtime"
+}

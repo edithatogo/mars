@@ -92,6 +92,7 @@ build-backend = "maturin"
 [tool.maturin]
 manifest-path = "rust-runtime/Cargo.toml"
 python-source = "."
+python-packages = ["pymars", "pymars_runtime"]
 
 [tool.setuptools]
 packages = ["pymars", "pymars.demos"]

@@ -33,8 +33,7 @@ from .runtime import (
     validate,
 )
 
-# TODO: Add other classes/functions to expose at the top level if desired.
-# e.g., from ._basis import BasisFunction (if users need to interact with it directly)
+# Additional top-level exports can be added here if the public API expands.
 
 __all__ = [
     "CategoricalImputer",

@@ -477,16 +477,9 @@ class LinearBasisFunction(BasisFunction):
         return False
 
 
-# TODO: Consider a more generic InteractionBasisFunction(bf1, bf2) if needed,
-# or ensure HingeBasisFunction and LinearBasisFunction can always represent one part of an interaction.
-# Current design: Hinge and Linear can have one parent, implying Parent * CurrentType.
-# This covers interactions like Hinge*Hinge, Hinge*Linear, Linear*Linear (if parent is Linear).
-
-# Example:
-# parent_linear = LinearBasisFunction(0, "x0")
-# interaction_linear_times_hinge = HingeBasisFunction(1, 5.0, parent_bf=parent_linear, variable_name="x1")
-#   str: (x0) * max(0, x1 - 5.00)
-#   degree: 1 (from parent_linear) + 1 (from hinge) = 2
+# Interactions are represented by parent-linked hinge and linear basis terms.
+# This keeps the basis tree simple while still covering products such as
+# hinge*hinge, hinge*linear, and linear*linear combinations.
 
 
 # Concrete implementation for a product of two arbitrary basis functions.

@@ -57,6 +57,46 @@ func TestFixtureParity(t *testing.T) {
 	}
 }
 
+func TestFitModelViaRust(t *testing.T) {
+	request := TrainingRequest{
+		X: [][]float64{
+			{0.0},
+			{1.0},
+			{2.0},
+		},
+		Y: []float64{1.0, 3.0, 5.0},
+		Params: TrainingParams{
+			MaxTerms:    5,
+			MaxDegree:   1,
+			Penalty:     3.0,
+			Minspan:     0.0,
+			Endspan:     0.0,
+			Threshold:   0.001,
+			AllowLinear: true,
+		},
+	}
+
+	spec, err := FitModel(request)
+	if err != nil {
+		t.Fatalf("FitModel failed: %v", err)
+	}
+	if spec == nil {
+		t.Fatal("FitModel returned nil spec")
+	}
+	if len(spec.BasisTerms) == 0 || len(spec.Coefficients) == 0 {
+		t.Fatal("FitModel returned an empty model spec")
+	}
+
+	predictions, err := Predict(spec, request.X)
+	if err != nil {
+		t.Fatalf("Predict failed: %v", err)
+	}
+	if len(predictions) != len(request.Y) {
+		t.Fatalf("prediction length mismatch: %d != %d", len(predictions), len(request.Y))
+	}
+	assertVectorClose(t, predictions, request.Y)
+}
+
 func nullableMatrixToFloat(rows [][]*float64) [][]float64 {
 	out := make([][]float64, len(rows))
 	for i, row := range rows {

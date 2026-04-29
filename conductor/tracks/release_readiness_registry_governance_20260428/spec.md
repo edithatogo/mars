@@ -23,6 +23,10 @@ approve before any package is pushed to an external registry.
   modules.
 - Confirm package contents through dry-run or local pack commands for each
   ecosystem.
+- Confirm version reporting, changelog, and package metadata parity across the
+  language surfaces.
+- Confirm logging defaults, verbosity toggles, and error-surfacing conventions
+  are documented for each binding.
 - Add an explicit external blocker table with owner, action, date, and status.
 - Define protected release environments, required secrets, and trusted
   publishing options where available.

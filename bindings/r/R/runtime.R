@@ -15,6 +15,37 @@ validate_model_spec <- function(spec) {
   .validate_model_spec_pure(spec)
 }
 
+fit_model <- function(x, y, max_terms = 21, max_degree = 1, penalty = 3.0,
+                      minspan = 0.0, endspan = 0.0, threshold = 0.001,
+                      allow_linear = TRUE, allow_missing = FALSE,
+                      categorical_features = integer(), feature_names = NULL,
+                      sample_weight = NULL) {
+  if (.rust_runtime_available()) {
+    result <- tryCatch(
+      .fit_model_rust(
+        x = x,
+        y = y,
+        max_terms = max_terms,
+        max_degree = max_degree,
+        penalty = penalty,
+        minspan = minspan,
+        endspan = endspan,
+        threshold = threshold,
+        allow_linear = allow_linear,
+        allow_missing = allow_missing,
+        categorical_features = categorical_features,
+        feature_names = feature_names,
+        sample_weight = sample_weight
+      ),
+      error = function(error) NULL
+    )
+    if (!is.null(result)) {
+      return(result)
+    }
+  }
+  stop("Rust training binary is not available", call. = FALSE)
+}
+
 design_matrix <- function(spec, rows) {
   if (.rust_runtime_available()) {
     result <- tryCatch(
@@ -55,6 +86,57 @@ predict_model <- function(spec, rows) {
 
 .predict_rust <- function(spec, rows) {
   .invoke_rust_runtime("predict", spec, rows)
+}
+
+.fit_model_rust <- function(x, y, max_terms, max_degree, penalty,
+                            minspan, endspan, threshold, allow_linear,
+                            allow_missing, categorical_features, feature_names,
+                            sample_weight = NULL) {
+  binary <- .rust_runtime_binary()
+  if (binary == "") {
+    stop("Rust runtime binary is not available", call. = FALSE)
+  }
+
+  request <- list(
+    x = .json_rows(as.matrix(x)),
+    y = as.numeric(y),
+    sample_weight = if (is.null(sample_weight)) NULL else as.numeric(sample_weight),
+    params = list(
+      max_terms = as.integer(max_terms),
+      max_degree = as.integer(max_degree),
+      penalty = as.numeric(penalty),
+      minspan = as.numeric(minspan),
+      endspan = as.numeric(endspan),
+      threshold = as.numeric(threshold),
+      allow_linear = isTRUE(allow_linear),
+      allow_missing = isTRUE(allow_missing),
+      categorical_features = as.integer(categorical_features),
+      feature_names = feature_names
+    )
+  )
+
+  request_file <- tempfile(fileext = ".json")
+  jsonlite::write_json(
+    request,
+    request_file,
+    auto_unbox = TRUE,
+    pretty = FALSE,
+    digits = NA,
+    na = "null",
+    null = "null"
+  )
+
+  output <- system2(binary, c("fit", "--request-file", request_file), stdout = TRUE, stderr = TRUE)
+  status <- attr(output, "status")
+  if (!is.null(status) && status != 0) {
+    stop(paste(output, collapse = "\n"), call. = FALSE)
+  }
+  if (length(output) == 0) {
+    stop("Rust training command returned no output", call. = FALSE)
+  }
+  spec <- jsonlite::fromJSON(paste(output, collapse = "\n"), simplifyVector = FALSE)
+  validate_model_spec(spec)
+  spec
 }
 
 .invoke_rust_runtime <- function(command, spec, rows = NULL) {
@@ -195,4 +277,10 @@ predict_model <- function(spec, rows) {
     return(ifelse(is.nan(row[[basis$variable_idx + 1]]), 1.0, 0.0))
   }
   stop(sprintf("unsupported basis term: %s", kind), call. = FALSE)
+}
+
+.json_rows <- function(rows) {
+  lapply(seq_len(nrow(rows)), function(i) {
+    as.list(rows[i, ])
+  })
 }

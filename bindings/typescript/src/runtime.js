@@ -4,6 +4,12 @@ export function loadModelSpec(raw) {
   return spec;
 }
 
+export function fitModel() {
+  throw new Error(
+    "training is not supported in @mars-earth/runtime; use a training-capable binding or the Rust CLI fit subcommand",
+  );
+}
+
 export function validate(spec) {
   if (!spec || typeof spec !== "object") {
     throw new Error("malformed artifact: model spec must be an object");

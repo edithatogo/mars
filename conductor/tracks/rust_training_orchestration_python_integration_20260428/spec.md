@@ -1,12 +1,12 @@
-# Specification: Complete Rust Training Orchestration and Python Integration
+# Specification: Rust Training Orchestration and Python Integration
 
 ## Overview
 
 The current Rust runtime owns portable replay and the first training primitives:
 basis evaluation, weighted least-squares/RSS, GCV scoring, candidate scoring,
-and pruning subset scoring. This track completes the next step: a Rust training
-orchestrator that can fit MARS models end to end and export the same portable
-`ModelSpec` contract used by the existing Python package.
+and pruning subset scoring. This track advances the next step toward a Rust
+training orchestrator that can fit MARS models end to end and export the same
+portable `ModelSpec` contract used by the existing Python package.
 
 The public Python API remains the compatibility baseline. `Earth.fit`,
 `Earth.predict`, estimator parameters, sklearn behavior, and import conventions

@@ -32,11 +32,13 @@ The remaining-track dependency gates are summarized in
   *Link: [./tracks/rust_backed_language_bindings_20260428/](./tracks/rust_backed_language_bindings_20260428/)*
 - [~] **Track: Harden CI/CD, quality gates, security checks, and automation**
   *Link: [./tracks/ci_quality_automation_hardening_20260428/](./tracks/ci_quality_automation_hardening_20260428/)*
-- [ ] **Track: Prepare release readiness and registry governance**
+- [~] **Track: Prepare release readiness and registry governance**
   *Link: [./tracks/release_readiness_registry_governance_20260428/](./tracks/release_readiness_registry_governance_20260428/)*
-- [ ] **Track: Complete Rust training orchestration and Python integration**
+- [~] **Track: Advance Rust training orchestration and Python integration**
   *Link: [./tracks/rust_training_orchestration_python_integration_20260428/](./tracks/rust_training_orchestration_python_integration_20260428/)*
-- [ ] **Track: Expose Rust training APIs through all language bindings**
+- [~] **Track: Expose Rust training APIs through all language bindings**
   *Link: [./tracks/cross_language_training_api_bindings_20260428/](./tracks/cross_language_training_api_bindings_20260428/)*
 - [ ] **Track: Publish packages to language package managers with release governance**
   *Link: [./tracks/package_publication_release_governance_20260428/](./tracks/package_publication_release_governance_20260428/)*
+- [x] **Track: Operator-facing diagnostics and uncertainty reporting**
+  *Link: [./tracks/operator_facing_diagnostics_and_uncertainty_20260429/](./tracks/operator_facing_diagnostics_and_uncertainty_20260429/)*

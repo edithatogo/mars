@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
-import { designMatrix, loadModelSpec, predict } from "../src/runtime.js";
+import { designMatrix, fitModel, loadModelSpec, predict } from "../src/runtime.js";
 
 const fixturesDir = path.resolve("../../tests/fixtures");
 
@@ -24,6 +24,13 @@ test("matches checked-in runtime portability fixtures", async () => {
     assertNestedClose(designMatrix(spec, probe), denullMatrix(fixture.design_matrix));
     assertNestedClose(predict(spec, probe), denullVector(fixture.predict));
   }
+});
+
+test("declares training as unsupported", () => {
+  assert.throws(
+    () => fitModel(),
+    /training is not supported in @mars-earth\/runtime/i,
+  );
 });
 
 async function readJson(file) {

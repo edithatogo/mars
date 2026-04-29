@@ -1,0 +1,351 @@
+name: Release Rehearsal
+
+on:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: Package family to rehearse
+        required: true
+        type: choice
+        options:
+          - all
+          - python
+          - rust
+          - typescript
+          - csharp
+          - r
+          - julia
+          - go
+      smoke_tests:
+        description: Run install-from-artifact smoke tests where feasible
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  rust-core:
+    runs-on: ubuntu-latest
+    environment: release-rehearsal
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Build Rust runtime CLI
+        run: cargo build --manifest-path rust-runtime/Cargo.toml --bin mars-runtime-cli
+
+      - name: Inspect Rust package contents
+        run: |
+          mkdir -p release-artifacts
+          cargo package --allow-dirty --list | tee release-artifacts/rust-package-files.txt
+          cargo metadata --format-version 1 --no-deps | tee release-artifacts/rust-metadata.json
+        working-directory: rust-runtime
+
+      - name: Build Rust package crate
+        run: cargo package --allow-dirty
+        working-directory: rust-runtime
+
+      - name: Upload Rust runtime CLI
+        uses: actions/upload-artifact@v7
+        with:
+          name: mars-runtime-cli
+          path: rust-runtime/target/debug/mars-runtime-cli
+          retention-days: 14
+
+      - name: Upload Rust release artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-rust
+          path: |
+            rust-runtime/target/package/*.crate
+            rust-runtime/release-artifacts/*
+          retention-days: 14
+
+  python:
+    if: inputs.scope == 'all' || inputs.scope == 'python'
+    runs-on: ubuntu-latest
+    needs: rust-core
+    environment: release-rehearsal
+    env:
+      MARS_RUNTIME_BIN: ${{ github.workspace }}/.ci-artifacts/mars-runtime-cli
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: mars-runtime-cli
+          path: .ci-artifacts
+
+      - run: chmod +x "$MARS_RUNTIME_BIN"
+
+      - run: uv python install 3.12
+
+      - run: uv sync --extra dev
+
+      - name: Build Python distribution
+        run: uv build
+
+      - name: Inspect Python artifacts
+        run: |
+          mkdir -p release-artifacts
+          wheel=$(find dist -maxdepth 1 -name '*.whl' -print -quit)
+          sdist=$(find dist -maxdepth 1 -name '*.tar.gz' -print -quit)
+          python -m zipfile -l "$wheel" | tee release-artifacts/python-wheel-list.txt
+          tar -tzf "$sdist" | tee release-artifacts/python-sdist-list.txt
+          uv run twine check dist/*
+
+      - name: Smoke test built Python wheel
+        if: inputs.smoke_tests
+        run: |
+          tmpdir=$(mktemp -d)
+          python -m pip install --no-deps --target "$tmpdir" dist/*.whl
+          PYTHONPATH="$tmpdir" python - <<'PY'
+          import pymars
+          assert hasattr(pymars, "Earth")
+          PY
+
+      - name: Upload Python release artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-python
+          path: |
+            dist/*
+            release-artifacts/*
+          retention-days: 14
+
+  typescript:
+    if: inputs.scope == 'all' || inputs.scope == 'typescript'
+    runs-on: ubuntu-latest
+    needs: rust-core
+    environment: release-rehearsal
+    env:
+      MARS_RUNTIME_BIN: ${{ github.workspace }}/.ci-artifacts/mars-runtime-cli
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: mars-runtime-cli
+          path: .ci-artifacts
+
+      - run: chmod +x "$MARS_RUNTIME_BIN"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Run TypeScript tests
+        run: npm test
+        working-directory: bindings/typescript
+
+      - name: Inspect TypeScript package contents
+        run: |
+          mkdir -p release-artifacts
+          npm pack --dry-run --json | tee release-artifacts/npm-pack-dry-run.json
+          tarball=$(npm pack)
+          echo "$tarball" | tee release-artifacts/npm-tarball-name.txt
+          tar -tzf "$tarball" | tee release-artifacts/npm-tarball-list.txt
+          if [ "${{ inputs.smoke_tests }}" = "true" ]; then
+            tmpdir=$(mktemp -d)
+            npm init -y --prefix "$tmpdir" >/dev/null
+            npm install --prefix "$tmpdir" "./$tarball" >/dev/null
+            (cd "$tmpdir" && node --input-type=module -e "import('@mars-earth/runtime')")
+          fi
+        working-directory: bindings/typescript
+
+      - name: Upload TypeScript release artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-typescript
+          path: |
+            bindings/typescript/*.tgz
+            bindings/typescript/release-artifacts/*
+          retention-days: 14
+
+  csharp:
+    if: inputs.scope == 'all' || inputs.scope == 'csharp'
+    runs-on: ubuntu-latest
+    needs: rust-core
+    environment: release-rehearsal
+    env:
+      MARS_RUNTIME_BIN: ${{ github.workspace }}/.ci-artifacts/mars-runtime-cli
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: mars-runtime-cli
+          path: .ci-artifacts
+
+      - run: chmod +x "$MARS_RUNTIME_BIN"
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "11.0.x"
+          dotnet-quality: "preview"
+
+      - name: Run C# tests
+        run: dotnet test MarsRuntime.Tests/MarsRuntime.Tests.csproj
+        working-directory: bindings/csharp
+
+      - name: Pack and inspect NuGet package
+        run: |
+          mkdir -p release-artifacts
+          dotnet pack MarsRuntime.csproj -c Release -o bin/Release
+          nupkg=$(ls bin/Release/*.nupkg | head -n 1)
+          unzip -l "$nupkg" | tee release-artifacts/nupkg-list.txt
+          if [ "${{ inputs.smoke_tests }}" = "true" ]; then
+            tmpdir=$(mktemp -d)
+            cat > "$tmpdir/Test.csproj" <<'EOF'
+            <Project Sdk="Microsoft.NET.Sdk">
+              <PropertyGroup>
+                <TargetFramework>net11.0</TargetFramework>
+              </PropertyGroup>
+              <ItemGroup>
+                <PackageReference Include="MarsRuntime" Version="0.0.0" />
+              </ItemGroup>
+            </Project>
+            EOF
+            dotnet restore "$tmpdir/Test.csproj" --source "$GITHUB_WORKSPACE/bindings/csharp/bin/Release"
+            dotnet build "$tmpdir/Test.csproj" --no-restore
+          fi
+        working-directory: bindings/csharp
+
+      - name: Upload C# release artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-csharp
+          path: |
+            bindings/csharp/bin/Release/*.nupkg
+            bindings/csharp/release-artifacts/*
+          retention-days: 14
+
+  r:
+    if: inputs.scope == 'all' || inputs.scope == 'r'
+    runs-on: ubuntu-latest
+    needs: rust-core
+    environment: release-rehearsal
+    env:
+      MARS_RUNTIME_BIN: ${{ github.workspace }}/.ci-artifacts/mars-runtime-cli
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: mars-runtime-cli
+          path: .ci-artifacts
+
+      - run: chmod +x "$MARS_RUNTIME_BIN"
+
+      - uses: r-lib/actions/setup-r@v2
+
+      - name: Install R dependencies
+        run: install.packages(c("jsonlite", "rcmdcheck"), repos = "https://cloud.r-project.org")
+        shell: Rscript {0}
+
+      - name: Build and inspect R package
+        run: |
+          mkdir -p release-artifacts
+          R CMD build bindings/r
+          tarball=$(ls marsruntime_*.tar.gz | tail -n 1)
+          tar -tzf "$tarball" | tee release-artifacts/r-package-list.txt
+          if [ "${{ inputs.smoke_tests }}" = "true" ]; then
+            libdir=$(mktemp -d)
+            R CMD INSTALL --library="$libdir" "$tarball"
+            Rscript -e "library(marsruntime, lib.loc = '$libdir')"
+          fi
+        working-directory: bindings/r
+
+      - name: Upload R release artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-r
+          path: |
+            bindings/r/marsruntime_*.tar.gz
+            bindings/r/release-artifacts/*
+          retention-days: 14
+
+  julia:
+    if: inputs.scope == 'all' || inputs.scope == 'julia'
+    runs-on: ubuntu-latest
+    needs: rust-core
+    environment: release-rehearsal
+    env:
+      MARS_RUNTIME_BIN: ${{ github.workspace }}/.ci-artifacts/mars-runtime-cli
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: mars-runtime-cli
+          path: .ci-artifacts
+
+      - run: chmod +x "$MARS_RUNTIME_BIN"
+
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: "1.10"
+
+      - name: Inspect Julia package metadata
+        run: |
+          mkdir -p release-artifacts
+          julia --project=bindings/julia -e 'using Pkg; Pkg.instantiate(); Pkg.status()' | tee release-artifacts/julia-status.txt
+
+      - name: Run Julia conformance tests
+        if: inputs.smoke_tests
+        run: julia --project=bindings/julia -e 'using Pkg; Pkg.instantiate(); Pkg.test()'
+
+      - name: Upload Julia release artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-julia
+          path: release-artifacts/*
+          retention-days: 14
+
+  go:
+    if: inputs.scope == 'all' || inputs.scope == 'go'
+    runs-on: ubuntu-latest
+    needs: rust-core
+    environment: release-rehearsal
+    env:
+      MARS_RUNTIME_BIN: ${{ github.workspace }}/.ci-artifacts/mars-runtime-cli
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: mars-runtime-cli
+          path: .ci-artifacts
+
+      - run: chmod +x "$MARS_RUNTIME_BIN"
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: Inspect Go module metadata
+        run: |
+          mkdir -p release-artifacts
+          go mod verify
+          go list -m -json all | tee release-artifacts/go-module-metadata.json
+        working-directory: bindings/go
+
+      - name: Run Go tests
+        if: inputs.smoke_tests
+        run: go test ./...
+        working-directory: bindings/go
+
+      - name: Upload Go release artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-go
+          path: bindings/go/release-artifacts/*
+          retention-days: 14

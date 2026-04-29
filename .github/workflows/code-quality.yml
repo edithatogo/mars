@@ -44,6 +44,14 @@ jobs:
       - name: Build documentation
         run: uv run mkdocs build --strict
 
+      - name: Run Vale prose lint
+        uses: errata-ai/vale-action@v2.1.1
+        with:
+          version: 3.14.1
+          files: '["README.md", "docs"]'
+          reporter: github-check
+          fail_on_error: true
+
       - name: Build Python package
         run: uv build
 

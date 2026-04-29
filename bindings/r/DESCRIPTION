@@ -5,5 +5,7 @@ Authors@R: person("Dylan", "A Mordaunt", email = "dylan@mordaunt.dev", role = c(
 Description: Thin R runtime surface for replaying portable mars ModelSpec artifacts.
 License: Apache License (>= 2)
 Encoding: UTF-8
+URL: https://github.com/edithatogo/mars
+BugReports: https://github.com/edithatogo/mars/issues
 Imports:
     jsonlite

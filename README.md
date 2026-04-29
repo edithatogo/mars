@@ -9,10 +9,10 @@
 ![Python Version](https://img.shields.io/pypi/pyversions/mars-earth.svg)
 ![License](https://img.shields.io/github/license/edithatogo/mars.svg)
 
-**mars** (formerly **pymars**) is a MARS implementation project moving from a
+**mars** (formerly **pymars**) is a mars implementation project moving from a
 pure Python training implementation toward a shared Rust computational core
 surfaced through Python, R, Julia, Rust, C#, Go, and TypeScript APIs. It is
-inspired by Jerome H. Friedman's MARS work and by prior open-source APIs such as
+inspired by Jerome H. Friedman's mars work and by prior open-source APIs such as
 `py-earth` and R `earth`, but it does not depend on those packages for
 implementation or validation.
 
@@ -24,18 +24,18 @@ Complete documentation is published at: [https://edithatogo.github.io/mars/](htt
 
 - **Python API Today:** Easy to install and use with a scikit-learn-compatible Python interface.
 - **Rust Core Direction:** Shared fitting and runtime evaluation logic is moving toward a Rust core.
-- **Scikit-learn Compatible:** Integrates with the scikit-learn ecosystem (estimators, pipelines, model selection tools).
-- **MARS Algorithm:** Implements the core MARS fitting procedure, including:
+- **scikit-learn Compatible:** Integrates with the scikit-learn ecosystem (estimators, pipelines, model selection tools).
+- **mars Algorithm:** Implements the core mars fitting procedure, including:
   - Forward pass to select basis functions (both hinge and linear terms).
-  - Pruning pass using Generalized Cross-Validation (GCV) to prevent overfitting.
+  - Pruning pass using generalized cross-validation (gcv) to prevent overfitting.
   - Support for interaction terms (including interactions involving linear terms).
   - Refined `minspan` and `endspan` controls for knot placement, aligning more closely with `py-earth` behavior (e.g., `minspan` as a cooldown period).
-- **Feature Importance:** Calculation of feature importances using methods like 'nb_subsets' (number of subsets in pruning trace), 'gcv' (GCV improvement), and 'rss' (RSS reduction).
+- **Feature Importance:** Calculation of feature importances using methods like 'nb_subsets' (number of subsets in pruning trace), 'gcv' (gcv improvement), and 'rss' (rss reduction).
 - **Regression and Classification:** Provides `EarthRegressor` and `EarthClassifier` classes.
 - **Generalized Linear Models:** The `GLMEarth` subclass fits logistic or Poisson models.
 - **Cross‑Validation Helper:** The `EarthCV` class integrates with scikit‑learn's model selection utilities.
 - **Plotting Utilities:** Simple diagnostics built on `matplotlib`.
-- **Advanced Interpretability:** Partial dependence plots, Individual Conditional Expectation (ICE) plots, and model explanation tools.
+- **Advanced interpretability:** Partial dependence plots, Individual Conditional Expectation (ICE) plots, and model explanation tools.
 - **Portable Model Export:** Export fitted `Earth` models to a versioned JSON model spec and replay them without relying on pickle or Python object reconstruction.
 - **Cross-Runtime Fixture Coverage:** Checked-in portable fixtures are validated by the Python runtime and a Rust reference runtime.
 - **Binding Roadmap:** The target surface spans Python, R, Julia, Rust, C#, Go, and TypeScript.
@@ -43,7 +43,7 @@ Complete documentation is published at: [https://edithatogo.github.io/mars/](htt
 
 ## Project Status
 
-The project is in active beta. The current Python MARS implementation,
+The project is in active beta. The current Python mars implementation,
 sklearn-compatible estimators, portable `ModelSpec` contract, and Rust reference
 runtime fixture validation are in place. Current roadmap work should keep the
 Python API stable while moving shared computation toward a Rust core that can
@@ -59,7 +59,7 @@ Near-term priorities are:
 
 ## Installation
 
-**Note:** Install `mars` inside a Python virtual environment to silence `pip` warnings about running as root.
+**Note:** Install mars inside a Python virtual environment to silence `pip` warnings about running as root.
 
 Install the published distribution from PyPI:
 
@@ -122,7 +122,7 @@ pytest
 
 ### Quick demos
 
-Run the included demo scripts to see `mars` in action:
+Run the included demo scripts to see mars in action:
 
 ```bash
 python -m pymars.demos.basic_regression_demo
@@ -191,7 +191,7 @@ Undocumented internal imports are not part of the supported public API.
 
 ## Documentation
 
-The repository ships source documentation for MkDocs in [`docs/`](docs/) and publishes the built site through GitHub Pages. For usage examples and tutorials, check the [examples directory](examples/) and the [`pymars/demos/`](pymars/demos/) modules.
+The repository ships source documentation for mkdocs in [`docs/`](docs/) and publishes the built site through GitHub Pages. For usage examples and tutorials, check the [examples directory](examples/) and the [`pymars/demos/`](pymars/demos/) modules.
 
 ## Contributing
 
@@ -220,6 +220,6 @@ This project is licensed under the [Apache 2.0 License](LICENSE).
 
 ## Acknowledgements
 
-- Based on the work of Jerome H. Friedman on MARS.
+- Based on the work of Jerome H. Friedman on mars.
 - API ideas were informed by `py-earth` and R `earth`, but mars does not depend
   on either package for implementation or validation.

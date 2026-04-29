@@ -1,7 +1,7 @@
-"""Tests for Phase 3 Task 2: Validate sklearn and artifact compatibility."""
+"""Tests for estimator compatibility and the current Rust training boundary."""
 
-import os
 from pathlib import Path
+
 import numpy as np
 import pytest
 
@@ -9,25 +9,20 @@ from pymars import Earth
 
 
 def test_sklearn_compat_fallback():
-    """Test that estimator compatibility tests pass with Python fallback."""
-    # This test verifies sklearn compatibility is preserved
-    from sklearn.utils.estimator_checks import check_estimator
-    
-    # Check that Earth passes sklearn estimator checks (basic)
-    # This is a placeholder - full check_estimator takes too long
+    """Test that the estimator interface remains intact on the Python path."""
     model = Earth()
-    assert hasattr(model, 'fit')
-    assert hasattr(model, 'predict')
-    assert hasattr(model, 'get_params')
-    assert hasattr(model, 'set_params')
+    assert hasattr(model, "fit")
+    assert hasattr(model, "predict")
+    assert hasattr(model, "get_params")
+    assert hasattr(model, "set_params")
 
 
-def test_targeted_tests_rust_routing():
-    """Test that targeted estimator tests pass with Rust routing enabled."""
-    # This is a placeholder - will be updated after Rust routing is implemented
-    # For now, just verify the test structure exists
-    test_file = Path("tests/test_sklearn_compat.py")
-    assert test_file.exists(), "test_sklearn_compat.py should exist"
+def test_rust_training_routing_is_not_public_yet():
+    """Rust training routing should remain an internal migration detail."""
+    model = Earth()
+    assert not hasattr(model, "_use_rust_training")
+    assert not hasattr(model, "use_rust_training")
+    assert Path("tests/test_sklearn_compat.py").exists()
 
 
 def test_rust_backed_exports_compatible_model_spec():
@@ -57,14 +52,17 @@ def test_rust_backed_exports_compatible_model_spec():
     np.testing.assert_almost_equal(y_pred1, y_pred2, decimal=10)
 
 
-def test_rust_routing_environment_flag():
-    """Test that Rust routing can be enabled via environment flag."""
-    # Set environment flag
-    os.environ['PYMARS_USE_RUST_TRAINING'] = '1'
-    
-    # This is a placeholder - will be updated after implementation
-    # For now, just verify the flag can be set
-    assert os.environ.get('PYMARS_USE_RUST_TRAINING') == '1'
-    
-    # Clean up
-    del os.environ['PYMARS_USE_RUST_TRAINING']
+def test_rust_routing_environment_flag_does_not_break_python_fit(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """An opt-in training flag should not break the Python fallback path."""
+    monkeypatch.setenv("PYMARS_USE_RUST_TRAINING", "1")
+
+    X = np.array([[0.0], [1.0], [2.0]])
+    y = np.array([1.0, 3.0, 5.0])
+
+    model = Earth(max_terms=5)
+    model.fit(X, y)
+
+    assert model.fitted_
+    assert model.predict(X).shape == (3,)

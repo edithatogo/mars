@@ -135,10 +135,9 @@ class Earth(BaseEstimator, RegressorMixin):
         minspan: int = -1,
         endspan: int = -1,
         allow_linear: bool = True,
-        allow_missing: bool = False,  # New parameter
+        allow_missing: bool = False,
         feature_importance_type: str | None = None,
         categorical_features: list[int] | None = None,
-        # TODO: Consider other py-earth params
     ):
         super().__init__()
 
@@ -151,7 +150,7 @@ class Earth(BaseEstimator, RegressorMixin):
         self.minspan = minspan
         self.endspan = endspan
         self.allow_linear = allow_linear
-        self.allow_missing = allow_missing  # Store new parameter
+        self.allow_missing = allow_missing
         self.feature_importance_type = feature_importance_type
         self.categorical_features = categorical_features
 
@@ -267,6 +266,23 @@ class Earth(BaseEstimator, RegressorMixin):
         self.n_features_in_ = X_processed.shape[1]
         self.record_.feature_names_in_ = self.feature_names_in_
         self.record_.model_params["feature_names_in_"] = self.feature_names_in_
+
+        from . import runtime as runtime_helpers
+
+        rust_fitted = runtime_helpers.fit_model(
+            self,
+            X_processed,
+            y_processed,
+            sample_weight_validated,
+        )
+        if rust_fitted is not None:
+            self.__dict__.update(rust_fitted.__dict__)
+            if self.record_ is not None and hasattr(self.record_, "model_params"):
+                self.record_.model_params["feature_names_in_"] = self.feature_names_in_
+            if self.feature_importance_type is not None:
+                self._calculate_feature_importances(self.X_original_)
+            self.fitted_ = True
+            return self
 
         # Forward Pass
         forward_passer = ForwardPasser(
@@ -435,11 +451,7 @@ class Earth(BaseEstimator, RegressorMixin):
         return self
 
     def _calculate_feature_importances(self, X_fit: Any) -> None:
-        """
-        Placeholder for feature importance calculation.
-        This will be implemented based on self.feature_importance_type.
-        # For 'nb_subsets', it uses the pruning trace stored in self.record_.
-        """
+        """Calculate feature importances for supported strategies."""
         import numpy as np  # Ensure numpy is available
 
         record = self.record_
@@ -552,15 +564,13 @@ class Earth(BaseEstimator, RegressorMixin):
                 self.feature_importances_ = importances  # All zeros
 
         elif self.feature_importance_type is not None:
-            # Placeholder for other types or warning for unknown types
             logger.warning(
-                "feature_importance_type '%s' is not yet fully implemented. Returning zeros for importances.",
+                "feature_importance_type '%s' is not implemented. Returning zeros for importances.",
                 self.feature_importance_type,
             )
             self.feature_importances_ = np.zeros(num_features)
         else:
-            # feature_importance_type is None, so do nothing, self.feature_importances_ remains None
-            pass
+            return
 
     def _scrub_input_data(
         self, X: Any, y: Any
@@ -788,6 +798,35 @@ class Earth(BaseEstimator, RegressorMixin):
         # The user of predict() will have to handle these NaNs if they occur.
         return cast(np.ndarray, y_pred)
 
+    def predict_interval(
+        self, X: Any, alpha: float = 0.05
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """
+        Predict an interval for X.
+
+        This API is intentionally not implemented yet. Interval reporting needs a
+        dedicated contract because the current portable runtime focuses on point
+        predictions and diagnostics. Callers should treat this as an explicit
+        unsupported feature rather than inferring an approximate interval from the
+        fitted basis model.
+
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features)
+            Input samples.
+        alpha : float, optional (default=0.05)
+            Requested tail mass for a future interval implementation.
+
+        Raises
+        ------
+        NotImplementedError
+            Always raised until a supported interval contract exists.
+        """
+        del X, alpha
+        raise NotImplementedError(
+            "Prediction intervals are not implemented yet for Earth."
+        )
+
     def get_model_spec(self) -> dict[str, Any]:
         """Return a versioned portable model specification."""
         return model_to_spec(self)
@@ -810,19 +849,6 @@ class Earth(BaseEstimator, RegressorMixin):
             payload = cast(dict[str, Any], json.loads(payload))
         return cast(Earth, spec_to_model(payload, cls))
 
-    # Remove the duplicate _transform_X_to_basis_matrix, as _build_basis_matrix is now the one.
-    # def _transform_X_to_basis_matrix(self, X, basis_functions):
-    #     """
-    #     Transform input X into a matrix where columns are evaluated basis functions.
-    #     """
-    #     # n_samples = X.shape[0]
-    #     # n_basis = len(basis_functions)
-    #     # B = np.empty((n_samples, n_basis))
-    #     # for i, bf in enumerate(basis_functions):
-    #     #     B[:, i] = bf.transform(X)
-    #     # return B
-    #     pass # Placeholder
-
     def summary(self) -> str | None:
         """
         Return a summary of the fitted model and log it.
@@ -831,7 +857,6 @@ class Earth(BaseEstimator, RegressorMixin):
             logger.info("Model not yet fitted.")
             return "Model not yet fitted."
 
-        # Placeholder for a more structured summary
         import numpy as np  # Local import
 
         if not self.fitted_:
@@ -846,8 +871,8 @@ class Earth(BaseEstimator, RegressorMixin):
             logger.info("Number of samples: N/A")
             logger.info("Number of features: N/A")
         else:
-            logger.info("Number of samples: %s", record.n_samples)
-            logger.info("Number of features: %s", record.n_features)
+            logger.info("Number of samples: %s", getattr(record, "n_samples", "N/A"))
+            logger.info("Number of features: %s", getattr(record, "n_features", "N/A"))
         logger.info("--------------------------")
         logger.info("Selected Basis Functions: %d", len(self.basis_))
         if self.gcv_ is not None:

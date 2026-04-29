@@ -1,50 +1,127 @@
-"""Tests for Phase 3 Task 1: Add controlled Python routing to Rust training core."""
+"""Tests for the current Python training routing contract."""
 
-import os
+import json
 from pathlib import Path
-import pytest
+
+import numpy as np
 
 from pymars import Earth
+from pymars import runtime
 
 
-def test_python_routing_flag_exists():
-    """Test that Earth has a flag to enable Rust training."""
-    # Check if there's a way to enable Rust training
+def test_public_rust_training_flag_is_not_exposed_yet() -> None:
+    """Rust training routing is still a private migration detail."""
     model = Earth()
-    
-    # Check for internal flag or environment variable
-    has_flag = hasattr(model, '_use_rust_training') or \
-               os.environ.get('PYMARS_USE_RUST_TRAINING') is not None
-    assert has_flag or True, "Should have a flag to enable Rust training"
+
+    assert not hasattr(model, "_use_rust_training")
+    assert not hasattr(model, "use_rust_training")
+    assert hasattr(model, "fit")
+    assert hasattr(model, "predict")
 
 
-def test_earth_preserves_constructor_params():
-    """Test that Earth constructor parameters are preserved."""
+def test_earth_preserves_constructor_params() -> None:
+    """Earth constructor parameters should remain stable."""
     model = Earth(max_terms=15, max_degree=2, penalty=2.5)
-    
-    assert model.max_terms == 15, "max_terms should be preserved"
-    assert model.max_degree == 2, "max_degree should be preserved"
-    assert model.penalty == 2.5, "penalty should be preserved"
+
+    assert model.max_terms == 15
+    assert model.max_degree == 2
+    assert model.penalty == 2.5
 
 
-def test_python_fallback_available():
-    """Test that Python fallback is available when Rust is not used."""
-    # Train a simple model with Python (default)
-    import numpy as np
+def test_python_fallback_available() -> None:
+    """The Python training path should still fit and predict successfully."""
     X = np.array([[0.0], [1.0], [2.0]])
     y = np.array([1.0, 3.0, 5.0])
-    
+
     model = Earth(max_terms=5)
     model.fit(X, y)
-    
-    assert model.fitted_, "Python fallback should work"
-    assert hasattr(model, 'basis_'), "Model should have basis_ attribute"
+
+    assert model.fitted_
+    assert hasattr(model, "basis_")
+    assert model.predict(X).shape == (3,)
 
 
-def test_rust_training_routing_placeholder():
-    """Test that Rust training routing exists (placeholder)."""
-    # This test will pass once routing is implemented
-    # For now, just verify the Earth class has the expected interface
-    model = Earth()
-    assert hasattr(model, 'fit'), "Earth should have fit method"
-    assert hasattr(model, 'predict'), "Earth should have predict method"
+def test_rust_training_bridge_can_fit_when_enabled(monkeypatch) -> None:
+    """Rust training routing should work behind the private environment gate."""
+    fixture_path = Path("tests/fixtures/training_full_fit_baseline_v1.json")
+    spec_json = fixture_path.read_text()
+    calls: list[str] = []
+
+    class DummyRustBackend:
+        def fit_model_json(self, request_json: str) -> str:
+            calls.append(request_json)
+            return spec_json
+
+    monkeypatch.setenv("PYMARS_USE_RUST_TRAINING", "1")
+    monkeypatch.setattr(runtime, "_rust_backend", DummyRustBackend())
+
+    model = Earth(max_terms=5, max_degree=1, penalty=3.0)
+    fitted = model.fit(np.array([[0.0], [1.0], [2.0]]), np.array([1.0, 3.0, 5.0]))
+
+    assert fitted is model
+    assert model.fitted_
+    assert len(calls) == 1
+    request = json.loads(calls[0])
+    assert request["params"]["max_degree"] == 1
+    assert request["params"]["penalty"] == 3.0
+    exported = json.loads(model.export_model())
+    assert exported["basis_terms"]
+    assert exported["coefficients"]
+    assert model.predict(np.array([[0.0], [1.0], [2.0]])).shape == (3,)
+
+
+def test_rust_training_bridge_sends_routing_flags(monkeypatch) -> None:
+    """Rust training routing should forward fit flags in the request payload."""
+    fixture_path = Path("tests/fixtures/training_full_fit_baseline_v1.json")
+    spec_json = fixture_path.read_text()
+    calls: list[str] = []
+
+    class DummyRustBackend:
+        def fit_model_json(self, request_json: str) -> str:
+            calls.append(request_json)
+            return spec_json
+
+    monkeypatch.setenv("PYMARS_USE_RUST_TRAINING", "1")
+    monkeypatch.setattr(runtime, "_rust_backend", DummyRustBackend())
+
+    model = Earth(
+        max_terms=5,
+        max_degree=1,
+        penalty=3.0,
+        allow_missing=True,
+        categorical_features=[0],
+        allow_linear=False,
+    )
+    model.fit(np.array([[0.0], [1.0], [2.0]]), np.array([1.0, 3.0, 5.0]))
+
+    assert len(calls) == 1
+    request = json.loads(calls[0])
+    assert request["params"]["allow_missing"] is True
+    assert request["params"]["allow_linear"] is False
+    assert request["params"]["categorical_features"] == [0]
+
+
+def test_rust_training_bridge_preserves_diagnostics(monkeypatch) -> None:
+    """Rust training routing should keep the Python diagnostics surface usable."""
+    fixture_path = Path("tests/fixtures/training_full_fit_baseline_v1.json")
+    spec_json = fixture_path.read_text()
+
+    class DummyRustBackend:
+        def fit_model_json(self, request_json: str) -> str:
+            del request_json
+            return spec_json
+
+    monkeypatch.setenv("PYMARS_USE_RUST_TRAINING", "1")
+    monkeypatch.setattr(runtime, "_rust_backend", DummyRustBackend())
+
+    model = Earth(max_terms=5, max_degree=1, penalty=3.0, feature_importance_type="nb_subsets")
+    model.fit(np.array([[0.0], [1.0], [2.0]]), np.array([1.0, 3.0, 5.0]))
+
+    assert model.record_ is not None
+    assert getattr(model.record_, "pruning_trace_basis_functions_", None)
+    assert model.feature_importances_ is not None
+    assert np.any(model.feature_importances_ > 0.0)
+
+    summary = model.summary_feature_importances()
+    assert "Feature Importances (nb_subsets)" in summary
+    assert "x0" in summary

@@ -73,3 +73,55 @@ public sealed class RuntimeFixtureTests
         }
     }
 }
+
+public sealed class RuntimeTrainingTests
+{
+    [Fact]
+    public void FitsModelThroughRustAndReplaysPredictions()
+    {
+        var request = new TrainingRequest(
+            X: new[]
+            {
+                new[] { 0.0 },
+                new[] { 1.0 },
+                new[] { 2.0 },
+            },
+            Y: new[] { 1.0, 3.0, 5.0 },
+            SampleWeight: null,
+            Params: new TrainingParams(
+                MaxTerms: 5,
+                MaxDegree: 1,
+                Penalty: 3.0,
+                Minspan: 0.0,
+                Endspan: 0.0,
+                Threshold: 0.001,
+                AllowLinear: true,
+                AllowMissing: false));
+
+        var spec = Runtime.FitModel(request);
+
+        Assert.NotNull(spec);
+        Assert.NotEmpty(spec.BasisTerms);
+        Assert.NotEmpty(spec.Coefficients);
+
+        var predictions = Runtime.Predict(spec, request.X);
+        Assert.Equal(request.Y.Length, predictions.Length);
+        AssertVectorClose(predictions, request.Y);
+    }
+
+    private static void AssertVectorClose(double[] actual, double[] expected)
+    {
+        Assert.Equal(expected.Length, actual.Length);
+        for (var index = 0; index < expected.Length; index++)
+        {
+            if (double.IsNaN(expected[index]))
+            {
+                Assert.True(double.IsNaN(actual[index]));
+            }
+            else
+            {
+                Assert.True(Math.Abs(actual[index] - expected[index]) <= 1e-12, $"{actual[index]} != {expected[index]} at {index}");
+            }
+        }
+    }
+}
