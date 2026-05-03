@@ -600,7 +600,10 @@ def test_earth_invalid_feature_importance_type(simple_earth_data, caplog):
     assert any(
         f"feature_importance_type '{invalid_type}'" in msg for msg in warning_msgs
     )
-    assert any("is not implemented. Returning zeros for importances." in msg for msg in warning_msgs)
+    assert any(
+        "is not implemented. Returning zeros for importances." in msg
+        for msg in warning_msgs
+    )
 
     # Test summary method for this case
     summary_str = model.summary_feature_importances()
@@ -622,7 +625,9 @@ def test_earth_predict_interval_is_explicitly_unsupported(simple_earth_data):
     model = Earth()
     model.fit(X, y)
 
-    with pytest.raises(NotImplementedError, match="Prediction intervals are not implemented yet"):
+    with pytest.raises(
+        NotImplementedError, match="Prediction intervals are not implemented yet"
+    ):
         model.predict_interval(X)
 
 

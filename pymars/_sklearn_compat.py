@@ -144,9 +144,7 @@ class EarthRegressor(RegressorMixin, BaseEstimator):
         # will be initialized in the fit() method, as per scikit-learn convention
         # to pass check_no_attributes_set_in_init from check_estimator.
 
-    def fit(
-        self, X: Any, y: Any, sample_weight: Any | None = None
-    ) -> EarthRegressor:
+    def fit(self, X: Any, y: Any, sample_weight: Any | None = None) -> EarthRegressor:
         """
         Fit the Earth regressor to the training data.
 
@@ -366,9 +364,7 @@ class EarthClassifier(ClassifierMixin, BaseEstimator):
         # Fitted attributes (like self.basis_, self.classes_, self.n_features_in_,
         # self.is_fitted_, self.classifier_) will be initialized in the fit() method.
 
-    def fit(
-        self, X: Any, y: Any, sample_weight: Any | None = None
-    ) -> EarthClassifier:
+    def fit(self, X: Any, y: Any, sample_weight: Any | None = None) -> EarthClassifier:
         """
         Fit the Earth classifier to the training data.
 

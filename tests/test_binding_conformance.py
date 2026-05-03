@@ -37,7 +37,9 @@ def test_manifest_declares_runtime_and_training_binding_modes() -> None:
     }
 
 
-@pytest.mark.parametrize("removed_mode", ["runtime_rust_backed", "training_rust_backed"])
+@pytest.mark.parametrize(
+    "removed_mode", ["runtime_rust_backed", "training_rust_backed"]
+)
 def test_manifest_requires_future_binding_modes(
     tmp_path: Path, removed_mode: str
 ) -> None:

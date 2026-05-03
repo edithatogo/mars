@@ -344,8 +344,7 @@ class Earth(BaseEstimator, RegressorMixin):
                 else:
                     self.rss_ = float(
                         np.sum(
-                            sample_weight_validated
-                            * (y_processed - y_pred_train) ** 2
+                            sample_weight_validated * (y_processed - y_pred_train) ** 2
                         )
                     )
                     self.mse_ = self.rss_ / float(np.sum(sample_weight_validated))
@@ -360,9 +359,7 @@ class Earth(BaseEstimator, RegressorMixin):
                     self.rss_ = float(np.sum(residuals**2))
                     self.mse_ = self.rss_ / len(y_processed)
                 else:
-                    self.rss_ = float(
-                        np.sum(sample_weight_validated * residuals**2)
-                    )
+                    self.rss_ = float(np.sum(sample_weight_validated * residuals**2))
                     self.mse_ = self.rss_ / float(np.sum(sample_weight_validated))
 
             return self
@@ -404,7 +401,8 @@ class Earth(BaseEstimator, RegressorMixin):
                 if sample_weight_validated is None:
                     self.rss_ = float(
                         np.sum(
-                            (y_processed[valid_pred_idx] - y_pred_train[valid_pred_idx]) ** 2
+                            (y_processed[valid_pred_idx] - y_pred_train[valid_pred_idx])
+                            ** 2
                         )
                     )
                     if np.sum(valid_pred_idx) > 0:
@@ -416,7 +414,11 @@ class Earth(BaseEstimator, RegressorMixin):
                     self.rss_ = float(
                         np.sum(
                             valid_weights
-                            * (y_processed[valid_pred_idx] - y_pred_train[valid_pred_idx]) ** 2
+                            * (
+                                y_processed[valid_pred_idx]
+                                - y_pred_train[valid_pred_idx]
+                            )
+                            ** 2
                         )
                     )
                     if float(np.sum(valid_weights)) > 0.0:
@@ -686,7 +688,9 @@ class Earth(BaseEstimator, RegressorMixin):
 
         record = self.record_
         if record is None:
-            raise ValueError("Model record is not available despite the model being fitted.")
+            raise ValueError(
+                "Model record is not available despite the model being fitted."
+            )
 
         X_checked = check_array(
             X,
@@ -948,9 +952,10 @@ class Earth(BaseEstimator, RegressorMixin):
         elif hasattr(record, "n_features") and record.n_features != num_features:
             # This case should ideally not happen if X_fit was used correctly
             feature_names = [f"x{i}" for i in range(num_features)]
-        elif hasattr(
-            record, "feature_names_in_"
-        ) and record.feature_names_in_ is not None:  # If sklearn wrapper set this in record
+        elif (
+            hasattr(record, "feature_names_in_")
+            and record.feature_names_in_ is not None
+        ):  # If sklearn wrapper set this in record
             feature_names = list(record.feature_names_in_)
         elif (
             hasattr(record, "model_params")

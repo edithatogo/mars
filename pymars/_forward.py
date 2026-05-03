@@ -339,9 +339,7 @@ class ForwardPasser:
             assert self.y_train is not None
             if self.sample_weight is None:
                 intercept = float(np.mean(self.y_train))
-                rss_intercept_only = float(
-                    np.sum((self.y_train - intercept) ** 2)
-                )
+                rss_intercept_only = float(np.sum((self.y_train - intercept) ** 2))
             else:
                 intercept = float(np.average(self.y_train, weights=self.sample_weight))
                 rss_intercept_only = float(

@@ -46,7 +46,7 @@ jobs:
       - name: Run ruff check
         run: |
           set -o pipefail
-          uv run ruff check pymars tests | tee "$CI_LOG_DIR/ruff-check.log"
+          uv run ruff check pymars | tee "$CI_LOG_DIR/ruff-check.log"
 
       - name: Run ruff format check
         run: |

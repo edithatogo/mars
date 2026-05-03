@@ -36,7 +36,9 @@ def _runtime_portability_fixture_pairs() -> list[tuple[Path, Path]]:
     pairs: list[tuple[Path, Path]] = []
     for model_spec_path in sorted(FIXTURES_DIR.glob("model_spec_*.json")):
         suffix = model_spec_path.stem.removeprefix("model_spec_")
-        runtime_fixture_path = FIXTURES_DIR / f"runtime_portability_fixture_{suffix}.json"
+        runtime_fixture_path = (
+            FIXTURES_DIR / f"runtime_portability_fixture_{suffix}.json"
+        )
         if runtime_fixture_path.exists():
             pairs.append((model_spec_path, runtime_fixture_path))
     return pairs
@@ -171,9 +173,7 @@ def test_runtime_uses_rust_backend_for_supported_specs(monkeypatch):
             calls.append(("design_matrix", rows))
             return [[1.0, 2.0], [3.0, 4.0]]
 
-        def predict_json(
-            self, spec_json: str, rows: list[list[float]]
-        ) -> list[float]:
+        def predict_json(self, spec_json: str, rows: list[list[float]]) -> list[float]:
             calls.append(("predict", rows))
             return [5.0, 6.0]
 
@@ -181,7 +181,9 @@ def test_runtime_uses_rust_backend_for_supported_specs(monkeypatch):
     monkeypatch.setattr(runtime, "_spec_is_rust_runtime_compatible", lambda spec: True)
 
     assert runtime.validate(spec) == spec
-    np.testing.assert_allclose(runtime.design_matrix(spec, probe), [[1.0, 2.0], [3.0, 4.0]])
+    np.testing.assert_allclose(
+        runtime.design_matrix(spec, probe), [[1.0, 2.0], [3.0, 4.0]]
+    )
     np.testing.assert_allclose(runtime.predict(spec, probe), [5.0, 6.0])
 
     assert [name for name, _payload in calls] == [
@@ -212,9 +214,7 @@ def test_runtime_falls_back_to_python_when_rust_backend_is_incompatible(monkeypa
             calls.append(("design_matrix", rows))
             return [[999.0]]
 
-        def predict_json(
-            self, spec_json: str, rows: list[list[float]]
-        ) -> list[float]:
+        def predict_json(self, spec_json: str, rows: list[list[float]]) -> list[float]:
             calls.append(("predict", rows))
             return [999.0]
 

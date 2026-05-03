@@ -83,9 +83,7 @@ def validate_model_spec(payload: dict[str, Any]) -> dict[str, Any]:
         )
 
     if len(payload["coefficients"]) != len(payload["basis_terms"]):
-        raise ValueError(
-            "Model spec must contain one coefficient per basis term."
-        )
+        raise ValueError("Model spec must contain one coefficient per basis term.")
 
     for idx, term in enumerate(payload["basis_terms"]):
         if not isinstance(term, dict):
@@ -238,14 +236,15 @@ def basis_function_from_spec(term_spec: BasisTermSpec) -> BasisFunction:
     return basis_function
 
 
-def categorical_imputer_to_spec(imputer: CategoricalImputer | None) -> dict[str, Any] | None:
+def categorical_imputer_to_spec(
+    imputer: CategoricalImputer | None,
+) -> dict[str, Any] | None:
     """Serialize a categorical imputer to a dictionary."""
     if imputer is None:
         return None
 
     encoders = {
-        str(idx): list(encoder.classes_)
-        for idx, encoder in imputer.encoders.items()
+        str(idx): list(encoder.classes_) for idx, encoder in imputer.encoders.items()
     }
     return {
         "encoders": encoders,
@@ -255,7 +254,9 @@ def categorical_imputer_to_spec(imputer: CategoricalImputer | None) -> dict[str,
     }
 
 
-def categorical_imputer_from_spec(payload: dict[str, Any] | None) -> CategoricalImputer | None:
+def categorical_imputer_from_spec(
+    payload: dict[str, Any] | None,
+) -> CategoricalImputer | None:
     """Rebuild a categorical imputer from its portable spec."""
     if payload is None:
         return None
@@ -347,15 +348,16 @@ def spec_to_model(payload: dict[str, Any], earth_cls: type[Any]) -> Any:
     basis_snapshot = list(model.basis_)
     coefficients_snapshot = np.asarray(model.coef_, dtype=float)
     feature_schema = payload.get("feature_schema", {})
-    feature_names = (
-        feature_schema.get("feature_names")
-        or [f"x{i}" for i in range(feature_schema.get("n_features", 0))]
-    )
+    feature_names = feature_schema.get("feature_names") or [
+        f"x{i}" for i in range(feature_schema.get("n_features", 0))
+    ]
     model.feature_names_in_ = np.asarray(
         feature_names,
         dtype=object,
     )
-    model.n_features_in_ = int(feature_schema.get("n_features", len(model.feature_names_in_)))
+    model.n_features_in_ = int(
+        feature_schema.get("n_features", len(model.feature_names_in_))
+    )
     model.record_ = SimpleNamespace(
         n_samples=0,
         n_features=model.n_features_in_,

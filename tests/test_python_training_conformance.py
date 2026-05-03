@@ -8,7 +8,9 @@ import pytest
 from pymars import Earth, runtime
 
 
-def test_rust_training_bridge_uses_compiled_backend(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_rust_training_bridge_uses_compiled_backend(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """The Python training path should hit the compiled Rust backend when available."""
     if runtime._rust_backend is None:
         pytest.skip("Compiled pymars_runtime extension is not available")

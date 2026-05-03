@@ -97,7 +97,9 @@ def gcv_penalty_cost_effective_parameters(
     return float(num_terms + penalty * num_hinge_terms)
 
 
-def calculate_gcv(rss: float, num_samples: int | float, num_effective_params: float) -> float:
+def calculate_gcv(
+    rss: float, num_samples: int | float, num_effective_params: float
+) -> float:
     """
     Calculate Generalized Cross-Validation score.
 

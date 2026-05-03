@@ -113,7 +113,9 @@ def test_rust_training_bridge_preserves_diagnostics(monkeypatch) -> None:
     monkeypatch.setenv("PYMARS_USE_RUST_TRAINING", "1")
     monkeypatch.setattr(runtime, "_rust_backend", DummyRustBackend())
 
-    model = Earth(max_terms=5, max_degree=1, penalty=3.0, feature_importance_type="nb_subsets")
+    model = Earth(
+        max_terms=5, max_degree=1, penalty=3.0, feature_importance_type="nb_subsets"
+    )
     model.fit(np.array([[0.0], [1.0], [2.0]]), np.array([1.0, 3.0, 5.0]))
 
     assert model.record_ is not None

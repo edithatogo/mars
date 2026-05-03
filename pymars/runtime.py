@@ -3,6 +3,7 @@ from __future__ import annotations
 """Spec-driven runtime helpers for portable pymars models."""
 
 import contextlib
+import logging
 import os
 from pathlib import Path
 from typing import Any, cast
@@ -17,14 +18,16 @@ from ._model_spec import (
 )
 from .earth import Earth
 
+logger = logging.getLogger(__name__)
+
 _rust_backend: Any = None
 try:
     import pymars_runtime as _native_module
 
-    if getattr(_native_module, "_IS_COMPILED", False):
+    if _native_module._IS_COMPILED:
         _rust_backend = _native_module
-except Exception:  # pragma: no cover - optional compiled extension
-    pass
+except Exception as exc:  # pragma: no cover - optional compiled extension
+    logger.debug("Rust runtime backend unavailable: %s", exc)
 
 _RUST_RUNTIME_SUPPORTED_KINDS = {
     "constant",
@@ -78,7 +81,9 @@ def save_model(model_or_spec: Earth | dict[str, Any], path: str | Path) -> Path:
     return target
 
 
-def fit_model(model: Earth, X: Any, y: Any, sample_weight: Any | None = None) -> Earth | None:
+def fit_model(
+    model: Earth, X: Any, y: Any, sample_weight: Any | None = None
+) -> Earth | None:
     """Fit an Earth model through the Rust training bridge when enabled."""
     if _rust_backend is None:
         return None
@@ -95,7 +100,8 @@ def fit_model(model: Earth, X: Any, y: Any, sample_weight: Any | None = None) ->
         weights = None
         if sample_weight is not None:
             weights = cast(
-                "list[float]", np.asarray(sample_weight, dtype=float).reshape(-1).tolist()
+                "list[float]",
+                np.asarray(sample_weight, dtype=float).reshape(-1).tolist(),
             )
         feature_names = getattr(model, "feature_names_in_", None)
         feature_names_list = None
@@ -118,17 +124,13 @@ def fit_model(model: Earth, X: Any, y: Any, sample_weight: Any | None = None) ->
                 "feature_names": feature_names_list,
             },
         }
-        trained_spec_json = getattr(_rust_backend, 'fit_model_json')(
-            spec_to_json(payload)
-        )
+        trained_spec_json = _rust_backend.fit_model_json(spec_to_json(payload))
     except Exception:
         return None
 
     from ._model_spec import spec_to_model
 
-    trained_model = spec_to_model(
-        spec_from_json(trained_spec_json), Earth
-    )
+    trained_model = spec_to_model(spec_from_json(trained_spec_json), Earth)
     trained_model.feature_importance_type = model.feature_importance_type
     model.__dict__.update(trained_model.__dict__)
     return model

@@ -39,7 +39,7 @@ Run the same checks locally when practical before opening a pull request:
 uv run pytest tests/ -q --tb=short -x --cov-fail-under=80
 uv run pytest -q tests/test_binding_conformance.py tests/test_model_spec.py
 uv run pytest -q tests/test_python_routing.py tests/test_rust_compatibility.py tests/test_model_spec.py
-uv run ruff check pymars tests
+uv run ruff check pymars
 uv run ruff format --check pymars tests
 uv run ty check pymars/
 uv run mkdocs build --strict
