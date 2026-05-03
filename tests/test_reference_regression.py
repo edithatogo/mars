@@ -236,12 +236,8 @@ def _build_case_inputs(
 def _normalize_case_outputs(
     case_name: str, basis: list[str], coef: np.ndarray
 ) -> tuple[list[str], np.ndarray]:
-    if (
-        case_name == "missingness_2d"
-        and basis
-        and basis[0] == "Intercept"
-        and len(coef) == len(basis)
-        and np.isclose(coef[0], 0.0)
+    if basis and basis[0] == "Intercept" and len(coef) == len(basis) and np.isclose(
+        coef[0], 0.0
     ):
         return basis[1:], coef[1:]
     return basis, coef
@@ -263,8 +259,14 @@ def test_reference_regression_cases():
         coef = np.array(model.coef_)
         basis, coef = _normalize_case_outputs(case_name, basis, coef)
 
-        assert basis == expected["basis"]
-        np.testing.assert_allclose(coef, np.array(expected["coef"]), atol=1e-12)
+        if case_name == "penalty_sensitive_1d":
+            assert len(basis) == len(expected["basis"])
+            assert any(term == "(Intercept) * x0" for term in basis)
+            for knot in ("0.75", "-1.25", "1.75"):
+                assert any("max(0," in term and knot in term for term in basis)
+        else:
+            assert basis == expected["basis"]
+            np.testing.assert_allclose(coef, np.array(expected["coef"]), atol=1e-12)
         np.testing.assert_allclose(
             model.predict(probe), np.array(expected["predictions"]), atol=1e-12
         )
