@@ -12,7 +12,7 @@
 - [~] Task: Confirm registry ownership and credential status [blocker: need human credential verification, 2026-04-29]
     - [x] Confirm PyPI project ownership and trusted publishing or token status
     - [~] Confirm crates.io owner and crate name status [blocker: human action needed, 2026-04-29]
-    - [~] Confirm npm organization/package ownership and publish-automation status [blocker: automation token or trusted publishing required, 2026-05-03]
+    - [~] Confirm npm organization/package ownership and publish-automation status [blocker: first publish needs an automation token, then trusted publishing can be registered, 2026-05-03]
     - [x] Confirm NuGet trusted publishing policy and login path
     - [x] Confirm Go module path and tag strategy
     - [~] Confirm R r-universe/CRAN and Julia General submission requirements [blocker: human action needed, 2026-04-29]

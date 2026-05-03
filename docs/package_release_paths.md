@@ -58,7 +58,9 @@ keep the shared `mars-earth` brand visible.
   compatibility. Training is intentionally unsupported in this package line
   until a separate training surface is designed.
 - Release path: `npm pack --dry-run`, artifact inspection, and `npm publish`
-  with trusted publishing or an automation token in `NODE_AUTH_TOKEN`.
+  with an automation token in `NODE_AUTH_TOKEN` for the first release. Switch
+  to trusted publishing after the package exists and the trusted publisher can
+  be registered in npm package settings.
 - Rehearse with `npm test`, `npm pack --dry-run`, and install-from-tarball
   smoke tests.
 

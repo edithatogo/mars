@@ -61,6 +61,8 @@ jobs:
         working-directory: bindings/typescript
       - name: Publish to npm
         if: inputs.dry_run == false
+        # The first npm publish must use an automation token. Granular tokens
+        # still trigger EOTP here until npm trusted publishing is configured.
         run: npm publish --access public
         working-directory: bindings/typescript
         env:

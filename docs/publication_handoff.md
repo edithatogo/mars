@@ -9,7 +9,7 @@ readiness to actual publication.
 | --- | --- | --- | --- |
 | PyPI `mars-earth` | Nothing further unless you change the publish path | GitHub Actions trusted publishing | Ready |
 | crates.io `mars-earth` | Registry token and confirmation of the owner/team | `CARGO_REGISTRY_TOKEN` in GitHub Actions | Waiting on secret setup |
-| npm `mars-earth` | Automation token or trusted-publishing equivalent and scope owner confirmation | `NPM_TOKEN` or npm trusted publishing | Waiting on secret setup |
+| npm `mars-earth` | Automation token for the first publish, or trusted publishing once the package exists and can be registered | `NPM_TOKEN` (automation token) or npm trusted publishing | Waiting on secret setup |
 | NuGet `mars-earth` | Trusted publishing owner confirmation and GitHub Actions login path | `NuGet/login@v1` short-lived API key exchange | Ready |
 | Go module | Tag-signing rule and who signs/reviews release tags | Repository policy / release checklist | Waiting on policy confirmation |
 | R `marsruntime` | r-universe / CRAN submission path and maintainer account details | Release checklist and maintainer notes | Waiting on maintainer confirmation |
