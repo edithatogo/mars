@@ -258,7 +258,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../index.md" class="md-nav__link">
         
   
   
@@ -285,7 +285,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../installation/" class="md-nav__link">
+      <a href="../installation.md" class="md-nav__link">
         
   
   
@@ -312,7 +312,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../usage/" class="md-nav__link">
+      <a href="../usage.md" class="md-nav__link">
         
   
   
@@ -339,7 +339,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../model_spec/" class="md-nav__link">
+      <a href="../model_spec.md" class="md-nav__link">
         
   
   
@@ -366,7 +366,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../rust_core/" class="md-nav__link">
+      <a href="../rust_core.md" class="md-nav__link">
         
   
   
@@ -393,7 +393,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../training_core_migration/" class="md-nav__link">
+      <a href="../training_core_migration.md" class="md-nav__link">
         
   
   
@@ -420,7 +420,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../training_orchestration_inventory/" class="md-nav__link">
+      <a href="../training_orchestration_inventory.md" class="md-nav__link">
         
   
   
@@ -447,7 +447,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../bindings/" class="md-nav__link">
+      <a href="../bindings.md" class="md-nav__link">
         
   
   
@@ -474,7 +474,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../binding_release/" class="md-nav__link">
+      <a href="../binding_release.md" class="md-nav__link">
         
   
   
@@ -501,7 +501,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../binding_backend_decisions/" class="md-nav__link">
+      <a href="../binding_backend_decisions.md" class="md-nav__link">
         
   
   
@@ -528,7 +528,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../binding_abi_contract/" class="md-nav__link">
+      <a href="../binding_abi_contract.md" class="md-nav__link">
         
   
   
@@ -555,7 +555,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../ci_quality/" class="md-nav__link">
+      <a href="../ci_quality.md" class="md-nav__link">
         
   
   
@@ -582,7 +582,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../supply_chain/" class="md-nav__link">
+      <a href="../supply_chain.md" class="md-nav__link">
         
   
   
@@ -748,7 +748,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../package_release_paths/" class="md-nav__link">
+      <a href="../package_release_paths.md" class="md-nav__link">
         
   
   
@@ -775,7 +775,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../remaining_roadmap/" class="md-nav__link">
+      <a href="../remaining_roadmap.md" class="md-nav__link">
         
   
   
@@ -802,7 +802,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../conformance/" class="md-nav__link">
+      <a href="../conformance.md" class="md-nav__link">
         
   
   
@@ -829,7 +829,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/" class="md-nav__link">
+      <a href="../api.md" class="md-nav__link">
         
   
   
@@ -856,7 +856,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../design/" class="md-nav__link">
+      <a href="../design.md" class="md-nav__link">
         
   
   
@@ -883,7 +883,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../requirements/" class="md-nav__link">
+      <a href="../requirements.md" class="md-nav__link">
         
   
   
@@ -910,7 +910,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tasks/" class="md-nav__link">
+      <a href="../tasks.md" class="md-nav__link">
         
   
   
@@ -984,7 +984,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/basic/" class="md-nav__link">
+      <a href="../tutorials/basic.md" class="md-nav__link">
         
   
   
@@ -1012,7 +1012,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/advanced/" class="md-nav__link">
+      <a href="../tutorials/advanced.md" class="md-nav__link">
         
   
   
@@ -1047,7 +1047,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../performance_optimization_plan/" class="md-nav__link">
+      <a href="../performance_optimization_plan.md" class="md-nav__link">
         
   
   
@@ -1074,7 +1074,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../robustness_improvement_plan/" class="md-nav__link">
+      <a href="../robustness_improvement_plan.md" class="md-nav__link">
         
   
   
@@ -1160,7 +1160,9 @@ registry inputs.</p>
 <li>Confirm the PyPI project owner and trusted publishing configuration for
   <code>mars-earth</code> if any publishing change is planned.</li>
 <li>Confirm the crates.io registry token for <code>mars-earth</code> exists.</li>
-<li>Confirm the npm publish token for <code>mars-earth</code> exists and is wired as <code>NPM_TOKEN</code> in GitHub Actions.</li>
+<li>Confirm the npm automation token or trusted publishing path for <code>mars-earth</code>
+  exists and is wired as <code>NPM_TOKEN</code> or the equivalent GitHub Actions/OIDC
+  path.</li>
 <li>Confirm the NuGet trusted publishing policy for <code>mars-earth</code> exists and the
   GitHub Actions login path is configured.</li>
 <li>Confirm the Go module tag-signing and release-tag policy.</li>
