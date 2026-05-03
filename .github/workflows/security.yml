@@ -53,7 +53,8 @@ jobs:
         run: cargo install cargo-audit --locked
 
       - name: Run cargo audit
-        run: cargo audit --manifest-path rust-runtime/Cargo.toml
+        working-directory: rust-runtime
+        run: cargo audit
 
       - name: Upload security reports
         if: always()
