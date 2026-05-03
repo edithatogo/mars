@@ -14,6 +14,8 @@
         <link rel="prev" href="../release_inventory/">
       
       
+        <link rel="next" href="../remaining_roadmap/">
+      
       
         
       
@@ -256,7 +258,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../index.md" class="md-nav__link">
+      <a href=".." class="md-nav__link">
         
   
   
@@ -283,7 +285,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../installation.md" class="md-nav__link">
+      <a href="../installation/" class="md-nav__link">
         
   
   
@@ -310,7 +312,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../usage.md" class="md-nav__link">
+      <a href="../usage/" class="md-nav__link">
         
   
   
@@ -337,7 +339,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../model_spec.md" class="md-nav__link">
+      <a href="../model_spec/" class="md-nav__link">
         
   
   
@@ -364,7 +366,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../rust_core.md" class="md-nav__link">
+      <a href="../rust_core/" class="md-nav__link">
         
   
   
@@ -391,7 +393,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../training_core_migration.md" class="md-nav__link">
+      <a href="../training_core_migration/" class="md-nav__link">
         
   
   
@@ -418,7 +420,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../training_orchestration_inventory.md" class="md-nav__link">
+      <a href="../training_orchestration_inventory/" class="md-nav__link">
         
   
   
@@ -445,7 +447,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../bindings.md" class="md-nav__link">
+      <a href="../bindings/" class="md-nav__link">
         
   
   
@@ -472,7 +474,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../binding_release.md" class="md-nav__link">
+      <a href="../binding_release/" class="md-nav__link">
         
   
   
@@ -499,7 +501,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../binding_backend_decisions.md" class="md-nav__link">
+      <a href="../binding_backend_decisions/" class="md-nav__link">
         
   
   
@@ -526,7 +528,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../binding_abi_contract.md" class="md-nav__link">
+      <a href="../binding_abi_contract/" class="md-nav__link">
         
   
   
@@ -553,7 +555,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../ci_quality.md" class="md-nav__link">
+      <a href="../ci_quality/" class="md-nav__link">
         
   
   
@@ -900,7 +902,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../remaining_roadmap.md" class="md-nav__link">
+      <a href="../remaining_roadmap/" class="md-nav__link">
         
   
   
@@ -927,7 +929,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../conformance.md" class="md-nav__link">
+      <a href="../conformance/" class="md-nav__link">
         
   
   
@@ -954,7 +956,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api.md" class="md-nav__link">
+      <a href="../api/" class="md-nav__link">
         
   
   
@@ -981,7 +983,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../design.md" class="md-nav__link">
+      <a href="../design/" class="md-nav__link">
         
   
   
@@ -1008,7 +1010,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../requirements.md" class="md-nav__link">
+      <a href="../requirements/" class="md-nav__link">
         
   
   
@@ -1035,7 +1037,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tasks.md" class="md-nav__link">
+      <a href="../tasks/" class="md-nav__link">
         
   
   
@@ -1109,7 +1111,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/basic.md" class="md-nav__link">
+      <a href="../tutorials/basic/" class="md-nav__link">
         
   
   
@@ -1137,7 +1139,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/advanced.md" class="md-nav__link">
+      <a href="../tutorials/advanced/" class="md-nav__link">
         
   
   
@@ -1172,7 +1174,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../performance_optimization_plan.md" class="md-nav__link">
+      <a href="../performance_optimization_plan/" class="md-nav__link">
         
   
   
@@ -1199,7 +1201,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../robustness_improvement_plan.md" class="md-nav__link">
+      <a href="../robustness_improvement_plan/" class="md-nav__link">
         
   
   
@@ -1407,10 +1409,11 @@
 <p>This page documents the package-manager-specific release paths for the current
 binding surface. It is the policy source for the publication track and the
 release-rehearsal workflow.</p>
-<p><code>mars-earth</code> is the public project brand for the whole package family. Where an
-ecosystem requires a concrete package or module identifier, that identifier
-stays ecosystem-native, while the docs and release metadata should keep the
-shared <code>mars-earth</code> brand visible.</p>
+<p><code>mars-earth</code> is the public project brand for the whole package family. The
+canonical package matrix lives in <a href="../release_inventory/">Release Inventory</a>.
+Where an ecosystem requires a concrete package or module identifier, that
+identifier stays ecosystem-native, while the docs and release metadata should
+keep the shared <code>mars-earth</code> brand visible.</p>
 <h2 id="release-criteria">Release Criteria</h2>
 <ul>
 <li>Stable runtime releases require Rust-backed conformance, artifact inspection,
@@ -1444,7 +1447,7 @@ shared <code>mars-earth</code> brand visible.</p>
 <h3 id="rust">Rust</h3>
 <ul>
 <li>Registry: crates.io.</li>
-<li>Package name: <code>pymars-runtime</code>.</li>
+<li>Package name: <code>mars-earth</code>.</li>
 <li>Release path: <code>cargo package</code> followed by <code>cargo publish</code> with
   <code>CARGO_REGISTRY_TOKEN</code> once ownership is confirmed.</li>
 <li>Rehearse with <code>cargo package --allow-dirty --list</code> and <code>cargo package</code>.</li>
@@ -1452,7 +1455,7 @@ shared <code>mars-earth</code> brand visible.</p>
 <h3 id="typescript">TypeScript</h3>
 <ul>
 <li>Registry: npm.</li>
-<li>Package name: <code>@mars-earth/runtime</code>.</li>
+<li>Package name: <code>mars-earth</code>.</li>
 <li>Release scope: runtime-only for now; the package uses Rust CLI acceleration
   where a built binary is available and keeps a JavaScript fallback for
   compatibility. Training is intentionally unsupported in this package line
@@ -1481,9 +1484,10 @@ shared <code>mars-earth</code> brand visible.</p>
 <h3 id="c">C</h3>
 <ul>
 <li>Registry: NuGet.</li>
-<li>Package name: <code>MarsRuntime</code>.</li>
-<li>Release path: <code>dotnet pack</code> followed by <code>dotnet nuget push</code> with
-  <code>NUGET_API_KEY</code> once the protected release environment is approved.</li>
+<li>Package name: <code>mars-earth</code>.</li>
+<li>Release path: <code>dotnet pack</code>, then <code>NuGet/login@v1</code> to mint a short-lived
+  API key, then <code>dotnet nuget push</code> through the protected <code>release</code>
+  environment.</li>
 <li>Rehearse with <code>dotnet test</code>, <code>dotnet pack</code>, and install-from-nupkg smoke
   tests.</li>
 </ul>

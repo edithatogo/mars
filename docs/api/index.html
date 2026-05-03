@@ -582,7 +582,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../supply_chain.md" class="md-nav__link">
+      <a href="../supply_chain/" class="md-nav__link">
         
   
   
@@ -609,7 +609,34 @@
   
   
     <li class="md-nav__item">
-      <a href="../release_checklist.md" class="md-nav__link">
+      <a href="../publication_handoff/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Publication Handoff
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release_checklist/" class="md-nav__link">
         
   
   
@@ -636,7 +663,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../release_inventory.md" class="md-nav__link">
+      <a href="../release_inventory/" class="md-nav__link">
         
   
   
@@ -663,7 +690,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../package_release_paths.md" class="md-nav__link">
+      <a href="../package_release_paths/" class="md-nav__link">
         
   
   
@@ -753,24 +780,6 @@
         
       
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    API Reference
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -787,58 +796,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#stable-estimators" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Stable estimators
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#portable-runtime" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Portable runtime
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#experimental-apis" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Experimental APIs
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
       
     </li>
   
@@ -940,10 +897,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_23" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_24" >
         
           
-          <label class="md-nav__link" for="__nav_23" id="__nav_23_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_24" id="__nav_24_label" tabindex="0">
             
   
   
@@ -961,8 +918,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_23_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_23">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_24_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_24">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1109,47 +1066,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#stable-estimators" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Stable estimators
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#portable-runtime" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Portable runtime
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#experimental-apis" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Experimental APIs
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -1169,16 +1085,14 @@
 
 
 <h1 id="api-reference">API Reference</h1>
-<p>Only the documented top-level <code>pymars</code> symbols below are part of the supported
-public API. Undocumented imports and internal modules are not covered by
-compatibility guarantees.</p>
-<h2 id="stable-estimators">Stable estimators</h2>
+<p>The supported public Python API remains the documented <code>pymars</code> surface.</p>
+<p>Stable estimators:</p>
 <ul>
 <li><code>pymars.Earth</code></li>
 <li><code>pymars.EarthRegressor</code></li>
 <li><code>pymars.EarthClassifier</code></li>
 </ul>
-<h2 id="portable-runtime">Portable runtime</h2>
+<p>Portable runtime helpers:</p>
 <ul>
 <li><code>pymars.validate</code></li>
 <li><code>pymars.load_model_spec</code></li>
@@ -1187,11 +1101,6 @@ compatibility guarantees.</p>
 <li><code>pymars.predict</code></li>
 <li><code>pymars.design_matrix</code></li>
 <li><code>pymars.inspect</code></li>
-</ul>
-<h2 id="experimental-apis">Experimental APIs</h2>
-<ul>
-<li><code>pymars.GLMEarth</code></li>
-<li><code>pymars.EarthCV</code></li>
 </ul>
 
 

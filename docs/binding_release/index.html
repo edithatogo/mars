@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#binding-release-management" class="md-skip">
+        <a href="#binding-release" class="md-skip">
           Skip to content
         </a>
       
@@ -483,24 +483,6 @@
         
       
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Binding Release
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -517,58 +499,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#package-managers" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Package Managers
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cicd" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        CI/CD
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#release-rule" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Release Rule
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
       
     </li>
   
@@ -662,7 +592,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../supply_chain.md" class="md-nav__link">
+      <a href="../supply_chain/" class="md-nav__link">
         
   
   
@@ -689,7 +619,34 @@
   
   
     <li class="md-nav__item">
-      <a href="../release_checklist.md" class="md-nav__link">
+      <a href="../publication_handoff/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Publication Handoff
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release_checklist/" class="md-nav__link">
         
   
   
@@ -716,7 +673,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../release_inventory.md" class="md-nav__link">
+      <a href="../release_inventory/" class="md-nav__link">
         
   
   
@@ -743,7 +700,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../package_release_paths.md" class="md-nav__link">
+      <a href="../package_release_paths/" class="md-nav__link">
         
   
   
@@ -940,10 +897,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_23" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_24" >
         
           
-          <label class="md-nav__link" for="__nav_23" id="__nav_23_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_24" id="__nav_24_label" tabindex="0">
             
   
   
@@ -961,8 +918,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_23_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_23">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_24_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_24">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1109,47 +1066,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#package-managers" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Package Managers
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cicd" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        CI/CD
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#release-rule" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Release Rule
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -1168,80 +1084,15 @@
   
 
 
-<h1 id="binding-release-management">Binding Release Management</h1>
-<p>Binding packages are released only after their conformance checks pass.</p>
-<h2 id="package-managers">Package Managers</h2>
-<table>
-<thead>
-<tr>
-<th>Binding</th>
-<th>Package manager</th>
-<th>Credential or gate</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Python</td>
-<td>PyPI</td>
-<td>Trusted publishing via GitHub Actions for <code>mars-earth</code></td>
-</tr>
-<tr>
-<td>Rust</td>
-<td>crates.io</td>
-<td><code>CARGO_REGISTRY_TOKEN</code></td>
-</tr>
-<tr>
-<td>TypeScript</td>
-<td>npm</td>
-<td><code>NPM_TOKEN</code> for <code>@mars-earth/runtime</code></td>
-</tr>
-<tr>
-<td>R</td>
-<td>r-universe, then CRAN</td>
-<td>Maintainer review and CRAN/r-universe setup</td>
-</tr>
-<tr>
-<td>Julia</td>
-<td>Julia General registry</td>
-<td>Registrator.jl and maintainer approval</td>
-</tr>
-<tr>
-<td>C# / .NET 11 preview</td>
-<td>NuGet</td>
-<td><code>NUGET_API_KEY</code></td>
-</tr>
-<tr>
-<td>Go</td>
-<td>Go modules</td>
-<td>Signed repository tag for the Go module path</td>
-</tr>
-</tbody>
-</table>
-<h2 id="cicd">CI/CD</h2>
-<p><code>bindings-ci.yml</code> validates the runtime replay surface for every binding family.
-<code>bindings-publish.yml</code> provides manual publish scaffolding. The publish workflow
-defaults to dry-run behavior and should not be used for real publication until
-registry ownership, credentials, and versioning policies are confirmed.
-<code>release-rehearsal.yml</code> runs the non-publishing release rehearsal, uploads
-candidate artifacts for inspection, and exercises install-from-artifact smoke
-tests where the ecosystem supports them.
-The release workflows also generate provenance attestations for built
-artifacts where GitHub supports them.</p>
-<h2 id="release-rule">Release Rule</h2>
-<p>Do not publish stable runtime packages until Rust-backed bindings pass
-conformance and duplicated MVP replay logic is removed, isolated as a tested
-fallback, or explicitly labeled experimental/pre-release.</p>
-<p>Do not publish stable training packages until Rust training orchestration and
-training-capable language bindings pass shared training conformance.</p>
-<p>Release readiness is separate from publication. Registry ownership, credentials,
-protected environments, version policy, dry-run artifacts, and external blockers
-must be resolved or recorded before a publish workflow runs.</p>
-<p>The current registry and parity inventory is tracked in
-<a href="release_inventory.md">Release and Parity Inventory</a>.
-The package-manager-specific release paths and policy live in
-<a href="package_release_paths.md">Package Release Paths</a>.
-The maintainer release checklist lives in
-<a href="release_checklist.md">Release Checklist</a>.</p>
+<h1 id="binding-release">Binding Release</h1>
+<p>Binding releases follow the shared release inventory and the package-specific
+paths in <a href="../package_release_paths/">Package Release Paths</a>.</p>
+<p>The release process is intentionally conservative:</p>
+<ul>
+<li>stable runtime releases require artifact inspection and conformance checks</li>
+<li>training releases require the Rust training path to be ready</li>
+<li>publication uses protected environments and registry-specific approvals</li>
+</ul>
 
 
 

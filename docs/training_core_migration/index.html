@@ -402,24 +402,6 @@
         
       
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Training Core Migration
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -436,47 +418,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#binding-feedback" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Binding Feedback
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#migration-order" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Migration Order
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
       
     </li>
   
@@ -651,7 +592,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../supply_chain.md" class="md-nav__link">
+      <a href="../supply_chain/" class="md-nav__link">
         
   
   
@@ -678,7 +619,34 @@
   
   
     <li class="md-nav__item">
-      <a href="../release_checklist.md" class="md-nav__link">
+      <a href="../publication_handoff/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Publication Handoff
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release_checklist/" class="md-nav__link">
         
   
   
@@ -705,7 +673,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../release_inventory.md" class="md-nav__link">
+      <a href="../release_inventory/" class="md-nav__link">
         
   
   
@@ -732,7 +700,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../package_release_paths.md" class="md-nav__link">
+      <a href="../package_release_paths/" class="md-nav__link">
         
   
   
@@ -929,10 +897,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_23" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_24" >
         
           
-          <label class="md-nav__link" for="__nav_23" id="__nav_23_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_24" id="__nav_24_label" tabindex="0">
             
   
   
@@ -950,8 +918,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_23_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_23">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_24_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_24">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1098,36 +1066,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#binding-feedback" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Binding Feedback
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#migration-order" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Migration Order
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -1147,43 +1085,15 @@
 
 
 <h1 id="training-core-migration">Training Core Migration</h1>
-<p>The portable runtime bindings now exercise the <code>ModelSpec</code> replay contract
-across Python, Rust, Go, TypeScript, R, Julia, and C# package surfaces. The next
-migration step is to replace duplicated runtime replay in each binding with
-thin Rust-backed runtime bindings. Full training orchestration should then start
-behind that validated Rust boundary.</p>
-<h2 id="binding-feedback">Binding Feedback</h2>
-<p>The binding MVPs exposed the core constraints that the Rust training layer must
-respect:</p>
+<p>The training migration is moving from Python orchestration toward a Rust core.</p>
+<p>Current state:</p>
 <ul>
-<li>Inputs must stay row-major and shape-explicit at the shared boundary.</li>
-<li>Missing values need explicit NaN/null semantics in fixtures.</li>
-<li>Categorical replay currently supports numeric category encodings only.</li>
-<li>Errors need stable categories so bindings can translate them idiomatically.</li>
-<li>Package CI must run conformance before any training internals are exposed.</li>
+<li>Rust-backed training exists for the supported baseline cases</li>
+<li>Python still owns unsupported edge handling and fallback behavior</li>
+<li>full search and pruning parity is still tracked separately</li>
 </ul>
-<h2 id="migration-order">Migration Order</h2>
-<ol>
-<li>Basis evaluation primitives.</li>
-<li>Weighted least-squares, RSS, and GCV scoring.</li>
-<li>Forward candidate scoring.</li>
-<li>Pruning subset scoring.</li>
-<li>Rust-backed runtime bindings across all supported languages.</li>
-<li>Full forward/pruning orchestration.</li>
-<li>Python estimator integration.</li>
-<li>Training APIs for non-Python language bindings where supported.</li>
-</ol>
-<p>The current Rust additions cover steps 1 through 4 as shared primitives:</p>
-<ul>
-<li>public basis-term evaluation</li>
-<li>weighted least-squares/RSS</li>
-<li>GCV scoring</li>
-<li>forward candidate scoring</li>
-<li>pruning subset scoring</li>
-</ul>
-<p>Python continues to own the public estimator API until full orchestration has
-parity fixtures and can be routed through Rust without changing sklearn-facing
-behavior.</p>
+<p>See <a href="../training_orchestration_inventory/">Training Orchestration Inventory</a> for
+the current boundary notes.</p>
 
 
 
