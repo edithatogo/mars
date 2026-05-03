@@ -15,9 +15,9 @@ class GLMEarth(EarthRegressor):
         super().__init__(**kwargs)
         self.family = family
 
-    def fit(self, X: Any, y: Any) -> GLMEarth:
+    def fit(self, X: Any, y: Any, sample_weight: Any | None = None) -> GLMEarth:
         """Fit the GLM Earth model to training data."""
-        super().fit(X, y)
+        super().fit(X, y, sample_weight)
         X_proc, mask, _ = self.earth_._scrub_input_data(X, y)
         basis = self.basis_
         if basis is None:

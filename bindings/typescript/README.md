@@ -1,4 +1,4 @@
-# @mars-earth/runtime
+# mars-earth
 
 Portable JavaScript runtime replay for mars `ModelSpec` artifacts.
 

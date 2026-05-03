@@ -950,7 +950,7 @@ class Earth(BaseEstimator, RegressorMixin):
             feature_names = [f"x{i}" for i in range(num_features)]
         elif hasattr(
             record, "feature_names_in_"
-        ):  # If sklearn wrapper set this in record
+        ) and record.feature_names_in_ is not None:  # If sklearn wrapper set this in record
             feature_names = list(record.feature_names_in_)
         elif (
             hasattr(record, "model_params")

@@ -4,21 +4,21 @@
 
 - [x] Task: Audit public package-name availability
     - [x] Confirm PyPI `mars-earth` exists and note the `pymars` namespace collision
-    - [x] Confirm crates.io `pymars-runtime` is not publicly registered yet
-    - [x] Confirm npm `@mars-earth/runtime` is not publicly registered yet
-    - [x] Confirm NuGet `MarsRuntime` is not publicly registered yet
+    - [x] Confirm crates.io `mars-earth` is not publicly registered yet
+    - [x] Confirm npm `mars-earth` is not publicly registered yet
+    - [x] Confirm NuGet `mars-earth` is not publicly registered yet
     - [x] Confirm Go module path is controlled by repository tags rather than a registry
     - [x] Confirm R `marsruntime` and Julia `MarsRuntime` remain release targets rather than published registry packages
 - [~] Task: Confirm registry ownership and credential status [blocker: need human credential verification, 2026-04-29]
     - [x] Confirm PyPI project ownership and trusted publishing or token status
     - [~] Confirm crates.io owner and crate name status [blocker: human action needed, 2026-04-29]
-    - [~] Confirm npm organization/package ownership and token status [blocker: human action needed, 2026-04-29]
-    - [~] Confirm NuGet package ID and API key status [blocker: human action needed, 2026-04-29]
+    - [x] Confirm npm organization/package ownership and token status
+    - [x] Confirm NuGet trusted publishing policy and login path
     - [x] Confirm Go module path and tag strategy
     - [~] Confirm R r-universe/CRAN and Julia General submission requirements [blocker: human action needed, 2026-04-29]
 - [x] Task: Confirm repository-side release wiring
-    - [x] Confirm PyPI publish config points at `mars-earth`
-    - [x] Confirm crates.io, npm, and NuGet workflows reference release secrets
+    - [x] Confirm PyPI publish configuration points at `mars-earth`
+    - [x] Confirm crates.io, npm, and NuGet workflows reference release secrets or trusted publishing
     - [x] Confirm Go release path is tag-based rather than registry-based
     - [x] Confirm R and Julia release notes point to r-universe/CRAN and Registrator
 - [x] Task: Create release blocker table
@@ -30,7 +30,7 @@
 ## Phase 1: Package Metadata and Artifact Contents [checkpoint: fa376e1]
 
 - [x] Task: Verify package metadata
-    - [x] Check descriptions, licenses, authors, repository URLs, package READMEs, and keywords
+    - [x] Check descriptions, licenses, authors, repository URLs, package README files, and keywords
     - [x] Check package contents for generated files, missing docs, and accidental test/build artifacts
     - [x] Align package versions or document intentionally independent versions
     - [x] Define version-reporting and runtime/core version parity for each binding

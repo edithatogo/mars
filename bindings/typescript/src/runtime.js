@@ -22,7 +22,7 @@ export function loadModelSpec(raw) {
 
 export function fitModel() {
   throw new Error(
-    "training is not supported in @mars-earth/runtime; use a training-capable binding or the Rust CLI fit subcommand",
+    "training is not supported in mars-earth; use a training-capable binding or the Rust CLI fit subcommand",
   );
 }
 

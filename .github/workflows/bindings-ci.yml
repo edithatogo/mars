@@ -215,7 +215,7 @@ jobs:
           tmpdir=$(mktemp -d)
           npm init -y --prefix "$tmpdir" >/dev/null
           npm install --prefix "$tmpdir" "$tarball" >/dev/null
-          (cd "$tmpdir" && node --input-type=module -e "import('@mars-earth/runtime')")
+          (cd "$tmpdir" && node --input-type=module -e "import('mars-earth')")
         working-directory: bindings/typescript
 
   r:
@@ -312,7 +312,7 @@ jobs:
               <TargetFramework>net11.0</TargetFramework>
             </PropertyGroup>
             <ItemGroup>
-              <PackageReference Include="MarsRuntime" Version="0.0.0" />
+              <PackageReference Include="mars-earth" Version="0.0.0" />
             </ItemGroup>
           </Project>
           EOF

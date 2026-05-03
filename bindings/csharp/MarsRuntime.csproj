@@ -3,7 +3,7 @@
     <TargetFramework>net11.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <PackageId>MarsRuntime</PackageId>
+    <PackageId>mars-earth</PackageId>
     <Version>0.0.0</Version>
     <Authors>Dylan A Mordaunt</Authors>
     <Description>Portable runtime replay for mars ModelSpec artifacts.</Description>

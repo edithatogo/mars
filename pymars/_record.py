@@ -29,6 +29,7 @@ class EarthRecord:
         self.model_params: dict[str, Any] = (
             earth_model_instance.__dict__.copy()
         )  # Store initial model params
+        self.feature_names_in_: np.ndarray | None = None
         self.n_samples = X.shape[0]
         self.n_features = X.shape[1]
 

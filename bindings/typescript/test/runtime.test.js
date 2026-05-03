@@ -30,7 +30,7 @@ test("matches checked-in runtime portability fixtures", async () => {
 test("declares training as unsupported", () => {
   assert.throws(
     () => fitModel(),
-    /training is not supported in @mars-earth\/runtime/i,
+    /training is not supported in mars-earth/i,
   );
 });
 

@@ -1,6 +1,6 @@
-# pymars-runtime
+# mars-earth
 
-`pymars-runtime` is the Rust replay prototype and future shared core boundary
+`mars-earth` is the Rust replay prototype and future shared core boundary
 for `mars`.
 
 Today it validates portable `ModelSpec` artifacts and evaluates

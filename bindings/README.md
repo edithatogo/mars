@@ -23,11 +23,11 @@ the same fixture pairs from `tests/fixtures`.
 | Binding | Package manager | Release path |
 | --- | --- | --- |
 | Python | PyPI | Existing `mars-earth` distribution |
-| Rust | crates.io | Publish `pymars-runtime` once crate ownership and API stability are confirmed |
-| TypeScript | npm | Publish `@mars-earth/runtime` |
+| Rust | crates.io | Publish `mars-earth` once crate ownership and API stability are confirmed |
+| TypeScript | npm | Publish `mars-earth` |
 | R | CRAN or r-universe | Start with r-universe, graduate to CRAN when API and checks are mature |
 | Julia | Julia General registry | Register `MarsRuntime.jl` after package UUID and API are stable |
-| C# | NuGet | Publish `MarsRuntime` package |
+| C# | NuGet | Publish `mars-earth` package |
 | Go | Go modules | Publish from repository tags under the Go module path |
 
 Publishing must be gated by CI, registry credentials, version checks, and an

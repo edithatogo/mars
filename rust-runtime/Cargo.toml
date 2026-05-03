@@ -1,5 +1,5 @@
 [package]
-name = "pymars-runtime"
+name = "mars-earth"
 version = "0.1.0"
 edition = "2021"
 description = "Portable runtime replay for mars ModelSpec artifacts"
@@ -10,6 +10,10 @@ readme = "README.md"
 [lib]
 name = "pymars_runtime"
 crate-type = ["rlib", "cdylib"]
+
+[[bin]]
+name = "mars-runtime-cli"
+path = "src/bin/mars-runtime-cli.rs"
 
 [dependencies]
 anyhow = "1"

@@ -17,12 +17,14 @@ from ._model_spec import (
 )
 from .earth import Earth
 
+_rust_backend: Any = None
 try:
-    import pymars_runtime as _rust_backend
-    if not getattr(_rust_backend, "_IS_COMPILED", False):
-        _rust_backend = None
+    import pymars_runtime as _native_module
+
+    if getattr(_native_module, "_IS_COMPILED", False):
+        _rust_backend = _native_module
 except Exception:  # pragma: no cover - optional compiled extension
-    _rust_backend = None
+    pass
 
 _RUST_RUNTIME_SUPPORTED_KINDS = {
     "constant",
@@ -116,8 +118,8 @@ def fit_model(model: Earth, X: Any, y: Any, sample_weight: Any | None = None) ->
                 "feature_names": feature_names_list,
             },
         }
-        trained_spec_json = _rust_backend.fit_model_json(
-            spec_to_json(cast("dict[str, Any]", payload))
+        trained_spec_json = getattr(_rust_backend, 'fit_model_json')(
+            spec_to_json(payload)
         )
     except Exception:
         return None
@@ -125,7 +127,7 @@ def fit_model(model: Earth, X: Any, y: Any, sample_weight: Any | None = None) ->
     from ._model_spec import spec_to_model
 
     trained_model = spec_to_model(
-        cast("dict[str, Any]", spec_from_json(cast("str", trained_spec_json))), Earth
+        spec_from_json(trained_spec_json), Earth
     )
     trained_model.feature_importance_type = model.feature_importance_type
     model.__dict__.update(trained_model.__dict__)

@@ -90,7 +90,7 @@ def validate_model_spec(payload: dict[str, Any]) -> dict[str, Any]:
     for idx, term in enumerate(payload["basis_terms"]):
         if not isinstance(term, dict):
             raise TypeError(f"Basis term at index {idx} must be an object.")
-        kind = term.get("kind")
+        kind = cast("dict[str, Any]", term)["kind"]
         if not isinstance(kind, str) or not kind:
             raise ValueError(
                 f"Basis term at index {idx} is missing a valid 'kind' field."

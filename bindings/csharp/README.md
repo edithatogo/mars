@@ -1,4 +1,4 @@
-# MarsRuntime
+# mars-earth
 
 Portable .NET runtime replay for mars `ModelSpec` artifacts.
 
