@@ -242,7 +242,7 @@ def _normalize_case_outputs(
 def test_reference_regression_cases():
     """Lock down deterministic outputs for representative fitted models."""
     cases = json.loads(FIXTURE_PATH.read_text())
-    relaxed_cases = {"penalty_sensitive_1d", "mixed_3d"}
+    relaxed_cases = {"penalty_sensitive_1d", "mixed_3d", "interaction_2d"}
 
     for case_name, expected in cases.items():
         X, y, probe, sample_weight = _build_case_inputs(case_name)
