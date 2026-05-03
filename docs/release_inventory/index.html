@@ -14,6 +14,8 @@
         <link rel="prev" href="../release_checklist/">
       
       
+        <link rel="next" href="../package_release_paths/">
+      
       
         
       
@@ -553,7 +555,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../ci_quality.md" class="md-nav__link">
+      <a href="../ci_quality/" class="md-nav__link">
         
   
   
@@ -801,7 +803,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../package_release_paths.md" class="md-nav__link">
+      <a href="../package_release_paths/" class="md-nav__link">
         
   
   
@@ -1264,9 +1266,8 @@
 surface, and known release blockers across the supported language packages.
 It is the working inventory for the release-readiness and registry-governance
 tracks.</p>
-<p>All packages belong to the <code>mars-earth</code> family. The registry/package IDs below
-are the ecosystem-specific identifiers used where a registry requires a
-concrete name.</p>
+<p>The public project brand is <code>mars-earth</code>. Language-specific package and module
+names remain ecosystem-native when a registry or toolchain requires them.</p>
 <h2 id="package-matrix">Package Matrix</h2>
 <table>
 <thead>
@@ -1358,9 +1359,9 @@ concrete name.</p>
 </tr>
 <tr>
 <td>npm <code>mars-earth</code></td>
-<td>Maintainer-owned package name; publish token verified for registry auth, but publish still fails with <code>EOTP</code> unless an automation token or trusted publishing is used</td>
-<td>Confirm npm org, automation-token/trusted-publishing path, and GitHub Actions wiring</td>
-<td>Partial</td>
+<td>Maintainer-owned package name; publish token or trusted publishing path still needs to be finalized for OTP-free publishing</td>
+<td>Confirm npm org and automation-token/trusted-publishing path</td>
+<td>Owner confirmed</td>
 <td>2026-05-03</td>
 </tr>
 <tr>
@@ -1482,10 +1483,8 @@ concrete name.</p>
 <ul>
 <li>Python release automation already points at <code>mars-earth</code> in <code>pyproject.toml</code>
   and the GitHub release workflow publishes that distribution name.</li>
-<li>Rust and NuGet publish jobs already reference the expected secret names or
-  trusted-publishing paths in GitHub Actions. npm still needs an
-  automation-token or trusted-publishing path; the current granular token hits
-  <code>EOTP</code> during publish.</li>
+<li>Rust, npm, and NuGet publish jobs already reference the expected secret names
+  or trusted-publishing paths in GitHub Actions.</li>
 <li>Go release remains tag-driven.</li>
 <li>R and Julia release notes already point to their registry-specific release
   paths.</li>

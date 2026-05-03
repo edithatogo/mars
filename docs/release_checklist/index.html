@@ -555,7 +555,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../ci_quality.md" class="md-nav__link">
+      <a href="../ci_quality/" class="md-nav__link">
         
   
   
@@ -696,10 +696,54 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#maintainer-inputs-needed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Maintainer Inputs Needed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-a-release-rehearsal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before a Release Rehearsal
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#registry-ownership-and-credentials" class="md-nav__link">
     <span class="md-ellipsis">
       
         Registry Ownership and Credentials
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-publishing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before Publishing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#after-publishing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        After Publishing
       
     </span>
   </a>
@@ -748,7 +792,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../package_release_paths.md" class="md-nav__link">
+      <a href="../package_release_paths/" class="md-nav__link">
         
   
   
@@ -1121,10 +1165,54 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#maintainer-inputs-needed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Maintainer Inputs Needed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-a-release-rehearsal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before a Release Rehearsal
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#registry-ownership-and-credentials" class="md-nav__link">
     <span class="md-ellipsis">
       
         Registry Ownership and Credentials
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-publishing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before Publishing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#after-publishing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        After Publishing
       
     </span>
   </a>
@@ -1152,9 +1240,35 @@
 
 
 <h1 id="release-checklist">Release Checklist</h1>
-<p>This checklist is for maintainers preparing a publication run.</p>
-<p>Use <a href="../publication_handoff/">Publication Handoff</a> to capture the remaining
-registry inputs.</p>
+<p>This checklist is for maintainers who are preparing an actual publication run.
+It captures the manual confirmation steps that cannot be inferred safely from
+the repository alone.</p>
+<p>The <a href="../publication_handoff/">Publication Handoff</a> page is the quickest way to
+capture the remaining registry inputs from the maintainer.</p>
+<h2 id="maintainer-inputs-needed">Maintainer Inputs Needed</h2>
+<p>To move the remaining publication gates forward, the maintainer needs to
+confirm or configure:</p>
+<ul>
+<li>crates.io ownership and the <code>CARGO_REGISTRY_TOKEN</code> for <code>mars-earth</code></li>
+<li>npm ownership and the <code>NPM_TOKEN</code> or trusted publishing setup for
+  <code>mars-earth</code></li>
+<li>NuGet ownership and the <code>NuGet/login@v1</code> trusted publishing path for
+  <code>mars-earth</code></li>
+<li>the R release path through r-universe and CRAN</li>
+<li>the Julia release path through Registrator.jl and the General registry</li>
+<li>the Go tag-signing and release-tag policy</li>
+</ul>
+<h2 id="before-a-release-rehearsal">Before a Release Rehearsal</h2>
+<ul>
+<li>Confirm the package family being rehearsed and whether it is runtime-only or
+  includes training APIs.</li>
+<li>Confirm the protected release environment exists and is required for the
+  publish job.</li>
+<li>Confirm the latest release candidate artifacts were produced by the current
+  commit.</li>
+<li>Confirm the rehearsal workflow uploaded reviewable artifacts for the target
+  package family.</li>
+</ul>
 <h2 id="registry-ownership-and-credentials">Registry Ownership and Credentials</h2>
 <ul>
 <li>Confirm the PyPI project owner and trusted publishing configuration for
@@ -1169,6 +1283,25 @@ registry inputs.</p>
 <li>Confirm the R submission path through r-universe and CRAN is available.</li>
 <li>Confirm the Julia submission path through Registrator.jl and the General
   registry is available.</li>
+</ul>
+<h2 id="before-publishing">Before Publishing</h2>
+<ul>
+<li>Confirm the blocker table in <code>release_inventory.md</code> has an owner, action,
+  date, and status for every unresolved item.</li>
+<li>Confirm the release notes describe any intentional version skew between
+  package ecosystems.</li>
+<li>Confirm the stable-versus-pre-release label matches the package contents.</li>
+<li>Confirm the package-specific smoke test passed from the built artifact.</li>
+<li>Confirm provenance or attestation artifacts were generated where the
+  ecosystem supports them.</li>
+</ul>
+<h2 id="after-publishing">After Publishing</h2>
+<ul>
+<li>Confirm the published artifact matches the rehearsal artifact.</li>
+<li>Confirm the registry page and README links point to the canonical project.</li>
+<li>Confirm any release notes or changelog entries were updated to match the
+  published version.</li>
+<li>Record any post-publish issue in the blocker table or the release notes.</li>
 </ul>
 
 

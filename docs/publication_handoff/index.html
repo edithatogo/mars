@@ -11,6 +11,8 @@
         <link rel="canonical" href="https://edithatogo.github.io/pymars/publication_handoff/">
       
       
+        <link rel="prev" href="../ci_quality/">
+      
       
         <link rel="next" href="../release_checklist/">
       
@@ -553,7 +555,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../ci_quality.md" class="md-nav__link">
+      <a href="../ci_quality/" class="md-nav__link">
         
   
   
@@ -678,10 +680,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#open-the-pages" class="md-nav__link">
+  <a href="#how-to-provide-it" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Open The Pages
+        How to Provide It
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#once-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Once Set
       
     </span>
   </a>
@@ -757,7 +770,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../package_release_paths.md" class="md-nav__link">
+      <a href="../package_release_paths/" class="md-nav__link">
         
   
   
@@ -1141,10 +1154,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#open-the-pages" class="md-nav__link">
+  <a href="#how-to-provide-it" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Open The Pages
+        How to Provide It
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#once-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Once Set
       
     </span>
   </a>
@@ -1173,13 +1197,12 @@
 
 <h1 id="publication-handoff">Publication Handoff</h1>
 <p>This page captures the remaining information needed to move from release
-readiness to actual publication for the <code>mars-earth</code> package family.</p>
-<p>The canonical package matrix lives in <a href="../release_inventory/">Release Inventory</a>.</p>
+readiness to actual publication.</p>
 <h2 id="required-inputs">Required Inputs</h2>
 <table>
 <thead>
 <tr>
-<th><code>mars-earth</code> family target</th>
+<th>Package</th>
 <th>What I need from you</th>
 <th>Where it should live</th>
 <th>Current state</th>
@@ -1202,7 +1225,7 @@ readiness to actual publication for the <code>mars-earth</code> package family.<
 <td>npm <code>mars-earth</code></td>
 <td>Automation token or trusted-publishing equivalent and scope owner confirmation</td>
 <td><code>NPM_TOKEN</code> or npm trusted publishing</td>
-<td>Waiting on automation path</td>
+<td>Waiting on secret setup</td>
 </tr>
 <tr>
 <td>NuGet <code>mars-earth</code></td>
@@ -1230,14 +1253,20 @@ readiness to actual publication for the <code>mars-earth</code> package family.<
 </tr>
 </tbody>
 </table>
-<h2 id="open-the-pages">Open The Pages</h2>
+<h2 id="how-to-provide-it">How to Provide It</h2>
 <ul>
-<li><a href="https://crates.io/crates/mars-earth">crates.io: <code>mars-earth</code></a></li>
-<li><a href="https://www.npmjs.com/package/mars-earth">npm: <code>mars-earth</code></a></li>
-<li><a href="https://www.nuget.org/packages/mars-earth">NuGet: <code>mars-earth</code></a></li>
-<li><a href="https://juliaregistries.github.io/Registrator.jl/stable/webui/">Registrator.jl Web UI</a></li>
-<li><a href="https://cran.r-project.org/">CRAN</a></li>
-<li><a href="https://r-universe.dev/search">r-universe</a></li>
+<li>Put secret values into GitHub Actions secret settings, not in the repository.</li>
+<li>Reply with the maintainer-approved owner/team names for crates.io, npm,
+  NuGet, R, and Julia.</li>
+<li>Reply with the Go tag policy if you want the release flow to enforce a
+  specific signing or review rule.</li>
+</ul>
+<h2 id="once-set">Once Set</h2>
+<ul>
+<li>I can update the release inventory and publication track to mark the
+  relevant blockers complete.</li>
+<li>I can then move on to the publication execution track without re-discovering
+  registry state.</li>
 </ul>
 
 
