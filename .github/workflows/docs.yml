@@ -1,12 +1,10 @@
 name: Documentation
 
-# Note: This workflow is designed to work with GitHub Pages configured 
-# to use the /docs folder on the main branch
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 concurrency:
@@ -14,19 +12,17 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
-  deploy:
-    # Only run on main branch pushes, not on PRs (to avoid permission issues)
-    if: github.event_name != 'pull_request'
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v6
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          # Make sure we have the latest changes
           fetch-depth: 0
 
       - name: Install uv
@@ -42,34 +38,21 @@ jobs:
         run: uv sync --extra dev
 
       - name: Build documentation
-        run: uv run mkdocs build
+        run: uv run mkdocs build --strict
 
-      # Copy the built site to the docs folder
-      - name: Update docs directory
-        run: |
-          # Create the site directory if it doesn't exist
-          mkdir -p docs
-          
-          # Copy built documentation to docs folder, excluding .nojekyll if it exists in site
-          rsync -av --delete --exclude '.nojekyll' site/ docs/
-          
-          # Add .nojekyll file to ensure GitHub Pages works properly with mkdocs
-          touch docs/.nojekyll
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
 
-      # Commit and push changes back to main
-      - name: Commit and push changes
-        run: |
-          # Configure git
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          
-          # Add all changes in docs directory
-          git add docs/
-          
-          # Check if there are changes to commit
-          if [[ -n "$(git status --porcelain docs/)" ]]; then
-            git commit -m "Auto-update documentation [skip ci]"
-            git push
-          else
-            echo "No documentation changes to commit"
-          fi
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
