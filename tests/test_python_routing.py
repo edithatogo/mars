@@ -7,6 +7,9 @@ import numpy as np
 
 from pymars import Earth, runtime
 
+FIXTURES_DIR = Path(__file__).parent / "fixtures"
+MODEL_SPEC_V1_PATH = FIXTURES_DIR / "model_spec_v1.json"
+
 
 def test_public_rust_training_flag_is_not_exposed_yet() -> None:
     """Rust training routing is still a private migration detail."""
@@ -126,3 +129,58 @@ def test_rust_training_bridge_preserves_diagnostics(monkeypatch) -> None:
     summary = model.summary_feature_importances()
     assert "Feature Importances (nb_subsets)" in summary
     assert "x0" in summary
+
+
+def test_runtime_inspect_uses_rust_backend_for_supported_specs(monkeypatch) -> None:
+    """Rust-backed inspect should match the Python summary for portable specs."""
+    spec = runtime.load_model_spec(MODEL_SPEC_V1_PATH)
+    expected = {
+        "spec_version": spec["spec_version"],
+        "model_type": spec["model_type"],
+        "n_features": spec["feature_schema"]["n_features"],
+        "n_basis_terms": len(spec["basis_terms"]),
+        "metrics": spec["metrics"],
+    }
+    calls: list[str] = []
+
+    class DummyRustBackend:
+        def inspect_model_spec_json(self, spec_json: str) -> str:
+            calls.append(spec_json)
+            return json.dumps(expected)
+
+    monkeypatch.setattr(runtime, "_rust_backend", DummyRustBackend())
+    monkeypatch.setattr(
+        runtime, "_spec_is_rust_runtime_compatible", lambda _spec: True
+    )
+
+    assert runtime.inspect(MODEL_SPEC_V1_PATH) == expected
+    assert len(calls) == 1
+
+
+def test_runtime_inspect_falls_back_to_python_for_incompatible_specs(
+    monkeypatch,
+) -> None:
+    """Incompatible specs should stay on the Python inspect path."""
+    spec = runtime.load_model_spec(MODEL_SPEC_V1_PATH)
+    spec["categorical_imputer"] = {"kind": "sentinel"}
+    expected = {
+        "spec_version": spec["spec_version"],
+        "model_type": spec["model_type"],
+        "n_features": spec["feature_schema"]["n_features"],
+        "n_basis_terms": len(spec["basis_terms"]),
+        "metrics": spec["metrics"],
+    }
+    calls: list[str] = []
+
+    class DummyRustBackend:
+        def inspect_model_spec_json(self, spec_json: str) -> str:
+            calls.append(spec_json)
+            return json.dumps({"unexpected": True})
+
+    monkeypatch.setattr(runtime, "_rust_backend", DummyRustBackend())
+    monkeypatch.setattr(
+        runtime, "_spec_is_rust_runtime_compatible", lambda _spec: False
+    )
+
+    assert runtime.inspect(spec) == expected
+    assert calls == []

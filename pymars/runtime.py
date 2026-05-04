@@ -3,6 +3,7 @@ from __future__ import annotations
 """Spec-driven runtime helpers for portable pymars models."""
 
 import contextlib
+import json
 import logging
 import os
 from pathlib import Path
@@ -185,6 +186,12 @@ def design_matrix(spec_or_path: dict[str, Any] | str | Path, X: Any) -> np.ndarr
 def inspect(spec_or_path: dict[str, Any] | str | Path) -> dict[str, Any]:
     """Return a normalized view of a portable model spec."""
     spec = load_model_spec(spec_or_path)
+    if _rust_backend is not None and _spec_is_rust_runtime_compatible(spec):
+        with contextlib.suppress(Exception):
+            return cast(
+                "dict[str, Any]",
+                json.loads(_rust_backend.inspect_model_spec_json(spec_to_json(spec))),
+            )
     return {
         "spec_version": spec.get("spec_version"),
         "model_type": spec.get("model_type"),
