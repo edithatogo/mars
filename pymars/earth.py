@@ -860,9 +860,9 @@ class Earth(BaseEstimator, RegressorMixin):
 
         record = self.record_
         num_features = len(self.feature_importances_)
-        if record is None:
-            feature_names = [f"x{i}" for i in range(num_features)]
-        elif hasattr(record, "n_features") and record.n_features != num_features:
+        if record is None or (
+            hasattr(record, "n_features") and record.n_features != num_features
+        ):
             feature_names = [f"x{i}" for i in range(num_features)]
         elif (
             hasattr(record, "feature_names_in_")

@@ -330,11 +330,10 @@ class CategoricalBasisFunction(BasisFunction):
         x_col = X_processed[:, self.variable_idx]
         current_term_values = (x_col == self.category).astype(float)
 
-        # Apply NaN where original variable was missing
         current_var_missing = missing_mask[:, self.variable_idx]
         current_term_values[current_var_missing] = np.nan
 
-        if self.parent1:  # This is an interaction term
+        if self.parent1:
             parent_transformed = self.parent1.transform(X_processed, missing_mask)
             return cast("np.ndarray", parent_transformed * current_term_values)
         return cast("np.ndarray", current_term_values)
@@ -411,22 +410,19 @@ class LinearBasisFunction(BasisFunction):
             X_processed
             if X_processed.ndim == 1
             else X_processed[:, self.variable_idx].copy()
-        )  # Use .copy() to avoid modifying X_processed
+        )
 
-        # Apply NaN where original variable was missing
         current_var_missing = (
             missing_mask
             if X_processed.ndim == 1
             else missing_mask[:, self.variable_idx]
         )
-        if current_term_values.dtype != float:  # Ensure float type before assigning NaN
+        if current_term_values.dtype != float:
             current_term_values = current_term_values.astype(float)
         current_term_values[current_var_missing] = np.nan
 
-        if self.parent1:  # This is an interaction term
-            parent_transformed = self.parent1.transform(
-                X_processed, missing_mask
-            )  # Recursive call
+        if self.parent1:
+            parent_transformed = self.parent1.transform(X_processed, missing_mask)
             return cast("np.ndarray", parent_transformed * current_term_values)
         return cast("np.ndarray", current_term_values)
 
