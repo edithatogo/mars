@@ -15,7 +15,7 @@ names remain ecosystem-native when a registry or toolchain requires them.
 | Python | `mars-earth` / `pymars` import name | `pyproject.toml` + `pymars/__init__.py` | `logging` module in package code and CLI | Published on PyPI as `1.0.4`; trusted publishing and workflow wiring are already configured |
 | Rust | `mars-earth` | `rust-runtime/Cargo.toml` | Rust logging is not yet centralized | Published on crates.io as `0.1.0`; native extension source remains |
 | R | `marsruntime` | `bindings/r/DESCRIPTION` | Host errors are surfaced from runtime helpers | Runtime replay package, release readiness pending |
-| Julia | `MarsRuntime` | `bindings/julia/Project.toml` | Host errors are surfaced from runtime helpers | Runtime replay package, release readiness pending |
+| Julia | `MarsRuntime` | `bindings/julia/Project.toml` | Host errors are surfaced from runtime helpers | Registration submitted to Julia General; awaiting review |
 | C# | `mars-earth` | `bindings/csharp/MarsRuntime.csproj` | Host exceptions from runtime bridge/helpers | Published on NuGet as `0.0.0` |
 | Go | `github.com/edithatogo/mars/bindings/go` | `bindings/go/go.mod` | Host errors from runtime bridge/helpers | Runtime replay package, release readiness pending |
 | TypeScript | `mars-earth` | `bindings/typescript/package.json` | JavaScript exceptions from runtime helpers | Published on npm as `0.0.0` |
@@ -25,7 +25,7 @@ names remain ecosystem-native when a registry or toolchain requires them.
 | Package | Owner / credential status | Action | Status | Date |
 | --- | --- | --- | --- | --- |
 | R `marsruntime` | Maintainer-owned package name; r-universe / CRAN requirements not verified in this inventory | Confirm submission path and maintainer review steps | Owner confirmed | 2026-04-29 |
-| Julia `MarsRuntime` | Maintainer-owned package name; registry path not verified in this inventory | Confirm registry path and UUID/review requirements | Owner confirmed | 2026-04-29 |
+| Julia `MarsRuntime` | Maintainer-owned package name; registration submitted to Julia General | Await General review and merge | Submitted | 2026-05-04 |
 
 ## Registry Audit Results
 
@@ -40,7 +40,7 @@ The public registry-name audit has been run against the current package set.
 | NuGet `mars-earth` | Present | [NuGet package page](https://www.nuget.org/packages/mars-earth) | Package is live as `0.0.0` |
 | Go module path | Controlled by repository tags | `bindings/go/go.mod` | Keep the module path aligned with signed tags |
 | R `marsruntime` | Not published in a public registry yet | `bindings/r/DESCRIPTION` | Confirm r-universe/CRAN path during release prep |
-| Julia `MarsRuntime` | Not published in a public registry yet | `bindings/julia/Project.toml` | Confirm General/Registrator path during release prep |
+| Julia `MarsRuntime` | Not published in a public registry yet; registration PR open | `bindings/julia/Project.toml` | Await General review and merge |
 
 ## Parity Notes
 
@@ -49,13 +49,14 @@ The public registry-name audit has been run against the current package set.
 - Logging should remain quiet by default; verbose diagnostics should be
   opt-in and should preserve the Rust core error context when available.
 - Registry ownership and credentials are no longer blockers for PyPI, crates.io,
-  npm, or NuGet; R and Julia remain the main external blockers and Go remains a
-  repository-controlled release step.
+  npm, or NuGet; R remains the main external blocker and Go remains a
+  repository-controlled release step. Julia is submitted and awaiting registry
+  review.
 
 ## Next Steps
 
 - Confirm the Go tag-signing and release-tag policy.
-- Confirm the remaining manual-review registry paths for R and Julia.
+- Confirm the remaining manual-review registry path for R.
 - Use the [Release Checklist](release_checklist.md) to record the manual
   confirmations and to fill in any remaining blocker rows.
 - Decide whether the next release line will keep package versions aligned or
@@ -69,5 +70,5 @@ The public registry-name audit has been run against the current package set.
   and the GitHub release workflow publishes that distribution name.
 - Rust, crates.io, npm, and NuGet packages are live on their registries.
 - Go release remains tag-driven.
-- R and Julia release notes already point to their registry-specific release
-  paths.
+- R release notes already point to the registry-specific release path, and the
+  Julia registry submission is already open.

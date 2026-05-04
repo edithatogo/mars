@@ -2,15 +2,15 @@
 
 ## Phase 0: Release Readiness Handoff
 
-- [~] Task: Verify release-readiness prerequisites [blocker: Go/R/Julia remain open, 2026-05-04]
-    - [~] Confirm release-readiness track is complete [blocker: Go/R/Julia remain open]
+- [~] Task: Verify release-readiness prerequisites [blocker: Go/R remain open; Julia awaiting General review, 2026-05-04]
+    - [~] Confirm release-readiness track is complete [blocker: Go/R remain open; Julia awaiting General review]
     - [x] Confirm CI quality gates are green for the selected release target
     - [x] Confirm Rust-backed runtime binding CI is green for stable runtime releases
     - [x] Confirm training API tracks are complete for packages that claim training support
-- [~] Task: Lock final release candidate metadata [blocker: maintainer approval needed for Go/R/Julia, 2026-04-29]
+- [~] Task: Lock final release candidate metadata [blocker: maintainer approval needed for Go/R; Julia awaiting General review, 2026-04-29]
     - [x] Confirm package versions, release notes, changelog entries, and package README links
     - [x] Confirm protected release environments and required maintainer approvals
-    - [~] Confirm no unresolved blocker exists for selected package targets [blocker: Go tag policy and R/Julia submission paths]
+    - [~] Confirm no unresolved blocker exists for selected package targets [blocker: Go tag policy and R submission path; Julia registration submitted]
 - [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 0: Release Readiness Handoff' (Protocol in workflow.md)
 
 ## Phase 1: Automated Registry Publication
@@ -32,7 +32,7 @@
 - [ ] Task: Publish review-based ecosystem packages
     - [ ] Publish R package to r-universe
     - [ ] Prepare CRAN submission when package maturity and maintainer approval are available
-    - [ ] Register Julia package in General when maintainer approval is available
+    - [~] Register Julia package in General via Registrator.jl [submitted, awaiting General review]
 - [ ] Task: Verify review-based packages
     - [ ] Install available R and Julia packages from their registries
     - [ ] Run smoke tests against the shared conformance fixture

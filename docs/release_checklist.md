@@ -14,7 +14,6 @@ confirm or configure:
 
 - the Go tag-signing and release-tag policy
 - the R release path through r-universe and CRAN
-- the Julia release path through Registrator.jl and the General registry
 
 ## Before a Release Rehearsal
 
@@ -31,10 +30,10 @@ confirm or configure:
 
 - Confirm the Go module tag-signing and release-tag policy.
 - Confirm the R submission path through r-universe and CRAN is available.
-- Confirm the Julia submission path through Registrator.jl and the General
-  registry is available.
 - If a republish or ownership change is planned later, re-check the PyPI,
   crates.io, npm, and NuGet paths against the release inventory.
+- If a Julia follow-up is needed later, check the open General registration PR
+  in the release inventory rather than re-running the initial Registrator flow.
 
 ## Before Publishing
 

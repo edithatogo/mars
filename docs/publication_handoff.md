@@ -13,7 +13,7 @@ readiness to actual publication.
 | NuGet `mars-earth` | Nothing further unless you change the publish path | `NuGet/login@v1` short-lived API key exchange | Published |
 | Go module | Tag-signing rule and who signs/reviews release tags | Repository policy / release checklist | Waiting on policy confirmation |
 | R `marsruntime` | r-universe / CRAN submission path and maintainer account details | Release checklist and maintainer notes | Waiting on maintainer confirmation |
-| Julia `MarsRuntime` | Registrator.jl / General submission path and package UUID/review details | Release checklist and maintainer notes | Waiting on maintainer confirmation |
+| Julia `MarsRuntime` | Registration submitted through Registrator.jl; awaiting General review | Release checklist and maintainer notes | Submitted |
 
 ## How to Provide It
 
@@ -21,8 +21,7 @@ readiness to actual publication.
 - Reply with the Go tag policy if you want the release flow to enforce a
   specific signing or review rule.
 - Reply with the R and Julia submission-path details when you are ready to
-  move those packages through r-universe, CRAN, Registrator.jl, or the General
-  registry.
+  move those packages through r-universe, CRAN, or the General registry.
 
 ## Once Set
 
