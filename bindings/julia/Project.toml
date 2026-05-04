@@ -1,6 +1,6 @@
 name = "MarsRuntime"
 uuid = "dd07e42f-8d4e-4e9e-9c0b-000000000001"
-version = "0.0.0"
+version = "0.1.0"
 authors = ["Dylan A Mordaunt"]
 
 [deps]
