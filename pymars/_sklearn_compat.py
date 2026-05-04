@@ -13,6 +13,8 @@ from typing import Any, cast
 
 import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
 from sklearn.utils.validation import has_fit_parameter
 
 from .earth import (
@@ -199,12 +201,6 @@ class EarthRegressor(RegressorMixin, BaseEstimator):
 
         earth: Any = self.earth_
         return cast("np.ndarray", earth.predict(X_validated))
-
-
-from sklearn.metrics import accuracy_score
-from sklearn.linear_model import LogisticRegression
-
-
 class EarthClassifier(ClassifierMixin, BaseEstimator):
     """
     Pymars Earth model for classification tasks, scikit-learn compatible.
