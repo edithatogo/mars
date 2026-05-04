@@ -12,7 +12,6 @@ capture the remaining registry inputs from the maintainer.
 To move the remaining publication gates forward, the maintainer needs to
 confirm or configure:
 
-- the Go tag-signing and release-tag policy
 - the R release path through r-universe and CRAN
 
 ## Before a Release Rehearsal
@@ -28,12 +27,12 @@ confirm or configure:
 
 ## Registry Ownership and Credentials
 
-- Confirm the Go module tag-signing and release-tag policy.
 - Confirm the R submission path through r-universe and CRAN is available.
 - If a republish or ownership change is planned later, re-check the PyPI,
   crates.io, npm, and NuGet paths against the release inventory.
 - If a Julia follow-up is needed later, check the open General registration PR
   in the release inventory rather than re-running the initial Registrator flow.
+- Go release is tag-driven via signed annotated tags named `go-v<version>`.
 
 ## Before Publishing
 

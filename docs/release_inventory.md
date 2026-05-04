@@ -17,7 +17,7 @@ names remain ecosystem-native when a registry or toolchain requires them.
 | R | `marsruntime` | `bindings/r/DESCRIPTION` | Host errors are surfaced from runtime helpers | Runtime replay package, release readiness pending |
 | Julia | `MarsRuntime` | `bindings/julia/Project.toml` | Host errors are surfaced from runtime helpers | Registration submitted to Julia General; awaiting review |
 | C# | `mars-earth` | `bindings/csharp/MarsRuntime.csproj` | Host exceptions from runtime bridge/helpers | Published on NuGet as `0.0.0` |
-| Go | `github.com/edithatogo/mars/bindings/go` | `bindings/go/go.mod` | Host errors from runtime bridge/helpers | Runtime replay package, release readiness pending |
+| Go | `github.com/edithatogo/mars/bindings/go` | `bindings/go/go.mod` | Host errors from runtime bridge/helpers | Release is tag-driven via signed annotated `go-v<version>` tags |
 | TypeScript | `mars-earth` | `bindings/typescript/package.json` | JavaScript exceptions from runtime helpers | Published on npm as `0.0.0` |
 
 ## Known External Blockers
@@ -38,7 +38,7 @@ The public registry-name audit has been run against the current package set.
 | crates.io `mars-earth` | Present | [crates.io package page](https://crates.io/crates/mars-earth) | Package is live as `0.1.0` |
 | npm `mars-earth` | Present | [npm package page](https://www.npmjs.com/package/mars-earth) | Package is live as `0.0.0` |
 | NuGet `mars-earth` | Present | [NuGet package page](https://www.nuget.org/packages/mars-earth) | Package is live as `0.0.0` |
-| Go module path | Controlled by repository tags | `bindings/go/go.mod` | Keep the module path aligned with signed tags |
+| Go module path | Controlled by repository tags | `bindings/go/go.mod` | Keep the module path aligned with signed `go-v<version>` tags |
 | R `marsruntime` | Not published in a public registry yet | `bindings/r/DESCRIPTION` | Confirm r-universe/CRAN path during release prep |
 | Julia `MarsRuntime` | Not published in a public registry yet; registration PR open | `bindings/julia/Project.toml` | Await General review and merge |
 
@@ -49,13 +49,12 @@ The public registry-name audit has been run against the current package set.
 - Logging should remain quiet by default; verbose diagnostics should be
   opt-in and should preserve the Rust core error context when available.
 - Registry ownership and credentials are no longer blockers for PyPI, crates.io,
-  npm, or NuGet; R remains the main external blocker and Go remains a
-  repository-controlled release step. Julia is submitted and awaiting registry
+  npm, or NuGet; R remains the main external blocker. Go is now a documented
+  tag-driven release policy, and Julia is submitted and awaiting registry
   review.
 
 ## Next Steps
 
-- Confirm the Go tag-signing and release-tag policy.
 - Confirm the remaining manual-review registry path for R.
 - Use the [Release Checklist](release_checklist.md) to record the manual
   confirmations and to fill in any remaining blocker rows.
@@ -69,6 +68,6 @@ The public registry-name audit has been run against the current package set.
 - Python release automation already points at `mars-earth` in `pyproject.toml`
   and the GitHub release workflow publishes that distribution name.
 - Rust, crates.io, npm, and NuGet packages are live on their registries.
-- Go release remains tag-driven.
+- Go release remains tag-driven via signed annotated `go-v<version>` tags.
 - R release notes already point to the registry-specific release path, and the
   Julia registry submission is already open.

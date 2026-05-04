@@ -328,8 +328,6 @@ def spec_to_model(payload: dict[str, Any], earth_cls: type[Any]) -> Any:
     payload = validate_model_spec(payload)
     params = copy.deepcopy(payload.get("params", {}))
     if "allow_missing" not in params:
-        # Legacy fixtures omitted this flag. Infer missing-value support from
-        # basis terms that require missing-aware runtime evaluation.
         params["allow_missing"] = any(
             term_payload.get("kind") in {"categorical", "missingness"}
             for term_payload in payload["basis_terms"]

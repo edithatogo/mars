@@ -231,8 +231,6 @@ class EarthClassifier(ClassifierMixin, BaseEstimator):
         is used by default. The `random_state` is set for reproducibility.
         Common choices include `LogisticRegression`, `SVC`, `RandomForestClassifier`.
 
-    # Additional Earth or classifier parameters can be exposed here as support grows.
-
     Attributes
     ----------
     earth_ : pymars.earth.Earth

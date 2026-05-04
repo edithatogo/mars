@@ -2,15 +2,15 @@
 
 ## Phase 0: Release Readiness Handoff
 
-- [~] Task: Verify release-readiness prerequisites [blocker: Go/R remain open; Julia awaiting General review, 2026-05-04]
-    - [~] Confirm release-readiness track is complete [blocker: Go/R remain open; Julia awaiting General review]
+- [~] Task: Verify release-readiness prerequisites [blocker: R remain open; Julia awaiting General review, 2026-05-04]
+    - [~] Confirm release-readiness track is complete [blocker: R remain open; Julia awaiting General review]
     - [x] Confirm CI quality gates are green for the selected release target
     - [x] Confirm Rust-backed runtime binding CI is green for stable runtime releases
     - [x] Confirm training API tracks are complete for packages that claim training support
-- [~] Task: Lock final release candidate metadata [blocker: maintainer approval needed for Go/R; Julia awaiting General review, 2026-04-29]
+- [~] Task: Lock final release candidate metadata [blocker: maintainer approval needed for R; Julia awaiting General review, 2026-04-29]
     - [x] Confirm package versions, release notes, changelog entries, and package README links
     - [x] Confirm protected release environments and required maintainer approvals
-    - [~] Confirm no unresolved blocker exists for selected package targets [blocker: Go tag policy and R submission path; Julia registration submitted]
+    - [~] Confirm no unresolved blocker exists for selected package targets [blocker: R submission path; Julia registration submitted]
 - [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 0: Release Readiness Handoff' (Protocol in workflow.md)
 
 ## Phase 1: Automated Registry Publication
