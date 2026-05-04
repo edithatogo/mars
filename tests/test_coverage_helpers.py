@@ -22,16 +22,21 @@ from pymars.demos import basic_classification_demo, basic_regression_demo
 
 
 class FakeSeries:
+    """Minimal stand-in for a pandas Series."""
+
     def __init__(self, values):
         self.values = np.asarray(values)
 
 
 class FakeFrame:
+    """Minimal stand-in for a pandas DataFrame."""
+
     def __init__(self, data):
         self._data = {key: np.asarray(value) for key, value in data.items()}
         self.columns = list(self._data)
 
     def drop(self, columns):
+        """Return a frame without the requested columns."""
         return FakeFrame({k: v for k, v in self._data.items() if k not in columns})
 
     def __getitem__(self, key):
@@ -39,53 +44,68 @@ class FakeFrame:
 
     @property
     def values(self):
+        """Return the column-stacked values array."""
         return np.column_stack(list(self._data.values()))
 
 
 class FakePredFrame:
+    """Minimal stand-in for a prediction output frame."""
+
     def __init__(self, data):
         self.data = data
         self.saved = None
 
     def to_csv(self, path, index=False):
+        """Record the path and index flag used for CSV export."""
         self.saved = (path, index)
 
 
 class FakePandasModule:
+    """Minimal stand-in for the pandas module."""
+
     def __init__(self, frame):
         self._frame = frame
         self.pred_frames = []
 
     def read_csv(self, _path):
+        """Return the configured frame regardless of path."""
         return self._frame
 
     def DataFrame(self, data):
+        """Return a fake prediction frame and track it."""
         frame = FakePredFrame(data)
         self.pred_frames.append(frame)
         return frame
 
 
 class FakeEarth:
+    """Minimal Earth-like estimator used by CLI and demo tests."""
+
     def __init__(self, **kwargs):
         self.kwargs = kwargs
         self.basis_ = [object(), object()]
         self.gcv_ = 1.2345
 
     def fit(self, X, y):
+        """Store the training data and return self."""
         self.X_ = np.asarray(X)
         self.y_ = np.asarray(y)
         return self
 
     def predict(self, X):
+        """Return a simple deterministic prediction."""
         X = np.asarray(X)
         return X[:, 0] if X.ndim > 1 else np.asarray([X[0]])
 
     def score(self, X, y):
+        """Return a fixed score."""
         del X, y
         return 0.5
 
 
 class FakeInternalEarth:
+    """Minimal internal Earth helper for plot tests."""
+
     def _scrub_input_data(self, X, y):
         X = np.asarray(X)
         del y
@@ -93,22 +113,28 @@ class FakeInternalEarth:
         return X, mask, None
 
     def _build_basis_matrix(self, X_proc, basis, mask):
+        """Build a small basis matrix for plotting tests."""
         X_proc = np.asarray(X_proc)
         del basis, mask
         return np.column_stack([np.ones(X_proc.shape[0]), X_proc[:, 0]])
 
 
 class FakePlotModel:
+    """Minimal model used to exercise plotting helpers."""
+
     def __init__(self):
         self.basis_ = [object()]
         self.earth_ = FakeInternalEarth()
 
     def predict(self, X):
+        """Return the first feature as a prediction."""
         X = np.asarray(X)
         return X[:, 0]
 
 
 class FakeExplainModel:
+    """Minimal fitted model used by explanation helpers."""
+
     def __init__(self):
         self.fitted_ = True
         self.basis_ = [SimpleNamespace(name="b0"), SimpleNamespace(name="b1")]
@@ -117,58 +143,74 @@ class FakeExplainModel:
         self.feature_importances_ = np.array([0.7, 0.3])
 
     def predict(self, X):
+        """Return a simple additive prediction."""
         X = np.asarray(X)
         return X[:, 0] + X[:, 1]
 
     def score(self, X, y):
+        """Return a fixed score."""
         del X, y
         return 0.9
 
 
 class FakeCliEarth(FakeEarth):
-    pass
+    """CLI-specific Earth stand-in."""
 
 
 class FakeCliModel:
+    """Minimal fitted model used by CLI prediction tests."""
+
     def __init__(self):
         self.basis_ = [object()]
 
     def predict(self, X):
+        """Return a constant prediction."""
         X = np.asarray(X)
         return np.full(X.shape[0], 3.14)
 
     def score(self, X, y):
+        """Return a fixed score."""
         del X, y
         return 0.75
 
 
 class FakeDemoModel:
+    """Minimal demo model used to exercise the example entry points."""
+
     def __init__(self, *args, **kwargs):
         del args
         self.kwargs = kwargs
         self.earth_ = SimpleNamespace(summary=lambda: None)
 
     def fit(self, X, y):
+        """Store the training data and return self."""
         self.X_ = np.asarray(X)
         self.y_ = np.asarray(y)
         return self
 
     def predict(self, X):
+        """Return zeros for every sample."""
         X = np.asarray(X)
         return np.zeros(X.shape[0])
 
     def score(self, X, y):
+        """Return a fixed score."""
         del X, y
         return 0.25
 
 
 class FakeClassifierDemoModel(FakeDemoModel):
+    """Demo model variant that returns integer class labels."""
+
     def predict(self, X):
+        """Return zero-valued class labels."""
         X = np.asarray(X)
         return np.zeros(X.shape[0], dtype=int)
 
 
 class FakeAdvancedExampleModel:
+    """Minimal model used by the advanced example path."""
+
     def __init__(self, **kwargs):
         self.kwargs = kwargs
         self.basis_ = [object(), object(), object()]
@@ -176,20 +218,25 @@ class FakeAdvancedExampleModel:
         self.feature_importances_ = np.array([0.4, 0.3, 0.2, 0.1, 0.0])
 
     def fit(self, X, y):
+        """Store the training data and return self."""
         self.X_ = np.asarray(X)
         self.y_ = np.asarray(y)
         return self
 
     def predict(self, X):
+        """Return a constant prediction."""
         X = np.asarray(X)
         return X[:, 0] * 0.0 + 1.0
 
     def score(self, X, y):
+        """Return a fixed score."""
         del X, y
         return 0.88
 
 
 class DummyBasisFunction:
+    """Simple basis-function stub for coverage tests."""
+
     def __init__(
         self,
         involved: tuple[int, ...] = (0,),
@@ -203,21 +250,26 @@ class DummyBasisFunction:
         self.rss_score_ = rss_score
 
     def is_constant(self):
+        """Return whether this basis function is constant."""
         return self._constant
 
     def get_involved_variables(self):
+        """Return the variables involved in this basis function."""
         return list(self._involved)
 
     def transform(self, X, missing_mask):
+        """Return a constant transformed column."""
         X = np.asarray(X)
         del missing_mask
         return np.ones(X.shape[0])
 
     def __str__(self):
+        """Return a stable string representation."""
         return "DummyBasisFunction"
 
 
 def test_utilities_cover_edge_cases():
+    """Exercise utility validation and GCV helpers."""
     arr = check_array([[1, 2], [3, 4]], ensure_min_samples=2, ensure_min_features=2)
     assert arr.shape == (2, 2)
     with pytest.raises(ValueError):
@@ -230,6 +282,7 @@ def test_utilities_cover_edge_cases():
 
 
 def test_earth_gcv_feature_importance_empty_basis():
+    """Exercise the empty-basis GCV feature-importance branch."""
     from pymars import Earth
 
     model = Earth(feature_importance_type="gcv")
@@ -244,6 +297,7 @@ def test_earth_gcv_feature_importance_empty_basis():
 
 
 def test_missing_helpers_cover_strategies():
+    """Exercise the main missing-value imputation strategies."""
     X = np.array([[1.0, np.nan], [3.0, 4.0]])
     assert np.allclose(
         handle_missing_X(X, strategy="mean"), np.array([[1.0, 4.0], [3.0, 4.0]])
@@ -268,6 +322,7 @@ def test_missing_helpers_cover_strategies():
 
 
 def test_missing_helpers_cover_remaining_branches():
+    """Exercise the remaining missing-value helper branches."""
     X_object = np.array([1.0, 2.0], dtype=object)
     with pytest.raises(TypeError):
         handle_missing_X(X_object, strategy="mean")
@@ -334,6 +389,7 @@ def test_missing_helpers_cover_remaining_branches():
 
 
 def test_record_logs_and_string_representation():
+    """Exercise EarthRecord logging and rendering."""
     X = np.ones((3, 2))
     y = np.array([1.0, 2.0, 3.0])
     record = EarthRecord(X, y, earth_model_instance=SimpleNamespace(alpha=1))
@@ -346,6 +402,7 @@ def test_record_logs_and_string_representation():
 
 
 def test_plot_helpers_cover_both_paths():
+    """Exercise the plotting helpers on their main paths."""
     model = FakePlotModel()
     X = np.array([[1.0, 2.0], [3.0, 4.0]])
     axes = plot.plot_basis_functions(model, X)
@@ -355,6 +412,7 @@ def test_plot_helpers_cover_both_paths():
 
 
 def test_explain_helpers_cover_both_paths(monkeypatch):
+    """Exercise explanation helpers with and without partial dependence."""
     model = FakeExplainModel()
     X = np.array([[1.0, 2.0], [3.0, 4.0]])
 
@@ -385,6 +443,7 @@ def test_explain_helpers_cover_both_paths(monkeypatch):
 
 
 def test_explain_helpers_cover_remaining_paths(monkeypatch):
+    """Exercise the remaining explanation helper branches."""
     del monkeypatch
     fitted_model = FakeExplainModel()
     large_x = np.ones((10000, 2))
@@ -412,6 +471,7 @@ def test_explain_helpers_cover_remaining_paths(monkeypatch):
 
 
 def test_cli_helpers_cover_success_and_error_paths(tmp_path, monkeypatch, capsys):
+    """Exercise CLI helpers for success and error cases."""
     frame = FakeFrame({"x1": [1.0, 2.0], "target": [3.0, 4.0]})
     fake_pd = FakePandasModule(frame)
     monkeypatch.setattr(cli.importlib, "import_module", lambda _name: fake_pd)
@@ -468,6 +528,7 @@ def test_cli_helpers_cover_success_and_error_paths(tmp_path, monkeypatch, capsys
 
 
 def test_demo_entrypoints(monkeypatch):
+    """Exercise the demo entry points."""
     monkeypatch.setattr(basic_regression_demo, "EarthRegressor", FakeDemoModel)
     monkeypatch.setattr(
         basic_classification_demo, "EarthClassifier", FakeClassifierDemoModel
@@ -477,6 +538,7 @@ def test_demo_entrypoints(monkeypatch):
 
 
 def test_advanced_example_path(monkeypatch):
+    """Exercise the advanced example workflow."""
     from pymars.demos import advanced_example
 
     monkeypatch.setattr(advanced_example.earth, "Earth", FakeAdvancedExampleModel)
@@ -505,6 +567,7 @@ def test_advanced_example_path(monkeypatch):
 
 
 def test_earth_internal_branches(monkeypatch):
+    """Exercise Earth feature-importance branches directly."""
     del monkeypatch
     from pymars import Earth
 
@@ -545,6 +608,7 @@ def test_earth_internal_branches(monkeypatch):
 
 
 def test_earth_predict_and_summary_branches(monkeypatch):
+    """Exercise Earth predict and summary error branches."""
     from pymars import Earth
     from pymars._basis import ConstantBasisFunction
 
@@ -617,6 +681,7 @@ def test_earth_predict_and_summary_branches(monkeypatch):
 
 
 def test_earth_fit_fallback_and_summary_paths(monkeypatch, caplog):
+    """Exercise Earth fit fallback and summary logging paths."""
     from pymars import Earth
 
     class FakeForwardPasser:
@@ -657,6 +722,7 @@ def test_earth_fit_fallback_and_summary_paths(monkeypatch, caplog):
 
 
 def test_earth_fit_forward_empty_branch(monkeypatch):
+    """Exercise the forward-pass empty-model fallback."""
     from pymars import Earth
 
     class FakeForwardPasser:
@@ -680,6 +746,7 @@ def test_earth_fit_forward_empty_branch(monkeypatch):
 
 
 def test_cli_main_dispatch_and_help(monkeypatch, capsys):
+    """Exercise CLI dispatch and help output."""
     monkeypatch.setattr(cli, "fit_model", lambda _args: None)
     monkeypatch.setattr(cli, "make_predictions", lambda _args: None)
     monkeypatch.setattr(cli, "score_model", lambda _args: None)
@@ -739,6 +806,7 @@ def test_cli_main_dispatch_and_help(monkeypatch, capsys):
 
 
 def test_cli_fit_and_score_branches(tmp_path, monkeypatch, capsys):
+    """Exercise CLI fit and score branches."""
     import pandas as pd
 
     class FakeCliModel:

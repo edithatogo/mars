@@ -56,6 +56,7 @@ def test_categorical_interaction():
 
 
 def test_categorical_imputer():
+    """Test categorical imputation on object arrays with missing values."""
     X = np.array(
         [
             ["a", "b"],
@@ -72,6 +73,7 @@ def test_categorical_imputer():
 
 
 def test_earth_categorical_with_strings_and_missing():
+    """Test categorical fitting with string values and missing entries."""
     X = np.array(
         [
             [1.0, "a"],

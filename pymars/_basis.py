@@ -17,8 +17,6 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
-# from ._types import XType, FloatArray # Assuming XType is np.ndarray for internal use
-
 
 class BasisFunction(ABC):
     """
@@ -30,29 +28,15 @@ class BasisFunction(ABC):
 
     def __init__(self, name: str = "BasisFunction") -> None:
         self._name = name
-        # Attributes common to many basis functions, but not all will use them directly.
-        # Subclasses will define how these are used.
-        self.variable_idx: int | None = (
-            None  # Index of the feature used by this basis function (if applicable)
-        )
-        self.knot_val: float | None = (
-            None  # Knot value for hinge functions (if applicable)
-        )
-        self.parent1: BasisFunction | None = None  # First parent for interaction terms
-        self.parent2: BasisFunction | None = (
-            None  # Second parent for interaction terms (not used in current 1-parent model)
-        )
-        self.is_linear_term: bool = (
-            False  # Indicates if the *newest* component is linear
-        )
-        self.is_hinge_term: bool = (
-            False  # Indicates if the *newest* component is a hinge
-        )
-        self._involved_variables: frozenset[int] = (
-            frozenset()
-        )  # Variables involved in this basis function
-        self.gcv_score_: float = 0.0  # GCV reduction contribution of this basis function (when added as part of a pair)
-        self.rss_score_: float = 0.0  # RSS reduction contribution of this basis function (when added as part of a pair)
+        self.variable_idx: int | None = None
+        self.knot_val: float | None = None
+        self.parent1: BasisFunction | None = None
+        self.parent2: BasisFunction | None = None
+        self.is_linear_term: bool = False
+        self.is_hinge_term: bool = False
+        self._involved_variables: frozenset[int] = frozenset()
+        self.gcv_score_: float = 0.0
+        self.rss_score_: float = 0.0
 
     def get_involved_variables(self) -> frozenset[int]:
         """
@@ -112,7 +96,6 @@ class BasisFunction(ABC):
         """Set the name, typically used by subclasses during init."""
         self._name = name
 
-    # Optional: Methods to explicitly set properties if not done in init by subclasses
     def _set_properties(
         self,
         variable_idx: int | None = None,
@@ -209,7 +192,6 @@ class HingeBasisFunction(BasisFunction):
         variable_name: str | None = None,
         parent_bf: BasisFunction | None = None,
     ):
-        # Determine name based on properties
         self.variable_name = variable_name or f"x{variable_idx}"
         name_str = ""
         if parent_bf:
@@ -235,7 +217,6 @@ class HingeBasisFunction(BasisFunction):
             involved_variables=current_involved_vars,
         )
         self.is_right_hinge = is_right_hinge
-        # self.variable_name is already set above for constructing the name
 
     def transform(
         self, X_processed: np.ndarray, missing_mask: np.ndarray
@@ -258,36 +239,26 @@ class HingeBasisFunction(BasisFunction):
             X_processed if X_processed.ndim == 1 else X_processed[:, self.variable_idx]
         )
 
-        # Calculate current hinge term's values (on zero-filled data)
         if self.is_right_hinge:
             current_term_values = np.maximum(0, x_col - self.knot_val)
         else:
             current_term_values = np.maximum(0, self.knot_val - x_col)
 
-        # Apply NaN where original variable was missing
-        # missing_mask corresponds to original X.
-        # If X_processed is 1D, missing_mask should also be 1D or (N,1)
-        # If X_processed is 2D, missing_mask is (N, n_features)
         current_var_missing = (
             missing_mask
             if X_processed.ndim == 1
             else missing_mask[:, self.variable_idx]
         )
-        if current_term_values.dtype != float:  # Ensure float type before assigning NaN
+        if current_term_values.dtype != float:
             current_term_values = current_term_values.astype(float)
         current_term_values[current_var_missing] = np.nan
 
-        if self.parent1:  # This is an interaction term
-            parent_transformed = self.parent1.transform(
-                X_processed, missing_mask
-            )  # Recursive call
-            # NaN propagation happens if either parent_transformed or current_term_values is NaN
+        if self.parent1:
+            parent_transformed = self.parent1.transform(X_processed, missing_mask)
             return cast("np.ndarray", parent_transformed * current_term_values)
-        # This is a simple hinge (degree 1)
         return cast("np.ndarray", current_term_values)
 
     def __str__(self) -> str:
-        # The name is already constructed in __init__ to handle interactions properly.
         return self.get_name()
 
     def degree(self) -> int:
@@ -457,7 +428,6 @@ class LinearBasisFunction(BasisFunction):
                 X_processed, missing_mask
             )  # Recursive call
             return cast("np.ndarray", parent_transformed * current_term_values)
-        # This is a simple linear term (degree 1)
         return cast("np.ndarray", current_term_values)
 
     def __str__(self) -> str:
@@ -477,12 +447,6 @@ class LinearBasisFunction(BasisFunction):
         return False
 
 
-# Interactions are represented by parent-linked hinge and linear basis terms.
-# This keeps the basis tree simple while still covering products such as
-# hinge*hinge, hinge*linear, and linear*linear combinations.
-
-
-# Concrete implementation for a product of two arbitrary basis functions.
 class InteractionBasisFunction(BasisFunction):
     """Represents the product of two basis functions."""
 
@@ -529,13 +493,11 @@ class MissingnessBasisFunction(BasisFunction):
 
         super().__init__(name=name_str)
 
-        # Missingness terms are typically not considered "hinges" or "linear" in the MARS sense.
-        # They are indicators.
         self._set_properties(
             variable_idx=variable_idx,
             is_hinge=False,
             is_linear=False,
-            parent1=None,  # Missingness functions are usually additive or interact differently
+            parent1=None,
             involved_variables=frozenset({variable_idx}),
         )
 
@@ -567,8 +529,6 @@ class MissingnessBasisFunction(BasisFunction):
                 f"variable_idx {self.variable_idx} is out of bounds for missing_mask with {missing_mask.shape[1]} features."
             )
 
-        # missing_mask[sample_idx, self.variable_idx] is True if original was NaN
-        # So, we directly convert this boolean mask column to int (True->1, False->0)
         return missing_mask[:, self.variable_idx].astype(int)
 
     def __str__(self) -> str:

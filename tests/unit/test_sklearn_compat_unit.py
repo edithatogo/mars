@@ -206,14 +206,11 @@ class TestGLMEarthSklearn:
     @pytest.mark.skip(reason="GLMEarth API differs from sklearn interface")
     def test_glm_earth_fit_returns_self(self):
         """Test that fit returns self."""
-        pass
 
     @pytest.mark.skip(reason="GLMEarth API differs from sklearn interface")
     def test_glm_earth_predict_shape(self):
         """Test predict returns correct shape."""
-        pass
 
     @pytest.mark.skip(reason="GLMEarth API differs from sklearn interface")
     def test_glm_earth_get_set_params(self):
         """Test get_params and set_params."""
-        pass

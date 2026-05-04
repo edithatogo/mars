@@ -49,6 +49,7 @@ def _load_runtime_portability_fixture(path: Path) -> dict[str, object]:
 
 
 def test_model_spec_json_roundtrip_preserves_predictions(tmp_path: Path):
+    """Check JSON export, load, and predict round-trips."""
     model = _fit_sample_model()
     probe = np.array([[0.0, 0.0, 0.1], [0.8, -0.5, 0.6]], dtype=float)
     expected = model.predict(probe)
@@ -66,6 +67,7 @@ def test_model_spec_json_roundtrip_preserves_predictions(tmp_path: Path):
 
 
 def test_spec_from_json_accepts_json_string():
+    """Check that raw JSON text can be parsed into a model spec."""
     payload = _fit_sample_model().export_model(format="json")
     restored = spec_from_json(payload)
     validate_model_spec(restored)
@@ -73,6 +75,7 @@ def test_spec_from_json_accepts_json_string():
 
 
 def test_cli_load_model_reads_json_artifact(tmp_path: Path):
+    """Check the CLI loader reads a saved JSON model artifact."""
     model = _fit_sample_model()
     probe = np.array([[0.0, 0.0, 0.1], [0.8, -0.5, 0.6]], dtype=float)
     target = tmp_path / "model.json"
@@ -84,6 +87,7 @@ def test_cli_load_model_reads_json_artifact(tmp_path: Path):
 
 
 def test_cli_save_model_writes_json_and_pickle(tmp_path: Path):
+    """Check the CLI saver writes both JSON and pickle outputs."""
     model = _fit_sample_model()
     json_target = tmp_path / "model.json"
     pickle_target = tmp_path / "model.pkl"
@@ -102,6 +106,7 @@ def test_cli_save_model_writes_json_and_pickle(tmp_path: Path):
 def test_checked_in_model_spec_fixture_roundtrip(
     model_spec_path: Path, runtime_fixture_path: Path
 ):
+    """Check checked-in specs still match their runtime fixtures."""
     spec = runtime.load_model_spec(model_spec_path)
     model = runtime.load_model(spec)
     fixture = _load_runtime_portability_fixture(runtime_fixture_path)
@@ -119,6 +124,7 @@ def test_checked_in_model_spec_fixture_roundtrip(
 
 
 def test_validate_model_spec_rejects_missing_required_field():
+    """Check missing required fields are rejected."""
     payload = runtime.load_model_spec(MODEL_SPEC_V1_PATH)
     payload.pop("basis_terms")
 
@@ -127,6 +133,7 @@ def test_validate_model_spec_rejects_missing_required_field():
 
 
 def test_validate_model_spec_rejects_mismatched_basis_and_coefficients():
+    """Check basis and coefficient length mismatches are rejected."""
     payload = runtime.load_model_spec(MODEL_SPEC_V1_PATH)
     payload["coefficients"] = payload["coefficients"][:-1]
 
@@ -135,6 +142,7 @@ def test_validate_model_spec_rejects_mismatched_basis_and_coefficients():
 
 
 def test_validate_model_spec_rejects_empty_basis_term_kind():
+    """Check empty basis-term kinds are rejected."""
     payload = runtime.load_model_spec(MODEL_SPEC_V1_PATH)
     payload["basis_terms"][0]["kind"] = ""
 
@@ -143,6 +151,7 @@ def test_validate_model_spec_rejects_empty_basis_term_kind():
 
 
 def test_runtime_validate_accepts_path_and_json_string():
+    """Check runtime.validate accepts both paths and JSON strings."""
     via_path = runtime.validate(MODEL_SPEC_V1_PATH)
     via_json = runtime.validate(MODEL_SPEC_V1_PATH.read_text())
 
@@ -151,6 +160,7 @@ def test_runtime_validate_accepts_path_and_json_string():
 
 
 def test_runtime_validate_rejects_invalid_payload():
+    """Check runtime.validate rejects malformed payloads."""
     payload = runtime.load_model_spec(MODEL_SPEC_V1_PATH)
     payload.pop("basis_terms")
 
@@ -159,6 +169,7 @@ def test_runtime_validate_rejects_invalid_payload():
 
 
 def test_runtime_uses_rust_backend_for_supported_specs(monkeypatch):
+    """Check supported specs route through the Rust backend."""
     spec = runtime.load_model_spec(MODEL_SPEC_V1_PATH)
     probe = np.array([[0.0, 0.0, 0.1], [0.8, -0.5, 0.6]], dtype=float)
     calls: list[tuple[str, object]] = []
@@ -168,17 +179,19 @@ def test_runtime_uses_rust_backend_for_supported_specs(monkeypatch):
             calls.append(("validate", spec_json))
 
         def design_matrix_json(
-            self, spec_json: str, rows: list[list[float]]
+            self, _spec_json: str, rows: list[list[float]]
         ) -> list[list[float]]:
             calls.append(("design_matrix", rows))
             return [[1.0, 2.0], [3.0, 4.0]]
 
-        def predict_json(self, spec_json: str, rows: list[list[float]]) -> list[float]:
+        def predict_json(self, _spec_json: str, rows: list[list[float]]) -> list[float]:
             calls.append(("predict", rows))
             return [5.0, 6.0]
 
     monkeypatch.setattr(runtime, "_rust_backend", DummyRustBackend())
-    monkeypatch.setattr(runtime, "_spec_is_rust_runtime_compatible", lambda spec: True)
+    monkeypatch.setattr(
+        runtime, "_spec_is_rust_runtime_compatible", lambda _spec: True
+    )
 
     assert runtime.validate(spec) == spec
     np.testing.assert_allclose(
@@ -194,6 +207,7 @@ def test_runtime_uses_rust_backend_for_supported_specs(monkeypatch):
 
 
 def test_runtime_falls_back_to_python_when_rust_backend_is_incompatible(monkeypatch):
+    """Check incompatible specs stay on the Python path."""
     spec = runtime.load_model_spec(MODEL_SPEC_V1_PATH)
     probe = np.array([[0.0, 0.0, 0.1], [0.8, -0.5, 0.6]], dtype=float)
     model = runtime.load_model(spec)
@@ -209,17 +223,19 @@ def test_runtime_falls_back_to_python_when_rust_backend_is_incompatible(monkeypa
             calls.append(("validate", spec_json))
 
         def design_matrix_json(
-            self, spec_json: str, rows: list[list[float]]
+            self, _spec_json: str, rows: list[list[float]]
         ) -> list[list[float]]:
             calls.append(("design_matrix", rows))
             return [[999.0]]
 
-        def predict_json(self, spec_json: str, rows: list[list[float]]) -> list[float]:
+        def predict_json(self, _spec_json: str, rows: list[list[float]]) -> list[float]:
             calls.append(("predict", rows))
             return [999.0]
 
     monkeypatch.setattr(runtime, "_rust_backend", DummyRustBackend())
-    monkeypatch.setattr(runtime, "_spec_is_rust_runtime_compatible", lambda spec: False)
+    monkeypatch.setattr(
+        runtime, "_spec_is_rust_runtime_compatible", lambda _spec: False
+    )
 
     assert runtime.validate(spec) == spec
     np.testing.assert_allclose(
@@ -233,6 +249,7 @@ def test_runtime_falls_back_to_python_when_rust_backend_is_incompatible(monkeypa
 
 
 def test_validate_model_spec_rejects_unsupported_major_version():
+    """Check unsupported major spec versions are rejected."""
     payload = runtime.load_model_spec(MODEL_SPEC_V1_PATH)
     payload["spec_version"] = "2.0"
 

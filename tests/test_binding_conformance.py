@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 from bindings.conformance.runner import (
@@ -13,8 +13,12 @@ from bindings.conformance.runner import (
     validate_expected_fixtures,
 )
 
+if TYPE_CHECKING:
+    from pathlib import Path
+
 
 def test_manifest_references_valid_runtime_fixtures() -> None:
+    """Check the manifest references all runtime fixture cases."""
     cases, _, _ = load_manifest(DEFAULT_MANIFEST)
 
     assert {case.name for case in cases} == {
@@ -28,6 +32,7 @@ def test_manifest_references_valid_runtime_fixtures() -> None:
 
 
 def test_manifest_declares_runtime_and_training_binding_modes() -> None:
+    """Check the manifest advertises the expected binding modes."""
     payload = json.loads(DEFAULT_MANIFEST.read_text())
 
     assert payload["binding_modes"] == {
@@ -43,6 +48,7 @@ def test_manifest_declares_runtime_and_training_binding_modes() -> None:
 def test_manifest_requires_future_binding_modes(
     tmp_path: Path, removed_mode: str
 ) -> None:
+    """Check the manifest rejects missing future binding modes."""
     payload = json.loads(DEFAULT_MANIFEST.read_text())
     del payload["binding_modes"][removed_mode]
     manifest_path = tmp_path / "manifest.json"
@@ -55,6 +61,7 @@ def test_manifest_requires_future_binding_modes(
 def test_binding_output_validation_accepts_expected_fixture_values(
     tmp_path: Path,
 ) -> None:
+    """Check binding output validation accepts the expected fixtures."""
     cases, atol, rtol = load_manifest(DEFAULT_MANIFEST)
     output = {
         "binding": "test",

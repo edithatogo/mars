@@ -74,7 +74,7 @@ def test_forward_passer_performance(benchmark):
         )
 
     result = benchmark(run_forward)
-    basis_functions, coefficients = result
+    basis_functions, _coefficients = result
     assert len(basis_functions) > 0
 
 
@@ -106,7 +106,7 @@ def test_pruning_passer_performance(benchmark):
         )
 
     result = benchmark(run_pruning)
-    pruned_bfs, pruned_coefs, best_gcv = result
+    pruned_bfs, _pruned_coefs, _best_gcv = result
     assert len(pruned_bfs) >= 1
 
 

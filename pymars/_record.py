@@ -28,34 +28,25 @@ class EarthRecord:
         del y
         self.model_params: dict[str, Any] = (
             earth_model_instance.__dict__.copy()
-        )  # Store initial model params
+        )
         self.feature_names_in_: np.ndarray | None = None
         self.n_samples = X.shape[0]
         self.n_features = X.shape[1]
 
-        # Forward pass tracking
-        self.fwd_basis_: list[
-            list[BasisFunction]
-        ] = []  # List of lists: basis functions at each step of fwd pass
-        self.fwd_coeffs_: list[
-            np.ndarray
-        ] = []  # List of arrays: coefficients at each step
-        self.fwd_rss_: list[float] = []  # List of floats: RSS at each step
+        self.fwd_basis_: list[list[BasisFunction]] = []
+        self.fwd_coeffs_: list[np.ndarray] = []
+        self.fwd_rss_: list[float] = []
 
-        # Pruning pass tracking
-        # These will store the sequence of models considered during pruning.
-        # Each element corresponds to a model of a certain size.
         self.pruning_trace_basis_functions_: list[list[BasisFunction]] = []
         self.pruning_trace_coeffs_: list[np.ndarray] = []
         self.pruning_trace_gcv_: list[float] = []
         self.pruning_trace_rss_: list[float] = []
 
-        # Final selected model details (can be set after pruning)
         self.final_basis_: list[BasisFunction] | None = None
         self.final_coeffs_: np.ndarray | None = None
         self.final_gcv_: float | None = None
         self.final_rss_: float | None = None
-        self.final_mse_: float | None = None  # MSE of the final model on training data
+        self.final_mse_: float | None = None
 
     def log_forward_pass_step(
         self, basis_functions: list[BasisFunction], coefficients: np.ndarray, rss: float
@@ -84,7 +75,7 @@ class EarthRecord:
         )
         self.pruning_trace_basis_functions_.append(
             list(basis_functions)
-        )  # Store copies
+        )
         self.pruning_trace_coeffs_.append(np.copy(coefficients))
         self.pruning_trace_gcv_.append(gcv)
         self.pruning_trace_rss_.append(rss)
@@ -121,8 +112,6 @@ class EarthRecord:
             summary.append(
                 f"\nPruning Pass Trace (models considered): {len(self.pruning_trace_gcv_)}"
             )
-            # Optionally print details of the trace, e.g., GCVs
-            # summary.append(f"  GCVs in sequence: {[f'{g:.4f}' for g in self.pruning_trace_gcv_]}")
 
         if self.final_basis_ is not None:
             summary.append("\nFinal Selected Model (after pruning):")

@@ -21,6 +21,7 @@ from pymars.earth import Earth
 # Minimal data for testing basic fit and predict
 @pytest.fixture
 def simple_earth_data():
+    """Return a small 1D regression dataset."""
     X = np.array([[1.0], [2.0], [3.0], [4.0], [5.0], [6.0], [7.0], [8.0]])
     y = np.array([1.0, 2.0, 3.0, 4.0, 3.5, 3.0, 2.5, 2.0])  # Piecewise linear
     return X, y
@@ -28,6 +29,7 @@ def simple_earth_data():
 
 @pytest.fixture
 def more_complex_earth_data():
+    """Return a synthetic multivariate regression dataset."""
     np.random.seed(42)
     X = np.random.rand(50, 3)
     y = 2 * X[:, 0] + np.sin(np.pi * X[:, 1]) - X[:, 2] ** 2 + np.random.randn(50) * 0.1
@@ -328,6 +330,7 @@ def test_earth_summary_feature_importances(simple_earth_data, capsys):
 # --- Tests for missing data handling ---
 @pytest.fixture
 def data_with_nans():
+    """Return a dataset with missing values in X."""
     X = np.array([[1.0, 2.0], [np.nan, 3.0], [3.0, np.nan], [4.0, 5.0]])
     y = np.array([1.0, 2.0, 3.0, 4.0])
     return X, y
@@ -335,6 +338,7 @@ def data_with_nans():
 
 @pytest.fixture
 def y_with_nans():
+    """Return a dataset with missing values in y."""
     X = np.array([[1.0, 2.0], [2.0, 3.0], [3.0, 4.0], [4.0, 5.0]])
     y = np.array([1.0, np.nan, 3.0, 4.0])
     return X, y
@@ -378,6 +382,7 @@ def test_earth_fit_allow_missing_X_has_nans(data_with_nans):
 
 
 def test_scrub_input_data_imputation():
+    """Test missing-value scrubbing replaces NaNs with zeros."""
     X = np.array([[1.0, np.nan], [np.nan, 3.0]])
     y = np.array([1.0, 2.0])
     model = Earth(allow_missing=True)
@@ -637,29 +642,7 @@ if __name__ == "__main__":
 
 def test_earth_fit_with_missingness_terms(data_with_nans):
     """Test Earth model fit when allow_missing=True and MissingnessBasisFunctions are selected."""
-    X_nan, y = data_with_nans  # X_nan is [[1,2], [nan,3], [3,nan], [4,5]]
-    # y is [1,2,3,4]
-
-    # Craft y such that missingness in X_nan[:,0] is informative
-    # For example, if X_nan[1,0] (NaN) corresponds to a higher y[1] value
-    # y_mod = y.copy()
-    # y_mod[1] = 10 # if x0 is missing, y is high
-    # y_mod[2] = 1  # if x1 is missing, y is low (to differentiate from x0 missingness effect)
-
-    # Let's use a simpler y where missingness in x0 implies a higher value,
-    # and missingness in x1 implies a lower value.
-    # X_nan:
-    # [[ 1.   2. ]
-    #  [ nan  3. ]
-    #  [ 3.   nan]
-    #  [ 4.   5. ]]
-    # y:
-    # y = normal_effect + 100 * is_missing(x0) - 50 * is_missing(x1)
-    # If x0 normal, x1 normal: y ~ 0
-    # If x0 missing, x1 normal: y ~ 100
-    # If x0 normal, x1 missing: y ~ -50
-    # If x0 missing, x1 missing: y ~ 50 (not in this data)
-
+    X_nan, _y = data_with_nans
     y_mod = np.array([0.0, 100.0, -50.0, 0.0])  # Corresponds to X_nan rows
 
     # We want MissingnessBasisFunctions to be selected.

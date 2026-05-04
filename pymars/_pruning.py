@@ -73,26 +73,19 @@ class PruningPasser:
             )
             return rss, coeffs_for_mean, num_valid_rows
 
-        # Identify rows with no NaNs in B_matrix (y_data is already finite)
         valid_rows_mask = ~np.any(np.isnan(B_matrix), axis=1)
         num_valid_rows = float(np.sum(valid_rows_mask))
 
-        if (
-            num_valid_rows == 0 or num_valid_rows < B_matrix.shape[1]
-        ):  # Not enough data or underdetermined
+        if num_valid_rows == 0 or num_valid_rows < B_matrix.shape[1]:
             return float(np.inf), None, 0
 
         B_complete = B_matrix[valid_rows_mask, :]
-        y_complete = y_data[
-            valid_rows_mask
-        ]  # y_data is already 1D from PruningPasser.run
+        y_complete = y_data[valid_rows_mask]
         if sample_weight is not None:
             sample_weight = sample_weight[valid_rows_mask]
             num_valid_rows = float(np.sum(sample_weight))
 
         try:
-            # B_complete should be 2D here because B_matrix.shape[1] > 0
-            # and num_valid_rows >= B_matrix.shape[1]
             if sample_weight is not None:
                 sqrt_weight = np.sqrt(sample_weight)
                 B_solved = B_complete * sqrt_weight[:, np.newaxis]
@@ -131,8 +124,6 @@ class PruningPasser:
         if not basis_functions:
             return cast("np.ndarray", np.empty((X_data.shape[0], 0)))
 
-        # Preallocate to avoid repeated hstack operations which were shown via
-        # profiling to dominate runtime for larger models.
         n_samples = X_data.shape[0]
         B_matrix = np.empty((n_samples, len(basis_functions)), dtype=float)
         for idx, bf in enumerate(basis_functions):
@@ -153,9 +144,6 @@ class PruningPasser:
         """
         del X_fit_original
         if not basis_subset:
-            # This case implies an intercept-only model IF an intercept is implicitly assumed
-            # or if _calculate_rss_and_coeffs handles B_matrix.shape[1] == 0 by returning intercept.
-            # Current _calculate_rss_and_coeffs for empty B_matrix (shape[1]==0) returns mean(y) as coeff.
             empty_matrix = cast("np.ndarray", np.empty((len(y_fit), 0)))
             rss_empty, coeffs_empty, n_valid_rows_for_empty = (
                 self._calculate_rss_and_coeffs(
@@ -163,14 +151,14 @@ class PruningPasser:
                     y_fit,
                     sample_weight=self.sample_weight,
                 )
-            )  # B_matrix with 0 columns
+            )
 
             if (
                 coeffs_empty is None
-            ):  # Should not happen with current _calc_rss_and_coeffs for empty B
+            ):
                 return float(np.inf), float(rss_empty), None
 
-            num_terms_intercept_only = 1  # Intercept
+            num_terms_intercept_only = 1
             num_hinge_terms_intercept_only = 0
 
             effective_params_empty = gcv_penalty_cost_effective_parameters(
@@ -192,10 +180,8 @@ class PruningPasser:
                 float(gcv_empty),
                 float(rss_empty),
                 coeffs_empty,
-            )  # coeffs_empty is np.array([np.mean(y_fit)])
+            )
 
-        # There is a duplicate line here, removing one instance.
-        # B_subset = self._build_basis_matrix(X_fit_processed, basis_subset, missing_mask)
         B_subset = self._build_basis_matrix(X_fit_processed, basis_subset, missing_mask)
 
         rss, coeffs, num_valid_rows_for_fit = self._calculate_rss_and_coeffs(
@@ -207,10 +193,9 @@ class PruningPasser:
         if coeffs is None or rss == np.inf or num_valid_rows_for_fit == 0:
             return float(np.inf), float(rss if rss is not None else np.inf), None
 
-        num_model_terms = coeffs.shape[0]  # Actual number of terms in the fitted model
+        num_model_terms = coeffs.shape[0]
 
         if num_model_terms == 0:
-            # This case implies LSTSQ resulted in an empty coefficient array, which means no model.
             return float(np.inf), float(rss), None
 
         num_hinge_terms_in_subset = sum(
@@ -221,10 +206,9 @@ class PruningPasser:
             num_model_terms,
             num_hinge_terms_in_subset,
             self.model.penalty,
-            num_valid_rows_for_fit,  # This is n_samples for the GCV calculation
+            num_valid_rows_for_fit,
         )
 
-        # The arguments for calculate_gcv are (rss, num_samples, num_effective_params)
         gcv_score = calculate_gcv(rss, num_valid_rows_for_fit, effective_params)
         return float(gcv_score), float(rss), coeffs
 

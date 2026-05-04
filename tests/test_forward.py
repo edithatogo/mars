@@ -16,6 +16,8 @@ from pymars.earth import Earth
 
 
 class MockEarth(Earth):
+    """Small Earth subclass used to control forward-pass test setup."""
+
     def __init__(
         self,
         max_degree=1,
@@ -27,7 +29,7 @@ class MockEarth(Earth):
         penalty=3.0,
         allow_linear=True,
         allow_missing=False,
-    ):  # Added allow_missing
+    ):
         super().__init__(
             max_degree=max_degree,
             penalty=penalty,
@@ -44,6 +46,7 @@ class MockEarth(Earth):
 
 @pytest.fixture
 def simple_data():
+    """Return a small one-feature regression fixture."""
     X = np.array([[1.0], [2.0], [3.0], [4.0], [5.0]])
     y = np.array([2.0, 4.0, 5.5, 8.5, 10.0])
     return X, y
@@ -51,6 +54,7 @@ def simple_data():
 
 @pytest.fixture
 def multi_feature_data():
+    """Return a two-feature regression fixture."""
     X = np.array([[1, 10], [2, 20], [3, 15], [4, 25], [5, 12]], dtype=float)
     y = X[:, 0] * 2 + X[:, 1] * 0.5 + np.random.randn(5) * 0.1
     return X, y
@@ -58,6 +62,7 @@ def multi_feature_data():
 
 @pytest.fixture
 def interaction_data():
+    """Return a grid fixture with a multiplicative target."""
     X = np.array(
         [[1, 1], [1, 2], [1, 3], [2, 1], [2, 2], [2, 3], [3, 1], [3, 2], [3, 3]],
         dtype=float,
@@ -67,7 +72,8 @@ def interaction_data():
 
 
 def test_forward_passer_instantiation_and_initial_state(simple_data):
-    X, y = simple_data
+    """Check the initial state of a new forward passer."""
+    _X, _y = simple_data
     earth_model = MockEarth(max_degree=1, max_terms=5)
     passer = ForwardPasser(earth_model)
     assert passer.model is earth_model
@@ -80,6 +86,7 @@ def test_forward_passer_instantiation_and_initial_state(simple_data):
 
 
 def test_initial_model_setup_in_run(simple_data):
+    """Check that run() seeds the model with an intercept term."""
     X, y = simple_data
     earth_model = MockEarth(max_degree=1, max_terms=3)
     passer = ForwardPasser(earth_model)
@@ -117,10 +124,10 @@ def test_initial_model_setup_in_run(simple_data):
 
 
 def test_build_basis_matrix(simple_data):
+    """Check basis-matrix construction for constant and hinge terms."""
     X, _ = simple_data
     earth_model = MockEarth()
     passer = ForwardPasser(earth_model)
-    # Manually set necessary attributes for _build_basis_matrix if it uses self.missing_mask
     passer.missing_mask = np.zeros_like(X, dtype=bool)
 
     bf_const = ConstantBasisFunction()
@@ -142,6 +149,7 @@ def test_build_basis_matrix(simple_data):
 
 
 def test_calculate_rss_and_coeffs(simple_data):
+    """Check RSS and coefficient calculation for several basis layouts."""
     X, y = simple_data
     earth_model = MockEarth()
     passer = ForwardPasser(earth_model)
@@ -180,6 +188,7 @@ def test_calculate_rss_and_coeffs(simple_data):
 
 
 def test_calculate_rss_and_coeffs_with_sample_weight(simple_data):
+    """Check weighted RSS and coefficient calculation."""
     X, y = simple_data
     sample_weight = np.array([1.0, 1.0, 1.0, 8.0, 8.0])
     earth_model = MockEarth()
@@ -210,6 +219,7 @@ def test_calculate_rss_and_coeffs_with_sample_weight(simple_data):
 
 
 def test_find_best_addition_simple_original(simple_data):
+    """Check that the best candidate reduces RSS on a simple problem."""
     X, y = simple_data
     earth_model = MockEarth(max_degree=1, endspan_alpha=0.0, max_terms=10)
     passer = ForwardPasser(earth_model)
@@ -237,7 +247,7 @@ def test_find_best_addition_simple_original(simple_data):
     passer._find_best_candidate_addition()
 
     assert passer._best_candidate_addition is not None
-    bf1, bf2_or_None = passer._best_candidate_addition
+    _bf1, bf2_or_None = passer._best_candidate_addition
 
     assert passer._min_candidate_rss < initial_rss, "RSS should improve"
     assert passer._best_new_B_matrix is not None, "Best new B matrix should be set"
@@ -249,6 +259,7 @@ def test_find_best_addition_simple_original(simple_data):
 
 
 def test_get_allowable_knot_values(simple_data):
+    """Check knot filtering under several span and degree settings."""
     X, _ = simple_data
     earth_model = MockEarth(endspan_alpha=0.0)
     passer = ForwardPasser(earth_model)
@@ -275,7 +286,7 @@ def test_get_allowable_knot_values(simple_data):
     passer.X_train = X_few_unique  # This is X_processed for the passer
     passer.n_samples, passer.n_features = X_few_unique.shape
     passer.missing_mask = np.zeros_like(X_few_unique, dtype=bool)
-    passer.X_fit_original = X_few_unique  # Original values for knot selection
+    passer.X_fit_original = X_few_unique
     knots_few = passer._get_allowable_knot_values(
         X_few_unique[:, 0], parent_intercept, 0
     )
@@ -390,6 +401,7 @@ def test_get_allowable_knot_values(simple_data):
 
 
 def test_generate_candidates_simple(simple_data):
+    """Check candidate generation from an intercept-only model."""
     X, y = simple_data
     earth_model = MockEarth(max_degree=1, endspan_alpha=0.0, allow_linear=True)
     passer = ForwardPasser(earth_model)
@@ -458,6 +470,7 @@ def test_generate_candidates_simple(simple_data):
 
 
 def test_run_main_loop_simple_case(simple_data):
+    """Check that run() progresses on a simple one-feature problem."""
     X, y = simple_data
     earth_model = MockEarth(
         max_degree=1, max_terms=3, endspan_alpha=0.0, allow_linear=True
@@ -486,7 +499,7 @@ def test_run_main_loop_simple_case(simple_data):
     earth_model_mt1 = MockEarth(max_degree=1, max_terms=1, endspan_alpha=0.1)
     passer_mt1 = ForwardPasser(earth_model_mt1)
     dummy_missing_mask_mt1 = np.zeros_like(X, dtype=bool)
-    final_bfs_mt1, final_coeffs_mt1 = passer_mt1.run(
+    final_bfs_mt1, _final_coeffs_mt1 = passer_mt1.run(
         X_fit_processed=X,
         y_fit=y.ravel(),
         missing_mask=dummy_missing_mask_mt1,
@@ -500,8 +513,7 @@ def test_run_main_loop_simple_case(simple_data):
     )
     passer_mt2 = ForwardPasser(earth_model_mt2)
     dummy_missing_mask_mt2 = np.zeros_like(X, dtype=bool)
-    # Corrected to use keyword arguments
-    final_bfs_mt2, final_coeffs_mt2 = passer_mt2.run(
+    final_bfs_mt2, _final_coeffs_mt2 = passer_mt2.run(
         X_fit_processed=X,
         y_fit=y.ravel(),
         missing_mask=dummy_missing_mask_mt2,
@@ -511,6 +523,7 @@ def test_run_main_loop_simple_case(simple_data):
 
 
 def test_generate_candidates_for_interaction(interaction_data):
+    """Check degree-2 candidate generation for interaction parents."""
     X, y = interaction_data
     earth_model = MockEarth(
         max_degree=2, max_terms=5, endspan_alpha=0.0, allow_linear=True
@@ -558,6 +571,7 @@ def test_generate_candidates_for_interaction(interaction_data):
 
 
 def test_run_with_interaction(interaction_data):
+    """Check that interaction data produces an interaction term."""
     X, y = interaction_data
     earth_model = MockEarth(
         max_degree=2, max_terms=7, penalty=0, endspan_alpha=0.0, allow_linear=True
@@ -594,6 +608,7 @@ def test_run_with_interaction(interaction_data):
 
 
 def test_generate_linear_candidates(multi_feature_data):
+    """Check linear candidate generation and degree constraints."""
     X, y = multi_feature_data
     earth_model_linear_true = MockEarth(max_degree=2, allow_linear=True, max_terms=5)
     passer_linear_true = ForwardPasser(earth_model_linear_true)
@@ -688,6 +703,7 @@ def test_generate_linear_candidates(multi_feature_data):
 
 
 def test_find_best_addition_selects_linear(simple_data):
+    """Check that a linear term is preferred on a linear target."""
     del simple_data
     X_linear = np.array([[1], [2], [3], [4], [5], [6]])
     y_linear = 2 * X_linear[:, 0] + 1
@@ -733,6 +749,7 @@ def test_find_best_addition_selects_linear(simple_data):
 
 
 def test_run_adds_linear_term():
+    """Check that run() can select a linear term."""
     X = np.array([[1], [2], [3], [4], [5], [6], [7], [8]])
     y = 3 * X[:, 0] - 2
 
@@ -766,6 +783,7 @@ def test_run_adds_linear_term():
 
 
 def test_run_adds_linear_interaction_term():
+    """Check that run() can select an interaction term."""
     X_inter = np.array([[1, 1], [1, 2], [2, 1], [2, 2], [3, 1], [3, 2]], dtype=float)
     y_inter = X_inter[:, 0] * X_inter[:, 1]
 
@@ -832,17 +850,14 @@ def test_generate_candidates_with_missingness():
     X_orig = np.array([[1.0, np.nan], [2.0, 20.0], [np.nan, 30.0], [4.0, np.nan]])
     y_dummy = np.array([1, 2, 3, 4])
 
-    # Mock Earth model that allows missing values
     earth_model_missing = MockEarth(allow_missing=True)
-    # Setup ForwardPasser internal state usually done by run()
     passer = ForwardPasser(earth_model_missing)
-    passer.X_train = np.nan_to_num(X_orig, nan=0.0)  # X_processed
+    passer.X_train = np.nan_to_num(X_orig, nan=0.0)
     passer.missing_mask = np.isnan(X_orig)
     passer.X_fit_original = X_orig
     passer.n_samples, passer.n_features = X_orig.shape
-    passer.current_basis_functions = [ConstantBasisFunction()]  # Start with intercept
+    passer.current_basis_functions = [ConstantBasisFunction()]
 
-    # Mock record to provide feature names
     class MockRecord:
         feature_names_in_ = ["feature0", "feature1"]
 
@@ -868,7 +883,6 @@ def test_generate_candidates_with_missingness():
     assert found_missingness_bf_0
     assert found_missingness_bf_1
 
-    # Test case: only one feature has NaNs
     X_one_nan = np.array([[1.0, 10.0], [2.0, np.nan], [3.0, 30.0]])
     passer.missing_mask = np.isnan(X_one_nan)
     passer.X_fit_original = X_one_nan
@@ -885,11 +899,10 @@ def test_generate_candidates_with_missingness():
     assert num_missingness_one_nan == 1
     assert found_missingness_bf_1_only
 
-    # Test: no missingness candidates if allow_missing=False
     earth_model_no_missing = MockEarth(allow_missing=False)
     passer_no_missing = ForwardPasser(earth_model_no_missing)
     passer_no_missing.X_train = np.nan_to_num(X_orig, nan=0.0)
-    passer_no_missing.missing_mask = np.isnan(X_orig)  # Mask is still there
+    passer_no_missing.missing_mask = np.isnan(X_orig)
     passer_no_missing.X_fit_original = X_orig
     passer_no_missing.n_samples, passer_no_missing.n_features = X_orig.shape
     passer_no_missing.current_basis_functions = [ConstantBasisFunction()]
@@ -902,10 +915,9 @@ def test_generate_candidates_with_missingness():
 
 
 def test_run_selects_missingness_bf():
-    """Test if ForwardPasser.run can select a MissingnessBasisFunction."""
-    # Create data where missingness in X0 is perfectly correlated with y
+    """Test whether run() can select a missingness basis function."""
     X_orig = np.array([[np.nan], [1.0], [np.nan], [2.0], [np.nan], [3.0]])
-    y = np.array([10.0, 1.0, 10.0, 2.0, 10.0, 3.0])  # High y when X0 is missing
+    y = np.array([10.0, 1.0, 10.0, 2.0, 10.0, 3.0])
 
     earth_model = MockEarth(
         allow_missing=True,
@@ -914,9 +926,8 @@ def test_run_selects_missingness_bf():
         allow_linear=False,
         endspan_alpha=0.0,
         minspan_alpha=0.0,
-    )  # No linear/hinge to isolate missingness
+    )
 
-    # Mock record for feature names
     class MockRecord:
         feature_names_in_ = ["x0"]
 
@@ -936,11 +947,6 @@ def test_run_selects_missingness_bf():
 
     assert len(final_bfs) >= 1
 
-    # Check coefficients roughly - e.g. missingness term should have a positive coeff
-    # B = Intercept | is_missing(x0)
-    # y = c0*1 + c1*is_missing(x0)
-    # When not missing: y_approx = c0. Mean of (1,2,3) is 2. So c0 approx 2.
-    # When missing: y_approx = c0 + c1 = 10. So c1 approx 8.
     idx_missing_bf = -1
     for i, bf in enumerate(final_bfs):
         if isinstance(bf, MissingnessBasisFunction):

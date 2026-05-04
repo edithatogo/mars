@@ -2,6 +2,8 @@
 Unit tests for the basis functions in pymars._basis
 """
 
+import re
+
 import numpy as np
 import pytest
 
@@ -58,6 +60,7 @@ def test_constant_basis_function():
 @pytest.mark.parametrize("is_right", [True, False])
 @pytest.mark.parametrize("parent_type", [None, "Constant", "Hinge", "Linear"])
 def test_hinge_basis_function(is_right, parent_type):
+    """Test HingeBasisFunction behavior across parent types."""
     base_var_idx, base_knot = 0, 2.5
     base_var_name = "X0"
 
@@ -140,6 +143,7 @@ def test_hinge_basis_function(is_right, parent_type):
 
 @pytest.mark.parametrize("parent_type", [None, "Constant", "Hinge", "Linear"])
 def test_linear_basis_function(parent_type):
+    """Test LinearBasisFunction behavior across parent types."""
     base_var_idx = 0
     base_var_name = "X0"
 
@@ -266,7 +270,10 @@ def test_missingness_basis_function():
     assert np.array_equal(transformed_var1, np.array([0, 1, 0]))
 
     # Test input validation for transform
-    with pytest.raises(TypeError, match="Input missing_mask must be a numpy array."):
+    with pytest.raises(
+        TypeError,
+        match=re.escape("Input missing_mask must be a numpy array."),
+    ):
         bf.transform(X_dummy, "not a mask")  # type: ignore
     with pytest.raises(ValueError, match="Input missing_mask must be 2D"):
         bf.transform(X_dummy, np.array([False, True]))  # 1D mask for 2D X

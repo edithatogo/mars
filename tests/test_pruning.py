@@ -11,6 +11,8 @@ from pymars.earth import Earth
 
 
 class MockEarth(Earth):
+    """Test double for Earth with a simplified constructor."""
+
     def __init__(self, penalty=3.0, allow_missing=False, **kwargs):
         super().__init__(penalty=penalty, allow_missing=allow_missing, **kwargs)
         self.record_ = None
@@ -18,8 +20,9 @@ class MockEarth(Earth):
 
 @pytest.fixture
 def simple_pruning_data():
+    """Return deterministic regression data for pruning tests."""
     np.random.seed(42)
-    n_samples_fixture = 40  # Increased from 10
+    n_samples_fixture = 40
     X = np.array(
         [[1 + i * 0.2, 10 + i * 0.3, 5 + i * 0.1] for i in range(n_samples_fixture)],
         dtype=float,
@@ -36,6 +39,7 @@ def simple_pruning_data():
 
 @pytest.fixture
 def initial_model_for_pruning(simple_pruning_data):
+    """Build a basis set and coefficients for pruning scenarios."""
     X, y = simple_pruning_data
 
     bf_intercept = ConstantBasisFunction()
@@ -87,6 +91,7 @@ def initial_model_for_pruning(simple_pruning_data):
 
 
 def test_pruning_passer_instantiation():
+    """PruningPasser should initialize with the expected defaults."""
     earth_model = MockEarth(penalty=2.5)
     passer = PruningPasser(earth_model)
     assert passer.model is earth_model
@@ -96,8 +101,8 @@ def test_pruning_passer_instantiation():
     assert len(passer.best_basis_functions_so_far) == 0
 
 
-def test_compute_gcv_for_subset(simple_pruning_data, initial_model_for_pruning):
-    del simple_pruning_data
+def test_compute_gcv_for_subset(initial_model_for_pruning):
+    """Subset GCV should be finite and consistent across basis choices."""
     X, y, initial_bfs, _ = initial_model_for_pruning
     earth_model_penalty3 = MockEarth(penalty=3.0)
     passer = PruningPasser(earth_model_penalty3)
@@ -120,7 +125,7 @@ def test_compute_gcv_for_subset(simple_pruning_data, initial_model_for_pruning):
     assert len(coeffs1) == len(initial_bfs)
 
     subset_bfs = initial_bfs[:-1]
-    gcv2, rss2, coeffs2 = passer._compute_gcv_for_subset(
+    gcv2, _rss2, coeffs2 = passer._compute_gcv_for_subset(
         X_fit_processed=X,
         y_fit=y.ravel(),
         missing_mask=passer.missing_mask,
@@ -130,9 +135,9 @@ def test_compute_gcv_for_subset(simple_pruning_data, initial_model_for_pruning):
     assert gcv2 > 0 and gcv2 != np.inf
     assert len(coeffs2) == len(subset_bfs)
 
-    intercept_bf = [bf for bf in initial_bfs if isinstance(bf, ConstantBasisFunction)][
-        0
-    ]
+    intercept_bf = next(
+        bf for bf in initial_bfs if isinstance(bf, ConstantBasisFunction)
+    )
     gcv_intercept, rss_intercept, coeffs_intercept = passer._compute_gcv_for_subset(
         X_fit_processed=X,
         y_fit=y.ravel(),
@@ -146,13 +151,14 @@ def test_compute_gcv_for_subset(simple_pruning_data, initial_model_for_pruning):
 
 
 def test_pruning_run_no_pruning_if_penalty_zero(initial_model_for_pruning):
+    """Penalty zero should preserve the best basis set."""
     X, y, initial_bfs, initial_coeffs = initial_model_for_pruning
     earth_model = MockEarth(penalty=0.0)
     passer = PruningPasser(earth_model)
     dummy_missing_mask = np.zeros_like(X, dtype=bool)
 
     initial_bfs_copy = list(initial_bfs)
-    pruned_bfs, pruned_coeffs, best_gcv = passer.run(
+    pruned_bfs, _pruned_coeffs, best_gcv = passer.run(
         X_fit_processed=X,
         y_fit=y.ravel(),
         missing_mask=dummy_missing_mask,
@@ -189,12 +195,13 @@ def test_pruning_run_no_pruning_if_penalty_zero(initial_model_for_pruning):
 
 
 def test_pruning_run_some_pruning_expected(initial_model_for_pruning):
+    """A positive penalty should remove at least one redundant basis."""
     X, y, initial_bfs, initial_coeffs = initial_model_for_pruning
     earth_model = MockEarth(penalty=3.0)
     passer = PruningPasser(earth_model)
     dummy_missing_mask = np.zeros_like(X, dtype=bool)
 
-    pruned_bfs, pruned_coeffs, best_gcv = passer.run(
+    pruned_bfs, _pruned_coeffs, best_gcv = passer.run(
         X_fit_processed=X,
         y_fit=y.ravel(),
         missing_mask=dummy_missing_mask,
@@ -232,12 +239,13 @@ def test_pruning_run_some_pruning_expected(initial_model_for_pruning):
 
 
 def test_pruning_run_empty_initial_set(simple_pruning_data):
+    """An empty starting basis should stay empty after pruning."""
     X, y = simple_pruning_data
     earth_model = MockEarth(penalty=3.0)
     passer = PruningPasser(earth_model)
     dummy_missing_mask = np.zeros_like(X, dtype=bool)
 
-    pruned_bfs, pruned_coeffs, best_gcv = passer.run(
+    pruned_bfs, _pruned_coeffs, best_gcv = passer.run(
         X_fit_processed=X,
         y_fit=y.ravel(),
         missing_mask=dummy_missing_mask,
@@ -252,6 +260,7 @@ def test_pruning_run_empty_initial_set(simple_pruning_data):
 
 
 def test_pruning_run_intercept_protection(simple_pruning_data):
+    """Pruning should never drop the intercept term."""
     X, y = simple_pruning_data
     bf_intercept = ConstantBasisFunction()
     bf_truly_bad_hinge = HingeBasisFunction(
@@ -278,7 +287,7 @@ def test_pruning_run_intercept_protection(simple_pruning_data):
     passer = PruningPasser(earth_model)
     dummy_missing_mask = np.zeros_like(X, dtype=bool)
 
-    pruned_bfs, pruned_coeffs, best_gcv = passer.run(
+    pruned_bfs, _pruned_coeffs, best_gcv = passer.run(
         X_fit_processed=X,
         y_fit=y.ravel(),
         missing_mask=dummy_missing_mask,
@@ -305,7 +314,3 @@ def test_pruning_run_intercept_protection(simple_pruning_data):
         basis_subset=[bf_intercept],
     )
     assert np.isclose(best_gcv, gcv_intercept_only)
-
-
-if __name__ == "__main__":
-    pytest.main([__file__])

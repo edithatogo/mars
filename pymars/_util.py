@@ -7,18 +7,12 @@ such as input validation, specific calculations not tied to a class, etc.
 
 from __future__ import annotations
 
-# Standard library imports
 import logging
 from typing import Any, cast
 
 import numpy as np
 
 logger = logging.getLogger(__name__)
-# from ._types import XType, YType, NumericArray, BoolArray # If using custom types
-
-# Scikit-learn like input validation (simplified examples)
-# In a real scenario, we would use sklearn.utils.validation directly
-# if scikit-learn is a hard dependency. If not, we might implement some checks.
 
 
 def check_array(
@@ -62,13 +56,6 @@ def check_array(
 
     return cast("np.ndarray", array)
 
-
-# ``check_X_y`` was formerly implemented here as a lightweight alternative to
-# :func:`sklearn.utils.validation.check_X_y`.  The project now depends on
-# scikit-learn's implementation directly.  Import ``check_X_y`` from
-# :mod:`sklearn.utils.validation` instead.
-
-
 def gcv_penalty_cost_effective_parameters(
     num_terms: int, num_hinge_terms: int, penalty: float, num_samples: int | float
 ) -> float:
@@ -91,9 +78,6 @@ def gcv_penalty_cost_effective_parameters(
     if num_terms == 0:
         return 0.0
 
-    # py-earth style: effective_num_parameters = num_terms + penalty * num_knots
-    # Here, num_knots corresponds to num_hinge_terms (as each hinge pair comes from one knot,
-    # and linear terms are not penalized in this way).
     return float(num_terms + penalty * num_hinge_terms)
 
 
@@ -110,10 +94,10 @@ def calculate_gcv(
     if num_samples == 0:
         return np.inf
     if num_effective_params >= num_samples:
-        return np.inf  # Avoid division by zero or sqrt of negative
+        return np.inf
 
     denominator = (1.0 - num_effective_params / num_samples) ** 2
-    if denominator < 1e-9:  # Effectively zero
+    if denominator < 1e-9:
         return np.inf
 
     return rss / (num_samples * denominator)

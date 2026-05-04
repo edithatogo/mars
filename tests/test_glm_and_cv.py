@@ -11,6 +11,7 @@ from pymars.plot import plot_basis_functions, plot_residuals
 
 
 def test_interaction_basis_function():
+    """Check interaction terms multiply their parent basis functions."""
     X = np.array([[2.0, 3.0], [0.0, 5.0]])
     mask = np.zeros_like(X, dtype=bool)
     bf1 = HingeBasisFunction(0, 1.0)
@@ -22,6 +23,7 @@ def test_interaction_basis_function():
 
 
 def test_glmearth_logistic():
+    """Check GLMEarth fits and predicts a binary target."""
     rng = np.random.RandomState(0)
     X = rng.rand(50, 2)
     y = (X[:, 0] + X[:, 1] > 1).astype(int)
@@ -32,6 +34,7 @@ def test_glmearth_logistic():
 
 
 def test_glmearth_poisson():
+    """Check GLMEarth fits and predicts a count target."""
     rng = np.random.RandomState(0)
     X = rng.rand(50, 2)
     y = rng.poisson(2 + X[:, 0])
@@ -42,6 +45,7 @@ def test_glmearth_poisson():
 
 
 def test_earthcv_and_plotting():
+    """Check cross-validation scoring and plotting helpers."""
     rng = np.random.RandomState(0)
     X = rng.rand(30, 2)
     y = rng.rand(30)
