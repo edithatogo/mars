@@ -20,6 +20,9 @@ readiness to actual publication.
 - Put secret values into GitHub Actions secret settings, not in the repository.
 - Reply with the Go tag policy if you want the release flow to enforce a
   specific signing or review rule.
+- Reply with the R and Julia submission-path details when you are ready to
+  move those packages through r-universe, CRAN, Registrator.jl, or the General
+  registry.
 
 ## Once Set
 

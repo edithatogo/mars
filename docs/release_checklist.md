@@ -12,9 +12,9 @@ capture the remaining registry inputs from the maintainer.
 To move the remaining publication gates forward, the maintainer needs to
 confirm or configure:
 
+- the Go tag-signing and release-tag policy
 - the R release path through r-universe and CRAN
 - the Julia release path through Registrator.jl and the General registry
-- the Go tag-signing and release-tag policy
 
 ## Before a Release Rehearsal
 
@@ -29,18 +29,12 @@ confirm or configure:
 
 ## Registry Ownership and Credentials
 
-- Confirm the PyPI project owner and trusted publishing configuration for
-  `mars-earth` if any publishing change is planned.
-- Confirm the crates.io registry token and verified publishing email for
-  `mars-earth`.
-- Confirm the npm automation token or trusted publishing path for `mars-earth`
-  only if a future republish or ownership change is planned.
-- Confirm the NuGet trusted publishing policy for `mars-earth` only if a
-  future republish or ownership change is planned.
 - Confirm the Go module tag-signing and release-tag policy.
 - Confirm the R submission path through r-universe and CRAN is available.
 - Confirm the Julia submission path through Registrator.jl and the General
   registry is available.
+- If a republish or ownership change is planned later, re-check the PyPI,
+  crates.io, npm, and NuGet paths against the release inventory.
 
 ## Before Publishing
 

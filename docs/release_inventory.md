@@ -24,7 +24,6 @@ names remain ecosystem-native when a registry or toolchain requires them.
 
 | Package | Owner / credential status | Action | Status | Date |
 | --- | --- | --- | --- | --- |
-| crates.io `mars-earth` | Maintainer-owned namespace; publishing required the configured registry token and a verified crates.io email on the account | No blocker remains unless the crate is republished | Published | 2026-05-04 |
 | R `marsruntime` | Maintainer-owned package name; r-universe / CRAN requirements not verified in this inventory | Confirm submission path and maintainer review steps | Owner confirmed | 2026-04-29 |
 | Julia `MarsRuntime` | Maintainer-owned package name; registry path not verified in this inventory | Confirm registry path and UUID/review requirements | Owner confirmed | 2026-04-29 |
 
@@ -36,7 +35,7 @@ The public registry-name audit has been run against the current package set.
 | --- | --- | --- | --- |
 | PyPI `mars-earth` | Present | [mars-earth on PyPI](https://pypi.org/project/mars-earth/) | Keep as the Python distribution name unless a rename is approved |
 | PyPI `pymars` | Present, unrelated project | [pymars on PyPI](https://pypi.org/project/pymars/) | Avoid using `pymars` as the published package name |
-| crates.io `mars-earth` | Not published yet | [crates.io package page](https://crates.io/crates/mars-earth) | Publish once ownership and registry credentials are confirmed |
+| crates.io `mars-earth` | Present | [crates.io package page](https://crates.io/crates/mars-earth) | Package is live as `0.1.0` |
 | npm `mars-earth` | Present | [npm package page](https://www.npmjs.com/package/mars-earth) | Package is live as `0.0.0` |
 | NuGet `mars-earth` | Present | [NuGet package page](https://www.nuget.org/packages/mars-earth) | Package is live as `0.0.0` |
 | Go module path | Controlled by repository tags | `bindings/go/go.mod` | Keep the module path aligned with signed tags |
@@ -55,6 +54,7 @@ The public registry-name audit has been run against the current package set.
 
 ## Next Steps
 
+- Confirm the Go tag-signing and release-tag policy.
 - Confirm the remaining manual-review registry paths for R and Julia.
 - Use the [Release Checklist](release_checklist.md) to record the manual
   confirmations and to fill in any remaining blocker rows.
@@ -62,14 +62,12 @@ The public registry-name audit has been run against the current package set.
   allow per-ecosystem version skew.
 - Define the logging contract for each binding surface and document it in the
   release-readiness track.
-- Run the `release-rehearsal.yml` workflow and record the resulting artifacts
-  and smoke-test output for the supported package managers.
 
 ## Repository Wiring
 
 - Python release automation already points at `mars-earth` in `pyproject.toml`
   and the GitHub release workflow publishes that distribution name.
-- Rust, npm, and NuGet packages are live on their registries.
+- Rust, crates.io, npm, and NuGet packages are live on their registries.
 - Go release remains tag-driven.
 - R and Julia release notes already point to their registry-specific release
   paths.
