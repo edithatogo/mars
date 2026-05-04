@@ -15,7 +15,8 @@
     - [x] Confirm npm organization/package ownership and publish-automation status [published on npm as `0.0.0`, 2026-05-04]
     - [x] Confirm NuGet trusted publishing policy and login path [published on NuGet as `0.0.0`, 2026-05-04]
     - [x] Confirm Go module path and tag strategy
-    - [~] Confirm R r-universe/CRAN requirements; Julia registration submitted and awaiting General review [blocker: human action needed, 2026-05-04]
+    - [~] Confirm R r-universe/CRAN requirements; Julia registration submitted and awaiting General review [blocker: R readiness track and human action needed, 2026-05-04]
+    - [ ] Complete R package publication readiness track before treating R as release-ready
 - [x] Task: Confirm repository-side release wiring
     - [x] Confirm PyPI publish configuration points at `mars-earth`
     - [x] Confirm crates.io, npm, and NuGet workflows reference release secrets or trusted publishing

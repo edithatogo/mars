@@ -36,6 +36,8 @@ The remaining-track dependency gates are summarized in
   *Link: [./tracks/release_readiness_registry_governance_20260428/](./tracks/release_readiness_registry_governance_20260428/)*
 - [x] **Track: Advance Rust training orchestration and Python integration**
   *Link: [./tracks/rust_training_orchestration_python_integration_20260428/](./tracks/rust_training_orchestration_python_integration_20260428/)*
+- [ ] **Track: R package publication readiness**
+  *Link: [./tracks/r_package_publication_readiness_20260504/](./tracks/r_package_publication_readiness_20260504/)*
 - [~] **Track: Publish packages to language package managers with release governance**
   *Link: [./tracks/package_publication_release_governance_20260428/](./tracks/package_publication_release_governance_20260428/)*
 - [x] **Track: Operator-facing diagnostics and uncertainty reporting**
