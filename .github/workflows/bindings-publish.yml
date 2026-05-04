@@ -74,12 +74,17 @@ jobs:
     environment: release
     steps:
       - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "11.0.x"
           dotnet-quality: "preview"
+      - name: Build Rust runtime helper
+        run: cargo build --manifest-path rust-runtime/Cargo.toml --bin mars-runtime-cli
       - run: dotnet test MarsRuntime.Tests/MarsRuntime.Tests.csproj
         working-directory: bindings/csharp
+        env:
+          MARS_RUNTIME_BIN: ${{ github.workspace }}/rust-runtime/target/debug/mars-runtime-cli
       - run: dotnet pack --configuration Release
         working-directory: bindings/csharp
       - name: NuGet login (OIDC -> temporary API key)
@@ -91,6 +96,8 @@ jobs:
         if: inputs.dry_run == false
         run: dotnet nuget push "bin/Release/*.nupkg" --api-key "${{steps.login.outputs.NUGET_API_KEY}}" --source https://api.nuget.org/v3/index.json
         working-directory: bindings/csharp
+        env:
+          MARS_RUNTIME_BIN: ${{ github.workspace }}/rust-runtime/target/debug/mars-runtime-cli
 
   publish-r:
     if: github.event_name == 'workflow_dispatch' && inputs.package == 'r'
