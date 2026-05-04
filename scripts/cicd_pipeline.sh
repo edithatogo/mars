@@ -20,7 +20,7 @@ ruff check pymars tests
 ruff format --check pymars tests
 
 echo "3. Running type checking with ty..."
-ty check pymars/
+ty check --error-on-warning pymars/
 
 echo "4. Running tests with coverage..."
 python -m pytest tests/ --cov=pymars --cov-report=term-missing

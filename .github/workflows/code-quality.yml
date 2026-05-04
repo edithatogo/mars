@@ -56,7 +56,7 @@ jobs:
       - name: Run ty type check
         run: |
           set -o pipefail
-          uv run ty check pymars/ | tee "$CI_LOG_DIR/ty.log"
+          uv run ty check --error-on-warning pymars/ | tee "$CI_LOG_DIR/ty.log"
 
       - name: Build documentation
         run: |
