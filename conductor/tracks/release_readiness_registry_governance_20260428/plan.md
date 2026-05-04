@@ -4,18 +4,18 @@
 
 - [x] Task: Audit public package-name availability
     - [x] Confirm PyPI `mars-earth` exists and note the `pymars` namespace collision
-    - [x] Confirm crates.io `mars-earth` is not publicly registered yet
-    - [x] Confirm npm `mars-earth` is not publicly registered yet
-    - [x] Confirm NuGet `mars-earth` is not publicly registered yet
+    - [x] Confirm crates.io `mars-earth` is publicly registered as `0.1.0`
+    - [x] Confirm npm `mars-earth` is publicly registered as `0.0.0`
+    - [x] Confirm NuGet `mars-earth` is publicly registered as `0.0.0`
     - [x] Confirm Go module path is controlled by repository tags rather than a registry
     - [x] Confirm R `marsruntime` and Julia `MarsRuntime` remain release targets rather than published registry packages
-- [~] Task: Confirm registry ownership and credential status [blocker: need human credential verification, 2026-04-29]
+- [~] Task: Confirm registry ownership and credential status [blocker: R/Julia submission-path confirmation, 2026-05-04]
     - [x] Confirm PyPI project ownership and trusted publishing or token status
-    - [~] Confirm crates.io owner and crate name status [blocker: human action needed, 2026-04-29]
-    - [~] Confirm npm organization/package ownership and publish-automation status [blocker: first publish needs an automation token, then trusted publishing can be registered, 2026-05-03]
-    - [x] Confirm NuGet trusted publishing policy and login path
+    - [x] Confirm crates.io owner and crate name status [published on crates.io as `0.1.0`, 2026-05-04]
+    - [x] Confirm npm organization/package ownership and publish-automation status [published on npm as `0.0.0`, 2026-05-04]
+    - [x] Confirm NuGet trusted publishing policy and login path [published on NuGet as `0.0.0`, 2026-05-04]
     - [x] Confirm Go module path and tag strategy
-    - [~] Confirm R r-universe/CRAN and Julia General submission requirements [blocker: human action needed, 2026-04-29]
+    - [~] Confirm R r-universe/CRAN and Julia General submission requirements [blocker: human action needed, 2026-05-04]
 - [x] Task: Confirm repository-side release wiring
     - [x] Confirm PyPI publish configuration points at `mars-earth`
     - [x] Confirm crates.io, npm, and NuGet workflows reference release secrets or trusted publishing

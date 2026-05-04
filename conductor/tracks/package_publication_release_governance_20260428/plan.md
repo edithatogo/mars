@@ -2,8 +2,8 @@
 
 ## Phase 0: Release Readiness Handoff
 
-- [~] Task: Verify release-readiness prerequisites [blocker: release-readiness track still has open registry credentials, 2026-04-29]
-    - [ ] Confirm release-readiness track is complete
+- [~] Task: Verify release-readiness prerequisites [blocker: Go/R/Julia remain open, 2026-05-04]
+    - [~] Confirm release-readiness track is complete [blocker: Go/R/Julia remain open]
     - [x] Confirm CI quality gates are green for the selected release target
     - [x] Confirm Rust-backed runtime binding CI is green for stable runtime releases
     - [x] Confirm training API tracks are complete for packages that claim training support
@@ -15,16 +15,16 @@
 
 ## Phase 1: Automated Registry Publication
 
-- [ ] Task: Publish approved automated registry packages
-    - [ ] Publish Python package to PyPI
-    - [ ] Publish Rust crate to crates.io
-    - [ ] Publish TypeScript package to npm
-    - [ ] Publish C# package to NuGet
+- [~] Task: Publish approved automated registry packages
+    - [x] Publish Python package to PyPI
+    - [x] Publish Rust crate to crates.io
+    - [x] Publish TypeScript package to npm
+    - [x] Publish C# package to NuGet
     - [ ] Publish Go module through a signed repository tag
-- [ ] Task: Verify automated registry packages
-    - [ ] Install each package from its registry
-    - [ ] Run smoke tests against the shared conformance fixture
-    - [ ] Record registry URLs, versions, and checksums where available
+- [x] Task: Verify automated registry packages
+    - [x] Install each package from its registry
+    - [x] Run smoke tests against the shared conformance fixture
+    - [x] Record registry URLs, versions, and checksums where available
 - [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 1: Automated Registry Publication' (Protocol in workflow.md)
 
 ## Phase 2: Manual and Review-Based Registry Publication
