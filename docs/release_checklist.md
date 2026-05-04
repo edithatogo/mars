@@ -12,7 +12,7 @@ capture the remaining registry inputs from the maintainer.
 To move the remaining publication gates forward, the maintainer needs to
 confirm or configure:
 
-- crates.io ownership and the `CARGO_REGISTRY_TOKEN` for `mars-earth`
+- crates.io ownership, verified email, and the `CARGO_REGISTRY_TOKEN` for `mars-earth`
 - npm ownership and the `NPM_TOKEN` automation-token setup for the first
   `mars-earth` publish, with trusted publishing reserved for later
 - NuGet ownership and the `NuGet/login@v1` trusted publishing path for
@@ -36,7 +36,8 @@ confirm or configure:
 
 - Confirm the PyPI project owner and trusted publishing configuration for
   `mars-earth` if any publishing change is planned.
-- Confirm the crates.io registry token for `mars-earth` exists.
+- Confirm the crates.io registry token and verified publishing email for
+  `mars-earth` exist.
 - Confirm the npm automation token or trusted publishing path for `mars-earth`
   exists and is wired as `NPM_TOKEN` or the equivalent GitHub Actions/OIDC
   path.

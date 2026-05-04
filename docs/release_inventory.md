@@ -25,7 +25,7 @@ names remain ecosystem-native when a registry or toolchain requires them.
 | Package | Owner / credential status | Action | Status | Date |
 | --- | --- | --- | --- | --- |
 | PyPI `mars-earth` | Confirmed by maintainer; trusted publishing is configured in GitHub Actions | Document the owner and publishing path as ready for release | Confirmed | 2026-04-29 |
-| crates.io `mars-earth` | Maintainer-owned namespace; registry token not verified in this inventory | Confirm crate owner and registry token | Owner confirmed | 2026-04-29 |
+| crates.io `mars-earth` | Maintainer-owned namespace; publishing also requires a verified crates.io email on the account | Confirm crate owner, registry token, and verified email | Owner confirmed | 2026-04-29 |
 | npm `mars-earth` | Maintainer-owned package name; first publish requires an automation token, then trusted publishing can be registered once the package exists | Confirm npm org and automation-token/trusted-publishing path | Owner confirmed | 2026-05-03 |
 | NuGet `mars-earth` | Maintainer-owned package ID; trusted publishing policy configured in GitHub Actions | Confirm package ID ownership and GitHub Actions login path | Ready | 2026-04-30 |
 | Go module path | Repository-controlled, tag-based release path documented in this inventory | Confirm module path and tagging policy | Documented | 2026-04-29 |
