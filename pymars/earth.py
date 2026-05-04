@@ -10,7 +10,7 @@ from typing import Any, cast
 import numpy as np
 from sklearn.base import BaseEstimator, RegressorMixin
 
-from ._basis import ConstantBasisFunction  # Used in fallbacks
+from ._basis import ConstantBasisFunction
 from ._model_spec import model_to_spec, spec_to_json, spec_to_model
 from ._util import (
     calculate_gcv,
@@ -18,9 +18,6 @@ from ._util import (
 )
 
 logger = logging.getLogger(__name__)
-# from ._forward import ForwardPasser # Imported locally in fit
-# from ._pruning import PruningPasser # Imported locally in fit
-# from ._record import EarthRecord
 
 
 class Earth(BaseEstimator, RegressorMixin):
@@ -141,7 +138,6 @@ class Earth(BaseEstimator, RegressorMixin):
     ):
         super().__init__()
 
-        # Core MARS algorithm parameters
         self.max_degree = max_degree
         self.penalty = penalty
         self.max_terms = max_terms
@@ -154,7 +150,6 @@ class Earth(BaseEstimator, RegressorMixin):
         self.feature_importance_type = feature_importance_type
         self.categorical_features = categorical_features
 
-        # Attributes that will be learned during fit
         self.basis_: list[Any] | None = None
         self.coef_: np.ndarray | None = None
         self.record_: Any | None = None
@@ -168,9 +163,6 @@ class Earth(BaseEstimator, RegressorMixin):
         self.fitted_ = False
         self.categorical_imputer_: Any | None = None
 
-    # _build_basis_matrix is defined in Earth class. Its signature was:
-    # def _build_basis_matrix(self, X: np.ndarray, basis_functions: list) -> np.ndarray:
-    # It needs to accept missing_mask.
     def _build_basis_matrix(
         self,
         X_processed: np.ndarray,
@@ -185,9 +177,6 @@ class Earth(BaseEstimator, RegressorMixin):
         if not basis_functions:
             return cast("np.ndarray", np.empty((X_processed.shape[0], 0)))
 
-        # Preallocate basis matrix to reduce memory allocations. Profiling
-        # revealed that constructing lists of arrays and calling np.hstack for
-        # every iteration consumed a significant portion of runtime.
         n_samples = X_processed.shape[0]
         B_matrix = np.empty((n_samples, len(basis_functions)), dtype=float)
         for idx, bf in enumerate(basis_functions):
@@ -210,8 +199,6 @@ class Earth(BaseEstimator, RegressorMixin):
         self : Earth
             The fitted model.
         """
-        # Import necessary modules here to avoid circular dependencies at module level
-        # and to keep them local to fit if they are only used here.
         import numpy as np
         from sklearn.utils.validation import _check_sample_weight, check_X_y
 
@@ -219,9 +206,6 @@ class Earth(BaseEstimator, RegressorMixin):
         from ._pruning import PruningPasser
         from ._record import EarthRecord
 
-        # Basic input validation using scikit-learn utilities. ``dtype=None``
-        # preserves object dtypes so that categorical handling in
-        # ``_scrub_input_data`` still works.
         X, y = check_X_y(
             X,
             y,
@@ -250,13 +234,7 @@ class Earth(BaseEstimator, RegressorMixin):
             missing_mask  # Store for later use (e.g. in basis.transform)
         )
 
-        # Initialize record object (optional, depends on verbosity/debugging needs)
-        # For now, let's assume self.record_ might be set up if verbose, etc.
-        # If EarthRecord is to be used, it should be initialized:
-        # self.record_ = EarthRecord(X_checked, y_checked, self)
-        self.record_ = EarthRecord(
-            X_processed, y_processed, self
-        )  # Use processed data for record
+        self.record_ = EarthRecord(X_processed, y_processed, self)
         if hasattr(X, "columns"):
             self.feature_names_in_ = np.asarray(X.columns, dtype=object)
         else:
@@ -284,42 +262,30 @@ class Earth(BaseEstimator, RegressorMixin):
             self.fitted_ = True
             return self
 
-        # Forward Pass
         forward_passer = ForwardPasser(
             self
-        )  # ForwardPasser will need access to missing_mask
-        # Pass original X for knot finding, X_processed for transforms, missing_mask for awareness
+        )
         fwd_basis_functions, fwd_coefficients = forward_passer.run(
             X_fit_processed=X_processed,
             y_fit=y_processed,
             missing_mask=missing_mask,
-            X_fit_original=self.X_original_,  # For knot selection on non-missing original values
+            X_fit_original=self.X_original_,
             sample_weight=sample_weight_validated,
         )
         assert fwd_coefficients is not None
 
         if not fwd_basis_functions:
-            # This might happen if only an intercept was fit and it's deemed invalid,
-            # or if an error occurred. For now, assume forward pass always gives something.
-            # If it's just an intercept, pruning might still occur or confirm it.
-            # If truly empty (error), we might need to raise an error or set a degenerate model.
             logger.warning("Forward pass returned no basis functions.")
-            # Set a model that predicts mean of y, or handle as error
             self.basis_ = (
                 [cast("Any", ConstantBasisFunction())]
                 if ConstantBasisFunction not in [type(bf) for bf in fwd_basis_functions]
                 else fwd_basis_functions
             )
-            if not self.basis_:  # if fwd_basis_functions was also empty
-                self.basis_ = [
-                    cast("Any", ConstantBasisFunction())
-                ]  # Ensure at least an intercept for predict
+            if not self.basis_:
+                self.basis_ = [cast("Any", ConstantBasisFunction())]
 
-            # Use X_processed and missing_mask for this potential build
             B_final = self._build_basis_matrix(X_processed, self.basis_, missing_mask)
             if B_final.shape[1] > 0:
-                # lstsq needs to be NaN aware if B_final can have NaNs
-                # For now, assume if B_final is built, it's on valid data for this very basic model
                 self.coef_, _, _, _ = np.linalg.lstsq(B_final, y_processed, rcond=None)
             else:
                 intercept = (
@@ -333,9 +299,8 @@ class Earth(BaseEstimator, RegressorMixin):
                     X_processed, self.basis_, missing_mask
                 )
 
-            self.gcv_ = np.inf  # Or calculate for intercept only
+            self.gcv_ = np.inf
             self.fitted_ = True
-            # Calculate RSS and MSE for this simple model
             if self.coef_ is not None and B_final.shape[1] > 0:
                 y_pred_train = B_final @ self.coef_
                 if sample_weight_validated is None:
@@ -364,7 +329,6 @@ class Earth(BaseEstimator, RegressorMixin):
 
             return self
 
-        # Pruning Pass
         pruning_passer = PruningPasser(self)
         pruned_bfs, pruned_coeffs, best_gcv = pruning_passer.run(
             X_fit_processed=X_processed,
@@ -379,24 +343,13 @@ class Earth(BaseEstimator, RegressorMixin):
         self.coef_ = pruned_coeffs
         self.gcv_ = best_gcv
 
-        # Calculate final RSS and MSE on training data using the pruned model
-        # This needs to use X_processed, y_processed, and missing_mask for consistency
-        if (
-            self.basis_ and self.coef_ is not None
-        ):  # Coef are from pruning pass which was NaN-aware
+        if self.basis_ and self.coef_ is not None:
             B_final = self._build_basis_matrix(X_processed, self.basis_, missing_mask)
-
-            # For RSS/MSE, consider only rows used in the final LSTSQ, or all non-NaN y_pred rows
-            # If lstsq in pruning pass already handled NaNs by using complete cases for GCV,
-            # the final coef_ are based on those complete cases.
-            # For final RSS/MSE, predict on X_processed and calculate based on y_processed.
 
             if B_final.shape[1] == len(self.coef_):
                 y_pred_train = B_final @ self.coef_
 
-                # Handle NaNs in y_pred_train for RSS/MSE calculation
                 valid_pred_idx = ~np.isnan(y_pred_train)
-                # y_processed should be all finite based on _scrub_y
 
                 if sample_weight_validated is None:
                     self.rss_ = float(
@@ -426,7 +379,6 @@ class Earth(BaseEstimator, RegressorMixin):
                     else:
                         self.mse_ = np.inf
             else:
-                # Fallback logic (similar to before, but use processed y)
                 self._set_fallback_model(
                     X_processed,
                     y_processed,
@@ -444,9 +396,7 @@ class Earth(BaseEstimator, RegressorMixin):
                 sample_weight=sample_weight_validated,
             )
 
-        # Calculate feature importances if requested
         if self.feature_importance_type is not None:
-            # Pass original X for consistent feature count if record not fully updated yet
             self._calculate_feature_importances(self.X_original_)
 
         self.fitted_ = True
@@ -454,7 +404,7 @@ class Earth(BaseEstimator, RegressorMixin):
 
     def _calculate_feature_importances(self, X_fit: Any) -> None:
         """Calculate feature importances for supported strategies."""
-        import numpy as np  # Ensure numpy is available
+        import numpy as np
 
         record = self.record_
 
@@ -463,11 +413,9 @@ class Earth(BaseEstimator, RegressorMixin):
             return
 
         if not hasattr(record, "n_features"):
-            # Fallback if record somehow doesn't have n_features, though it should.
-            # This might happen if fit failed very early or record not initialized.
             if hasattr(X_fit, "shape") and X_fit.ndim == 2:
                 num_features = X_fit.shape[1]
-            else:  # Cannot determine num_features
+            else:
                 logger.warning(
                     "Cannot determine number of features for importance calculation."
                 )
@@ -489,68 +437,31 @@ class Earth(BaseEstimator, RegressorMixin):
 
             importances = np.zeros(num_features)
             for basis_set in record.pruning_trace_basis_functions_:
-                # For each model in the pruning sequence
                 model_variables = set()
                 for bf in basis_set:
                     model_variables.update(bf.get_involved_variables())
 
                 for var_idx in model_variables:
-                    if 0 <= var_idx < num_features:  # Ensure var_idx is valid
+                    if 0 <= var_idx < num_features:
                         importances[var_idx] += 1
 
             if np.sum(importances) > 0:
                 self.feature_importances_ = importances / np.sum(importances)
             else:
-                # All zeros if no features were ever used or trace was empty in a weird way
                 self.feature_importances_ = importances
 
         elif self.feature_importance_type == "gcv":
             importances = np.zeros(num_features)
-            if not self.basis_:  # No basis functions in the final model
+            if not self.basis_:
                 self.feature_importances_ = importances
                 return
 
             for bf in self.basis_:
-                if bf.is_constant():  # Skip intercept
+                if bf.is_constant():
                     continue
 
-                # gcv_score_ should have been set during the forward pass
-                # for basis functions that were part of a selected pair.
                 score_to_add = getattr(bf, "gcv_score_", 0.0)
 
-                # py-earth uses max(0, gcv_reduction_score) when summing for feature importance.
-                # This ensures that terms that actually improved GCV (or didn't worsen it)
-                # contribute positively to the importance score.
-                actual_contribution = max(0.0, score_to_add)
-
-                if (
-                    actual_contribution > 0
-                ):  # Only add if there's a non-negative contribution
-                    for var_idx in bf.get_involved_variables():
-                        if 0 <= var_idx < num_features:
-                            importances[var_idx] += actual_contribution
-
-            # Normalize importances
-            gcv_total: float = float(np.sum(importances))
-            if gcv_total > 0:
-                self.feature_importances_ = importances / gcv_total
-            else:
-                self.feature_importances_ = importances  # All zeros if no positive contributions or all contributions were <=0
-
-        elif self.feature_importance_type == "rss":
-            importances = np.zeros(num_features)
-            if not self.basis_:  # No basis functions in the final model
-                self.feature_importances_ = importances
-                return
-
-            for bf in self.basis_:
-                if bf.is_constant():  # Skip intercept
-                    continue
-
-                # rss_score_ should have been set during the forward pass
-                score_to_add = getattr(bf, "rss_score_", 0.0)
-
-                # py-earth uses max(0, rss_reduction_score) for consistency with GCV logic
                 actual_contribution = max(0.0, score_to_add)
 
                 if actual_contribution > 0:
@@ -558,12 +469,36 @@ class Earth(BaseEstimator, RegressorMixin):
                         if 0 <= var_idx < num_features:
                             importances[var_idx] += actual_contribution
 
-            # Normalize importances
+            gcv_total: float = float(np.sum(importances))
+            if gcv_total > 0:
+                self.feature_importances_ = importances / gcv_total
+            else:
+                self.feature_importances_ = importances
+
+        elif self.feature_importance_type == "rss":
+            importances = np.zeros(num_features)
+            if not self.basis_:
+                self.feature_importances_ = importances
+                return
+
+            for bf in self.basis_:
+                if bf.is_constant():
+                    continue
+
+                score_to_add = getattr(bf, "rss_score_", 0.0)
+
+                actual_contribution = max(0.0, score_to_add)
+
+                if actual_contribution > 0:
+                    for var_idx in bf.get_involved_variables():
+                        if 0 <= var_idx < num_features:
+                            importances[var_idx] += actual_contribution
+
             rss_total: float = float(np.sum(importances))
             if rss_total > 0:
                 self.feature_importances_ = importances / rss_total
             else:
-                self.feature_importances_ = importances  # All zeros
+                self.feature_importances_ = importances
 
         elif self.feature_importance_type is not None:
             logger.warning(
@@ -578,7 +513,6 @@ class Earth(BaseEstimator, RegressorMixin):
         self, X: Any, y: Any
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         """Helper to validate and preprocess X and y."""
-        # Convert X to object array first to preserve categorical strings
         if not isinstance(X, np.ndarray):
             X_obj = np.asarray(X, dtype=object)
         else:
@@ -587,7 +521,6 @@ class Earth(BaseEstimator, RegressorMixin):
         if X_obj.ndim == 1:
             X_obj = X_obj.reshape(-1, 1)
 
-        # Build missing mask from original values
         missing_mask = np.zeros_like(X_obj, dtype=bool)
         for j in range(X_obj.shape[1]):
             col = X_obj[:, j]
@@ -615,7 +548,6 @@ class Earth(BaseEstimator, RegressorMixin):
             X_processed = X_processed.copy()
             X_processed[missing_mask] = 0.0
 
-        # Convert y
         if not isinstance(y, np.ndarray):
             y_processed = np.asarray(y, dtype=float)
         else:
@@ -645,7 +577,6 @@ class Earth(BaseEstimator, RegressorMixin):
         """Set an intercept-only model and compute its RSS, MSE and GCV."""
         del X_processed, missing_mask, pruning_passer_instance_for_gcv_calc
 
-        # Intercept-only basis and coefficient
         self.basis_ = [cast("Any", ConstantBasisFunction())]
         intercept = (
             float(np.mean(y_processed))
@@ -654,7 +585,6 @@ class Earth(BaseEstimator, RegressorMixin):
         )
         self.coef_ = np.array([intercept])
 
-        # Compute RSS and MSE without constructing a basis matrix
         residuals = y_processed - intercept
         if sample_weight is None:
             self.rss_ = float(np.sum(residuals**2))
@@ -666,7 +596,6 @@ class Earth(BaseEstimator, RegressorMixin):
             self.mse_ = self.rss_ / weight_sum if weight_sum > 0.0 else np.inf
             n_samples_for_gcv = len(y_processed)
 
-        # Compute GCV once using the calculated RSS
         try:
             eff_params = gcv_penalty_cost_effective_parameters(
                 num_terms=1,
@@ -679,7 +608,6 @@ class Earth(BaseEstimator, RegressorMixin):
             logger.warning("Fallback GCV calculation failed: %s", exc)
             gcv_score = np.inf
 
-        # Ensure self.gcv_ is set even if computation fails
         self.gcv_ = gcv_score if np.isfinite(gcv_score) else np.inf
 
     def _prepare_prediction_data(self, X: Any) -> tuple[np.ndarray, np.ndarray]:
@@ -767,16 +695,11 @@ class Earth(BaseEstimator, RegressorMixin):
 
         X_predict_processed, predict_missing_mask = self._prepare_prediction_data(X)
 
-        if not basis:  # Should be caught by above, but as a safeguard
-            # If model is truly empty (e.g. only intercept and it got removed, though fit tries to prevent this)
-            # we need a stored mean from training y.
-            if hasattr(
-                record, "y_mean_"
-            ):  # Assuming y_mean_ is stored by EarthRecord or fit
+        if not basis:
+            if hasattr(record, "y_mean_"):
                 return cast(
                     "np.ndarray", np.full(X_predict_processed.shape[0], record.y_mean_)
                 )
-            # Fallback if no mean stored (should not happen in normal operation)
             return cast("np.ndarray", np.zeros(X_predict_processed.shape[0]))
 
         B_pred = self._build_basis_matrix(
@@ -784,7 +707,6 @@ class Earth(BaseEstimator, RegressorMixin):
         )
 
         if B_pred.shape[1] != len(coef):
-            # Fallback for intercept-only if dimensions mismatch after transform (e.g. all terms NaN for some reason)
             if (
                 len(basis) == 1
                 and isinstance(basis[0], ConstantBasisFunction)
@@ -792,14 +714,12 @@ class Earth(BaseEstimator, RegressorMixin):
             ):
                 return cast(
                     "np.ndarray", np.full(X_predict_processed.shape[0], coef[0])
-                )  # Predict intercept
+                )
             raise ValueError(
                 f"Shape mismatch between transformed X for predict ({B_pred.shape}) and coefficients ({coef.shape})."
             )
 
         y_pred = B_pred @ coef
-        # y_pred can contain NaNs if basis functions resulted in NaNs for some rows.
-        # The user of predict() will have to handle these NaNs if they occur.
         return cast("np.ndarray", y_pred)
 
     def predict_interval(
@@ -896,18 +816,14 @@ class Earth(BaseEstimator, RegressorMixin):
         if self.basis_ and self.coef_ is not None:
             logger.info("\nBasis Functions and Coefficients:")
 
-            # Determine max length of basis function string for alignment
             max_bf_str_len = 0
-            if self.basis_:  # Ensure basis_ is not empty
+            if self.basis_:
                 max_bf_str_len = max(len(str(bf)) for bf in self.basis_)
 
             for i, bf in enumerate(self.basis_):
                 coef_val = self.coef_[i]
-                # Format coefficient nicely, handling potential arrays from multi-output later
                 coef_str = f"{coef_val:.4f}"
-                if isinstance(
-                    coef_val, np.ndarray
-                ):  # Should not happen with current 1D y
+                if isinstance(coef_val, np.ndarray):
                     coef_str = ", ".join([f"{c:.4f}" for c in coef_val])
 
                 logger.info("  %s Coef: %s", f"{bf!s:<{max_bf_str_len + 2}}", coef_str)
@@ -942,30 +858,26 @@ class Earth(BaseEstimator, RegressorMixin):
                 "during model initialization and call `fit()`."
             )
 
-        # Assuming self.feature_importances_ is a 1D numpy array of scores
-        # and self.record_ contains feature names if available, or we use generic names.
-
         record = self.record_
         num_features = len(self.feature_importances_)
         if record is None:
             feature_names = [f"x{i}" for i in range(num_features)]
         elif hasattr(record, "n_features") and record.n_features != num_features:
-            # This case should ideally not happen if X_fit was used correctly
             feature_names = [f"x{i}" for i in range(num_features)]
         elif (
             hasattr(record, "feature_names_in_")
             and record.feature_names_in_ is not None
-        ):  # If sklearn wrapper set this in record
+        ):
             feature_names = list(record.feature_names_in_)
         elif (
             hasattr(record, "model_params")
             and record.model_params.get("feature_names_in_") is not None
-        ):  # Check if stored from wrapper
+        ):
             feature_names = list(record.model_params["feature_names_in_"])
-        else:  # Fallback to generic names
+        else:
             feature_names = [f"x{i}" for i in range(num_features)]
 
-        if len(feature_names) != num_features:  # Fallback if names mismatch
+        if len(feature_names) != num_features:
             feature_names = [f"x{i}" for i in range(num_features)]
 
         importances = self.feature_importances_
@@ -987,7 +899,6 @@ class Earth(BaseEstimator, RegressorMixin):
             else np.arange(num_features)
         )
 
-        # Determine max length of feature name for alignment
         max_name_len = max(len(name) for name in feature_names) if feature_names else 10
 
         output.extend(
@@ -998,13 +909,8 @@ class Earth(BaseEstimator, RegressorMixin):
         output.append("-------------------------------------")
         return "\n".join(output)
 
-    # ------------------------------------------------------------------
-    # scikit-learn estimator interface utilities
-    # ------------------------------------------------------------------
     def get_params(self, deep: bool = True) -> dict[str, Any]:
         """Return estimator parameters for compatibility with scikit-learn."""
-        # BaseEstimator implements get_params using introspection of __init__
-        # signature, which covers all hyperparameters stored as attributes.
         return cast("dict[str, Any]", super().get_params(deep=deep))
 
     def set_params(self, **params: Any) -> Earth:
