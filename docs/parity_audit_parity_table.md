@@ -1,0 +1,40 @@
+# Consolidated Parity Table
+
+This page joins the upstream `py-earth` feature matrix, the R `earth` feature
+matrix, and the current repo gap matrix into one source-backed view.
+
+Classification labels:
+
+- `compatible` - the repo is materially aligned with the upstream surface
+- `partial` - part of the upstream surface is present, but the contract is not
+  yet fully closed
+- `parity-critical` - the row still carries a user-visible gap or a tracked
+  parity obligation
+- `upstream-only or intentionally out of scope` - the difference is deliberate
+  and should stay explicit
+- `unknown` - the available sources do not yet pin the contract down cleanly
+
+| Area | Upstream synthesis | Current repo signal | Classification | Evidence |
+| --- | --- | --- | --- | --- |
+| Core model family | `py-earth` is the scikit-learn-style mars estimator; R `earth` is the formula-driven mars lineage. | `pymars` keeps the `Earth` / `EarthClassifier` estimator surface and the Rust-backed runtime boundary. | compatible | `docs/parity_audit_feature_matrix.md`, `docs/parity_audit_r_earth_matrix.md`, `docs/model_spec.md`, `docs/installation.md` |
+| Basis-term support | Upstream docs center the basis vocabulary on constant, linear, and hinge terms, with interaction products built from those parts. | repo tests and basis helpers exercise constant, linear, hinge, and interaction basis objects. | compatible | `docs/parity_audit_feature_matrix.md`, `tests/test_basis_unit.py` |
+| Training / pruning / selection | `py-earth` documents a forward pass followed by pruning with gcv-based selection; R `earth` also treats training and pruning as first-class model behavior. | The repo has explicit forward and pruning passes plus fitted record objects, so the core training flow is present but still audit-visible. | partial | `docs/parity_audit_feature_matrix.md`, `docs/parity_audit_r_earth_matrix.md`, `docs/parity_audit_repo_gap_matrix.md` |
+| Categorical and missingness handling | `py-earth` documents `allow_missing`; R `earth` keeps missing-data handling and mixed-variable lineage visible in the manual. | The repo supports `allow_missing` and validates missing-data paths, but categorical support is not surfaced as a first-class documented contract. | partial | `docs/parity_audit_feature_matrix.md`, `docs/parity_audit_repo_gap_matrix.md`, `tests/test_util.py` |
+| Diagnostics, summaries, plots, uncertainty | `py-earth` exposes `summary`, `trace`, `pruning_trace`, `score_samples`, `predict_deriv`, and `transform`; R `earth` adds `summary.earth`, plotting, `evimp`, and interval-oriented prediction workflows. | Summary and feature-importance helpers exist; plot and uncertainty coverage are still open, and the R `earth` plot / interval workflow remains a parity-critical upstream surface not yet closed by the current repo slice. | partial | `docs/parity_audit_feature_matrix.md`, `docs/parity_audit_r_earth_matrix.md`, `docs/parity_audit_recommendations.md` |
+| Formula / interface ergonomics | `py-earth` stays estimator-centric; R `earth` stays formula-centric. | The repo intentionally stays estimator-centric and does not expose a public formula layer. | upstream-only or intentionally out of scope | `docs/parity_audit_feature_matrix.md`, `docs/parity_audit_r_earth_matrix.md`, `docs/parity_audit_repo_gap_matrix.md` |
+| Validation, errors, warnings | Both upstream lineages document validation-heavy behavior; warnings are surfaced explicitly in R `earth`. | The repo uses sklearn validation and explicit exceptions, but warning control is narrower and logging-based. | partial | `docs/parity_audit_repo_gap_matrix.md`, `docs/parity_audit_rubric.md` |
+| Deterministic outputs, tie handling | Upstream examples are stable, but the sources do not define a universal tie-breaking contract. | The repo has golden/regression fixtures, but tie handling is still not a formal public policy. | partial | `docs/parity_audit_repo_gap_matrix.md`, `tests/e2e/test_golden_master.py`, `tests/test_reference_regression.py` |
+| Sample weights and edge cases | `py-earth` documents weighted fitting; zero-weight rows should not contribute. | Weighted fits, nonnegative weights, positive-total checks, missing-data paths, and dense-only edge cases are exercised. | compatible | `docs/parity_audit_repo_gap_matrix.md`, `tests/test_sklearn_compat.py`, `tests/test_training_fixtures.py` |
+| Example outputs and documented claims | Both lineages ship canonical examples and narrative claims that define expected behavior. | The repo has demos and docs, but example-output parity is not fully fixture-locked yet. | parity-critical | `docs/parity_audit_repo_gap_matrix.md`, `docs/parity_audit_recommendations.md`, `pymars/demos/` |
+| Serialization and `multioutput` | `py-earth` documents pickling; R `earth` includes richer object reconstruction and output structures. | Pickle round-trips and multioutput remain expected failures in the sklearn checks. | parity-critical | `docs/parity_audit_repo_gap_matrix.md`, `tests/test_sklearn_compat.py`, `tests/integration/test_pipeline_and_io.py` |
+| Packaging, versioning, release behavior | `py-earth` is a single Python package with docs and a source-install flow; R `earth` follows CRAN-style packaging. | The repo is a Rust-first, multi-registry package family under the `mars-earth` brand. | upstream-only or intentionally out of scope | `docs/parity_audit_feature_matrix.md`, `docs/parity_audit_r_earth_matrix.md`, `docs/parity_audit_repo_gap_matrix.md`, `docs/release_inventory.md`, `docs/package_release_paths.md` |
+
+## Reading the table
+
+- Rows marked `parity-critical` should stay visible in the audit until they are
+  backed by fixtures or explicit implementation notes.
+- Rows marked `upstream-only or intentionally out of scope` should remain
+  documented so users do not mistake a deliberate ecosystem difference for a
+  missing feature.
+- Rows marked `partial` are the ones most likely to need a follow-up track or
+  a tighter source citation before they can be treated as closed.

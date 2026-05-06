@@ -1,0 +1,65 @@
+# Parity Audit Behavioral Divergence Summary
+
+This note is the behavioral slice of the parity audit. It summarizes where the
+current repository is aligned with upstream `py-earth` / `earth`, where behavior is
+deliberately narrower, and which gaps remain parity-critical.
+
+Source basis:
+
+- [mars / earth repo gap matrix](parity_audit_repo_gap_matrix.md)
+- [Parity Audit Gap Classification](parity_audit_gap_classification.md)
+- [Consolidated Parity Table](parity_audit_parity_table.md)
+- [Parity Audit Recommendations](parity_audit_recommendations.md)
+
+## Executive Readout
+
+- Validation and error handling are broadly aligned with upstream expectations
+  and are treated as compatible in the repo gap matrix.
+- Warning behavior is intentionally narrower than upstream R `earth` and does
+  not expose a user-facing `warn` knob.
+- Deterministic outputs are already fixture-backed, but tie handling is still
+  not documented as a public contract.
+- Sample weights, missingness, and dense-input edge cases are covered well
+  enough to be treated as compatible for the current single-output surface.
+- Example outputs and documented claims remain parity-critical because they are
+  still not fully fixture-locked against the upstream narrative examples.
+- Serialization and `multioutput` remain parity-critical gaps.
+
+## Behavioral Differences By Area
+
+| Area | Repository behavior | Upstream reference | Audit reading | Bucket |
+| --- | --- | --- | --- | --- |
+| Validation, errors, warnings | `pymars` uses scikit-learn validation, explicit `ValueError` / `NotFittedError` paths, and portable-spec validation before replay. Warning handling is logging-based and intentionally narrower. | `py-earth` and R `earth` document validation-heavy estimator behavior, with R `earth` exposing explicit warning controls in more user-facing flows. | Validation and error handling are compatible. Warning control is a deliberate boundary rather than a parity defect. | `compatible` for validation / errors; `upstream-only or intentionally out of scope` for warning knobs |
+| Deterministic outputs, tie handling | Golden and regression fixtures lock representative outputs, but the repo does not yet state a formal tie-breaking policy. | Upstream docs and examples show stable behavior, but the sources do not pin down a universal tie-break contract. | Determinism is covered; tie handling remains evidence-hardening work, not a closed public contract. | `compatible` for deterministic outputs; `nice-to-have` for tie handling |
+| Sample weights and edge cases | Weighted fits, nonnegative weights, positive-total checks, missing-data paths, and dense-only edge cases are exercised in tests and runtime validation. | Upstream `py-earth` documents weighted fitting semantics, and zero-weight rows are not expected to contribute. | The single-output weighted-fit path is aligned closely enough for this slice. multioutput-weight semantics are still separate work. | `compatible` |
+| Example outputs and documented claims | The repo has demos and narrative docs, but example-output parity is not fully fixture-locked yet. | Upstream docs and examples define canonical behavior claims that users can treat as part of the contract. | This is still a user-visible parity obligation because doc claims can outlive implementation details if they are not backed by fixtures. | `parity-critical` |
+| Serialization and `multioutput` | Pickle round-trips remain an expected failure in sklearn checks, and multioutput regression is still not accepted as a closed contract. | Upstream docs describe estimators that can be serialized and richer output structures. | These are real behavioral gaps, not scope choices. They should remain visible until the contract is implemented and checked. | `parity-critical` |
+
+## What This Means For The Audit
+
+1. Keep validation and error semantics in the aligned bucket unless upstream
+   source material identifies a concrete mismatch in message category or
+   failure mode.
+2. Treat warning control as intentionally narrower than upstream R `earth`,
+   not as missing parity.
+3. Keep tie handling in the evidence queue until the upstream contract is
+   explicitly pinned down.
+4. Close example outputs, serialization, and `multioutput` as the remaining
+   parity-critical behavioral gaps.
+5. Continue to treat sample weights, missingness, and dense-input edge cases as
+   aligned for the current single-output estimator surface.
+
+## Cross-Reference
+
+The classification note is the bucket source of truth for the higher-level
+interpretation:
+
+- `parity-critical`: example outputs and documented claims; serialization and
+  `multioutput`
+- `nice-to-have`: tie handling
+- `upstream-only or intentionally out of scope`: warning behavior and other
+  deliberate scope boundaries
+
+See [Parity Audit Gap Classification](parity_audit_gap_classification.md) for
+the exact bucket mapping and [Parity Audit Recommendations](parity_audit_recommendations.md)
+for the track order that follows from it.

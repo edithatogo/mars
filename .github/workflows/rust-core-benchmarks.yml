@@ -1,0 +1,51 @@
+name: Rust Core Benchmarks
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "rust-runtime/**"
+      - ".github/workflows/rust-core-benchmarks.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "rust-runtime/**"
+      - ".github/workflows/rust-core-benchmarks.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: rust-core-benchmarks-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Run cargo bench
+        run: |
+          mkdir -p release-artifacts
+          set -o pipefail
+          cargo bench | tee release-artifacts/cargo-bench.log || true
+          cargo metadata --format-version 1 --no-deps | tee release-artifacts/cargo-metadata.json
+        working-directory: rust-runtime
+
+      - name: Upload benchmark results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: rust-core-benchmark-results
+          path: |
+            rust-runtime/release-artifacts/*
+            rust-runtime/target/criterion/**
+          if-no-files-found: warn
+          retention-days: 30

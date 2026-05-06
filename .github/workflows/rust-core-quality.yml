@@ -1,0 +1,83 @@
+name: Rust Core Quality
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "rust-runtime/**"
+      - ".github/workflows/rust-core-quality.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "rust-runtime/**"
+      - ".github/workflows/rust-core-quality.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: rust-core-quality-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  cargo-deny:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install cargo-deny
+        run: cargo install cargo-deny --locked
+
+      - name: Run cargo deny
+        working-directory: rust-runtime
+        run: |
+          mkdir -p release-artifacts
+          set -o pipefail
+          cargo deny check --config deny.toml 2>&1 | tee release-artifacts/cargo-deny.log
+
+      - name: Upload cargo deny logs
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: rust-core-cargo-deny-logs
+          path: |
+            rust-runtime/release-artifacts/cargo-deny.log
+            rust-runtime/deny.toml
+          if-no-files-found: warn
+          retention-days: 30
+
+  cargo-nextest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install cargo-nextest
+        run: cargo install cargo-nextest --locked
+
+      - name: Run cargo nextest
+        working-directory: rust-runtime
+        run: |
+          mkdir -p release-artifacts
+          set -o pipefail
+          cargo nextest run --workspace --all-features 2>&1 | tee release-artifacts/cargo-nextest.log
+
+      - name: Upload cargo nextest logs
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: rust-core-cargo-nextest-logs
+          path: |
+            rust-runtime/release-artifacts/cargo-nextest.log
+          if-no-files-found: warn
+          retention-days: 30

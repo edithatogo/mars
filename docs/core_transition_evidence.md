@@ -1,0 +1,39 @@
+# Core Transition Evidence
+
+This note defines the shared evidence format for the two phase-0 tracks being
+run in parallel: the Rust core full conversion track and the mars / earth
+parity audit track.
+
+The goal is to keep the conversion and audit work reproducible, source-backed,
+and easy to parallelize without overlap.
+
+## Record Format
+
+Use the same short record shape for every phase-0 item:
+
+- `source`: the upstream or repo file being inspected
+- `claim`: one sentence describing the behavior or boundary under review
+- `evidence`: the command, excerpt, or doc reference that supports the claim
+- `status`: `confirmed`, `divergent`, `unknown`, or `intentional`
+- `priority`: `parity-critical`, `important`, or `optional`
+- `next_action`: the follow-up step or track phase that should consume it
+
+## Track Split
+
+- The Rust core conversion track owns the remaining Python-owned boundary
+  inventory, migration slices, and retirement conditions, including the
+  canonical Rust-backed spec-loading helpers for JSON strings and file paths,
+  the Rust-first validation and inspection slices, the Rust-backed portable
+  replay and export-normalization paths for compatible specs, the Rust-first
+  training bridge, and the Python-side dict-input adapter path.
+- The parity audit track owns upstream source inventory, feature matrices,
+  behavior comparisons, and gap classification.
+
+## Parallel Work Rules
+
+- Keep each worker on one evidence slice.
+- Do not reuse the same evidence record for multiple claims.
+- Prefer source-backed references over memory or lore.
+- Record intentional differences explicitly rather than leaving them implicit.
+- Reuse the same field names in docs, plans, and handoff notes so the tracks
+  can be merged cleanly later.

@@ -23,7 +23,7 @@ remaining roadmap.
 - [x] Task: Implement Rust forward-pass orchestration [1cc6430]
     - [x] Generate numeric candidate terms from normalized rows
     - [x] Emit parent-linked linear and hinge terms from the baseline path
-    - [x] Apply max-terms and GCV-driven stopping for the baseline path
+    - [x] Apply max-terms and gcv-driven stopping for the baseline path
     - [x] Preserve deterministic candidate ordering within the numeric baseline
     - [x] Fit coefficients for each accepted basis set
 - [x] Task: Extend Rust forward-pass orchestration to full parity [1cc6430]
@@ -41,7 +41,7 @@ remaining roadmap.
 ## Phase 2: Rust Pruning and Final Model Export
 
 - [x] Task: Implement Rust pruning orchestration [d9a05a8]
-    - [x] Score pruning subsets with GCV and weighted RSS
+    - [x] Score pruning subsets with gcv and weighted rss
     - [x] Refit coefficients after selected basis pruning
     - [x] Export final fitted state as `ModelSpec`
 - [x] Task: Extend Rust pruning orchestration to full parity [d9a05a8]

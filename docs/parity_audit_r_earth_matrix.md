@@ -1,0 +1,36 @@
+# R earth Feature Matrix
+
+This matrix captures the R `earth` package surface that matters for the mars /
+earth parity audit. It is based on the package reference manual, the PDF
+manual, and the package page in the R ecosystem.
+
+Sources used:
+
+- [earth reference manual](https://cran.r-universe.dev/earth/doc/manual.html)
+- [earth PDF manual](https://stephenmilborrow.r-universe.dev/earth/earth.pdf)
+- [earth package page](https://r-pkg.org/pkg/earth)
+- [earth topic docs](https://www.rdocumentation.org/packages/earth)
+
+## Feature Matrix
+
+| Area | Upstream R `earth` behavior | Evidence | Parity judgment |
+| --- | --- | --- | --- |
+| Summaries | `summary.earth` is a primary entry point. It prints fitted model details, supports `newdata`, and reports estimated importance using `evimp` with the `nsubsets` criterion. `print.summary.earth` supports more detail for `earth`-`glm` models, although the manual warns that the displayed GLM standard errors and statistics are not meaningful because of earth preprocessing. | Manual: `summary.earth` arguments and notes, including `newdata`, `details`, and `Estimated importance` via `evimp` (`manual.html` lines 2343-2422). PDF manual: `summary.earth` examples (`earth.pdf` lines 1208-1230). | Parity-critical |
+| Plots | `plot.earth` is a core plotting method. The manual documents model and cumulative residual-distribution plots via `which = 1:2` by default. The package also exposes `plot.varmod` for variance-model plots, `plot.evimp` for variable-importance plots, `plot.earth.models` for model comparison, and `plotd` for class prediction distributions. | Manual: `plot.earth` arguments (`manual.html` lines 1509-1524); `plot.varmod` and variance-model examples (`manual.html` lines 1747-1763); `plot.evimp` entry (`manual.html` lines 1586-1589); package page lists `plot.earth`, `plot.evimp`, `plot.varmod`, and `plotd` (`r-pkg.org` lines 47-58). | Parity-critical |
+| Uncertainty and prediction intervals | `predict.earth` supports `interval = "none"`, `"pint"`, `"cint"`, and `"se"`, with `level = .95` by default. Prediction intervals require a variance model built with `varmod.method`. The manual explicitly says variance models estimate the variance of predicted values and can be used to estimate prediction intervals. | PDF manual: `predict.earth` usage and interval semantics (`earth.pdf` lines 1443-1477, 1714-1718); manual: `varmod.method` description and variance-model defaults (`manual.html` lines 291-298); manual: variance-model section (`manual.html` lines 2519-2524). | Parity-critical |
+| Variable importance | `evimp` is the package’s explicit variable-importance function. The manual documents the `nsubsets`, `gcv`, and `rss` criteria, and `summary.earth` prints the estimated importance using `evimp` with `nsubsets`. | Manual: variable-importance criteria (`manual.html` lines 772-781); `summary.earth` note (`manual.html` lines 2416-2422); package page lists `evimp` as a first-class function (`r-pkg.org` lines 47-58). | Parity-critical |
+| GLM-style extensions | `earth` supports a `glm` argument. The manual exposes `glm.list`, `glm.coefficients`, `glm.stats`, and `glm.bpairs`, and says `predict.earth` returns the same values for `"link"`, `"response"`, and `"earth"` unless the original call used `glm`. GLM residual handling is also documented separately. | Manual: `glm.list` and related fields (`manual.html` lines 585-599); `predict.earth` note for GLM models (`earth.pdf` lines 1481-1485); residual handling and GLM options (`manual.html` lines 2272-2288). | Parity-critical |
+| Update workflows | `update.earth` is explicitly documented as supporting formula changes, pruning-only updates, and penalty-only pruning with `ponly = TRUE`. The manual notes that `trace = 1` reports if the forward pass was skipped and that `keepxy = TRUE` can reuse saved `x`/`y` values. | Manual: update description and examples (`manual.html` lines 2433-2507); note on `trace = 1` and `keepxy = TRUE` (`manual.html` lines 2487-2489). | Parity-critical |
+| Formula interface | `earth` is presented as a formula-driven R modeling package. The manual and package docs use formula-native examples throughout, including `earth(formula, data=...)`, `update.earth`, and downstream prediction / plotting methods that operate on fitted formula-based models. | Manual: package usage and examples (`manual.html` lines 1-11, 50-63, 2433-2507); PDF manual examples (`earth.pdf` lines 1-40, 1208-1230). | Parity-critical |
+| Packaging and release conventions | The package is published as `earth` on CRAN/r-universe, with a PDF manual, package source on GitHub, and documented dependencies (`Formula`, `plotmo`) plus suggestions (`gam`, `mgcv`, `mda`, `MASS`). The reference manual points users to the main vignette and the variance-model vignette. | Package page: version, source, manual, deps/suggests (`r-pkg.org` lines 32-58); manual See Also entries for the main vignette and variance-model vignette (`manual.html` lines 393-397). | Parity-critical |
+
+## Interpretation Notes
+
+- The matrix is intentionally source-first. It records what the R `earth`
+  docs say before comparing the current repository.
+- Items marked parity-critical should feed the later gap matrix unless the
+  repository already documents an intentional deviation.
+- Plotting functions are grouped together because the package presents them as
+  part of the same user-facing diagnostics surface.
+- Packaging and release conventions matter because the R ecosystem expects both
+  package metadata and generated manual artifacts.

@@ -2,6 +2,7 @@ use serde::Deserialize;
 
 use crate::errors::{MarsError, MarsResult};
 use crate::model_spec::{BasisTermSpec, FeatureSchema, ModelSpec};
+use crate::observability;
 use crate::runtime::evaluate_basis;
 
 #[derive(Debug, Clone, PartialEq, Deserialize)]
@@ -355,6 +356,7 @@ pub fn forward_pass(
     sample_weight: Option<&[f64]>,
     params: &TrainingParams,
 ) -> MarsResult<ForwardPassResult> {
+    let _span = observability::span("training::forward_pass");
     validate_xy(x, y, sample_weight)?;
     let mut basis_terms = vec![constant_term()];
     let mut current = fit_terms(x, y, sample_weight, &basis_terms, params)?;
@@ -415,6 +417,7 @@ pub fn prune_model(
     _coefficients: &[f64],
     params: &TrainingParams,
 ) -> MarsResult<PruningResult> {
+    let _span = observability::span("training::prune_model");
     validate_xy(x, y, sample_weight)?;
     if basis_terms.is_empty() {
         return Ok(PruningResult {
@@ -518,6 +521,7 @@ pub fn model_spec_from_terms(
 }
 
 pub fn fit_model(request: &TrainingRequest) -> MarsResult<ModelSpec> {
+    let _span = observability::span("training::fit_model");
     let forward = forward_pass(
         &request.x,
         &request.y,

@@ -1,0 +1,8 @@
+{
+  "track_id": "rust_core_profiling_observability_20260504",
+  "type": "chore",
+  "status": "complete",
+  "created_at": "2026-05-04T13:48:07Z",
+  "updated_at": "2026-05-06T03:28:37Z",
+  "description": "Create a comprehensive Rust core profiling and observability hardening track covering inventory, benchmark strategy, CI gates, release guidance, and final validation."
+}

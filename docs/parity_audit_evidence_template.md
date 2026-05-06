@@ -1,0 +1,46 @@
+# mars / earth Parity Audit Evidence Template
+
+Use this template for every upstream reference, fixture, or divergence note
+captured during the parity audit.
+
+## Evidence Record
+
+| Field | Description |
+| --- | --- |
+| `item_id` | Stable slug for the item being recorded |
+| `source` | Upstream project, document, or example |
+| `reference` | URL, file path, or citation |
+| `category` | `feature`, `behavior`, `diagnostic`, `packaging`, `docs`, `release` |
+| `upstream_observation` | What the upstream reference shows |
+| `repo_counterpart` | The matching repo behavior or doc claim |
+| `comparison` | `match`, `compatible`, `diverge`, or `unknown` |
+| `priority` | `parity-critical`, `optional`, or `intentional` |
+| `evidence_command` | Reproduction command, if applicable |
+| `notes` | Caveats, assumptions, or follow-up pointers |
+
+## Intentional Deviation Record
+
+| Field | Description |
+| --- | --- |
+| `deviation_id` | Stable slug for the deviation |
+| `upstream_reference` | Upstream source or behavior |
+| `repo_behavior` | Current repo behavior |
+| `reason` | Why the difference is intentional |
+| `impact` | User-visible impact |
+| `follow_up_track` | Conductor track, if a fix is deferred |
+
+## Comparison Labels
+
+- `match`: behavior is effectively the same for user-facing purposes
+- `compatible`: behavior differs slightly but remains user-compatible
+- `diverge`: behavior differs in a way the user can observe or rely on
+- `unknown`: not enough evidence yet
+
+## Minimum Entry Requirements
+
+Every meaningful audit note should include:
+
+- one source reference
+- one repo-side counterpart or statement that the counterpart is absent
+- a classification from the rubric
+- a short rationale for the classification

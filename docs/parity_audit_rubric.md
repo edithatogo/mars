@@ -1,0 +1,130 @@
+# mars / earth Parity Audit Rubric
+
+This rubric defines how the parity audit classifies differences between the
+current repository and the upstream `py-earth` / R `earth` references.
+
+## Parity-Critical Versus Optional
+
+### Parity-critical
+
+Treat a difference as parity-critical when it affects one of the following:
+
+- public API shape or import conventions
+- constructor defaults that change behavior for a typical user
+- validation, error, or warning behavior that users can observe directly
+- training, pruning, replay, prediction, or serialization semantics
+- categorical or missing-value handling
+- deterministic output, tie handling, or reproducibility guarantees
+- documented examples that produce different observable results
+- package identity, versioning, install, or release behavior that users rely on
+- docs claims that would mislead users about supported behavior
+
+### Optional
+
+Treat a difference as optional when it is:
+
+- purely cosmetic or presentation-level
+- an internal implementation choice with no user-visible effect
+- a convenience feature not required for the core mars/earth contract
+- a diagnostic enhancement that does not alter model semantics
+- an upstream extra that is not documented as a compatibility expectation
+
+### Out of scope or intentional
+
+Treat a difference as intentionally out of scope when:
+
+- it is already documented as unsupported in this repository
+- it requires a separate feature track to preserve API stability
+- it depends on an environment or registry feature the project does not use
+- it is an upstream-only capability that should remain explicit as unsupported
+
+## Comparison Rules
+
+### Defaults
+
+Compare:
+
+- constructor defaults
+- implicit behavior when arguments are omitted
+- inferred defaults triggered by data shape or feature type
+
+Record whether a default is:
+
+- identical
+- compatible but not identical
+- intentionally different
+
+### Errors and warnings
+
+Compare:
+
+- error class or category
+- trigger condition
+- message content at the level of user meaning, not exact punctuation
+- whether the issue is an error, warning, or silent fallback
+
+Accept minor wording drift only when the user-facing meaning is the same.
+
+### Examples and docs claims
+
+Compare:
+
+- README examples
+- package-level documentation
+- API reference claims
+- narrative docs that describe supported behavior
+
+Treat an example as parity-critical when it demonstrates a supported public
+behavior or when the upstream docs present it as canonical usage.
+
+### Packaging and versioning
+
+Compare:
+
+- package name and import/module name
+- version scheme and release tags
+- build/release commands
+- generated documentation artifacts
+- release notes and distribution metadata
+
+Record whether the project matches, intentionally differs, or cannot match due
+to registry or ecosystem constraints.
+
+## Recording Intentional Deviations
+
+Every intentional deviation must record:
+
+- a stable identifier
+- the upstream reference that differs
+- the repo-side behavior
+- the reason for the deviation
+- the user impact
+- whether a follow-up implementation track is required
+
+Use this form:
+
+| Field | Required content |
+| --- | --- |
+| `deviation_id` | Stable slug such as `audit-001` |
+| `upstream_reference` | Link or citation to the source behavior |
+| `repo_behavior` | What the current repository does instead |
+| `reason` | Why the difference exists |
+| `impact` | User-visible effect, if any |
+| `status` | `intentional`, `needs-track`, or `candidate-fix` |
+
+## Evidence Standard
+
+Each finding should carry:
+
+- a source citation
+- a command, fixture, or example reproduction where possible
+- a repo-side counterpart
+- a parity judgment using this rubric
+- a confidence note when the evidence is indirect
+
+## Phase Usage
+
+- Phase 0 uses this rubric to frame the audit.
+- Phase 1 uses it to build the feature and behavior matrix.
+- Phase 2 uses it to classify gaps.
+- Later phases use it to keep recommendations and documentation consistent.

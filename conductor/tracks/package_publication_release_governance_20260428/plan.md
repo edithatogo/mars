@@ -4,7 +4,7 @@
 
 - [~] Task: Verify release-readiness prerequisites [blocker: Julia awaiting General review, 2026-05-04]
     - [~] Confirm release-readiness track is complete [blocker: Julia awaiting General review]
-    - [ ] Confirm R package publication readiness track is complete before R publication
+    - [x] Confirm R package publication readiness track is complete before R publication
     - [x] Confirm CI quality gates are green for the selected release target
     - [x] Confirm Rust-backed runtime binding CI is green for stable runtime releases
     - [x] Confirm training API tracks are complete for packages that claim training support

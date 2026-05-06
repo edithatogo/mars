@@ -7,10 +7,49 @@ use pymars_runtime::training::{fit_model, TrainingRequest};
 use serde::Deserialize;
 use serde_json::json;
 
+mod observability {
+    use std::env;
+    use std::sync::OnceLock;
+
+    static ENABLED: OnceLock<bool> = OnceLock::new();
+
+    pub(crate) fn init_from_env() {
+        let _ = enabled();
+    }
+
+    pub(crate) fn span(name: &'static str) -> SpanGuard {
+        let active = enabled();
+        if active {
+            eprintln!("trace: enter {name}");
+        }
+        SpanGuard { name, active }
+    }
+
+    fn enabled() -> bool {
+        *ENABLED.get_or_init(|| {
+            env::var_os("RUST_LOG").is_some() || env::var_os("MARS_RUNTIME_TRACE").is_some()
+        })
+    }
+
+    pub(crate) struct SpanGuard {
+        name: &'static str,
+        active: bool,
+    }
+
+    impl Drop for SpanGuard {
+        fn drop(&mut self) {
+            if self.active {
+                eprintln!("trace: exit {}", self.name);
+            }
+        }
+    }
+}
+
 #[derive(Debug, Deserialize)]
 struct JsonRows(Vec<Vec<Option<f64>>>);
 
 fn main() {
+    observability::init_from_env();
     if let Err(error) = run() {
         eprintln!("{error}");
         process::exit(1);
@@ -18,6 +57,7 @@ fn main() {
 }
 
 fn run() -> Result<(), String> {
+    let _span = observability::span("mars-runtime-cli::run");
     let mut args = env::args().skip(1);
     let command = args.next().ok_or_else(|| {
         "expected a subcommand: validate, design-matrix, predict, or fit".to_string()

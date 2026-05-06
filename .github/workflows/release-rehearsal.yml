@@ -283,9 +283,11 @@ jobs:
       - name: Build and inspect R package
         run: |
           mkdir -p release-artifacts
-          R CMD build bindings/r
+          R CMD build .
           tarball=$(ls marsruntime_*.tar.gz | tail -n 1)
           tar -tzf "$tarball" | tee release-artifacts/r-package-list.txt
+          R CMD check --no-manual --as-cran "$tarball"
+          cp marsruntime.Rcheck/00check.log release-artifacts/r-check.log
           if [ "${{ inputs.smoke_tests }}" = "true" ]; then
             libdir=$(mktemp -d)
             R CMD INSTALL --library="$libdir" "$tarball"
@@ -304,6 +306,7 @@ jobs:
           name: release-r
           path: |
             bindings/r/marsruntime_*.tar.gz
+            bindings/r/marsruntime.Rcheck/00check.log
             bindings/r/release-artifacts/*
           retention-days: 14
 

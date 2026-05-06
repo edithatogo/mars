@@ -1,0 +1,74 @@
+---
+title: "Mars Runtime Basics"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Mars Runtime Basics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+## Overview
+
+`marsruntime` provides a portable R surface for validated Mars `ModelSpec`
+artifacts. It can validate, replay, and inspect portable artifacts through the
+same package interface that the release docs and package manual describe.
+
+## Loading a model specification
+
+```{r}
+library(marsruntime)
+
+spec <- list(
+  spec_version = "1.0",
+  basis_terms = list(list(kind = "constant")),
+  coefficients = list(1),
+  feature_schema = list(n_features = 0)
+)
+
+validate_model_spec(spec)
+```
+
+## Replaying predictions
+
+```{r}
+rows <- matrix(numeric(0), nrow = 1, ncol = 0)
+design_matrix(spec, rows)
+predict_model(spec, rows)
+```
+
+## Training
+
+When the Rust runtime helper is available, `fit_model()` can fit a portable
+specification from feature and response data. The actual training path is
+runtime-dependent, so this vignette shows the call without executing it.
+
+```{r, eval=FALSE}
+fit_model(
+  x = matrix(c(0, 1, 2), ncol = 1),
+  y = c(1, 3, 5),
+  max_terms = 5,
+  max_degree = 1,
+  penalty = 3.0
+)
+```
+
+## Validation
+
+For source-tree validation, run:
+
+```sh
+Rscript tests/conformance.R
+Rscript tests/training.R
+```
+
+For package publication validation, run:
+
+```sh
+R CMD build .
+R CMD check --no-manual --as-cran marsruntime_*.tar.gz
+R CMD Rd2pdf .
+```

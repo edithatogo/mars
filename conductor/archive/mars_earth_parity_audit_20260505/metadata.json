@@ -1,0 +1,8 @@
+{
+  "track_id": "mars_earth_parity_audit_20260505",
+  "type": "chore",
+  "status": "complete",
+  "created_at": "2026-05-04T14:03:16Z",
+  "updated_at": "2026-05-06T03:28:37Z",
+  "description": "Perform a comprehensive parity audit of the original mars/earth libraries and turn the findings into an actionable gap matrix."
+}

@@ -3,8 +3,10 @@ use std::path::Path;
 
 use crate::errors::{MarsError, MarsResult};
 use crate::model_spec::{BasisTermSpec, ModelSpec};
+use crate::observability;
 
 pub fn load_model_spec_str(raw: &str) -> MarsResult<ModelSpec> {
+    let _span = observability::span("runtime::load_model_spec_str");
     let spec: ModelSpec = serde_json::from_str(raw).map_err(|error| {
         MarsError::MalformedArtifact(format!("failed to deserialize model spec JSON: {error}"))
     })?;
@@ -13,6 +15,7 @@ pub fn load_model_spec_str(raw: &str) -> MarsResult<ModelSpec> {
 }
 
 pub fn load_model_spec_path(path: impl AsRef<Path>) -> MarsResult<ModelSpec> {
+    let _span = observability::span("runtime::load_model_spec_path");
     let path_ref = path.as_ref();
     let raw = fs::read_to_string(path_ref).map_err(|error| {
         MarsError::MalformedArtifact(format!(
@@ -23,7 +26,20 @@ pub fn load_model_spec_path(path: impl AsRef<Path>) -> MarsResult<ModelSpec> {
     load_model_spec_str(&raw)
 }
 
+pub fn load_model_spec_json_or_path(path_or_json: impl AsRef<str>) -> MarsResult<ModelSpec> {
+    let _span = observability::span("runtime::load_model_spec_json_or_path");
+    let raw = path_or_json.as_ref();
+    let trimmed = raw.trim_start();
+
+    if trimmed.starts_with('{') || trimmed.starts_with('[') {
+        return load_model_spec_str(raw);
+    }
+
+    load_model_spec_path(Path::new(raw))
+}
+
 pub fn validate_model_spec(spec: &ModelSpec) -> MarsResult<()> {
+    let _span = observability::span("runtime::validate_model_spec");
     let mut parts = spec.spec_version.split('.');
     let major = parts.next().ok_or_else(|| {
         MarsError::MissingRequiredField("spec_version must contain a major version".to_string())
@@ -137,6 +153,7 @@ pub fn validate_model_spec(spec: &ModelSpec) -> MarsResult<()> {
 }
 
 pub fn design_matrix(spec: &ModelSpec, rows: &[Vec<f64>]) -> MarsResult<Vec<Vec<f64>>> {
+    let _span = observability::span("runtime::design_matrix");
     validate_model_spec(spec)?;
     validate_rows(spec, rows)?;
 
@@ -151,6 +168,7 @@ pub fn design_matrix(spec: &ModelSpec, rows: &[Vec<f64>]) -> MarsResult<Vec<Vec<
 }
 
 pub fn predict(spec: &ModelSpec, rows: &[Vec<f64>]) -> MarsResult<Vec<f64>> {
+    let _span = observability::span("runtime::predict");
     let matrix = design_matrix(spec, rows)?;
     Ok(matrix
         .iter()

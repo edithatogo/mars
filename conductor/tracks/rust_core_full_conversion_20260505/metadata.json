@@ -1,8 +1,0 @@
-{
-  "track_id": "rust_core_full_conversion_20260505",
-  "type": "chore",
-  "status": "in_progress",
-  "created_at": "2026-05-04T14:03:16Z",
-  "updated_at": "2026-05-05T00:00:00Z",
-  "description": "Progress the core toward a fully Rust-owned implementation by migrating remaining Python-owned core behavior behind a stable public API."
-}

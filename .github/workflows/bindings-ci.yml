@@ -240,7 +240,14 @@ jobs:
         shell: Rscript {0}
 
       - name: Build R package
-        run: R CMD build bindings/r
+        run: R CMD build .
+        working-directory: bindings/r
+
+      - name: Run R package check
+        run: R CMD check --no-manual --as-cran "$tarball"
+        working-directory: bindings/r
+        env:
+          tarball: marsruntime_0.0.0.tar.gz
 
       - name: Smoke test built R package
         run: |

@@ -24,6 +24,40 @@ pub mod python;
 pub mod runtime;
 pub mod training;
 
+pub(crate) mod observability {
+    use std::env;
+    use std::sync::OnceLock;
+
+    static ENABLED: OnceLock<bool> = OnceLock::new();
+
+    pub(crate) fn span(name: &'static str) -> SpanGuard {
+        let active = enabled();
+        if active {
+            eprintln!("trace: enter {name}");
+        }
+        SpanGuard { name, active }
+    }
+
+    fn enabled() -> bool {
+        *ENABLED.get_or_init(|| {
+            env::var_os("RUST_LOG").is_some() || env::var_os("MARS_RUNTIME_TRACE").is_some()
+        })
+    }
+
+    pub(crate) struct SpanGuard {
+        name: &'static str,
+        active: bool,
+    }
+
+    impl Drop for SpanGuard {
+        fn drop(&mut self) {
+            if self.active {
+                eprintln!("trace: exit {}", self.name);
+            }
+        }
+    }
+}
+
 pub use errors::{MarsError, MarsResult};
 pub use model_spec::{BasisTermSpec, FeatureSchema, ModelSpec};
 pub use runtime::{

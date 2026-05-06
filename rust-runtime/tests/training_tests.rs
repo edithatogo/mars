@@ -3,8 +3,9 @@ use std::fs;
 use serde::Deserialize;
 
 use pymars_runtime::{
-    fit_least_squares, fit_model, forward_pass, model_spec_from_terms, predict, prune_model,
-    score_candidate, score_pruning_subset, validate_model_spec, TrainingParams, TrainingRequest,
+    fit_least_squares, fit_model, forward_pass, load_model_spec_str, model_spec_from_terms,
+    predict, prune_model, score_candidate, score_pruning_subset, validate_model_spec,
+    TrainingParams, TrainingRequest,
 };
 
 #[derive(Debug, Deserialize)]
@@ -344,6 +345,78 @@ fn forward_pass_supports_missingness_terms_when_enabled() {
     validate_model_spec(&spec).expect("missingness spec should validate");
     let predictions = predict(&spec, &x).expect("missingness spec should replay");
     assert_vector_close(&predictions, &y);
+}
+
+#[test]
+fn fit_model_export_json_round_trips_through_rust_loader() {
+    let fixture = load_fit_fixture();
+    let request = TrainingRequest {
+        x: fixture.x.clone(),
+        y: fixture.y.clone(),
+        sample_weight: Some(fixture.sample_weight.clone()),
+        params: TrainingParams {
+            max_terms: fixture
+                .params
+                .get("max_terms")
+                .and_then(serde_json::Value::as_u64)
+                .unwrap_or(5) as usize,
+            max_degree: fixture
+                .params
+                .get("max_degree")
+                .and_then(serde_json::Value::as_u64)
+                .unwrap_or(1) as usize,
+            penalty: fixture
+                .params
+                .get("penalty")
+                .and_then(serde_json::Value::as_f64)
+                .unwrap_or(3.0),
+            minspan: fixture
+                .params
+                .get("minspan")
+                .and_then(serde_json::Value::as_f64)
+                .unwrap_or(0.0),
+            endspan: fixture
+                .params
+                .get("endspan")
+                .and_then(serde_json::Value::as_f64)
+                .unwrap_or(0.0),
+            threshold: fixture
+                .params
+                .get("threshold")
+                .and_then(serde_json::Value::as_f64)
+                .unwrap_or(0.001),
+            allow_linear: fixture
+                .params
+                .get("allow_linear")
+                .and_then(serde_json::Value::as_bool)
+                .unwrap_or(true),
+            allow_missing: fixture
+                .params
+                .get("allow_missing")
+                .and_then(serde_json::Value::as_bool)
+                .unwrap_or(false),
+            categorical_features: fixture
+                .params
+                .get("categorical_features")
+                .and_then(serde_json::Value::as_array)
+                .map(|values| {
+                    values
+                        .iter()
+                        .filter_map(serde_json::Value::as_u64)
+                        .map(|value| value as usize)
+                        .collect()
+                }),
+            feature_names: Some(vec!["x0".to_string()]),
+        },
+    };
+
+    let spec = fit_model(&request).expect("fit_model should succeed");
+    let spec_json = serde_json::to_string_pretty(&spec).expect("spec should serialize");
+    let loaded = load_model_spec_str(&spec_json).expect("spec JSON should reload");
+    let predictions = predict(&loaded, &fixture.x).expect("reloaded spec should replay");
+
+    assert_eq!(loaded, spec);
+    assert_vector_close(&predictions, &fixture.y);
 }
 
 fn load_fixture() -> TrainingFixture {

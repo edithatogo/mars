@@ -1,4 +1,4 @@
-.PHONY: help install test test-unit test-integration test-e2e lint type-check format clean docs-build docs-serve benchmark profile dist release check
+.PHONY: help install test test-unit test-integration test-e2e lint type-check format clean docs-build docs-serve benchmark bench-rust cargo-deny cargo-nextest profile dist release check
 
 help: ## Show this help message
 	@echo "Available commands:"
@@ -51,6 +51,15 @@ docs-serve: ## Serve documentation locally
 
 benchmark: ## Run benchmarks
 	uv run pytest tests/test_benchmark.py -v --benchmark-only
+
+bench-rust: ## Run Rust benchmarks
+	cd rust-runtime && cargo bench
+
+cargo-deny: ## Run cargo deny for the Rust core
+	cd rust-runtime && cargo deny check
+
+cargo-nextest: ## Run cargo nextest for the Rust core
+	cd rust-runtime && cargo nextest run
 
 profile: ## Run Scalene profiler
 	uv run scalene run scripts/profile_earth.py

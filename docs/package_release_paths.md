@@ -69,9 +69,13 @@ keep the shared `mars-earth` brand visible.
 - Registry: r-universe first, then CRAN when the package is ready for formal
   submission.
 - Package name: `marsruntime`.
-- Release path: build the source tarball, inspect package contents, and follow
-  maintainer review before CRAN submission.
-- Rehearse with `R CMD build`, local install, and conformance tests.
+- Release path: build the source tarball, inspect package contents, run
+  `R CMD check`, and follow maintainer review before CRAN submission.
+- Package docs: keep the per-function Rd pages plus a package-level help topic
+  and a build-ready vignette source; use `R CMD Rd2pdf` as the manual build path
+  when the local toolchain supports it.
+- Rehearse with `R CMD build`, `R CMD check`, local install, conformance
+  tests, the vignette build path, and the manual build path where available.
 
 ### Julia
 

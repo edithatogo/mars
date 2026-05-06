@@ -10,14 +10,19 @@
 - **matplotlib** - Plotting utilities for diagnostics and visualization
 
 ## Rust Runtime/Core
-- **Cargo** - Rust build and test orchestration
+- **cargo** - Rust build and test orchestration
 - **serde / serde_json** - `ModelSpec` artifact parsing
 - **anyhow** - Test harness error context
+- **criterion** - Rust core benchmarking and regression measurement without
+  expanding the public API
+- **tracing** - Structured internal spans and events for Rust-core diagnostics
+- **cargo deny** - Dependency and license hygiene checks for the Rust core
+- **cargo nextest** - Faster Rust test execution for core and integration suites
 
 ## Rust Binding Strategy
 - **PyO3 / maturin** - Python extension mechanism for Rust-backed estimator and runtime integration
 - **Rust CLI bridge** - Temporary runtime bridge for R, Julia, C#, and Go while native interop is prepared
-- **wasm-bindgen / WebAssembly** - TypeScript runtime surface where a portable browser/Node package is preferable
+- **WASM / WebAssembly** - TypeScript runtime surface backed by `wasm-bindgen` where a portable browser/Node package is preferable
 
 ## Optional Dependencies
 - **pandas** - Required for CLI functionality and full scikit-learn estimator checks
@@ -27,6 +32,10 @@
 - **pytest-cov** - Code coverage reporting
 - **hypothesis** - Property-based testing for edge cases
 - **pytest-benchmark** - Performance benchmarking
+- **coverage/profiling artifacts** - Keep benchmark and profiling outputs
+  reproducible and inspectable when tracking regressions
+- **flamegraphs / memory profiling** - Optional local tooling for targeted Rust
+  performance investigation
 
 ## Code Quality
 - **ruff** - Fast Python linter (replaces flake8, pyflakes, isort)
@@ -45,4 +54,4 @@
 - **pre-commit** - Git hook management
 
 ## Documentation
-- **MkDocs** - Static site generation for documentation
+- **mkdocs** - Static site generation for documentation
