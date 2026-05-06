@@ -2,6 +2,7 @@ name = "MarsRuntime"
 uuid = "dd07e42f-8d4e-4e9e-9c0b-000000000001"
 version = "0.1.0"
 authors = ["Dylan A Mordaunt"]
+license = "Apache-2.0"
 
 [deps]
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
