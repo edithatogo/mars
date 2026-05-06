@@ -11,6 +11,9 @@ The active priorities are:
 - keep CI and supply-chain checks aligned with the manifests
 - preserve the current `pymars` import API while the public package family
   stays under `mars-earth`
+- set up the Linear and Notion workspace operating models with review loops
+- expand the scientific-stewardship plan to cover JOSS, speck, and EasyBuild
 - finish the scientific stewardship and submission-readiness roadmap for
-  scikit-learn-contrib, pyOpenSci, rOpenSci, and NumFOCUS
+  scikit-learn-contrib, pyOpenSci, rOpenSci, NumFOCUS, JOSS, speck, and
+  EasyBuild
 - finish the SOTA HPC, ABI, and parallelism roadmap for HPSF and E4S

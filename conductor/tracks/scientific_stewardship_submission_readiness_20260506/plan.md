@@ -7,10 +7,14 @@
     - [ ] Review pyOpenSci package-scope and review expectations
     - [ ] Review rOpenSci review and package standards
     - [ ] Review NumFOCUS stewardship and project expectations
+    - [ ] Review JOSS paper requirements and submission checklist
+    - [ ] Review speck requirements and project-specific submission expectations
+    - [ ] Review EasyBuild fit and packaging expectations
 - [ ] Task: Build the stewardship gap matrix
     - [ ] List current strengths
     - [ ] List missing repo/doc artifacts
     - [ ] Separate shared gaps from community-specific gaps
+    - [ ] Add venue-specific notes for JOSS, speck, and EasyBuild
 - [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 0: Community Criteria Inventory' (Protocol in workflow.md)
 
 ## Phase 1: Polyglot repo and docs organization
@@ -43,6 +47,10 @@
     - [ ] Draft the stewardship and sustainability summary
     - [ ] Draft the governance and community-health summary
     - [ ] List any remaining project-health gaps
+- [ ] Task: Prepare JOSS, speck, and EasyBuild readiness
+    - [ ] Draft the JOSS paper outline and software-summary narrative
+    - [ ] Draft the speck submission or ecosystem-fit summary
+    - [ ] Draft the EasyBuild packaging and installation-story summary
 - [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 2: Community Submission Packets' (Protocol in workflow.md)
 
 ## Phase 3: Roadmap Validation and Handoff

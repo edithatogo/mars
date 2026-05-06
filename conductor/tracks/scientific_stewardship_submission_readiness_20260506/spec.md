@@ -6,7 +6,7 @@ The project is now technically mature across multiple language surfaces, but
 its external scientific identity is still fragmented. This track creates the
 community-readiness roadmap for the whole project and turns that roadmap into a
 concrete submission-prep package for scikit-learn-contrib, pyOpenSci, rOpenSci,
-and NumFOCUS.
+NumFOCUS, JOSS, speck, and EasyBuild.
 
 The track also defines how a polyglot scientific library should organize its
 repository and documentation so the shared Rust core, language bindings,
@@ -24,12 +24,16 @@ maintain.
 ## Functional Requirements
 
 - Inventory the current repository against community-readiness expectations for
-  scikit-learn-contrib, pyOpenSci, rOpenSci, and NumFOCUS.
+  scikit-learn-contrib, pyOpenSci, rOpenSci, NumFOCUS, JOSS, speck, and
+  EasyBuild.
 - Produce a gap matrix that identifies:
   - current strengths
   - required repo/documentation changes
   - submission artifacts still missing
   - which changes are shared across communities versus community-specific
+- Include venue-specific notes for JOSS, speck, and EasyBuild, even where the
+  submission target is a paper, build workflow, or ecosystem listing rather than
+  a traditional package-review body.
 - Define a recommended repository and documentation organization for a
   polyglot scientific library.
 - Produce a roadmap for community-facing submission readiness, including what

@@ -51,6 +51,8 @@ graph TD
   core, language bindings, release governance, and community-facing material.
 - The project has strong engineering discipline, but no formal external review
   alignment yet with pyOpenSci, rOpenSci, scikit-learn-contrib, or NumFOCUS.
+- JOSS, speck, and EasyBuild are adjacent scientific venues that should be
+  tracked explicitly rather than left implicit.
 
 ## HPC Gaps
 
@@ -77,7 +79,7 @@ import API:
 ## Roadmap Themes
 
 1. Scientific stewardship and community readiness for scikit-learn-contrib,
-   pyOpenSci, rOpenSci, and NumFOCUS.
+   pyOpenSci, rOpenSci, NumFOCUS, JOSS, speck, and EasyBuild.
 2. Polyglot repository and documentation organization for a shared Rust core
    with language-specific entry points.
 3. ABI evaluation and migration strategy that preserves the existing API.
@@ -94,6 +96,7 @@ import API:
 | pyOpenSci | scientific workflow fit, reproducible testing, package scope alignment, and clear maintenance expectations | pre-submission inquiry packet, packaging/release notes, scientific workflow narrative, docs for reproducibility |
 | rOpenSci | scientific R package quality, review-ready documentation, CRAN/r-universe compatibility, and maintenance commitments | submission packet, package review checklist, documentation and test alignment, release policy summary |
 | NumFOCUS | project sustainability, governance, community health, and clear scientific value | stewardship narrative, governance summary, contributor model, sustainability statement |
+| JOSS / speck / EasyBuild | software-paper, ecosystem-fit, and HPC packaging venues with their own submission or build expectations | paper outline, venue-fit narrative, build/packaging notes, and submission-specific checklists |
 
 ## HPC Submission Readiness
 
@@ -104,5 +107,6 @@ import API:
 
 ## Related Conductor Tracks
 
+- [Linear and Notion workspace SOTA for polyglot stewardship](../conductor/tracks/linear_notion_workspace_sota_20260506/)
 - [Scientific stewardship and submission readiness for polyglot scientific libraries](../conductor/tracks/scientific_stewardship_submission_readiness_20260506/)
 - [SOTA HPC, ABI, and parallelism roadmap](../conductor/tracks/hpc_sota_abi_and_parallelism_roadmap_20260506/)

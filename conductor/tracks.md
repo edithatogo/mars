@@ -52,6 +52,8 @@ The remaining-track dependency gates are summarized in
   *Link: [./archive/rust_core_full_conversion_20260505/](./archive/rust_core_full_conversion_20260505/)*
 - [x] **Track: mars / earth parity audit**
   *Link: [./archive/mars_earth_parity_audit_20260505/](./archive/mars_earth_parity_audit_20260505/)*
+- [ ] **Track: Linear and Notion workspace SOTA for polyglot stewardship**
+  *Link: [./tracks/linear_notion_workspace_sota_20260506/](./tracks/linear_notion_workspace_sota_20260506/)*
 - [ ] **Track: Scientific stewardship and submission readiness for polyglot scientific libraries**
   *Link: [./tracks/scientific_stewardship_submission_readiness_20260506/](./tracks/scientific_stewardship_submission_readiness_20260506/)*
 - [ ] **Track: SOTA HPC, ABI, and parallelism roadmap**
