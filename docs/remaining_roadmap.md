@@ -11,3 +11,6 @@ The active priorities are:
 - keep CI and supply-chain checks aligned with the manifests
 - preserve the current `pymars` import API while the public package family
   stays under `mars-earth`
+- finish the scientific stewardship and submission-readiness roadmap for
+  scikit-learn-contrib, pyOpenSci, rOpenSci, and NumFOCUS
+- finish the SOTA HPC, ABI, and parallelism roadmap for HPSF and E4S

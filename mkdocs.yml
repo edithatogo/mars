@@ -28,6 +28,7 @@ nav:
   - Rust Core Ownership Boundary: rust_core_ownership.md
   - Rust Core Full Conversion Boundary: rust_core_full_conversion_boundary.md
   - Rust Core Observability and Profiling: rust_core_observability.md
+  - Scientific Stewardship and HPC Roadmap: scientific_stewardship_and_hpc_roadmap.md
   - Starlight Docs Stack Governance: starlight_docs_stack.md
   - Parity Audit Evidence: parity_audit_evidence.md
   - Parity Table: parity_audit_parity_table.md
