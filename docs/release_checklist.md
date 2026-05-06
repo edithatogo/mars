@@ -24,10 +24,18 @@ confirm or configure:
   commit.
 - Confirm the rehearsal workflow uploaded reviewable artifacts for the target
   package family.
+- Confirm the R package check and manual build commands succeeded when the R
+  track is being published.
+- Confirm the vignette source can be built by the installed R toolchain.
 
 ## Registry Ownership and Credentials
 
-- Confirm the R submission path through r-universe and CRAN is available.
+- Confirm the R submission path through r-universe and CRAN is available for
+  external submission.
+- Confirm `R CMD check` and `R CMD Rd2pdf` are part of the release rehearsal
+  path when local tooling supports them.
+- Confirm the vignette build path is part of the release rehearsal path when
+  the vignette dependency stack is installed.
 - If a republish or ownership change is planned later, re-check the PyPI,
   crates.io, npm, and NuGet paths against the release inventory.
 - If a Julia follow-up is needed later, check the open General registration PR

@@ -14,7 +14,7 @@ names remain ecosystem-native when a registry or toolchain requires them.
 | --- | --- | --- | --- | --- |
 | Python | `mars-earth` / `pymars` import name | `pyproject.toml` + `pymars/__init__.py` | `logging` module in package code and CLI | Published on PyPI as `1.0.4`; trusted publishing and workflow wiring are already configured |
 | Rust | `mars-earth` | `rust-runtime/Cargo.toml` | Rust logging is not yet centralized | Published on crates.io as `0.1.0`; native extension source remains |
-| R | `marsruntime` | `bindings/r/DESCRIPTION` | Host errors are surfaced from runtime helpers | Runtime replay package, release readiness pending |
+| R | `marsruntime` | `bindings/r/DESCRIPTION` | Host errors are surfaced from runtime helpers | Runtime replay package with package-level help, vignette, manual build path, and CRAN-safe checks complete; ready for external submission |
 | Julia | `MarsRuntime` | `bindings/julia/Project.toml` | Host errors are surfaced from runtime helpers | Registration submitted to Julia General; awaiting review |
 | C# | `mars-earth` | `bindings/csharp/MarsRuntime.csproj` | Host exceptions from runtime bridge/helpers | Published on NuGet as `0.0.0` |
 | Go | `github.com/edithatogo/mars/bindings/go` | `bindings/go/go.mod` | Host errors from runtime bridge/helpers | Release is tag-driven via signed annotated `go-v<version>` tags |
@@ -24,7 +24,7 @@ names remain ecosystem-native when a registry or toolchain requires them.
 
 | Package | Owner / credential status | Action | Status | Date |
 | --- | --- | --- | --- | --- |
-| R `marsruntime` | Maintainer-owned package name; r-universe / CRAN requirements not verified in this inventory | Confirm submission path and maintainer review steps | Owner confirmed | 2026-04-29 |
+| R `marsruntime` | Maintainer-owned package name; r-universe / CRAN requirements verified locally | Confirm external submission path and maintainer review steps | Ready for submission | 2026-05-06 |
 | Julia `MarsRuntime` | Maintainer-owned package name; registration submitted to Julia General | Await General review and merge | Submitted | 2026-05-04 |
 
 ## Registry Audit Results
@@ -39,7 +39,7 @@ The public registry-name audit has been run against the current package set.
 | npm `mars-earth` | Present | [npm package page](https://www.npmjs.com/package/mars-earth) | Package is live as `0.0.0` |
 | NuGet `mars-earth` | Present | [NuGet package page](https://www.nuget.org/packages/mars-earth) | Package is live as `0.0.0` |
 | Go module path | Controlled by repository tags | `bindings/go/go.mod` | Keep the module path aligned with signed `go-v<version>` tags |
-| R `marsruntime` | Not published in a public registry yet | `bindings/r/DESCRIPTION` | Confirm r-universe/CRAN path during release prep |
+| R `marsruntime` | Not published in a public registry yet | `bindings/r/DESCRIPTION` | Locally complete; ready for r-universe submission and later CRAN review |
 | Julia `MarsRuntime` | Not published in a public registry yet; registration PR open | `bindings/julia/Project.toml` | Await General review and merge |
 
 ## Parity Notes
@@ -49,9 +49,8 @@ The public registry-name audit has been run against the current package set.
 - Logging should remain quiet by default; verbose diagnostics should be
   opt-in and should preserve the Rust core error context when available.
 - Registry ownership and credentials are no longer blockers for PyPI, crates.io,
-  npm, or NuGet; R remains the main external blocker. Go is now a documented
-  tag-driven release policy, and Julia is submitted and awaiting registry
-  review.
+  npm, or NuGet. R is ready for submission, Go is a documented tag-driven
+  release policy, and Julia is submitted and awaiting registry review.
 
 ## Next Steps
 
@@ -69,5 +68,6 @@ The public registry-name audit has been run against the current package set.
   and the GitHub release workflow publishes that distribution name.
 - Rust, crates.io, npm, and NuGet packages are live on their registries.
 - Go release remains tag-driven via signed annotated `go-v<version>` tags.
-- R release notes already point to the registry-specific release path, and the
-  Julia registry submission is already open.
+- R release notes already point to the registry-specific release path, the
+  package-level help topic, vignette, and manual build path are in place, and the Julia
+  registry submission is already open.

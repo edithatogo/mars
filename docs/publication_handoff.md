@@ -12,14 +12,15 @@ readiness to actual publication.
 | npm `mars-earth` | Nothing further unless you change the publish path | `NPM_TOKEN` (automation token) or npm trusted publishing | Published |
 | NuGet `mars-earth` | Nothing further unless you change the publish path | `NuGet/login@v1` short-lived API key exchange | Published |
 | Go module | Signed annotated tag policy and who signs/reviews release tags | Repository policy / release checklist | Policy confirmed |
-| R `marsruntime` | r-universe / CRAN submission path and maintainer account details | Release checklist and maintainer notes | Waiting on maintainer confirmation |
+| R `marsruntime` | r-universe / CRAN submission path and maintainer account details | Release checklist and maintainer notes | Package help, vignette, and manual build path are complete; awaiting external submission |
 | Julia `MarsRuntime` | Registration submitted through Registrator.jl; awaiting General review | Release checklist and maintainer notes | Submitted |
 
 ## How to Provide It
 
 - Put secret values into GitHub Actions secret settings, not in the repository.
-- Reply with the R and Julia submission-path details when you are ready to
-  move those packages through r-universe, CRAN, or the General registry.
+- Reply with the R submission-path details when you are ready to move that
+  package through r-universe or CRAN. Julia remains on the General registry
+  review path.
 
 ## Once Set
 
