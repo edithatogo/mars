@@ -40,7 +40,7 @@ The public registry-name audit has been run against the current package set.
 | NuGet `mars-earth` | Present | [NuGet package page](https://www.nuget.org/packages/mars-earth) | Package is live as `0.0.0` |
 | Go module path | Controlled by repository tags | `bindings/go/go.mod` | Keep the module path aligned with signed `bindings/go/v<version>` tags; `bindings/go/v0.1.0` has been published |
 | R `marsruntime` | Not published in a public registry yet | `bindings/r/DESCRIPTION` | Locally complete; ready for r-universe submission and later CRAN review |
-| Julia `MarsRuntime` | Not published in a public registry yet; registration PR open and auto-merge waiting period active | `bindings/julia/Project.toml` | Await General review and merge |
+| Julia `MarsRuntime` | Not published in a public registry yet; registration PR open and auto-merge waiting period active | `bindings/julia/Project.toml` | Waiting out mandatory General review period |
 
 ## Parity Notes
 
