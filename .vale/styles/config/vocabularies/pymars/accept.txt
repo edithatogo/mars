@@ -9,6 +9,7 @@ JavaScript
 Julia
 MARSRuntime
 OpenSSF
+Parallelization
 Spack
 Zenodo
 criterion
@@ -83,6 +84,7 @@ retriggered
 roadmaps
 ruff
 scikit-learn
+subagents
 astro
 ty
 uv
@@ -90,3 +92,4 @@ Vale
 write-good
 toolchain
 namespace
+maintainership

@@ -105,6 +105,23 @@ import API:
 6. Ecosystem and foundation alignment for Apache Arrow, PyPA, the .NET
    Foundation, and Julia/R communities.
 
+## Active Implementation Lanes
+
+The roadmap is now split into six dependency-aware Conductor lanes so separate
+subagents can work safely in parallel:
+
+| Lane | Track | Blocks |
+| --- | --- | --- |
+| Citation and JOSS packet | `citation_metadata_joss_packet_20260506` | community submission packets and DOI workflow |
+| Supply-chain evidence | `supply_chain_scorecard_sbom_20260506` | PyPA, OpenSSF, HPSF, E4S, and foundation evidence |
+| HPC packaging feasibility | `hpc_packaging_feasibility_20260506` | Spack, EasyBuild, conda-forge, HPSF, and E4S readiness |
+| ABI and Arrow feasibility | `abi_arrow_interop_feasibility_20260506` | stable interop, optional Arrow path, and future HPC portability |
+| Governance and submissions | `community_governance_submission_packets_20260506` | scikit-learn-contrib, pyOpenSci, rOpenSci, NumFOCUS, JOSS, PyPA, .NET Foundation, Julia, R, HPSF, and E4S packets |
+| Workspace export | `workspace_automation_export_20260506` | Linear and Notion project mirrors |
+
+See the [SOTA Dependency and Parallelization Plan](sota_dependency_parallelization_plan.md)
+for the dependency graph, lane ownership, external gates, and execution rules.
+
 ## Community Submission Readiness
 
 | Community | What it expects | repo changes still needed |
@@ -139,10 +156,17 @@ import API:
 - [Ecosystem and foundation alignment for polyglot scientific libraries](../conductor/archive/ecosystem_foundation_alignment_20260506/)
 - [Rust migration and ABI compatibility](../conductor/archive/rust_migration_abi_compatibility_20260506/)
 - [SOTA HPC, ABI, and parallelism roadmap](../conductor/archive/hpc_sota_abi_and_parallelism_roadmap_20260506/)
+- [Citation metadata and JOSS packet](../conductor/tracks/citation_metadata_joss_packet_20260506/)
+- [Supply-chain Scorecard and SBOM](../conductor/tracks/supply_chain_scorecard_sbom_20260506/)
+- [HPC packaging feasibility](../conductor/tracks/hpc_packaging_feasibility_20260506/)
+- [ABI and Apache Arrow interoperability feasibility](../conductor/tracks/abi_arrow_interop_feasibility_20260506/)
+- [Community governance and submission packets](../conductor/tracks/community_governance_submission_packets_20260506/)
+- [Workspace automation export](../conductor/tracks/workspace_automation_export_20260506/)
 
 ## Detail Pages
 
 - [Workspace Automation](workspace_automation.md)
+- [SOTA Dependency and Parallelization Plan](sota_dependency_parallelization_plan.md)
 - [Community Submission Readiness](community_submission_readiness.md)
 - [Ecosystem and Foundation Alignment](ecosystem_foundation_alignment.md)
 - [Rust Migration and ABI Compatibility](rust_migration_abi_compatibility.md)

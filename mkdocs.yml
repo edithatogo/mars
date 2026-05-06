@@ -29,6 +29,7 @@ nav:
   - Rust Core Full Conversion Boundary: rust_core_full_conversion_boundary.md
   - Rust Core Observability and Profiling: rust_core_observability.md
   - Scientific Stewardship and HPC Roadmap: scientific_stewardship_and_hpc_roadmap.md
+  - SOTA Dependency and Parallelization Plan: sota_dependency_parallelization_plan.md
   - Community Submission Readiness: community_submission_readiness.md
   - Ecosystem and Foundation Alignment: ecosystem_foundation_alignment.md
   - Rust Migration and ABI Compatibility: rust_migration_abi_compatibility.md

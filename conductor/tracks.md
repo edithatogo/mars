@@ -62,3 +62,33 @@ The remaining-track dependency gates are summarized in
   *Link: [./archive/ecosystem_foundation_alignment_20260506/](./archive/ecosystem_foundation_alignment_20260506/)*
 - [x] **Track: Rust migration and ABI compatibility**
   *Link: [./archive/rust_migration_abi_compatibility_20260506/](./archive/rust_migration_abi_compatibility_20260506/)*
+
+---
+
+- [ ] **Track: Add citation metadata and a JOSS-ready paper packet**
+  *Link: [./tracks/citation_metadata_joss_packet_20260506/](./tracks/citation_metadata_joss_packet_20260506/)*
+
+---
+
+- [ ] **Track: Add OpenSSF Scorecard, SBOM, and release provenance evidence**
+  *Link: [./tracks/supply_chain_scorecard_sbom_20260506/](./tracks/supply_chain_scorecard_sbom_20260506/)*
+
+---
+
+- [ ] **Track: Prepare Spack, EasyBuild, and conda-forge packaging feasibility**
+  *Link: [./tracks/hpc_packaging_feasibility_20260506/](./tracks/hpc_packaging_feasibility_20260506/)*
+
+---
+
+- [ ] **Track: Evaluate API-preserving ABI and Apache Arrow interoperability**
+  *Link: [./tracks/abi_arrow_interop_feasibility_20260506/](./tracks/abi_arrow_interop_feasibility_20260506/)*
+
+---
+
+- [ ] **Track: Prepare community governance and submission packets**
+  *Link: [./tracks/community_governance_submission_packets_20260506/](./tracks/community_governance_submission_packets_20260506/)*
+
+---
+
+- [ ] **Track: Prepare Linear and Notion workspace exports**
+  *Link: [./tracks/workspace_automation_export_20260506/](./tracks/workspace_automation_export_20260506/)*
