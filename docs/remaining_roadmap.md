@@ -11,12 +11,13 @@ The active priorities are:
 - keep CI and supply-chain checks aligned with the manifests
 - preserve the current `pymars` import API while the public package family
   stays under `mars-earth`
-- set up the Linear and Notion workspace operating models with review loops
-- expand the scientific-stewardship plan to cover JOSS, speck, and EasyBuild
-- finish the scientific stewardship and submission-readiness roadmap for
-  scikit-learn-contrib, pyOpenSci, rOpenSci, NumFOCUS, JOSS, speck, and
-  EasyBuild
-- finish the ecosystem and foundation alignment roadmap for Apache Arrow, PyPA,
-  the .NET Foundation, and Julia/R communities
-- finish the Rust migration and ABI compatibility roadmap
-- finish the SOTA HPC, ABI, and parallelism roadmap for HPSF and E4S
+- implement follow-on work from the completed SOTA planning docs only when it
+  becomes concrete enough for a separate feature track
+
+The completed SOTA planning artifacts are:
+
+- [Workspace Automation](workspace_automation.md)
+- [Community Submission Readiness](community_submission_readiness.md)
+- [Ecosystem and Foundation Alignment](ecosystem_foundation_alignment.md)
+- [Rust Migration and ABI Compatibility](rust_migration_abi_compatibility.md)
+- [SOTA HPC Roadmap](hpc_sota_roadmap.md)

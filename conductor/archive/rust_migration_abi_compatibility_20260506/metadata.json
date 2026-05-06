@@ -1,7 +1,7 @@
 {
   "track_id": "rust_migration_abi_compatibility_20260506",
   "type": "feature",
-  "status": "new",
+  "status": "completed",
   "created_at": "2026-05-06T22:00:41Z",
   "updated_at": "2026-05-06T22:00:41Z",
   "description": "Define the remaining Rust migration boundary and ABI compatibility strategy without breaking the public API."

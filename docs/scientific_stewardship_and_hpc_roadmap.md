@@ -134,8 +134,16 @@ import API:
 
 ## Related Conductor Tracks
 
-- [Linear and Notion workspace SOTA for polyglot stewardship](../conductor/tracks/linear_notion_workspace_sota_20260506/)
-- [Scientific stewardship and submission readiness for polyglot scientific libraries](../conductor/tracks/scientific_stewardship_submission_readiness_20260506/)
-- [Ecosystem and foundation alignment for polyglot scientific libraries](../conductor/tracks/ecosystem_foundation_alignment_20260506/)
-- [Rust migration and ABI compatibility](../conductor/tracks/rust_migration_abi_compatibility_20260506/)
-- [SOTA HPC, ABI, and parallelism roadmap](../conductor/tracks/hpc_sota_abi_and_parallelism_roadmap_20260506/)
+- [Linear and Notion workspace SOTA for polyglot stewardship](../conductor/archive/linear_notion_workspace_sota_20260506/)
+- [Scientific stewardship and submission readiness for polyglot scientific libraries](../conductor/archive/scientific_stewardship_submission_readiness_20260506/)
+- [Ecosystem and foundation alignment for polyglot scientific libraries](../conductor/archive/ecosystem_foundation_alignment_20260506/)
+- [Rust migration and ABI compatibility](../conductor/archive/rust_migration_abi_compatibility_20260506/)
+- [SOTA HPC, ABI, and parallelism roadmap](../conductor/archive/hpc_sota_abi_and_parallelism_roadmap_20260506/)
+
+## Detail Pages
+
+- [Workspace Automation](workspace_automation.md)
+- [Community Submission Readiness](community_submission_readiness.md)
+- [Ecosystem and Foundation Alignment](ecosystem_foundation_alignment.md)
+- [Rust Migration and ABI Compatibility](rust_migration_abi_compatibility.md)
+- [SOTA HPC Roadmap](hpc_sota_roadmap.md)

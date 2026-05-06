@@ -53,6 +53,13 @@
 - **tox** - Multi-environment test orchestration
 - **pre-commit** - Git hook management
 
+## Workspace Automation
+- **notionctl** - Local Notion CLI for page, database, block, comment, user,
+  team, search, schema, and raw API operations once authenticated
+- **linear-cli** - Local Linear CLI for issues, projects, documents,
+  initiatives, roadmaps, milestones, labels, comments, search, and raw GraphQL
+  operations once authenticated
+
 ## Documentation
 - **mkdocs** - Static site generation for documentation
 - **Starlight (planned)** - Future docs platform under governance review;

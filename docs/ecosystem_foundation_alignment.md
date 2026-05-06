@@ -1,0 +1,77 @@
+# Ecosystem and Foundation Alignment
+
+This page captures ecosystem and foundation alignment targets that are adjacent
+to scientific package review. These are not immediate submission instructions;
+they define what would make the project credible in each ecosystem.
+
+## Alignment Matrix
+
+| Target | Why it matters | Current state | Next repo-side step |
+| --- | --- | --- | --- |
+| Apache Arrow | Arrow is the main cross-language data interchange story for columnar analytics and memory-oriented interop | no Arrow runtime surface yet | evaluate Arrow C Data / C Stream as an optional data boundary for matrix and table inputs |
+| PyPA | Python packaging standards define the Python distribution baseline | PyPI package and release metadata exist | keep `pyproject.toml`, trusted publishing, metadata, and wheel smoke tests aligned with PyPA specs |
+| .NET Foundation | C# ecosystem stewardship and project-health framing | NuGet package exists | document C# binding ownership, support policy, and whether foundation membership is useful |
+| Julia communities | Julia General is the registry path and community discovery route | Julia package submitted and waiting on registry processing | keep Julia docs, package metadata, examples, and issue routing current |
+| R communities | R package review and discovery depend on R-specific documentation and checks | R package is locally publication-ready | complete r-universe/CRAN path, then align examples and review notes |
+
+## Apache Arrow Position
+
+Arrow is relevant as a future data interchange boundary, not as a requirement
+for the current API. A non-breaking path would be:
+
+1. keep numpy/list inputs and `ModelSpec` JSON as public APIs
+2. add optional Arrow import/export helpers behind feature gates or package
+   extras
+3. consider Arrow C Data / C Stream only after ownership and lifetime rules are
+   documented
+4. keep model semantics independent from the transport format
+
+## PyPA Position
+
+The Python package should stay aligned with PyPA interoperability specs:
+
+- `pyproject.toml` remains the Python packaging source of truth
+- wheels are smoke-tested from clean environments
+- trusted publishing stays preferred over long-lived credentials
+- metadata is mirrored in `docs/release_metadata.json`
+
+## .NET Foundation Position
+
+The .NET Foundation is relevant if the C# binding becomes a serious community
+surface. Before that, the repo needs:
+
+- documented C# ownership and support policy
+- NuGet package quality checks
+- clear issue routing for C# users
+- a maintainer statement for the binding
+
+## Julia and R Position
+
+Julia and R should be treated as language communities with their own review and
+publication norms:
+
+- Julia: General registry, package metadata, examples, and issue routing
+- R: r-universe/CRAN, `R CMD check`, manual/vignette quality, and maintainer
+  communication
+
+## Additional SOTA Improvements
+
+Recommended improvements that cut across ecosystems:
+
+- add `CITATION.cff`
+- add `codemeta.json`
+- add release DOI workflow through Zenodo or equivalent
+- add OpenSSF Scorecard tracking
+- add SBOM generation for release artifacts
+- evaluate conda-forge packaging after Python release cadence stabilizes
+- add Spack and EasyBuild feasibility notes before claiming HPC packaging
+
+## References
+
+- Apache Arrow overview: https://arrow.apache.org/
+- Apache Arrow format overview: https://arrow.apache.org/overview/
+- PyPA specifications: https://packaging.python.org/specifications/
+- PyPA documentation: https://www.pypa.io/
+- .NET Foundation membership policy: https://dotnetfoundation.org/about/policies/.net-foundation-membership-policy
+- Julia package registration: https://help.juliahub.com/juliahub/stable/registering/
+- r-universe documentation: https://docs.r-universe.dev/
