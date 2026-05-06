@@ -35,6 +35,7 @@ SciPy
 TypeScript
 API
 APIs
+Algolia
 automerge
 clippy
 cooldown
@@ -71,6 +72,7 @@ pymars
 r-universe
 ruff
 scikit-learn
+astro
 ty
 uv
 Vale

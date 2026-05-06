@@ -55,3 +55,5 @@
 
 ## Documentation
 - **mkdocs** - Static site generation for documentation
+- **Starlight (planned)** - Future docs platform under governance review;
+  current mkdocs Material site remains live until a migration track is approved

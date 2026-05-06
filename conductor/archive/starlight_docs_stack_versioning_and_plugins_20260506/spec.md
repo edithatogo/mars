@@ -5,7 +5,7 @@
 This track defines a version-pinned, plugin-complete Starlight documentation
 stack for `mars`. The goal is to evaluate the Starlight core version and the
 supporting plugin set needed to preserve the current documentation experience,
-then record a clear migration or coexistence path from the current MkDocs site
+then record a clear migration or coexistence path from the current mkdocs site
 without changing the public docs surface prematurely.
 
 ## Goals
@@ -15,7 +15,7 @@ without changing the public docs surface prematurely.
 - Identify the Starlight version target and the required plugin set.
 - Record version pinning, upgrade policy, and compatibility constraints.
 - Define validation and CI expectations for any Starlight-based docs stack.
-- Keep the current MkDocs documentation site stable until a Starlight change is
+- Keep the current mkdocs documentation site stable until a Starlight change is
   explicitly approved.
 
 ## Functional Requirements
@@ -30,7 +30,7 @@ without changing the public docs surface prematurely.
    pinned, and released.
 5. Specify the CI checks and local validation commands needed to keep the docs
    stack reproducible.
-6. Capture a fallback or rollback path so the current MkDocs site remains the
+6. Capture a fallback or rollback path so the current mkdocs site remains the
    source of truth until migration is approved.
 
 ## Non-Goals
@@ -48,5 +48,5 @@ without changing the public docs surface prematurely.
 - The docs stack decision includes a clear upgrade and rollback policy.
 - The validation strategy for the Starlight docs stack is recorded.
 - The track is linked from the Conductor registry and the remaining roadmap.
-- The current MkDocs site remains intact unless a later phase explicitly
+- The current mkdocs site remains intact unless a later phase explicitly
   approves migration.

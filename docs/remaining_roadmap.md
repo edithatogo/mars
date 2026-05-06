@@ -5,8 +5,6 @@ tracks are archived in Conductor and no longer listed here.
 
 The active priorities are:
 
-- evaluate and pin the Starlight documentation stack version and plugin set
-  for any future docs migration
 - complete the remaining release publication handoff for Julia while the
   mandatory General review period runs
 - update the release inventory when the Julia General registry result lands
