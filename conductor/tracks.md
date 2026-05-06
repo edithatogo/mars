@@ -58,3 +58,7 @@ The remaining-track dependency gates are summarized in
   *Link: [./tracks/scientific_stewardship_submission_readiness_20260506/](./tracks/scientific_stewardship_submission_readiness_20260506/)*
 - [ ] **Track: SOTA HPC, ABI, and parallelism roadmap**
   *Link: [./tracks/hpc_sota_abi_and_parallelism_roadmap_20260506/](./tracks/hpc_sota_abi_and_parallelism_roadmap_20260506/)*
+- [ ] **Track: Ecosystem and foundation alignment for polyglot scientific libraries**
+  *Link: [./tracks/ecosystem_foundation_alignment_20260506/](./tracks/ecosystem_foundation_alignment_20260506/)*
+- [ ] **Track: Rust migration and ABI compatibility**
+  *Link: [./tracks/rust_migration_abi_compatibility_20260506/](./tracks/rust_migration_abi_compatibility_20260506/)*

@@ -38,6 +38,7 @@ ecosystem targets such as JOSS, speck, and EasyBuild.
   - scientific stewardship work
   - release and publication work
   - JOSS, speck, and EasyBuild readiness
+  - Apache Arrow, PyPA, .NET Foundation, Julia communities, and R communities
 - Define a review loop for each workspace area so the development and review
   passes can be carried out separately and iteratively.
 - Keep the workspace model aligned with the repo roadmap rather than creating
@@ -57,6 +58,8 @@ ecosystem targets such as JOSS, speck, and EasyBuild.
 - The four-phase development/review cadence is explicit.
 - JOSS, speck, and EasyBuild are represented in the workspace plan.
 - The workspace plan links back to the repo roadmap and Conductor tracks.
+- Apache Arrow, PyPA, .NET Foundation, Julia communities, and R communities
+  are represented in the workspace plan.
 - The plan preserves the distinction between development notes and review
   notes.
 

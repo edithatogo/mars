@@ -19,6 +19,12 @@ graph TD
     Community --> PyOS[pyOpenSci]
     Community --> RO[rOpenSci]
     Community --> NF[NumFOCUS]
+    Community --> SE[Stewardship ecosystems]
+    SE --> Arrow[Apache Arrow]
+    SE --> PyPA[PyPA]
+    SE --> DotNet[.NET Foundation]
+    SE --> Julia[Julia communities]
+    SE --> Rcomm[R communities]
     HPC[Performance and HPC work] --> HPSF[HPSF]
     HPC --> E4S[E4S]
 ```
@@ -39,6 +45,12 @@ graph TD
     CommunityHome --> PyOS[pyOpenSci]
     CommunityHome --> RO[rOpenSci]
     CommunityHome --> NF[NumFOCUS]
+    CommunityHome --> SE[Stewardship ecosystems]
+    SE --> Arrow[Apache Arrow]
+    SE --> PyPA[PyPA]
+    SE --> DotNet[.NET Foundation]
+    SE --> Julia[Julia communities]
+    SE --> Rcomm[R communities]
 ```
 
 ## SOTA Gaps
@@ -53,6 +65,9 @@ graph TD
   alignment yet with pyOpenSci, rOpenSci, scikit-learn-contrib, or NumFOCUS.
 - JOSS, speck, and EasyBuild are adjacent scientific venues that should be
   tracked explicitly rather than left implicit.
+- Apache Arrow, PyPA, the .NET Foundation, and Julia/R communities should be
+  tracked as ecosystem and foundation alignment targets rather than folded into
+  the scientific-review narrative.
 
 ## HPC Gaps
 
@@ -87,6 +102,8 @@ import API:
    accelerator support.
 5. Community positioning for HPSF and E4S once the performance and
    portability story is credible.
+6. Ecosystem and foundation alignment for Apache Arrow, PyPA, the .NET
+   Foundation, and Julia/R communities.
 
 ## Community Submission Readiness
 
@@ -97,6 +114,16 @@ import API:
 | rOpenSci | scientific R package quality, review-ready documentation, CRAN/r-universe compatibility, and maintenance commitments | submission packet, package review checklist, documentation and test alignment, release policy summary |
 | NumFOCUS | project sustainability, governance, community health, and clear scientific value | stewardship narrative, governance summary, contributor model, sustainability statement |
 | JOSS / speck / EasyBuild | software-paper, ecosystem-fit, and HPC packaging venues with their own submission or build expectations | paper outline, venue-fit narrative, build/packaging notes, and submission-specific checklists |
+
+## Ecosystem and Foundation Alignment
+
+| Ecosystem | What it expects | repo changes still needed |
+| --- | --- | --- |
+| Apache Arrow | interoperable data interchange, polyglot data tooling, and a credible interoperability story | data interchange narrative, interoperability examples, Arrow-fit summary |
+| PyPA | packaging standards, build metadata hygiene, and clear Python packaging guidance | packaging story, metadata hygiene notes, Python packaging guidance |
+| .NET Foundation | ecosystem stewardship, maintainability, and clear C# community fit | C# ecosystem narrative, stewardship notes, community/contact path |
+| Julia communities | registry-ready package maintenance and clear community stewardship | Julia community narrative, maintainer story, registry/process notes |
+| R communities | scientific R package stewardship and review-readiness | R community narrative, review readiness notes, maintenance story |
 
 ## HPC Submission Readiness
 
@@ -109,4 +136,6 @@ import API:
 
 - [Linear and Notion workspace SOTA for polyglot stewardship](../conductor/tracks/linear_notion_workspace_sota_20260506/)
 - [Scientific stewardship and submission readiness for polyglot scientific libraries](../conductor/tracks/scientific_stewardship_submission_readiness_20260506/)
+- [Ecosystem and foundation alignment for polyglot scientific libraries](../conductor/tracks/ecosystem_foundation_alignment_20260506/)
+- [Rust migration and ABI compatibility](../conductor/tracks/rust_migration_abi_compatibility_20260506/)
 - [SOTA HPC, ABI, and parallelism roadmap](../conductor/tracks/hpc_sota_abi_and_parallelism_roadmap_20260506/)

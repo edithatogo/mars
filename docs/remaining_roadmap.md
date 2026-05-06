@@ -16,4 +16,7 @@ The active priorities are:
 - finish the scientific stewardship and submission-readiness roadmap for
   scikit-learn-contrib, pyOpenSci, rOpenSci, NumFOCUS, JOSS, speck, and
   EasyBuild
+- finish the ecosystem and foundation alignment roadmap for Apache Arrow, PyPA,
+  the .NET Foundation, and Julia/R communities
+- finish the Rust migration and ABI compatibility roadmap
 - finish the SOTA HPC, ABI, and parallelism roadmap for HPSF and E4S
