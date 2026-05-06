@@ -1,0 +1,46 @@
+{
+  "@context": "https://doi.org/10.5063/SCHEMA/Codemeta-2.0",
+  "@type": "SoftwareSourceCode",
+  "name": "mars-earth",
+  "alternateName": "pymars",
+  "description": "A pure Python implementation of multivariate adaptive regression splines with a scikit-learn compatible API.",
+  "codeRepository": "https://github.com/edithatogo/mars",
+  "url": "https://github.com/edithatogo/mars",
+  "version": "1.0.4",
+  "datePublished": "2026-04-18",
+  "license": "https://spdx.org/licenses/Apache-2.0.html",
+  "programmingLanguage": "Python",
+  "applicationCategory": "MachineLearning",
+  "keywords": [
+    "mars-earth",
+    "pymars",
+    "multivariate adaptive regression splines",
+    "machine learning",
+    "scikit-learn"
+  ],
+  "softwareRequirements": [
+    "Python >=3.9",
+    "NumPy >=1.20.0",
+    "scikit-learn >=1.0.0",
+    "Matplotlib >=3.4.0"
+  ],
+  "author": [
+    {
+      "@type": "Person",
+      "givenName": "Dylan A.",
+      "familyName": "Mordaunt",
+      "email": "dylan@mordaunt.dev",
+      "identifier": "https://orcid.org/0000-0000-0000-0000"
+    }
+  ],
+  "maintainer": [
+    {
+      "@type": "Person",
+      "givenName": "Dylan A.",
+      "familyName": "Mordaunt",
+      "email": "dylan@mordaunt.dev"
+    }
+  ],
+  "identifier": "https://pypi.org/project/mars-earth/",
+  "downloadUrl": "https://pypi.org/project/mars-earth/1.0.4/"
+}

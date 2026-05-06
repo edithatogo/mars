@@ -1,43 +1,34 @@
 # Workspace Automation
 
-This page defines the supported terminal automation path for Linear and Notion.
-The repo remains the canonical source for code, Conductor tracks, and durable
-documentation. Linear and Notion should track work and decisions without
-becoming duplicate source-of-truth systems.
+This page defines the supported terminal automation path for Linear and
+Notion. The repo remains the canonical source for code, Conductor tracks, and
+durable documentation. Linear and Notion should mirror that state, not replace
+it.
 
-## Installed CLIs
+## Scope Boundaries
 
-The local workspace has two standalone CLIs available:
+- Do not commit tokens, API keys, or workspace secrets.
+- Do not treat Linear or Notion as an alternate source of truth for code or
+  roadmap status.
+- Do not edit shared registry pages from this lane; keep that work in the
+  lane-specific export templates and local CLI guidance.
 
-| Tool | Binary | Installed by | Primary use |
+## Workspace Taxonomy
+
+The workspace mirrors the six parallel work lanes already used in the SOTA
+dependency plan. The concrete objects are intentionally simple so the export
+path can be scripted later without inventing extra structure.
+
+| Conductor lane | Linear home | Notion home | Export intent |
 | --- | --- | --- | --- |
-| Notion | `notionctl` and `notion` | `pipx install notionctl` | create and maintain pages, databases, blocks, comments, users, teams, search, and raw Notion API calls |
-| Linear | `~/.cargo/bin/linear-cli` | `cargo install linear-cli` | manage issues, projects, documents, roadmaps, initiatives, milestones, labels, comments, and raw Linear GraphQL calls |
+| Citation metadata and paper packet | Project or initiative | `Roadmap Index` and `Decisions` | publication packet and authoring status |
+| Supply chain scorecard and SBOM | Project | `Release State` | CI, provenance, and evidence snapshots |
+| HPC packaging feasibility | Project or initiative | `HPC and ABI` | packaging notes and feasibility evidence |
+| ABI and Arrow interop feasibility | Project | `HPC and ABI` | contract notes and proof-of-concept evidence |
+| Community submission packets | Initiative | `Scientific Stewardship` and `Ecosystem Alignment` | review packets and maintainer actions |
+| Workspace automation export | Project | `Workspace Reviews` | review notes and exported snapshots |
 
-Authentication is external to the repo:
-
-```bash
-notion auth login
-~/.cargo/bin/linear-cli auth
-```
-
-`notionctl` can also use `NOTION_API_KEY`. `linear-cli` stores its Linear
-credentials through its own auth flow.
-
-## Linear Operating Model
-
-Use Linear for issue and roadmap execution. The recommended structure is:
-
-| Area | Linear object | Purpose |
-| --- | --- | --- |
-| Core runtime | Project or initiative | Rust core, ABI, profiling, and performance work |
-| Bindings | Project | Python, R, Julia, Rust, C#, Go, and TypeScript package work |
-| Scientific stewardship | Initiative | scikit-learn-contrib, pyOpenSci, rOpenSci, NumFOCUS, JOSS, speck/Spack, and EasyBuild readiness |
-| Ecosystem alignment | Initiative | Apache Arrow, PyPA, .NET Foundation, Julia communities, and R communities |
-| Release governance | Project | registry state, submission blockers, and post-publish verification |
-| Workspace operations | Project | Notion/Linear maintenance and review passes |
-
-Recommended labels:
+Recommended Linear labels for this lane:
 
 - `area:rust-core`
 - `area:bindings`
@@ -58,41 +49,95 @@ Recommended labels:
 - `target:julia`
 - `target:r`
 
-Ready-for-work issues should include:
+## Tooling And Authentication
 
-- linked Conductor track or doc page
-- acceptance criteria
-- validation command
-- owner or maintainer action if external
+The local environment already exposes `notionctl` and `notion`. Linear CLI is
+expected to be installed separately when the workspace export lane is active.
+The repo does not vendor either tool.
 
-Ready-for-review issues should include:
+| Tool | Install path | Authentication | Notes |
+| --- | --- | --- | --- |
+| Notion | `pipx install notionctl` or `uv tool install notionctl` | `notion auth login`, `NOTION_API_KEY`, or `--token` | `notionctl` and `notion` both expose the same CLI surface. |
+| Linear | `cargo install linear-cli` | `linear-cli auth login`, browser-based authorization, or `LINEAR_API_KEY` | Use `linear-cli auth status` before exporting. If your installed build differs, check `linear-cli --help` first. |
 
-- changed files
-- validation output
-- remaining blocker if any
-- whether external auth or registry action is required
+## Linear CLI Setup
 
-## Notion Operating Model
+The Linear CLI should be treated as a local operator tool. Keep the auth
+session external to the repo and use environment variables or the CLI keyring
+for reuse.
 
-Use Notion for curated knowledge, decision logs, and submission prep. The
-recommended top-level page is `mars Knowledge Base` with these child pages:
+Typical setup:
 
-| Page | Purpose |
-| --- | --- |
-| Roadmap Index | links to Conductor, docs, release metadata, and active community plans |
-| Scientific Stewardship | submission-readiness notes for scientific communities |
-| Ecosystem Alignment | Apache Arrow, PyPA, .NET Foundation, Julia, and R community positioning |
-| HPC and ABI | performance, ABI, Spack/EasyBuild, HPSF, and E4S notes |
-| Decisions | durable decisions with date, owner, context, and consequence |
-| Release State | human-readable mirror of `docs/release_metadata.json` |
-| Workspace Reviews | Linear and Notion review notes by phase |
+```bash
+cargo install linear-cli
+linear-cli auth login
+linear-cli auth status
+```
 
-Canonical content stays in the repo. Notion pages should link back to source
-docs instead of copying them wholesale.
+If the installed build supports browser-based authorization / PKCE, prefer the
+browser flow for interactive use and use an API key only for scripting:
+
+```bash
+export LINEAR_API_KEY="lin_api_..."
+```
+
+Workspace export guidance:
+
+```bash
+mkdir -p exports/linear
+linear-cli export csv -t <TEAM_KEY> -f exports/linear/issues.csv
+linear-cli export projects-csv -f exports/linear/projects.csv
+```
+
+Keep the export scope narrow:
+
+- issues for active lanes
+- projects for lane ownership
+- milestones for review gates
+- labels for taxonomy
+
+## Notion CLI Setup
+
+The Notion CLI is already available locally. Use it for authenticated page and
+database access, and keep the token out of the repository.
+
+Typical setup:
+
+```bash
+notion auth login
+notion auth status
+export NOTION_API_KEY="secret_..."
+```
+
+Workspace export guidance:
+
+```bash
+mkdir -p exports/notion
+notion search "mars" > exports/notion/search.json
+notion db get <DATABASE_ID> > exports/notion/database.json
+notion db query <DATABASE_ID> > exports/notion/roadmap.json
+notion page get <PAGE_ID> > exports/notion/page.json
+notion block get <PAGE_ID> > exports/notion/blocks.json
+```
+
+Use these commands to capture:
+
+- roadmap indices
+- release state mirrors
+- decisions and review notes
+- evidence pages and handoff summaries
+
+## Export Templates
+
+- `docs/templates/linear_workspace_export.md`
+- `docs/templates/notion_workspace_export.md`
+
+These templates are source-controlled skeletons only. They are safe to share
+because they do not contain secrets, workspace IDs, or tokens.
 
 ## Review Cadence
 
-The Linear/Notion workspace track uses four phases:
+The Linear / Notion workspace track uses four phases:
 
 1. Linear development
 2. Linear review
@@ -104,16 +149,38 @@ Each review should confirm:
 - the workspace structure maps back to Conductor tracks
 - no page or issue duplicates canonical repo docs
 - community targets are visible but not noisy
-- external blockers are marked as external, with owner/action/date
+- external blockers are marked as external, with owner, action, and date
 
-## Additional Recommendation
+## Status Flow
 
-Add generated workspace snapshots later, not now. Once Linear and Notion are
-authenticated, a small script can export the active Linear roadmap and Notion
-index into `docs/workspace_snapshot.md`. That should be read-only evidence, not
-a second planning system.
+Conductor remains the source of truth. Linear and Notion are mirrors that
+surface the current state to external collaborators.
 
-## References
+| Conductor state | Linear mapping | Notion mapping |
+| --- | --- | --- |
+| `new` | backlog issue or project intake | Roadmap Index note |
+| `in_progress` | active issue or project status | Workspace Reviews entry |
+| `blocked` | blocked label or project status | Decisions entry with owner and blocker |
+| `done` | completed issue or archived project | Release State mirror or review summary |
 
-- Notion CLI: local `notionctl --help`
-- Linear CLI: local `linear-cli --help`
+Use the Notion `Workspace Reviews` page for phase-by-phase notes and keep the
+Linear issue/project status aligned with the current Conductor checkpoint.
+
+## Validation
+
+The workspace lane should validate with:
+
+```bash
+uv run mkdocs build --strict
+notionctl --help
+linear-cli --help
+```
+
+If `linear-cli` is not installed in the current environment, document that as a
+local setup dependency rather than committing credentials.
+
+## Related Roadmap
+
+- [SOTA Dependency and Parallelization Plan](sota_dependency_parallelization_plan.md)
+- [Remaining Roadmap](remaining_roadmap.md)
+- [Community Submission Readiness](community_submission_readiness.md)

@@ -60,6 +60,7 @@ nav:
   - Binding Release: binding_release.md
   - Binding Backend Decisions: binding_backend_decisions.md
   - Binding ABI and API Contract: binding_abi_contract.md
+  - Binding ABI and Arrow Decision: binding_abi_arrow_decision.md
   - Release Metadata: release_metadata.json
   - CI and Quality Policy: ci_quality.md
   - Supply Chain Security: supply_chain.md

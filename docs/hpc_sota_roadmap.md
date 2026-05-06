@@ -1,9 +1,28 @@
 # SOTA HPC Roadmap
 
+This page is the lane-local roadmap for HPC packaging feasibility.
+
 The project is currently a portable scientific ML library with a Rust core. It
-is not yet an HPC runtime. This roadmap defines what would have to change before
-the project could credibly pursue HPSF, E4S, Spack, EasyBuild, or accelerator
-positioning.
+is not yet an HPC runtime. This roadmap defines the packaging and deployment
+work needed before the project could credibly pursue HPSF, E4S, Spack, or
+EasyBuild positioning.
+
+## Scope
+
+In scope for this lane:
+
+- packaging feasibility notes for Spack and EasyBuild
+- an optional conda-forge feasibility note
+- reproducible build and install smoke commands for Linux HPC-style systems
+- explicit assumptions about compilers, Python, Rust, and source tarballs
+
+Out of scope for this lane:
+
+- accelerator runtimes
+- GPU, TPU, or MPI enablement
+- public API changes
+- shared registry publishing work
+- changing the release naming model
 
 ## Current HPC State
 
@@ -18,6 +37,17 @@ positioning.
 | MPI/distributed | unsupported | no multi-node training or inference model |
 | HPC packaging | not packaged for Spack/EasyBuild yet | no package recipe or easyconfig feasibility note |
 
+## Packaging Artifacts
+
+The feasibility artifacts for this lane live under `packaging/` and stay
+isolated from runtime code and shared registry notes.
+
+| Target | Artifact | Purpose |
+| --- | --- | --- |
+| Spack | `packaging/spack/package.py` | proof-of-concept PythonPackage sketch and dependency notes |
+| EasyBuild | `packaging/easybuild/pymars-0.1.0.eb` | proof-of-concept easyconfig sketch and module-install notes |
+| conda-forge | `packaging/conda-forge/README.md` | optional feasibility note only; no staged-recipes submission in this lane |
+
 ## Near-Term Work
 
 These steps improve engineering maturity without changing the API:
@@ -28,6 +58,22 @@ These steps improve engineering maturity without changing the API:
 - document CPU parallelism options and decide whether Rayon is appropriate
 - add Spack and EasyBuild feasibility notes
 - add OpenSSF Scorecard and SBOM release evidence
+- keep packaging notes source-only and separate from runtime source files
+
+## Smoke Commands
+
+Use these commands to verify the packaging story in a clean Linux-like
+environment:
+
+- `uv sync --frozen`
+- `uv run pytest -q`
+- `cargo test --manifest-path rust-runtime/Cargo.toml`
+- `cargo build --manifest-path rust-runtime/Cargo.toml`
+- `python3 -m py_compile packaging/spack/package.py`
+- `spack spec` / `spack install --test=root` against the feasibility recipe once
+  a local Spack environment is available
+- `eb --check-consistency` / `eb --dry-run` against the easyconfig sketch once a
+  local EasyBuild environment is available
 
 ## Mid-Term Work
 
@@ -93,4 +139,15 @@ The ABI and Arrow work should be staged:
 - Spack packaging guide: https://spack.readthedocs.io/en/latest/packaging_guide_creation.html
 - EasyBuild: https://easybuild.io/
 - EasyBuild docs: https://docs.easybuild.io/
+- conda-forge: https://conda-forge.org/
 - Apache Arrow: https://arrow.apache.org/
+
+## External Packaging Assumptions
+
+- Linux-style toolchains are the first target.
+- Spack and EasyBuild feasibility here means source-installability, dependency
+  declaration, and smoke-testability, not upstream submission.
+- The package should remain buildable from source without accelerator runtimes.
+- Source tarballs or release archives should be stable enough for repeated
+  install tests.
+- Any conda-forge follow-up would need a separate community submission track.

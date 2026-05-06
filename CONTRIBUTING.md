@@ -20,7 +20,7 @@ Thank you for your interest in improving **pymars**! The project is a pure Pytho
 - Follow **PEP 8** and use type hints. Document modules, classes, functions, and methods with clear documentation explaining *why* things are done.
 - Run a linter such as `ruff` to catch style issues.
 - Write comments that focus on reasoning and motivation rather than line-by-line explanations.
-- Aim for minimal dependencies (typically NumPy and SciPy). List them in `requirements.txt` and `pyproject.toml`.
+- Aim for minimal dependencies (typically `numpy` and SciPy). List them in `requirements.txt` and `pyproject.toml`.
 
 ## Running Tests
 
@@ -53,6 +53,21 @@ Rscript tests/conformance.R
 julia --project=bindings/julia -e 'using Pkg; Pkg.instantiate(); Pkg.test()'
 dotnet test bindings/csharp/MarsRuntime.Tests/MarsRuntime.Tests.csproj
 ```
+
+## Governance and Support
+
+- Read [GOVERNANCE.md](GOVERNANCE.md) before proposing policy, release, or
+  submission changes.
+- Read [SUPPORT.md](SUPPORT.md) before opening a support request or reporting a
+  sensitive issue.
+- Read [docs/community_submission_readiness.md](docs/community_submission_readiness.md)
+  before preparing any external submission packet.
+- Read [docs/ecosystem_foundation_alignment.md](docs/ecosystem_foundation_alignment.md)
+  for the ecosystem-specific positioning behind PyPA, .NET Foundation, Julia,
+  and R.
+- Do not edit citation metadata from this lane; the citation pack is tracked
+  separately and should remain consistent with the release inventory and
+  community-readiness docs.
 
 ## Failure Triage
 

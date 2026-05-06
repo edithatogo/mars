@@ -1,0 +1,35 @@
+# EasyBuild feasibility sketch for pymars.
+#
+# This file records the source-install assumptions for HPC-style packaging and
+# keeps the lane isolated from runtime code and shared release registries.
+
+name = 'pymars'
+version = '0.1.0'
+
+homepage = 'https://github.com/edithatogo/mars'
+description = "Feasibility sketch for packaging pymars with EasyBuild."
+
+toolchain = {'name': 'foss', 'version': '2024a'}
+
+dependencies = [
+    ('Python', '3.10'),
+    ('NumPy', '1.26'),
+    ('SciPy', '1.13'),
+    ('scikit-learn', '1.5'),
+]
+
+sources = [
+    {
+        'filename': 'mars-earth-0.1.0.tar.gz',
+        'extract_cmd': 'tar xzf',
+    },
+]
+
+sanity_check_paths = {
+    'files': ['bin/python', 'lib/python/site-packages/pymars/__init__.py'],
+    'dirs': ['lib/python/site-packages/pymars'],
+}
+
+modextrapaths = {
+    'PYTHONPATH': 'lib/python/site-packages',
+}

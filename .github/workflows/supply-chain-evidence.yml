@@ -1,0 +1,74 @@
+name: Supply Chain Evidence
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 3 * * 1"
+
+concurrency:
+  group: supply-chain-evidence-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  scorecard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Run OpenSSF Scorecard
+        uses: ossf/scorecard-action@v2.4.3
+        with:
+          results_file: supply-chain-scorecard.sarif
+          results_format: sarif
+          repo_token: ${{ github.token }}
+          publish_results: false
+
+      - name: Upload Scorecard results
+        uses: actions/upload-artifact@v4
+        with:
+          name: supply-chain-scorecard
+          path: supply-chain-scorecard.sarif
+          retention-days: 14
+
+  sbom:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Generate repository SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          path: .
+          format: spdx-json
+          artifact-name: supply-chain-sbom
+          output-file: supply-chain-sbom.spdx.json
+          upload-artifact: true
+          upload-release-assets: false
+
+  provenance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Capture provenance evidence
+        run: |
+          mkdir -p supply-chain-evidence
+          {
+            echo "# Provenance evidence"
+            echo
+            echo "## Release workflow attestation lines"
+            rg -n "actions/attest@v4|attestations: write|id-token: write" .github/workflows/release.yml .github/workflows/release-rehearsal.yml
+            echo
+            echo "## Workflow checksums"
+            sha256sum .github/workflows/release.yml .github/workflows/release-rehearsal.yml
+          } > supply-chain-evidence/provenance.txt
+
+      - name: Upload provenance evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: supply-chain-provenance
+          path: supply-chain-evidence/provenance.txt
+          retention-days: 14

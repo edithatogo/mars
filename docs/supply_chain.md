@@ -3,6 +3,13 @@
 This page records the repo-level policy for dependency automation, secret
 scanning, and artifact provenance.
 
+The current evidence set is split into three repeatable checks:
+
+- OpenSSF Scorecard for repository health signals
+- SBOM generation for the repository and release inputs
+- provenance evidence collected from the release and release-rehearsal
+  workflows
+
 ## Dependency Automation
 
 - Renovate is the dependency automation source of truth for GitHub Actions and
@@ -35,3 +42,24 @@ scanning, and artifact provenance.
   ecosystem supports it.
 - The repo uses `actions/attest@v4` in release and rehearsal workflows for the
   built artifacts that can be attested directly.
+
+## Repeatable Evidence
+
+The repository keeps a dedicated evidence workflow at
+`.github/workflows/supply-chain-evidence.yml`.
+It is manual or scheduled, uses only read permissions, and produces three
+artifacts:
+
+- `supply-chain-scorecard.sarif` from OpenSSF Scorecard
+- `supply-chain-sbom.spdx.json` from the SBOM action
+- `supply-chain-provenance.txt` with the release workflow attestation lines and
+  workflow checksums
+
+This workflow is evidence wiring only. It does not change package publication,
+registry credentials, or release permissions.
+
+## Related Readiness
+
+- [Community Submission Readiness](community_submission_readiness.md)
+- [Ecosystem and Foundation Alignment](ecosystem_foundation_alignment.md)
+- [SOTA HPC Roadmap](hpc_sota_roadmap.md)

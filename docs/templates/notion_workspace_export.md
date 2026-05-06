@@ -1,0 +1,27 @@
+# Notion Workspace Export Template
+
+This template records the minimal fields needed to export the active Conductor
+lanes into Notion without duplicating canonical repository docs.
+
+## Top-Level Page
+
+- name:
+- purpose:
+- owner:
+
+## Child Pages
+
+- Roadmap Index:
+- Scientific Stewardship:
+- Ecosystem Alignment:
+- HPC and ABI:
+- Decisions:
+- Release State:
+- Workspace Reviews:
+
+## Export Notes
+
+- source doc:
+- dependency gate:
+- validation command:
+- external blocker:
