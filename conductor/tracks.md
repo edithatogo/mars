@@ -40,6 +40,8 @@ The remaining-track dependency gates are summarized in
   *Link: [./archive/r_package_publication_readiness_20260504/](./archive/r_package_publication_readiness_20260504/)*
 - [~] **Track: Publish packages to language package managers with release governance**
   *Link: [./tracks/package_publication_release_governance_20260428/](./tracks/package_publication_release_governance_20260428/)*
+- [ ] **Track: Starlight docs stack versioning and plugin governance**
+  *Link: [./tracks/starlight_docs_stack_versioning_and_plugins_20260506/](./tracks/starlight_docs_stack_versioning_and_plugins_20260506/)*
 - [x] **Track: Operator-facing diagnostics and uncertainty reporting**
   *Link: [./tracks/operator_facing_diagnostics_and_uncertainty_20260429/](./tracks/operator_facing_diagnostics_and_uncertainty_20260429/)*
 - [x] **Track: Rust core profiling and observability hardening**
