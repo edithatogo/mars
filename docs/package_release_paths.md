@@ -2,13 +2,16 @@
 
 This page documents the package-manager-specific release paths for the current
 binding surface. It is the policy source for the publication track and the
-release-rehearsal workflow.
+release-rehearsal workflow. The canonical machine-readable release metadata
+is [release_metadata.json](release_metadata.json).
 
 `mars-earth` is the public project brand for the whole package family. The
-canonical package matrix lives in [Release Inventory](release_inventory.md).
-Where an ecosystem requires a concrete package or module identifier, that
-identifier stays ecosystem-native, while the docs and release metadata should
-keep the shared `mars-earth` brand visible.
+canonical package matrix lives in [Release Inventory](release_inventory.md)
+and the canonical machine-readable metadata lives in
+[release_metadata.json](release_metadata.json). Where an ecosystem requires
+a concrete package or module identifier, that identifier stays
+ecosystem-native, while the docs and release metadata should keep the shared
+`mars-earth` brand visible.
 
 ## Release Criteria
 

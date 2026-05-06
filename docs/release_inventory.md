@@ -3,7 +3,8 @@
 This page records the current package identities, version sources, logging
 surface, and known release blockers across the supported language packages.
 It is the working inventory for the release-readiness and registry-governance
-tracks.
+tracks. The canonical machine-readable source of truth is
+[release_metadata.json](release_metadata.json).
 
 The public project brand is `mars-earth`. Language-specific package and module
 names remain ecosystem-native when a registry or toolchain requires them.

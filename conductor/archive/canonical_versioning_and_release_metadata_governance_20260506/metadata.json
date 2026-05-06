@@ -1,0 +1,8 @@
+{
+  "track_id": "canonical_versioning_and_release_metadata_governance_20260506",
+  "type": "chore",
+  "status": "completed",
+  "created_at": "2026-05-06T08:30:00Z",
+  "updated_at": "2026-05-06T11:36:16Z",
+  "description": "Create a canonical release metadata source and enforce versioning parity across the mars-earth package family"
+}

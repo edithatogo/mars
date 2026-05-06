@@ -16,7 +16,7 @@ This repo enforces a conservative quality gate:
 - R package build/check/manual validation when the R package is part of a
   release rehearsal
 - release rehearsal and artifact inspection
-- package alignment checks so docs and manifests stay in sync
+- package alignment checks so docs, manifests, and `release_metadata.json` stay in sync
 
 Recommended local Rust commands:
 

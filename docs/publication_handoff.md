@@ -1,7 +1,8 @@
 # Publication Handoff
 
 This page captures the remaining information needed to move from release
-readiness to actual publication.
+readiness to actual publication. The canonical machine-readable release
+metadata is [release_metadata.json](release_metadata.json).
 
 ## Required Inputs
 

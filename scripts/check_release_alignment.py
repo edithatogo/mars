@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Check that release docs and package manifests use the same package names."""
+"""Check that release docs, package manifests, and canonical release metadata align."""
 
 from __future__ import annotations
 
 import json
-import re
 import sys
 import tomllib
 import xml.etree.ElementTree as ET
@@ -17,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def main() -> int:
     errors: list[str] = []
 
+    errors.extend(check_canonical_release_metadata())
     errors.extend(check_manifest_names())
     errors.extend(check_release_inventory())
     errors.extend(check_package_paths())
@@ -28,6 +28,39 @@ def main() -> int:
 
     print("release alignment check passed")
     return 0
+
+
+def check_canonical_release_metadata() -> list[str]:
+    errors: list[str] = []
+    path = ROOT / "docs/release_metadata.json"
+    if not path.exists():
+        return ["docs/release_metadata.json is missing"]
+
+    data = json.loads(path.read_text())
+    if data.get("brand") != "mars-earth":
+        errors.append("docs/release_metadata.json brand must be mars-earth")
+
+    expected = {
+        "Python": ("mars-earth", "1.0.4"),
+        "Rust": ("mars-earth", "0.1.0"),
+        "R": ("marsruntime", "0.0.0"),
+        "Julia": ("MarsRuntime", "0.1.0"),
+        "C#": ("mars-earth", "0.0.0"),
+        "Go": ("github.com/edithatogo/mars/bindings/go", "0.1.0"),
+        "TypeScript": ("mars-earth", "0.0.0"),
+    }
+    packages = {item.get("language"): item for item in data.get("packages", [])}
+    for language, (package, version) in expected.items():
+        item = packages.get(language)
+        if item is None:
+            errors.append(f"docs/release_metadata.json missing package entry for {language}")
+            continue
+        if item.get("package") != package:
+            errors.append(f"docs/release_metadata.json {language} package must be {package}")
+        if item.get("version") != version:
+            errors.append(f"docs/release_metadata.json {language} version must be {version}")
+
+    return errors
 
 
 def check_manifest_names() -> list[str]:
