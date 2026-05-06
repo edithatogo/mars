@@ -130,6 +130,12 @@ class BasisTermSpec:
     @classmethod
     def from_dict(cls, payload: dict[str, Any]) -> BasisTermSpec:
         """Build a basis term spec from a dictionary payload."""
+        gcv_score = payload.get("gcv_score", 0.0)
+        if gcv_score is None:
+            gcv_score = 0.0
+        rss_score = payload.get("rss_score", 0.0)
+        if rss_score is None:
+            rss_score = 0.0
         return cls(
             kind=payload["kind"],
             variable_idx=payload.get("variable_idx"),
@@ -137,8 +143,8 @@ class BasisTermSpec:
             knot_val=payload.get("knot_val"),
             is_right_hinge=payload.get("is_right_hinge"),
             category=payload.get("category"),
-            gcv_score=float(payload.get("gcv_score", 0.0)),
-            rss_score=float(payload.get("rss_score", 0.0)),
+            gcv_score=float(gcv_score),
+            rss_score=float(rss_score),
             parent1=cls.from_dict(payload["parent1"])
             if payload.get("parent1") is not None
             else None,
@@ -327,6 +333,8 @@ def spec_to_model(payload: dict[str, Any], earth_cls: type[Any]) -> Any:
     """Rehydrate an Earth-compatible estimator from a portable spec."""
     payload = validate_model_spec(payload)
     params = copy.deepcopy(payload.get("params", {}))
+    params.pop("threshold", None)
+    params.pop("feature_names", None)
     if "allow_missing" not in params:
         params["allow_missing"] = any(
             term_payload.get("kind") in {"categorical", "missingness"}

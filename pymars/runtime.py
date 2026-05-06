@@ -2,10 +2,8 @@ from __future__ import annotations
 
 """Spec-driven runtime helpers for portable pymars models."""
 
-import contextlib
 import json
 import logging
-import os
 from pathlib import Path
 from typing import Any, cast
 
@@ -45,6 +43,14 @@ def load_model_spec(spec_or_path: dict[str, Any] | str | Path) -> dict[str, Any]
     if isinstance(spec_or_path, dict):
         return spec_or_path
 
+    if _rust_backend is not None:
+        try:
+            return spec_from_json(
+                _rust_backend.load_model_spec_canonical_json(str(spec_or_path))
+            )
+        except Exception:
+            pass
+
     if isinstance(spec_or_path, Path):
         return spec_from_json(spec_or_path.read_text())
 
@@ -63,9 +69,11 @@ def load_model(spec_or_path: dict[str, Any] | str | Path) -> Earth:
 def validate(spec_or_path: dict[str, Any] | str | Path) -> dict[str, Any]:
     """Validate and return a portable model spec."""
     spec = load_model_spec(spec_or_path)
-    if _rust_backend is not None and _spec_is_rust_runtime_compatible(spec):
-        with contextlib.suppress(Exception):
-            _rust_backend.validate_model_spec_json(spec_to_json(spec))
+    try:
+        if _validate_with_rust(spec):
+            return spec
+    except ValueError:
+        pass
     validate_model_spec(spec)
     return spec
 
@@ -73,61 +81,58 @@ def validate(spec_or_path: dict[str, Any] | str | Path) -> dict[str, Any]:
 def save_model(model_or_spec: Earth | dict[str, Any], path: str | Path) -> Path:
     """Save a fitted model or normalized spec to a JSON file."""
     target = Path(path)
+    target.write_text(export_model_json(model_or_spec))
+    return target
+
+
+def export_model_json(model_or_spec: Earth | dict[str, Any]) -> str:
+    """Export a fitted model or normalized spec as canonical JSON."""
     spec = (
         model_to_spec(model_or_spec)
         if isinstance(model_or_spec, Earth)
         else model_or_spec
     )
-    target.write_text(spec_to_json(spec))
-    return target
+    if _rust_backend is not None and _spec_is_rust_runtime_compatible(spec):
+        return cast("str", _rust_backend.export_model_json(spec_to_json(spec)))
+    return spec_to_json(spec)
 
 
 def fit_model(
     model: Earth, X: Any, y: Any, sample_weight: Any | None = None
 ) -> Earth | None:
-    """Fit an Earth model through the Rust training bridge when enabled."""
+    """Fit an Earth model through the Rust training bridge when available."""
     if _rust_backend is None:
         return None
-    if os.environ.get("PYMARS_USE_RUST_TRAINING", "").strip().lower() not in {
-        "1",
-        "true",
-        "yes",
-        "on",
-    }:
-        return None
-    try:
-        rows = _coerce_rows_for_rust(X)
-        y_values = cast("list[float]", np.asarray(y, dtype=float).reshape(-1).tolist())
-        weights = None
-        if sample_weight is not None:
-            weights = cast(
-                "list[float]",
-                np.asarray(sample_weight, dtype=float).reshape(-1).tolist(),
-            )
-        feature_names = getattr(model, "feature_names_in_", None)
-        feature_names_list = None
-        if feature_names is not None:
-            feature_names_list = list(feature_names)
-        payload: dict[str, Any] = {
-            "x": rows,
-            "y": y_values,
-            "sample_weight": weights,
-            "params": {
-                "max_terms": model.max_terms or max(2, 2 * len(rows[0]) + 1),
-                "max_degree": model.max_degree,
-                "penalty": model.penalty,
-                "minspan": model.minspan,
-                "endspan": model.endspan,
-                "threshold": 0.001,
-                "allow_linear": model.allow_linear,
-                "allow_missing": model.allow_missing,
-                "categorical_features": list(model.categorical_features or []),
-                "feature_names": feature_names_list,
-            },
-        }
-        trained_spec_json = _rust_backend.fit_model_json(spec_to_json(payload))
-    except Exception:
-        return None
+    rows = _coerce_rows_for_rust(X)
+    y_values = cast("list[float]", np.asarray(y, dtype=float).reshape(-1).tolist())
+    weights = None
+    if sample_weight is not None:
+        weights = cast(
+            "list[float]",
+            np.asarray(sample_weight, dtype=float).reshape(-1).tolist(),
+        )
+    feature_names = getattr(model, "feature_names_in_", None)
+    feature_names_list = None
+    if feature_names is not None:
+        feature_names_list = list(feature_names)
+    payload: dict[str, Any] = {
+        "x": rows,
+        "y": y_values,
+        "sample_weight": weights,
+        "params": {
+            "max_terms": model.max_terms or max(2, 2 * len(rows[0]) + 1),
+            "max_degree": model.max_degree,
+            "penalty": model.penalty,
+            "minspan": model.minspan,
+            "endspan": model.endspan,
+            "threshold": 0.001,
+            "allow_linear": model.allow_linear,
+            "allow_missing": model.allow_missing,
+            "categorical_features": list(model.categorical_features or []),
+            "feature_names": feature_names_list,
+        },
+    }
+    trained_spec_json = _rust_backend.fit_model_json(spec_to_json(payload))
 
     from ._model_spec import spec_to_model
 
@@ -140,20 +145,9 @@ def fit_model(
 def predict(spec_or_path: dict[str, Any] | str | Path, X: Any) -> np.ndarray:
     """Predict using a portable model spec."""
     spec = load_model_spec(spec_or_path)
-    if _rust_backend is not None and _spec_is_rust_runtime_compatible(spec):
-        try:
-            rows = _coerce_rows_for_rust(X)
-        except (TypeError, ValueError):
-            rows = None
-        if rows is not None:
-            with contextlib.suppress(Exception):
-                return cast(
-                    "np.ndarray",
-                    np.asarray(
-                        _rust_backend.predict_json(spec_to_json(spec), rows),
-                        dtype=float,
-                    ),
-                )
+    rust_prediction = _predict_with_rust(spec, X)
+    if rust_prediction is not None:
+        return rust_prediction
     model = load_model(spec)
     return cast("np.ndarray", model.predict(X))
 
@@ -161,20 +155,9 @@ def predict(spec_or_path: dict[str, Any] | str | Path, X: Any) -> np.ndarray:
 def design_matrix(spec_or_path: dict[str, Any] | str | Path, X: Any) -> np.ndarray:
     """Build the basis matrix for a portable model spec."""
     spec = load_model_spec(spec_or_path)
-    if _rust_backend is not None and _spec_is_rust_runtime_compatible(spec):
-        try:
-            rows = _coerce_rows_for_rust(X)
-        except (TypeError, ValueError):
-            rows = None
-        if rows is not None:
-            with contextlib.suppress(Exception):
-                return cast(
-                    "np.ndarray",
-                    np.asarray(
-                        _rust_backend.design_matrix_json(spec_to_json(spec), rows),
-                        dtype=float,
-                    ),
-                )
+    rust_matrix = _design_matrix_with_rust(spec, X)
+    if rust_matrix is not None:
+        return rust_matrix
     model = load_model(spec)
     X_processed, missing_mask = model._prepare_prediction_data(X)
     basis = model.basis_
@@ -186,12 +169,9 @@ def design_matrix(spec_or_path: dict[str, Any] | str | Path, X: Any) -> np.ndarr
 def inspect(spec_or_path: dict[str, Any] | str | Path) -> dict[str, Any]:
     """Return a normalized view of a portable model spec."""
     spec = load_model_spec(spec_or_path)
-    if _rust_backend is not None and _spec_is_rust_runtime_compatible(spec):
-        with contextlib.suppress(Exception):
-            return cast(
-                "dict[str, Any]",
-                json.loads(_rust_backend.inspect_model_spec_json(spec_to_json(spec))),
-            )
+    rust_summary = _inspect_with_rust(spec)
+    if rust_summary is not None:
+        return rust_summary
     return {
         "spec_version": spec.get("spec_version"),
         "model_type": spec.get("model_type"),
@@ -199,6 +179,74 @@ def inspect(spec_or_path: dict[str, Any] | str | Path) -> dict[str, Any]:
         "n_basis_terms": len(spec.get("basis_terms", [])),
         "metrics": spec.get("metrics", {}),
     }
+
+
+def _validate_with_rust(spec: dict[str, Any]) -> bool:
+    """Validate a portable spec with the Rust backend if possible."""
+    if _rust_backend is None:
+        return False
+    if not _spec_is_rust_runtime_compatible(spec):
+        return False
+    _rust_backend.validate_model_spec_json(spec_to_json(spec))
+    return True
+
+
+def _inspect_with_rust(spec: dict[str, Any]) -> dict[str, Any] | None:
+    """Inspect a portable spec with the Rust backend if possible."""
+    if _rust_backend is None:
+        return None
+    if not _spec_is_rust_runtime_compatible(spec):
+        return None
+    return cast(
+        "dict[str, Any]",
+        json.loads(_rust_backend.inspect_model_spec_json(spec_to_json(spec))),
+    )
+
+
+def _predict_with_rust(spec: dict[str, Any], X: Any) -> np.ndarray | None:
+    """Predict through Rust when the runtime and inputs are compatible."""
+    if not _spec_is_rust_runtime_compatible(spec):
+        return None
+    if _rust_backend is None:
+        return None
+    try:
+        rows = _coerce_rows_for_rust(X)
+    except (TypeError, ValueError):
+        return None
+    return cast(
+        "np.ndarray",
+        np.asarray(
+            _rust_backend.predict_json(spec_to_json(spec), rows),
+            dtype=float,
+        ),
+    )
+
+
+def _design_matrix_with_rust(spec: dict[str, Any], X: Any) -> np.ndarray | None:
+    """Build a basis matrix through Rust when the runtime and inputs are compatible."""
+    if not _spec_is_rust_runtime_compatible(spec):
+        return None
+    if _rust_backend is None:
+        return None
+    try:
+        rows = _coerce_rows_for_rust(X)
+    except (TypeError, ValueError):
+        return None
+    return cast(
+        "np.ndarray",
+        np.asarray(
+            _rust_backend.design_matrix_json(spec_to_json(spec), rows),
+            dtype=float,
+        ),
+    )
+
+
+def _coerce_rows_for_rust(X: Any) -> list[list[float]]:
+    """Coerce runtime input to a Rust-friendly row-major float matrix."""
+    rows = np.asarray(X, dtype=float)
+    if rows.ndim != 2:
+        raise ValueError("X must be a 2D array-like input for runtime evaluation.")
+    return cast("list[list[float]]", rows.tolist())
 
 
 def _spec_is_rust_runtime_compatible(spec: dict[str, Any]) -> bool:
@@ -222,11 +270,3 @@ def _spec_is_rust_runtime_compatible(spec: dict[str, Any]) -> bool:
                 return False
 
     return True
-
-
-def _coerce_rows_for_rust(X: Any) -> list[list[float]]:
-    """Coerce runtime input to a Rust-friendly row-major float matrix."""
-    rows = np.asarray(X, dtype=float)
-    if rows.ndim != 2:
-        raise ValueError("X must be a 2D array-like input for runtime evaluation.")
-    return cast("list[list[float]]", rows.tolist())

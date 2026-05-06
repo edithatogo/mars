@@ -3,7 +3,6 @@
 from pathlib import Path
 
 import numpy as np
-import pytest
 
 from pymars import Earth
 
@@ -52,12 +51,8 @@ def test_rust_backed_exports_compatible_model_spec():
     np.testing.assert_almost_equal(y_pred1, y_pred2, decimal=10)
 
 
-def test_rust_routing_environment_flag_does_not_break_python_fit(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """An opt-in training flag should not break the Python fallback path."""
-    monkeypatch.setenv("PYMARS_USE_RUST_TRAINING", "1")
-
+def test_rust_routing_does_not_break_python_fit() -> None:
+    """Rust-backed training routing should not break the Python fallback path."""
     X = np.array([[0.0], [1.0], [2.0]])
     y = np.array([1.0, 3.0, 5.0])
 

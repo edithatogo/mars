@@ -1,0 +1,97 @@
+# Rust Core Ownership Boundary
+
+This track defines the migration boundary for the remaining `pymars` core.
+It does not change the public API. It records which responsibilities are Rust-owned
+already, which remain in Python as adapter glue, and what evidence is required
+before a migration slice can retire fallback behavior.
+
+## Rust-owned behavior
+
+Rust is the authoritative implementation for the portable runtime boundary:
+
+- canonical portable spec loading and export normalization through
+  `load_model_spec_str`, `load_model_spec_path`, and the Rust-backed export
+  helper for JSON strings and file paths
+- `design_matrix` for portable basis evaluation
+- `predict` for portable replay and point prediction
+- `inspect` for portable spec metadata summaries on compatible specs
+- baseline Rust training entrypoints for supported cases
+- CLI and native bridge surfaces used by host-language bindings
+
+## Python adapter-only behavior
+
+Python remains responsible for the stable import surface and migration glue:
+
+- `import pymars as earth` and `earth.Earth(...)`
+- scikit-learn estimator compliance and parameter plumbing
+- input coercion and compatibility validation before handing off to Rust
+- portable spec loading wrappers around the canonical Rust helpers for dict
+  inputs, plus validation and reconstruction wrappers
+- explicit fallback when the compiled backend is unavailable
+- explicit fallback for unsupported training or runtime cases while parity is incomplete
+- the `pymars.inspect(...)` adapter that uses the Rust path for compatible
+  specs
+- export/load wrappers around the portable `ModelSpec`
+- diagnostics and summary helpers that depend on Python-side estimator state
+
+## Transitional fallback points
+
+These are the places where Python still changes behavior during the migration:
+
+- `pymars.runtime.fit_model(...)` falls back to Python when the Rust backend is
+  unavailable or rejects the training request
+- `pymars.runtime.predict(...)` and `pymars.runtime.design_matrix(...)` fall back
+  to Python when the spec is not Rust-compatible or the native bridge fails
+- `pymars.runtime.validate(...)` keeps Python validation and loading as the
+  final authority after an optional Rust compatibility check
+- `pymars.runtime.export_model_json(...)` and `pymars.runtime.save_model(...)`
+  use the Rust export normalization path for compatible specs, then fall back
+  to the existing Python serializer when the bridge is unavailable
+- `pymars.inspect(...)` uses the Rust-backed metadata slice for compatible
+  specs and falls back to Python adapter behavior otherwise
+- `pymars.Earth.fit(...)` still owns unsupported edge handling and estimator
+  compatibility behavior around the runtime bridge
+
+Fallback removal conditions:
+
+- the Rust path produces fixture-equivalent output for the supported slice
+- the fallback behavior is no longer needed for compatibility with missing native
+  builds or explicitly unsupported cases
+- the release docs and host-language bindings no longer rely on the Python branch
+  for the migrated behavior
+
+## API stability constraints
+
+The migration must preserve the current contract:
+
+- `pymars` stays the import surface
+- `Earth` stays the estimator class
+- sklearn-compatible constructor, fit, predict, and parameter behavior stay intact
+- `ModelSpec` versioning stays compatible with the current `1.0` contract unless
+  a dedicated schema migration track changes it
+- exported JSON/dict payloads keep their current top-level shape
+- JSON export normalization stays stable for supported portable specs
+- transitional gates stay explicit and documented
+- supported portable specs route through Rust first, with Python used only for
+  explicit unsupported or missing-native cases
+- no new user-facing model semantics are introduced during ownership transfer
+
+## Evidence needed for a migration slice
+
+A slice can only be considered ready when the following are available:
+
+- fixture-backed parity tests for the migrated path
+- export/load/predict round-trip coverage for the moved behavior
+- negative tests proving unsupported cases still fail or fall back explicitly
+- confirmation that the Python public API did not change
+- documentation updates that describe the new ownership boundary
+- if the slice touches training, a local or CI validation run that exercises the
+  relevant training/export path end to end
+
+## Current boundary summary
+
+The practical migration boundary is:
+
+- Rust owns portable evaluation and the supported baseline training path
+- Python owns compatibility glue, unsupported-case fallback, and the public
+  estimator surface until the migration slices prove parity

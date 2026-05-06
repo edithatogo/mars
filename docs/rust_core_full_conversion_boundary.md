@@ -9,16 +9,20 @@ core behavior.
 Python still owns these core-adjacent responsibilities:
 
 - runtime helper glue in `pymars/runtime.py`
-  - loading portable specs from JSON text, paths, and mapping objects
-  - saving fitted models to portable JSON
-  - the opt-in Rust training bridge guarded by `PYMARS_USE_RUST_TRAINING`
-  - Rust-runtime compatibility checks and row coercion
-  - replay fallbacks for `predict` and `design_matrix`
+  - Rust-first portable model export serialization for fitted specs, with
+    Python fallback only for unsupported or missing-native cases
+  - Rust-first `validate`, `inspect`, `predict`, and `design_matrix` dispatch
+    for portable specs, with Python fallback only for unsupported or
+    missing-native cases
+  - the Rust-first training bridge, with Python fallback only for unsupported
+    or missing-native cases
+  - row coercion for Rust-backed runtime evaluation
 - training orchestration and export logic in `pymars/earth.py`
   - input scrubbing and missing-value handling
   - categorical preprocessing and imputer setup
   - the Python fallback model path used when Rust fitting is unavailable
-  - `predict`, `export_model`, `from_model`, and diagnostics helpers
+  - `export_model`, `from_model`, and diagnostics helpers
+  - prediction fallback only when Rust-backed portable replay is unavailable
 - portable-spec validation and reconstruction helpers in `pymars/_model_spec.py`
   - schema validation
   - conversion between `Earth` objects and portable specs
@@ -28,7 +32,16 @@ Python still owns these core-adjacent responsibilities:
 
 Rust is already the authoritative owner for:
 
-- portable spec validation through the native runtime when compatible
+- portable spec loading through the canonical Rust-backed
+  `load_model_spec_json_or_path` helper for JSON strings and file paths, with
+  `load_model_spec_str` and `load_model_spec_path` as the lower-level Rust
+  entry points
+- portable model export serialization for compatible specs through the Rust
+  runtime bridge
+- portable spec validation through the Rust runtime bridge, with Python used
+  only as a fallback for unsupported or missing-native cases
+- portable `inspect` metadata summaries for compatible specs through the
+  native runtime
 - `design_matrix`
 - `predict`
 - the supported Rust-backed training slices exposed through `fit`
@@ -39,8 +52,14 @@ Python remains an adapter layer for:
 
 - import compatibility and the public `pymars.Earth` surface
 - lightweight JSON/spec glue
-- environment-gated training fallback during the conversion
-- runtime replay fallback for unsupported or incompatible specs
+- portable model export fallback for backend errors
+- portable spec loading handoff for dict inputs and backend fallback cases;
+  `pymars.runtime.load_model_spec` routes JSON strings and file paths through
+  Rust first
+- portable spec validation and reconstruction helpers in `pymars/_model_spec.py`
+- Rust-first training fallback during the conversion when the backend rejects
+  a request or is unavailable
+- runtime replay fallback for unsupported or backend-rejected specs
 - feature-importance and summary helpers that still read the Python model
   object state
 
@@ -49,13 +68,18 @@ Python remains an adapter layer for:
 The deliberate fallback points that remain documented in code are:
 
 - `pymars.runtime.validate` falls back to Python validation if Rust cannot
-  validate the spec
+  validate the spec or the spec is not Rust-compatible
+- `pymars.inspect` uses the Rust-backed metadata slice first and falls back to
+  Python adapter behavior if the spec is not Rust-compatible or the backend is
+  unavailable
 - `pymars.runtime.predict` and `design_matrix` fall back to Python replay for
-  unsupported specs or missing runtime support
-- `pymars.runtime.fit_model` is opt-in and returns `None` when Rust training is
-  disabled or unavailable
-- `pymars.Earth.fit` uses Python orchestration when the Rust bridge does not
-  produce a trained spec
+  unsupported inputs or missing runtime support
+- `pymars.runtime.fit_model` returns `None` when Rust training is unavailable
+  and otherwise lets supported Rust training failures surface
+- `pymars.Earth.fit` uses Python orchestration when the Rust bridge is
+  unavailable
+- `pymars.Earth.predict` uses the Rust-backed portable replay path first and
+  falls back to the reconstructed Python model only when needed
 - host-language bindings use their own CLI fallback paths only when the Rust
   runtime binary is missing or incompatible
 

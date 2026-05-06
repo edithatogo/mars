@@ -11,7 +11,7 @@ import numpy as np
 from sklearn.base import BaseEstimator, RegressorMixin
 
 from ._basis import ConstantBasisFunction
-from ._model_spec import model_to_spec, spec_to_json, spec_to_model
+from ._model_spec import model_to_spec, spec_to_model
 from ._util import (
     calculate_gcv,
     gcv_penalty_cost_effective_parameters,
@@ -693,6 +693,12 @@ class Earth(BaseEstimator, RegressorMixin):
                 "Model record is not available despite the model being fitted."
             )
 
+        from . import runtime as runtime_helpers
+
+        rust_prediction = runtime_helpers._predict_with_rust(self.get_model_spec(), X)
+        if rust_prediction is not None:
+            return rust_prediction
+
         X_predict_processed, predict_missing_mask = self._prepare_prediction_data(X)
 
         if not basis:
@@ -761,7 +767,9 @@ class Earth(BaseEstimator, RegressorMixin):
         if format == "dict":
             return spec
         if format == "json":
-            return spec_to_json(spec)
+            from . import runtime as runtime_helpers
+
+            return runtime_helpers.export_model_json(spec)
         raise ValueError("format must be 'json' or 'dict'")
 
     @classmethod

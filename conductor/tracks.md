@@ -6,9 +6,9 @@ The remaining-track dependency gates are summarized in
 
 ---
 
-- [x] **Track: Complete MARS algorithm implementation with full scikit-learn compatibility**
+- [x] **Track: Complete mars algorithm implementation with full scikit-learn compatibility**
   *Link: [./tracks/complete_mars_implementation_20260411/](./tracks/complete_mars_implementation_20260411/)*
-- [x] **Track: Strict Ruff, Strict Typing, >90% Coverage**
+- [x] **Track: Strict ruff, Strict Typing, >90% Coverage**
   *Link: [./tracks/strict_ruff_typing_coverage_20260414/](./tracks/strict_ruff_typing_coverage_20260414/)*
 - [x] **Track: Estimator maturity hardening**
   *Link: [./tracks/estimator_maturity_hardening_20260420/](./tracks/estimator_maturity_hardening_20260420/)*
@@ -24,21 +24,27 @@ The remaining-track dependency gates are summarized in
   *Link: [./tracks/rust_core_multi_language_bindings_20260427/](./tracks/rust_core_multi_language_bindings_20260427/)*
 - [x] **Track: Shared binding conformance harness**
   *Link: [./tracks/shared_binding_conformance_harness_20260428/](./tracks/shared_binding_conformance_harness_20260428/)*
-- [x] **Track: Portable runtime binding MVPs**
+- [x] **Track: Portable runtime binding packages**
   *Link: [./tracks/portable_runtime_binding_mvps_20260428/](./tracks/portable_runtime_binding_mvps_20260428/)*
 - [x] **Track: Rust training core migration after bindings**
   *Link: [./tracks/rust_training_core_migration_after_bindings_20260428/](./tracks/rust_training_core_migration_after_bindings_20260428/)*
-- [x] **Track: Replace MVP replay bindings with Rust-backed language bindings**
+- [~] **Track: Replace MVP replay bindings with Rust-backed language bindings**
   *Link: [./archive/rust_backed_language_bindings_20260428/](./archive/rust_backed_language_bindings_20260428/)*
 - [x] **Track: Harden CI/CD, quality gates, security checks, and automation**
   *Link: [./archive/ci_quality_automation_hardening_20260428/](./archive/ci_quality_automation_hardening_20260428/)*
 - [~] **Track: Prepare release readiness and registry governance**
   *Link: [./tracks/release_readiness_registry_governance_20260428/](./tracks/release_readiness_registry_governance_20260428/)*
-- [x] **Track: Advance Rust training orchestration and Python integration**
+- [~] **Track: Advance Rust training orchestration and Python integration**
   *Link: [./tracks/rust_training_orchestration_python_integration_20260428/](./tracks/rust_training_orchestration_python_integration_20260428/)*
-- [ ] **Track: R package publication readiness**
+- [~] **Track: R package publication readiness**
   *Link: [./tracks/r_package_publication_readiness_20260504/](./tracks/r_package_publication_readiness_20260504/)*
 - [~] **Track: Publish packages to language package managers with release governance**
   *Link: [./tracks/package_publication_release_governance_20260428/](./tracks/package_publication_release_governance_20260428/)*
 - [x] **Track: Operator-facing diagnostics and uncertainty reporting**
   *Link: [./tracks/operator_facing_diagnostics_and_uncertainty_20260429/](./tracks/operator_facing_diagnostics_and_uncertainty_20260429/)*
+- [~] **Track: Rust core profiling and observability hardening**
+  *Link: [./tracks/rust_core_profiling_observability_20260504/](./tracks/rust_core_profiling_observability_20260504/)*
+- [x] **Track: Rust core full conversion and Python boundary retirement**
+  *Link: [./archive/rust_core_full_conversion_20260505/](./archive/rust_core_full_conversion_20260505/)*
+- [~] **Track: mars / earth parity audit**
+  *Link: [./tracks/mars_earth_parity_audit_20260505/](./tracks/mars_earth_parity_audit_20260505/)*
