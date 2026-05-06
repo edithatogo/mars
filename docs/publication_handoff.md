@@ -13,15 +13,15 @@ readiness to actual publication.
 | NuGet `mars-earth` | Nothing further unless you change the publish path | `NuGet/login@v1` short-lived API key exchange | Published |
 | Go module | Signed annotated tag policy and who signs/reviews release tags | Repository policy / release checklist | Published via `bindings/go/v0.1.0` tag |
 | R `marsruntime` | r-universe / CRAN submission path and maintainer account details | Release checklist and maintainer notes | Package help, vignette, and manual build path are complete; awaiting external submission |
-| Julia `MarsRuntime` | Registration submitted through Registrator.jl; package-local license files added; auto-merge checks passed and the PR is waiting out the mandatory period | Release checklist and maintainer notes | Submitted; waiting period active |
+| Julia `MarsRuntime` | Registration submitted through Registrator.jl; package-local license files added; release notes retriggered; auto-merge checks passed and the PR is waiting out the mandatory period | Release checklist and maintainer notes | Submitted; waiting period active |
 
 ## How to Provide It
 
 - Put secret values into GitHub Actions secret settings, not in the repository.
 - Reply with the R submission-path details when you are ready to move that
   package through r-universe or CRAN. Julia remains on the General registry
-  path after the package-local license fix; it is now waiting out the
-  mandatory merge period.
+  path after the package-local license fix and release-note retrigger; it is
+  now waiting out the mandatory merge period.
 
 ## Once Set
 

@@ -70,6 +70,9 @@ marsruntime
 npm
 pymars
 r-universe
+reregister
+retrigger
+retriggered
 ruff
 scikit-learn
 astro
