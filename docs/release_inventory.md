@@ -15,7 +15,7 @@ names remain ecosystem-native when a registry or toolchain requires them.
 | Python | `mars-earth` / `pymars` import name | `pyproject.toml` + `pymars/__init__.py` | `logging` module in package code and CLI | Published on PyPI as `1.0.4`; trusted publishing and workflow wiring are already configured |
 | Rust | `mars-earth` | `rust-runtime/Cargo.toml` | Rust logging is not yet centralized | Published on crates.io as `0.1.0`; native extension source remains |
 | R | `marsruntime` | `bindings/r/DESCRIPTION` | Host errors are surfaced from runtime helpers | Runtime replay package with package-level help, vignette, manual build path, and CRAN-safe checks complete; ready for external submission |
-| Julia | `MarsRuntime` | `bindings/julia/Project.toml` | Host errors are surfaced from runtime helpers | Registration submitted to Julia General; package-local license files added; awaiting registry review refresh |
+| Julia | `MarsRuntime` | `bindings/julia/Project.toml` | Host errors are surfaced from runtime helpers | Registration submitted to Julia General; package-local license files added; auto-merge checks passed and the PR is waiting out the mandatory period |
 | C# | `mars-earth` | `bindings/csharp/MarsRuntime.csproj` | Host exceptions from runtime bridge/helpers | Published on NuGet as `0.0.0` |
 | Go | `github.com/edithatogo/mars/bindings/go` | `bindings/go/go.mod` | Host errors from runtime bridge/helpers | Published via signed annotated `bindings/go/v0.1.0` tag; release is tag-driven |
 | TypeScript | `mars-earth` | `bindings/typescript/package.json` | JavaScript exceptions from runtime helpers | Published on npm as `0.0.0` |
@@ -25,7 +25,7 @@ names remain ecosystem-native when a registry or toolchain requires them.
 | Package | Owner / credential status | Action | Status | Date |
 | --- | --- | --- | --- | --- |
 | R `marsruntime` | Maintainer-owned package name; r-universe / CRAN requirements verified locally | Confirm external submission path and maintainer review steps | Ready for submission | 2026-05-06 |
-| Julia `MarsRuntime` | Maintainer-owned package name; registration submitted to Julia General | Await General review and merge | Submitted; manual review requested after adding package-local license files | 2026-05-04 |
+| Julia `MarsRuntime` | Maintainer-owned package name; registration submitted to Julia General | Await General review and merge | Submitted; auto-merge checks passed and the PR is waiting out the mandatory period | 2026-05-04 |
 
 ## Registry Audit Results
 
@@ -40,7 +40,7 @@ The public registry-name audit has been run against the current package set.
 | NuGet `mars-earth` | Present | [NuGet package page](https://www.nuget.org/packages/mars-earth) | Package is live as `0.0.0` |
 | Go module path | Controlled by repository tags | `bindings/go/go.mod` | Keep the module path aligned with signed `bindings/go/v<version>` tags; `bindings/go/v0.1.0` has been published |
 | R `marsruntime` | Not published in a public registry yet | `bindings/r/DESCRIPTION` | Locally complete; ready for r-universe submission and later CRAN review |
-| Julia `MarsRuntime` | Not published in a public registry yet; registration PR open and manual review requested | `bindings/julia/Project.toml` | Await General review and merge |
+| Julia `MarsRuntime` | Not published in a public registry yet; registration PR open and auto-merge waiting period active | `bindings/julia/Project.toml` | Await General review and merge |
 
 ## Parity Notes
 
@@ -51,7 +51,7 @@ The public registry-name audit has been run against the current package set.
 - Registry ownership and credentials are no longer blockers for PyPI, crates.io,
   npm, or NuGet. R is ready for submission, Go is a documented tag-driven
   release policy, and Julia is submitted with package-local license files and
-  is awaiting registry review.
+  auto-merge checks passed; the PR is waiting out the mandatory period.
 
 ## Next Steps
 
