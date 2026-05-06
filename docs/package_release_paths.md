@@ -98,9 +98,9 @@ keep the shared `mars-earth` brand visible.
 
 - Registry: Go modules.
 - Release path: publish by signed repository tag rather than by registry push.
-- Tag policy: create a signed annotated tag named `go-v<version>` from the
-  repository default branch after the release rehearsal passes and the version
-  has been recorded in the release inventory.
+- Tag policy: create a signed annotated tag named `bindings/go/v<version>` from
+  the repository default branch after the release rehearsal passes and the
+  version has been recorded in the release inventory.
 - Rehearse with `go test`, `go mod verify`, and module metadata inspection.
 
 ## Rollback, Yank, and Deprecation

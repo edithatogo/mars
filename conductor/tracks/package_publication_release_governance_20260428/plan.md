@@ -16,12 +16,12 @@
 
 ## Phase 1: Automated Registry Publication
 
-- [~] Task: Publish approved automated registry packages
+- [x] Task: Publish approved automated registry packages
     - [x] Publish Python package to PyPI
     - [x] Publish Rust crate to crates.io
     - [x] Publish TypeScript package to npm
     - [x] Publish C# package to NuGet
-    - [ ] Publish Go module through a signed repository tag
+    - [x] Publish Go module through a signed repository tag
 - [x] Task: Verify automated registry packages
     - [x] Install each package from its registry
     - [x] Run smoke tests against the shared conformance fixture

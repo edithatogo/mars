@@ -40,7 +40,8 @@ confirm or configure:
   crates.io, npm, and NuGet paths against the release inventory.
 - If a Julia follow-up is needed later, check the open General registration PR
   in the release inventory rather than re-running the initial Registrator flow.
-- Go release is tag-driven via signed annotated tags named `go-v<version>`.
+- Go release is tag-driven via signed annotated tags named
+  `bindings/go/v<version>`; `bindings/go/v0.1.0` is already published.
 
 ## Before Publishing
 

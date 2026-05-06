@@ -11,7 +11,7 @@ readiness to actual publication.
 | crates.io `mars-earth` | No further action unless you republish or change ownership | `CARGO_REGISTRY_TOKEN` in GitHub Actions | Published |
 | npm `mars-earth` | Nothing further unless you change the publish path | `NPM_TOKEN` (automation token) or npm trusted publishing | Published |
 | NuGet `mars-earth` | Nothing further unless you change the publish path | `NuGet/login@v1` short-lived API key exchange | Published |
-| Go module | Signed annotated tag policy and who signs/reviews release tags | Repository policy / release checklist | Policy confirmed |
+| Go module | Signed annotated tag policy and who signs/reviews release tags | Repository policy / release checklist | Published via `bindings/go/v0.1.0` tag |
 | R `marsruntime` | r-universe / CRAN submission path and maintainer account details | Release checklist and maintainer notes | Package help, vignette, and manual build path are complete; awaiting external submission |
 | Julia `MarsRuntime` | Registration submitted through Registrator.jl; awaiting General review | Release checklist and maintainer notes | Submitted |
 
