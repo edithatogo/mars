@@ -2,16 +2,16 @@
 
 ## Phase 0: Release Readiness Handoff
 
-- [~] Task: Verify release-readiness prerequisites [blocker: Julia awaiting General review, 2026-05-04]
-    - [~] Confirm release-readiness track is complete [blocker: Julia awaiting General review]
+- [~] Task: Verify release-readiness prerequisites [blocker: Julia waiting out mandatory General review period, 2026-05-04]
+    - [~] Confirm release-readiness track is complete [blocker: Julia waiting out mandatory General review period]
     - [x] Confirm R package publication readiness track is complete before R publication
     - [x] Confirm CI quality gates are green for the selected release target
     - [x] Confirm Rust-backed runtime binding CI is green for stable runtime releases
     - [x] Confirm training API tracks are complete for packages that claim training support
-- [~] Task: Lock final release candidate metadata [blocker: maintainer approval needed for R; Julia awaiting General review, 2026-04-29]
+- [~] Task: Lock final release candidate metadata [blocker: maintainer approval needed for R; Julia waiting out mandatory General review period, 2026-04-29]
     - [x] Confirm package versions, release notes, changelog entries, and package README links
     - [x] Confirm protected release environments and required maintainer approvals
-    - [~] Confirm no unresolved blocker exists for selected package targets [blocker: Julia registration submitted]
+    - [~] Confirm no unresolved blocker exists for selected package targets [blocker: Julia registration submitted, waiting out mandatory period]
 - [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 0: Release Readiness Handoff' (Protocol in workflow.md)
 
 ## Phase 1: Automated Registry Publication
@@ -33,7 +33,7 @@
 - [ ] Task: Publish review-based ecosystem packages
     - [ ] Publish R package to r-universe
     - [ ] Prepare CRAN submission when package maturity and maintainer approval are available
-    - [~] Register Julia package in General via Registrator.jl [submitted, awaiting General review]
+    - [~] Register Julia package in General via Registrator.jl [submitted, waiting out mandatory General review period]
 - [ ] Task: Verify review-based packages
     - [ ] Install available R and Julia packages from their registries
     - [ ] Run smoke tests against the shared conformance fixture

@@ -9,13 +9,13 @@
     - [x] Confirm NuGet `mars-earth` is publicly registered as `0.0.0`
     - [x] Confirm Go module path is controlled by repository tags rather than a registry
     - [x] Confirm R `marsruntime` and Julia `MarsRuntime` remain release targets rather than published registry packages
-- [~] Task: Confirm registry ownership and credential status [blocker: Julia awaiting General review, 2026-05-04]
+- [~] Task: Confirm registry ownership and credential status [blocker: Julia waiting out mandatory General review period, 2026-05-04]
     - [x] Confirm PyPI project ownership and trusted publishing or token status
     - [x] Confirm crates.io owner and crate name status [published on crates.io as `0.1.0`, 2026-05-04]
     - [x] Confirm npm organization/package ownership and publish-automation status [published on npm as `0.0.0`, 2026-05-04]
     - [x] Confirm NuGet trusted publishing policy and login path [published on NuGet as `0.0.0`, 2026-05-04]
     - [x] Confirm Go module path and tag strategy
-    - [x] Confirm R r-universe/CRAN requirements; Julia registration submitted and awaiting General review [blocker: Julia awaiting General review, 2026-05-04]
+    - [x] Confirm R r-universe/CRAN requirements; Julia registration submitted and waiting out mandatory General review period [blocker: Julia waiting out mandatory General review period, 2026-05-04]
     - [x] Complete R package publication readiness track before treating R as release-ready
 - [x] Task: Confirm repository-side release wiring
     - [x] Confirm PyPI publish configuration points at `mars-earth`

@@ -5,10 +5,9 @@ tracks are archived in Conductor and no longer listed here.
 
 The active priorities are:
 
-- complete the remaining release publication handoff for Julia and any final
-  release-governance follow-ups
-- wait for the Julia General review outcome and update the release inventory
-  when it lands
+- complete the remaining release publication handoff for Julia while the
+  mandatory General review period runs
+- update the release inventory when the Julia General registry result lands
 - keep CI and supply-chain checks aligned with the manifests
 - preserve the current `pymars` import API while the public package family
   stays under `mars-earth`
