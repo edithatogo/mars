@@ -43,6 +43,9 @@ def test_rust_backed_exports_compatible_model_spec():
     assert "params" in spec, "Spec should have params"
     assert spec["feature_schema"]["n_features"] == model.n_features_in_
     assert len(spec["feature_schema"]["feature_names"]) == model.n_features_in_
+    assert model.gcv_ is not None
+    assert model.rss_ is not None
+    assert model.mse_ is not None
 
     # Verify spec can be used to recreate model
     model2 = Earth.from_model(spec)

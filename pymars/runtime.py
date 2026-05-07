@@ -9,12 +9,14 @@ from typing import Any, cast
 
 import numpy as np
 
+from ._basis import HingeBasisFunction
 from ._model_spec import (
     model_to_spec,
     spec_from_json,
     spec_to_json,
     validate_model_spec,
 )
+from ._util import calculate_gcv, gcv_penalty_cost_effective_parameters
 from .earth import Earth
 
 logger = logging.getLogger(__name__)
@@ -138,6 +140,40 @@ def fit_model(
 
     trained_model = spec_to_model(spec_from_json(trained_spec_json), Earth)
     trained_model.feature_importance_type = model.feature_importance_type
+    if trained_model.rss_ is None or trained_model.mse_ is None or trained_model.gcv_ is None:
+        y_array = np.asarray(y_values, dtype=float)
+        X_array = np.asarray(rows, dtype=float)
+        predictions = np.asarray(trained_model.predict(X_array), dtype=float)
+        residuals = y_array - predictions
+        if weights is None:
+            rss = float(np.sum(residuals**2))
+            mse = rss / len(y_array) if len(y_array) else np.inf
+        else:
+            sample_weight_array = np.asarray(weights, dtype=float)
+            rss = float(np.sum(sample_weight_array * residuals**2))
+            weight_sum = float(np.sum(sample_weight_array))
+            mse = rss / weight_sum if weight_sum > 0.0 else np.inf
+
+        num_terms = len(trained_model.basis_ or [])
+        num_hinge_terms = sum(
+            isinstance(bf, HingeBasisFunction) for bf in (trained_model.basis_ or [])
+        )
+        n_samples_for_gcv = len(y_array)
+        eff_params = gcv_penalty_cost_effective_parameters(
+            num_terms=num_terms,
+            num_hinge_terms=num_hinge_terms,
+            penalty=trained_model.penalty,
+            num_samples=n_samples_for_gcv,
+        )
+        gcv = calculate_gcv(rss, n_samples_for_gcv, eff_params)
+        trained_model.rss_ = rss
+        trained_model.mse_ = mse
+        trained_model.gcv_ = gcv
+        if trained_model.record_ is not None:
+            trained_model.record_.final_rss_ = rss
+            trained_model.record_.final_mse_ = mse
+            trained_model.record_.final_gcv_ = gcv
+            trained_model.record_.n_samples = len(y_array)
     model.__dict__.update(trained_model.__dict__)
     return model
 
