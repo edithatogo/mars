@@ -6,7 +6,6 @@ import copy
 import json
 import re
 from dataclasses import dataclass
-from types import SimpleNamespace
 from typing import Any, cast
 
 import numpy as np
@@ -22,6 +21,7 @@ from ._basis import (
     MissingnessBasisFunction,
 )
 from ._categorical import CategoricalImputer
+from ._record import EarthRecord
 
 MODEL_SPEC_VERSION = "1.0"
 _MODEL_SPEC_VERSION_RE = re.compile(r"^(?P<major>\d+)\.(?P<minor>\d+)$")
@@ -374,21 +374,22 @@ def spec_to_model(payload: dict[str, Any], earth_cls: type[Any]) -> Any:
         dtype=object,
     )
     model.n_features_in_ = int(feature_count)
-    model.record_ = SimpleNamespace(
-        n_samples=0,
-        n_features=model.n_features_in_,
-        feature_names_in_=model.feature_names_in_,
-        model_params={"feature_names_in_": model.feature_names_in_},
-        pruning_trace_basis_functions_=[basis_snapshot],
-        pruning_trace_coeffs_=[coefficients_snapshot],
-        pruning_trace_gcv_=[model.gcv_ if model.gcv_ is not None else 0.0],
-        pruning_trace_rss_=[model.rss_ if model.rss_ is not None else 0.0],
-        final_basis_=basis_snapshot,
-        final_coeffs_=coefficients_snapshot,
-        final_gcv_=model.gcv_,
-        final_rss_=model.rss_,
-        final_mse_=model.mse_,
+    model.record_ = EarthRecord(
+        np.empty((0, model.n_features_in_)),
+        np.empty((0,)),
+        model,
     )
+    model.record_.feature_names_in_ = model.feature_names_in_
+    model.record_.model_params["feature_names_in_"] = model.feature_names_in_
+    model.record_.pruning_trace_basis_functions_ = [basis_snapshot]
+    model.record_.pruning_trace_coeffs_ = [coefficients_snapshot]
+    model.record_.pruning_trace_gcv_ = [model.gcv_ if model.gcv_ is not None else 0.0]
+    model.record_.pruning_trace_rss_ = [model.rss_ if model.rss_ is not None else 0.0]
+    model.record_.final_basis_ = basis_snapshot
+    model.record_.final_coeffs_ = coefficients_snapshot
+    model.record_.final_gcv_ = model.gcv_
+    model.record_.final_rss_ = model.rss_
+    model.record_.final_mse_ = model.mse_
     model.categorical_imputer_ = categorical_imputer_from_spec(
         payload.get("categorical_imputer")
     )
