@@ -105,6 +105,8 @@ def fit_model(
     """Fit an Earth model through the Rust training bridge when available."""
     if _rust_backend is None:
         return None
+    if model.categorical_features:
+        return None
     rows = _coerce_rows_for_rust(X)
     y_values = cast("list[float]", np.asarray(y, dtype=float).reshape(-1).tolist())
     weights = None
