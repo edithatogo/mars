@@ -249,7 +249,11 @@ class Earth(BaseEstimator, RegressorMixin):
 
         use_rust_fit = (
             ForwardPasser.__module__ == "pymars._forward"
+            and getattr(ForwardPasser.run, "__module__", "pymars._forward")
+            == "pymars._forward"
             and PruningPasser.__module__ == "pymars._pruning"
+            and getattr(PruningPasser.run, "__module__", "pymars._pruning")
+            == "pymars._pruning"
         )
         rust_fitted = (
             runtime_helpers.fit_model(
