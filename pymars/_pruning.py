@@ -153,9 +153,7 @@ class PruningPasser:
                 )
             )
 
-            if (
-                coeffs_empty is None
-            ):
+            if coeffs_empty is None:
                 return float(np.inf), float(rss_empty), None
 
             num_terms_intercept_only = 1

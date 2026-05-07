@@ -201,6 +201,8 @@ class EarthRegressor(RegressorMixin, BaseEstimator):
 
         earth: Any = self.earth_
         return cast("np.ndarray", earth.predict(X_validated))
+
+
 class EarthClassifier(ClassifierMixin, BaseEstimator):
     """
     Pymars Earth model for classification tasks, scikit-learn compatible.
@@ -384,7 +386,10 @@ class EarthClassifier(ClassifierMixin, BaseEstimator):
         if X_validated.ndim == 1:
             X_validated = X_validated.reshape(1, -1)
 
-        if self.n_features_in_ is not None and X_validated.shape[1] != self.n_features_in_:
+        if (
+            self.n_features_in_ is not None
+            and X_validated.shape[1] != self.n_features_in_
+        ):
             raise ValueError(
                 f"X has {X_validated.shape[1]} features, but {self.__class__.__name__} "
                 f"is expecting {self.n_features_in_} features as input."

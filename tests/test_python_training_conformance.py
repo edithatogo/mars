@@ -8,8 +8,7 @@ import pytest
 from pymars import Earth, runtime
 
 
-def test_rust_training_bridge_uses_compiled_backend(
-) -> None:
+def test_rust_training_bridge_uses_compiled_backend() -> None:
     """The Python training path should hit the compiled Rust backend when available."""
     if runtime._rust_backend is None:
         pytest.skip("Compiled pymars_runtime extension is not available")
@@ -30,6 +29,7 @@ def test_rust_training_bridge_uses_compiled_backend(
 
 def test_rust_training_bridge_propagates_backend_errors(monkeypatch) -> None:
     """Supported Rust training should fail loudly instead of silently falling back."""
+
     class DummyRustBackend:
         def fit_model_json(self, request_json: str) -> str:
             del request_json

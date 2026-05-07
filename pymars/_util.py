@@ -56,6 +56,7 @@ def check_array(
 
     return cast("np.ndarray", array)
 
+
 def gcv_penalty_cost_effective_parameters(
     num_terms: int, num_hinge_terms: int, penalty: float, num_samples: int | float
 ) -> float:

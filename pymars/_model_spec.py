@@ -297,7 +297,9 @@ def model_to_spec(model: Any) -> dict[str, Any]:
         feature_names = [f"x{i}" for i in range(int(n_features or len(model.coef_)))]
 
     if n_features is None:
-        n_features = len(feature_names) if feature_names is not None else len(model.coef_)
+        n_features = (
+            len(feature_names) if feature_names is not None else len(model.coef_)
+        )
     n_features = int(n_features)
     if feature_names is None or len(feature_names) != n_features:
         feature_names = [f"x{i}" for i in range(n_features)]

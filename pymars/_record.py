@@ -26,9 +26,7 @@ class EarthRecord:
 
     def __init__(self, X: np.ndarray, y: np.ndarray, earth_model_instance: Any):
         del y
-        self.model_params: dict[str, Any] = (
-            earth_model_instance.__dict__.copy()
-        )
+        self.model_params: dict[str, Any] = earth_model_instance.__dict__.copy()
         self.feature_names_in_: np.ndarray | None = None
         self.n_samples = X.shape[0]
         self.n_features = X.shape[1]
@@ -73,9 +71,7 @@ class EarthRecord:
             len(basis_functions),
             gcv,
         )
-        self.pruning_trace_basis_functions_.append(
-            list(basis_functions)
-        )
+        self.pruning_trace_basis_functions_.append(list(basis_functions))
         self.pruning_trace_coeffs_.append(np.copy(coefficients))
         self.pruning_trace_gcv_.append(gcv)
         self.pruning_trace_rss_.append(rss)

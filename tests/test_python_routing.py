@@ -193,9 +193,7 @@ def test_runtime_supported_rust_paths_propagate_backend_errors(
             raise RuntimeError("boom")
 
     monkeypatch.setattr(runtime, "_rust_backend", DummyRustBackend())
-    monkeypatch.setattr(
-        runtime, "_spec_is_rust_runtime_compatible", lambda _spec: True
-    )
+    monkeypatch.setattr(runtime, "_spec_is_rust_runtime_compatible", lambda _spec: True)
 
     with pytest.raises(expected_error):
         runtime_call(spec)
@@ -263,9 +261,7 @@ def test_runtime_export_model_json_routes_through_rust(monkeypatch) -> None:
             return expected_json
 
     monkeypatch.setattr(runtime, "_rust_backend", DummyRustBackend())
-    monkeypatch.setattr(
-        runtime, "_spec_is_rust_runtime_compatible", lambda _spec: True
-    )
+    monkeypatch.setattr(runtime, "_spec_is_rust_runtime_compatible", lambda _spec: True)
 
     exported = runtime.export_model_json(spec)
 
@@ -286,9 +282,7 @@ def test_runtime_predict_supported_rust_paths_propagate_backend_errors(
             raise RuntimeError("boom")
 
     monkeypatch.setattr(runtime, "_rust_backend", DummyRustBackend())
-    monkeypatch.setattr(
-        runtime, "_spec_is_rust_runtime_compatible", lambda _spec: True
-    )
+    monkeypatch.setattr(runtime, "_spec_is_rust_runtime_compatible", lambda _spec: True)
 
     with pytest.raises(RuntimeError):
         runtime.predict(spec, np.array([[0.0], [1.0], [2.0]]))
@@ -309,20 +303,18 @@ def test_runtime_design_matrix_supported_rust_paths_propagate_backend_errors(
             raise RuntimeError("boom")
 
     monkeypatch.setattr(runtime, "_rust_backend", DummyRustBackend())
-    monkeypatch.setattr(
-        runtime, "_spec_is_rust_runtime_compatible", lambda _spec: True
-    )
+    monkeypatch.setattr(runtime, "_spec_is_rust_runtime_compatible", lambda _spec: True)
 
     with pytest.raises(RuntimeError):
         runtime.design_matrix(spec, np.array([[0.0], [1.0], [2.0]]))
 
 
-def test_runtime_save_model_routes_through_rust_export(
-    monkeypatch, tmp_path
-) -> None:
+def test_runtime_save_model_routes_through_rust_export(monkeypatch, tmp_path) -> None:
     """Saving a compatible model should use the Rust export-normalization path."""
     model = runtime.load_model(runtime.load_model_spec(MODEL_SPEC_V1_PATH))
-    expected_json = json.dumps(model.export_model(format="dict"), indent=2, sort_keys=True)
+    expected_json = json.dumps(
+        model.export_model(format="dict"), indent=2, sort_keys=True
+    )
     target = tmp_path / "model.json"
     calls: list[str] = []
 
@@ -332,9 +324,7 @@ def test_runtime_save_model_routes_through_rust_export(
             return expected_json
 
     monkeypatch.setattr(runtime, "_rust_backend", DummyRustBackend())
-    monkeypatch.setattr(
-        runtime, "_spec_is_rust_runtime_compatible", lambda _spec: True
-    )
+    monkeypatch.setattr(runtime, "_spec_is_rust_runtime_compatible", lambda _spec: True)
 
     saved = runtime.save_model(model, target)
 

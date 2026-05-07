@@ -77,6 +77,7 @@ def test_check_array_conversion_failure(monkeypatch):
 def test_gcv_penalty_cost():
     """gcv_penalty_cost_effective_parameters should follow the expected formula."""
     from pymars._util import gcv_penalty_cost_effective_parameters
+
     assert (
         gcv_penalty_cost_effective_parameters(
             num_terms=1, num_hinge_terms=0, penalty=3.0, num_samples=10

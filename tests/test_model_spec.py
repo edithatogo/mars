@@ -189,9 +189,7 @@ def test_runtime_uses_rust_backend_for_supported_specs(monkeypatch):
             return [5.0, 6.0]
 
     monkeypatch.setattr(runtime, "_rust_backend", DummyRustBackend())
-    monkeypatch.setattr(
-        runtime, "_spec_is_rust_runtime_compatible", lambda _spec: True
-    )
+    monkeypatch.setattr(runtime, "_spec_is_rust_runtime_compatible", lambda _spec: True)
 
     assert runtime.validate(spec) == spec
     np.testing.assert_allclose(

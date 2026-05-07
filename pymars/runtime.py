@@ -42,7 +42,9 @@ _RUST_RUNTIME_SUPPORTED_KINDS = {
 
 def _should_use_rust_backend() -> bool:
     """Return whether runtime helpers should route through the active backend."""
-    return _rust_backend is not None and not getattr(_rust_backend, "_IS_COMPILED", False)
+    return _rust_backend is not None and not getattr(
+        _rust_backend, "_IS_COMPILED", False
+    )
 
 
 def _rust_backend_supports(method_name: str) -> bool:
@@ -157,7 +159,11 @@ def fit_model(
 
     trained_model = spec_to_model(spec_from_json(trained_spec_json), Earth)
     trained_model.feature_importance_type = model.feature_importance_type
-    if trained_model.rss_ is None or trained_model.mse_ is None or trained_model.gcv_ is None:
+    if (
+        trained_model.rss_ is None
+        or trained_model.mse_ is None
+        or trained_model.gcv_ is None
+    ):
         y_array = np.asarray(y_values, dtype=float)
         X_array = np.asarray(rows, dtype=float)
         predictions = np.asarray(trained_model.predict(X_array), dtype=float)

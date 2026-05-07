@@ -274,9 +274,7 @@ class Earth(BaseEstimator, RegressorMixin):
             self.fitted_ = True
             return self
 
-        forward_passer = ForwardPasser(
-            self
-        )
+        forward_passer = ForwardPasser(self)
         fwd_basis_functions, fwd_coefficients = forward_passer.run(
             X_fit_processed=X_processed,
             y_fit=y_processed,
