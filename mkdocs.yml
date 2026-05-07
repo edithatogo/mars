@@ -1,7 +1,7 @@
 site_name: pymars Documentation
-site_url: https://edithatogo.github.io/pymars/
-repo_url: https://github.com/edithatogo/pymars
-repo_name: edithatogo/pymars
+site_url: https://edithatogo.github.io/mars/
+repo_url: https://github.com/edithatogo/mars
+repo_name: edithatogo/mars
 edit_uri: edit/main/docs/
 theme:
   name: material

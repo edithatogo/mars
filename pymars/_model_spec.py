@@ -285,15 +285,22 @@ def model_to_spec(model: Any) -> dict[str, Any]:
         raise ValueError("Fitted model is missing basis functions or coefficients.")
 
     record = getattr(model, "record_", None)
+    n_features = getattr(model, "n_features_in_", None)
+    if n_features is None and record is not None:
+        n_features = getattr(record, "n_features", None)
     feature_names = None
     if record is not None and hasattr(record, "feature_names_in_"):
         feature_names = list(record.feature_names_in_)
     elif hasattr(model, "feature_names_in_"):
         feature_names = list(model.feature_names_in_)
     elif record is not None:
-        feature_names = [
-            f"x{i}" for i in range(getattr(record, "n_features", len(model.coef_)))
-        ]
+        feature_names = [f"x{i}" for i in range(int(n_features or len(model.coef_)))]
+
+    if n_features is None:
+        n_features = len(feature_names) if feature_names is not None else len(model.coef_)
+    n_features = int(n_features)
+    if feature_names is None or len(feature_names) != n_features:
+        feature_names = [f"x{i}" for i in range(n_features)]
 
     return {
         "spec_version": MODEL_SPEC_VERSION,
@@ -313,7 +320,7 @@ def model_to_spec(model: Any) -> dict[str, Any]:
             "categorical_features": list(model.categorical_features or []),
         },
         "feature_schema": {
-            "n_features": getattr(record, "n_features", None),
+            "n_features": n_features,
             "feature_names": feature_names,
         },
         "basis_terms": [basis_function_to_spec(bf).to_dict() for bf in model.basis_],
@@ -357,13 +364,16 @@ def spec_to_model(payload: dict[str, Any], earth_cls: type[Any]) -> Any:
     feature_names = feature_schema.get("feature_names") or [
         f"x{i}" for i in range(feature_schema.get("n_features", 0))
     ]
+    feature_count = feature_schema.get("n_features")
+    if feature_names:
+        feature_count = len(feature_names)
+    if feature_count is None:
+        feature_count = len(feature_names)
     model.feature_names_in_ = np.asarray(
         feature_names,
         dtype=object,
     )
-    model.n_features_in_ = int(
-        feature_schema.get("n_features", len(model.feature_names_in_))
-    )
+    model.n_features_in_ = int(feature_count)
     model.record_ = SimpleNamespace(
         n_samples=0,
         n_features=model.n_features_in_,
