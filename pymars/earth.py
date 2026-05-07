@@ -693,12 +693,6 @@ class Earth(BaseEstimator, RegressorMixin):
                 "Model record is not available despite the model being fitted."
             )
 
-        from . import runtime as runtime_helpers
-
-        rust_prediction = runtime_helpers._predict_with_rust(self.get_model_spec(), X)
-        if rust_prediction is not None:
-            return rust_prediction
-
         X_predict_processed, predict_missing_mask = self._prepare_prediction_data(X)
 
         if not basis:
@@ -707,6 +701,21 @@ class Earth(BaseEstimator, RegressorMixin):
                     "np.ndarray", np.full(X_predict_processed.shape[0], record.y_mean_)
                 )
             return cast("np.ndarray", np.zeros(X_predict_processed.shape[0]))
+
+        from . import runtime as runtime_helpers
+
+        try:
+            rust_spec = self.get_model_spec()
+        except (TypeError, ValueError):
+            rust_spec = None
+
+        rust_prediction = (
+            runtime_helpers._predict_with_rust(rust_spec, X)
+            if rust_spec is not None
+            else None
+        )
+        if rust_prediction is not None:
+            return rust_prediction
 
         B_pred = self._build_basis_matrix(
             X_predict_processed, basis, predict_missing_mask
