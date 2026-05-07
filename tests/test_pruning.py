@@ -191,7 +191,7 @@ def test_pruning_run_no_pruning_if_penalty_zero(initial_model_for_pruning):
         basis_subset=initial_bfs,
     )
     assert best_gcv <= gcv_of_initial_set + 1e-9
-    assert pruned_coeffs is not None
+    assert _pruned_coeffs is not None
 
 
 def test_pruning_run_some_pruning_expected(initial_model_for_pruning):
@@ -255,7 +255,7 @@ def test_pruning_run_empty_initial_set(simple_pruning_data):
     )
 
     assert len(pruned_bfs) == 0
-    assert pruned_coeffs is not None and pruned_coeffs.size == 0
+    assert _pruned_coeffs is not None and _pruned_coeffs.size == 0
     assert best_gcv == np.inf
 
 

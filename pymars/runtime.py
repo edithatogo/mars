@@ -40,12 +40,25 @@ _RUST_RUNTIME_SUPPORTED_KINDS = {
 }
 
 
+def _should_use_rust_backend() -> bool:
+    """Return whether runtime helpers should route through the active backend."""
+    return _rust_backend is not None and not getattr(_rust_backend, "_IS_COMPILED", False)
+
+
+def _rust_backend_supports(method_name: str) -> bool:
+    """Return whether the active backend provides a callable method."""
+    method = getattr(_rust_backend, method_name, None)
+    return callable(method)
+
+
 def load_model_spec(spec_or_path: dict[str, Any] | str | Path) -> dict[str, Any]:
     """Load a model spec from a dict, JSON string, or JSON file path."""
     if isinstance(spec_or_path, dict):
         return spec_or_path
 
-    if _rust_backend is not None:
+    if _should_use_rust_backend() and _rust_backend_supports(
+        "load_model_spec_canonical_json"
+    ):
         try:
             return spec_from_json(
                 _rust_backend.load_model_spec_canonical_json(str(spec_or_path))
@@ -94,7 +107,11 @@ def export_model_json(model_or_spec: Earth | dict[str, Any]) -> str:
         if isinstance(model_or_spec, Earth)
         else model_or_spec
     )
-    if _rust_backend is not None and _spec_is_rust_runtime_compatible(spec):
+    if (
+        _should_use_rust_backend()
+        and _rust_backend_supports("export_model_json")
+        and _spec_is_rust_runtime_compatible(spec)
+    ):
         return cast("str", _rust_backend.export_model_json(spec_to_json(spec)))
     return spec_to_json(spec)
 
@@ -103,9 +120,7 @@ def fit_model(
     model: Earth, X: Any, y: Any, sample_weight: Any | None = None
 ) -> Earth | None:
     """Fit an Earth model through the Rust training bridge when available."""
-    if _rust_backend is None:
-        return None
-    if model.categorical_features or model.allow_missing:
+    if not (_should_use_rust_backend() and _rust_backend_supports("fit_model_json")):
         return None
     rows = _coerce_rows_for_rust(X)
     y_values = cast("list[float]", np.asarray(y, dtype=float).reshape(-1).tolist())
@@ -221,7 +236,9 @@ def inspect(spec_or_path: dict[str, Any] | str | Path) -> dict[str, Any]:
 
 def _validate_with_rust(spec: dict[str, Any]) -> bool:
     """Validate a portable spec with the Rust backend if possible."""
-    if _rust_backend is None:
+    if not _should_use_rust_backend():
+        return False
+    if not _rust_backend_supports("validate_model_spec_json"):
         return False
     if not _spec_is_rust_runtime_compatible(spec):
         return False
@@ -231,7 +248,9 @@ def _validate_with_rust(spec: dict[str, Any]) -> bool:
 
 def _inspect_with_rust(spec: dict[str, Any]) -> dict[str, Any] | None:
     """Inspect a portable spec with the Rust backend if possible."""
-    if _rust_backend is None:
+    if not _should_use_rust_backend():
+        return None
+    if not _rust_backend_supports("inspect_model_spec_json"):
         return None
     if not _spec_is_rust_runtime_compatible(spec):
         return None
@@ -245,7 +264,7 @@ def _predict_with_rust(spec: dict[str, Any], X: Any) -> np.ndarray | None:
     """Predict through Rust when the runtime and inputs are compatible."""
     if not _spec_is_rust_runtime_compatible(spec):
         return None
-    if _rust_backend is None:
+    if not (_should_use_rust_backend() and _rust_backend_supports("predict_json")):
         return None
     try:
         rows = _coerce_rows_for_rust(X)
@@ -264,7 +283,9 @@ def _design_matrix_with_rust(spec: dict[str, Any], X: Any) -> np.ndarray | None:
     """Build a basis matrix through Rust when the runtime and inputs are compatible."""
     if not _spec_is_rust_runtime_compatible(spec):
         return None
-    if _rust_backend is None:
+    if not (
+        _should_use_rust_backend() and _rust_backend_supports("design_matrix_json")
+    ):
         return None
     try:
         rows = _coerce_rows_for_rust(X)
