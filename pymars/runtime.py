@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import sys
 from pathlib import Path
 from typing import Any, cast
 
@@ -22,13 +23,14 @@ from .earth import Earth
 logger = logging.getLogger(__name__)
 
 _rust_backend: Any = None
-try:
-    import pymars_runtime as _native_module
+if sys.platform != "darwin":
+    try:
+        import pymars_runtime as _native_module
 
-    if _native_module._IS_COMPILED:
-        _rust_backend = _native_module
-except Exception as exc:  # pragma: no cover - optional compiled extension
-    logger.debug("Rust runtime backend unavailable: %s", exc)
+        if _native_module._IS_COMPILED:
+            _rust_backend = _native_module
+    except Exception as exc:  # pragma: no cover - optional compiled extension
+        logger.debug("Rust runtime backend unavailable: %s", exc)
 
 _RUST_RUNTIME_SUPPORTED_KINDS = {
     "constant",
