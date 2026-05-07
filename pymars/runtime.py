@@ -63,8 +63,8 @@ def load_model_spec(spec_or_path: dict[str, Any] | str | Path) -> dict[str, Any]
             return spec_from_json(
                 _rust_backend.load_model_spec_canonical_json(str(spec_or_path))
             )
-        except Exception:
-            pass
+        except Exception as exc:  # pragma: no cover - backend fallback path
+            logger.debug("Rust spec loader failed, falling back to Python: %s", exc)
 
     if isinstance(spec_or_path, Path):
         return spec_from_json(spec_or_path.read_text())
