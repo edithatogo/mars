@@ -19,7 +19,7 @@ In scope for this lane:
 Out of scope for this lane:
 
 - accelerator runtimes
-- GPU, TPU, or MPI enablement
+- GPU, TPU, or MPI support
 - public API changes
 - shared registry publishing work
 - changing the release naming model
@@ -144,10 +144,10 @@ The ABI and Arrow work should be staged:
 
 ## External Packaging Assumptions
 
-- Linux-style toolchains are the first target.
+- Linux-style compiler stacks are the first target.
 - Spack and EasyBuild feasibility here means source-installability, dependency
   declaration, and smoke-testability, not upstream submission.
-- The package should remain buildable from source without accelerator runtimes.
+- The package should remain installable from source without accelerator runtimes.
 - Source tarballs or release archives should be stable enough for repeated
   install tests.
 - Any conda-forge follow-up would need a separate community submission track.
