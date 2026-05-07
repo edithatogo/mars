@@ -73,7 +73,8 @@ ecosystem-native, while the docs and release metadata should keep the shared
   submission.
 - Package name: `marsruntime`.
 - Release path: build the source tarball, inspect package contents, run
-  `R CMD check`, and follow maintainer review before CRAN submission.
+  `R CMD check`, and submit through the maintainer-chosen r-universe / CRAN
+  path once review is ready.
 - Package docs: keep the per-function Rd pages plus a package-level help topic
   and a build-ready vignette source; use `R CMD Rd2pdf` as the manual build path
   when the local toolchain supports it.
@@ -84,7 +85,8 @@ ecosystem-native, while the docs and release metadata should keep the shared
 
 - Registry: Julia General via Registrator.jl.
 - Package name: `MarsRuntime`.
-- Release path: register after UUID, metadata, and API stability are confirmed.
+- Release path: already registered via Registrator.jl; wait out the General
+  review period and keep metadata stable until the PR merges.
 - Rehearse with `Pkg.instantiate()`, `Pkg.status()`, and `Pkg.test()`.
 
 ### C#

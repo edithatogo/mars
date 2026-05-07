@@ -1,5 +1,9 @@
 # Implementation Plan
 
+Current external gate: Julia is still waiting out the mandatory General review
+period after the retriggered registration. All other registry ownership and
+credential checks in this lane are complete.
+
 ## Phase 0: Registry and Ownership Inventory [checkpoint: dd2bbec]
 
 - [x] Task: Audit public package-name availability

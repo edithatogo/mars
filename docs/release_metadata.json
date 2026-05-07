@@ -37,7 +37,7 @@
       "package": "MarsRuntime",
       "version": "0.1.0",
       "version_source": ["bindings/julia/Project.toml"],
-      "release_state": "submitted",
+      "release_state": "waiting_period",
       "logging_surface": "Host errors are surfaced from runtime helpers"
     },
     {

@@ -5,12 +5,17 @@ tracks are archived in Conductor and no longer listed here.
 
 The active priorities are:
 
-- complete the remaining release publication handoff for Julia while the
-  mandatory General review period runs
-- update the release inventory when the Julia General registry result lands
+- keep the release inventory and publication handoff aligned with the current
+  registry state
+- finish the remaining R submission path when the maintainer is ready to
+  publish externally
+- let the Julia General review period complete, then update the release
+  inventory and handoff record with the registry outcome
 - keep CI and supply-chain checks aligned with the manifests
 - preserve the current `pymars` import API while the public package family
   stays under `mars-earth`
+- keep the release inventory, publication handoff, and release checklist
+  visible from the docs home page
 - keep the completed SOTA lanes visible in archive form for later reference
 
 The completed SOTA lanes are:
@@ -32,6 +37,9 @@ The completed SOTA planning artifacts are:
 - [Workspace Automation](workspace_automation.md)
 - [SOTA Dependency and Parallelization Plan](sota_dependency_parallelization_plan.md)
 - [Community Submission Readiness](community_submission_readiness.md)
+- [Release Inventory](release_inventory.md)
+- [Publication Handoff](publication_handoff.md)
+- [Release Checklist](release_checklist.md)
 - [Ecosystem and Foundation Alignment](ecosystem_foundation_alignment.md)
 - [Rust Migration and ABI Compatibility](rust_migration_abi_compatibility.md)
 - [SOTA HPC Roadmap](hpc_sota_roadmap.md)
