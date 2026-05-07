@@ -18,16 +18,23 @@
 
 ## Phase 2: Documentation Integration
 
-- [ ] Task: Link workspace automation to the SOTA lanes
+- [x] Task: Link workspace automation to the SOTA lanes
     - [x] Update workspace automation docs
-    - [ ] Link workspace setup from the dependency and remaining roadmap pages
-    - [ ] Mark all account-level actions as external gates
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 2: Documentation Integration' (Protocol in workflow.md)
+    - [x] Link workspace setup from the dependency and remaining roadmap pages
+    - [x] Mark all account-level actions as external gates
+- [x] Task: Conductor - Automated Review and Checkpoint 'Phase 2: Documentation Integration' (Protocol in workflow.md)
 
 ## Phase 3: Validation and Handoff
 
-- [ ] Task: Validate workspace docs
-    - [ ] Run `uv run mkdocs build --strict`
-    - [ ] Verify no credentials or workspace IDs are committed
-    - [ ] Record any remaining auth-dependent steps
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 3: Validation and Handoff' (Protocol in workflow.md)
+- [x] Task: Validate workspace docs
+    - [x] Run `uv run mkdocs build --strict`
+    - [x] Verify no credentials or workspace IDs are committed
+    - [x] Record any remaining auth-dependent steps
+- [x] Task: Conductor - Automated Review and Checkpoint 'Phase 3: Validation and Handoff' (Protocol in workflow.md)
+
+Remaining auth-dependent steps:
+
+- Install and authenticate `linear-cli` locally before exporting Linear
+  workspace state.
+- Use `notion auth login` or `NOTION_API_KEY` before exporting Notion
+  workspace state.

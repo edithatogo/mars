@@ -65,30 +65,30 @@ The remaining-track dependency gates are summarized in
 
 ---
 
-- [ ] **Track: Add citation metadata and a JOSS-ready paper packet**
-  *Link: [./tracks/citation_metadata_joss_packet_20260506/](./tracks/citation_metadata_joss_packet_20260506/)*
+- [x] **Track: Add citation metadata and a JOSS-ready paper packet**
+  *Link: [./archive/citation_metadata_joss_packet_20260506/](./archive/citation_metadata_joss_packet_20260506/)*
 
 ---
 
-- [ ] **Track: Add OpenSSF Scorecard, SBOM, and release provenance evidence**
-  *Link: [./tracks/supply_chain_scorecard_sbom_20260506/](./tracks/supply_chain_scorecard_sbom_20260506/)*
+- [x] **Track: Add OpenSSF Scorecard, SBOM, and release provenance evidence**
+  *Link: [./archive/supply_chain_scorecard_sbom_20260506/](./archive/supply_chain_scorecard_sbom_20260506/)*
 
 ---
 
-- [ ] **Track: Prepare Spack, EasyBuild, and conda-forge packaging feasibility**
-  *Link: [./tracks/hpc_packaging_feasibility_20260506/](./tracks/hpc_packaging_feasibility_20260506/)*
+- [x] **Track: Prepare Spack, EasyBuild, and conda-forge packaging feasibility**
+  *Link: [./archive/hpc_packaging_feasibility_20260506/](./archive/hpc_packaging_feasibility_20260506/)*
 
 ---
 
-- [ ] **Track: Evaluate API-preserving ABI and Apache Arrow interoperability**
-  *Link: [./tracks/abi_arrow_interop_feasibility_20260506/](./tracks/abi_arrow_interop_feasibility_20260506/)*
+- [x] **Track: Evaluate API-preserving ABI and Apache Arrow interoperability**
+  *Link: [./archive/abi_arrow_interop_feasibility_20260506/](./archive/abi_arrow_interop_feasibility_20260506/)*
 
 ---
 
-- [ ] **Track: Prepare community governance and submission packets**
-  *Link: [./tracks/community_governance_submission_packets_20260506/](./tracks/community_governance_submission_packets_20260506/)*
+- [x] **Track: Prepare community governance and submission packets**
+  *Link: [./archive/community_governance_submission_packets_20260506/](./archive/community_governance_submission_packets_20260506/)*
 
 ---
 
-- [ ] **Track: Prepare Linear and Notion workspace exports**
-  *Link: [./tracks/workspace_automation_export_20260506/](./tracks/workspace_automation_export_20260506/)*
+- [x] **Track: Prepare Linear and Notion workspace exports**
+  *Link: [./archive/workspace_automation_export_20260506/](./archive/workspace_automation_export_20260506/)*

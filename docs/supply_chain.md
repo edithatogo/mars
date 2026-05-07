@@ -58,8 +58,14 @@ artifacts:
 This workflow is evidence wiring only. It does not change package publication,
 registry credentials, or release permissions.
 
-## Related Readiness
+## Readiness Links
 
-- [Community Submission Readiness](community_submission_readiness.md)
-- [Ecosystem and Foundation Alignment](ecosystem_foundation_alignment.md)
-- [SOTA HPC Roadmap](hpc_sota_roadmap.md)
+These evidence checks feed the broader readiness notes for the adjacent
+community and ecosystem lanes:
+
+- [Community Submission Readiness](community_submission_readiness.md) for the
+  PyPA-facing packaging baseline and submission checklist
+- [Ecosystem and Foundation Alignment](ecosystem_foundation_alignment.md) for
+  the PyPA and foundation positioning context
+- [SOTA HPC Roadmap](hpc_sota_roadmap.md) for the HPSF and E4S readiness
+  framing

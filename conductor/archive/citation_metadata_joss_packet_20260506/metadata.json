@@ -1,8 +1,8 @@
 {
   "track_id": "citation_metadata_joss_packet_20260506",
   "type": "chore",
-  "status": "new",
+  "status": "completed",
   "created_at": "2026-05-06T22:12:32Z",
-  "updated_at": "2026-05-06T22:12:32Z",
+  "updated_at": "2026-05-07T01:00:20Z",
   "description": "Add citation metadata and a JOSS-ready paper packet without changing the public API."
 }
