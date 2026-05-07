@@ -286,7 +286,7 @@ jobs:
           R CMD build .
           tarball=$(ls marsruntime_*.tar.gz | tail -n 1)
           if [ -z "$tarball" ]; then
-            tarball=$(find .. -maxdepth 1 -name 'marsruntime_*.tar.gz' -print -quit)
+            tarball=$(find . .. ../.. -name 'marsruntime_*.tar.gz' -print -quit)
           fi
           tar -tzf "$tarball" | tee release-artifacts/r-package-list.txt
           R CMD check --no-manual --as-cran "$tarball"
