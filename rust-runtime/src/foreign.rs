@@ -4,6 +4,11 @@ use std::ptr;
 
 use crate::errors::{MarsError, MarsResult};
 use crate::runtime::{design_matrix, load_model_spec_str, predict, validate_model_spec};
+use serde::Deserialize;
+
+pub const MARS_FOREIGN_ABI_VERSION_MAJOR: u32 = 1;
+pub const MARS_FOREIGN_ABI_VERSION_MINOR: u32 = 0;
+pub const MARS_FOREIGN_ABI_VERSION_PATCH: u32 = 0;
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
@@ -22,6 +27,14 @@ pub enum MarsForeignStatus {
 }
 
 #[repr(C)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub struct MarsForeignAbiVersion {
+    pub major: u32,
+    pub minor: u32,
+    pub patch: u32,
+}
+
+#[repr(C)]
 #[derive(Debug)]
 pub struct MarsForeignError {
     pub status: MarsForeignStatus,
@@ -33,6 +46,16 @@ impl Default for MarsForeignError {
         Self {
             status: MarsForeignStatus::Ok,
             message: ptr::null_mut(),
+        }
+    }
+}
+
+impl Default for MarsForeignAbiVersion {
+    fn default() -> Self {
+        Self {
+            major: MARS_FOREIGN_ABI_VERSION_MAJOR,
+            minor: MARS_FOREIGN_ABI_VERSION_MINOR,
+            patch: MARS_FOREIGN_ABI_VERSION_PATCH,
         }
     }
 }
@@ -73,6 +96,9 @@ impl Default for MarsForeignVector {
     }
 }
 
+#[derive(Debug, Deserialize)]
+struct ForeignBatchMatrix(Vec<Vec<Option<f64>>>);
+
 #[repr(C)]
 pub struct MarsModelSpecHandle {
     spec_json: CString,
@@ -88,6 +114,65 @@ impl MarsModelSpecHandle {
             MarsError::MalformedArtifact(format!("invalid UTF-8 in stored spec: {error}"))
         })?)
     }
+}
+
+/// # Safety
+///
+/// `out_version` and `out_error` must be valid pointers when non-null.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn mars_runtime_abi_version(
+    out_version: *mut MarsForeignAbiVersion,
+    out_error: *mut MarsForeignError,
+) -> MarsForeignStatus {
+    if out_version.is_null() {
+        return write_error(
+            out_error,
+            MarsForeignStatus::NullPointer,
+            "out_version must not be null",
+        );
+    }
+
+    *out_version = MarsForeignAbiVersion::default();
+    clear_error(out_error);
+    MarsForeignStatus::Ok
+}
+
+/// # Safety
+///
+/// `out_error` must be a valid pointer when non-null.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn mars_runtime_abi_check_compatibility(
+    requested_major: u32,
+    requested_minor: u32,
+    requested_patch: u32,
+    out_error: *mut MarsForeignError,
+) -> MarsForeignStatus {
+    let current = MarsForeignAbiVersion::default();
+    if requested_major != current.major {
+        return write_error(
+            out_error,
+            MarsForeignStatus::UnsupportedArtifactVersion,
+            format!(
+                "requested ABI major {requested_major} is incompatible with current major {}",
+                current.major
+            ),
+        );
+    }
+    if requested_minor > current.minor
+        || (requested_minor == current.minor && requested_patch > current.patch)
+    {
+        return write_error(
+            out_error,
+            MarsForeignStatus::UnsupportedArtifactVersion,
+            format!(
+                "requested ABI version {requested_major}.{requested_minor}.{requested_patch} exceeds current {}.{}.{}",
+                current.major, current.minor, current.patch
+            ),
+        );
+    }
+
+    clear_error(out_error);
+    MarsForeignStatus::Ok
 }
 
 /// # Safety
@@ -290,6 +375,67 @@ pub unsafe extern "C" fn mars_model_spec_predict(
         Ok(values) => write_vector(out_vector, out_error, values),
         Err(error) => write_error_from_mars_error(out_error, error),
     }
+}
+
+/// # Safety
+///
+/// `json`, `out_matrix`, and `out_error` must be valid pointers when non-null
+/// and `out_matrix` must be writable.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn mars_batch_matrix_from_json(
+    json: *const c_char,
+    out_matrix: *mut MarsForeignMatrix,
+    out_error: *mut MarsForeignError,
+) -> MarsForeignStatus {
+    if json.is_null() || out_matrix.is_null() {
+        return write_error(
+            out_error,
+            MarsForeignStatus::NullPointer,
+            "json and out_matrix must not be null",
+        );
+    }
+
+    let cstr = match CStr::from_ptr(json).to_str() {
+        Ok(value) => value,
+        Err(error) => {
+            return write_error(
+                out_error,
+                MarsForeignStatus::InvalidUtf8,
+                format!("json must be UTF-8: {error}"),
+            );
+        }
+    };
+
+    let ForeignBatchMatrix(rows) = match serde_json::from_str(cstr) {
+        Ok(value) => value,
+        Err(error) => {
+            return write_error(
+                out_error,
+                MarsForeignStatus::MalformedArtifact,
+                format!("failed to deserialize batch matrix JSON: {error}"),
+            );
+        }
+    };
+
+    if let Some(first_len) = rows.first().map(Vec::len) {
+        if rows.iter().any(|row| row.len() != first_len) {
+            return write_error(
+                out_error,
+                MarsForeignStatus::MalformedArtifact,
+                "batch matrix rows must all have the same length",
+            );
+        }
+    }
+
+    let matrix = rows
+        .into_iter()
+        .map(|row| {
+            row.into_iter()
+                .map(|value| value.unwrap_or(f64::NAN))
+                .collect()
+        })
+        .collect();
+    write_matrix(out_matrix, out_error, matrix)
 }
 
 fn slice_rows(rows: *const f64, n_rows: usize, n_cols: usize) -> Vec<Vec<f64>> {

@@ -29,8 +29,8 @@ Most external review packets need some combination of:
   adapter glue
 
 The packet material should agree with `docs/release_metadata.json`,
-`docs/release_inventory.md`, `docs/package_release_paths.md`, and
-`docs/community_submission_readiness.md`.
+`docs/release_inventory.md`, `docs/package_release_paths.md`,
+`docs/hpc_contracts.md`, and `docs/community_submission_readiness.md`.
 
 ## Submission and Alignment Matrix
 
@@ -43,7 +43,7 @@ The packet material should agree with `docs/release_metadata.json`,
 | JOSS | Paper packet | Plausible once package state and paper scope are stable | `paper.md`, `paper.bib`, statement of need, research impact, release DOI, and citation metadata |
 | PyPA | Packaging-alignment packet | Python packaging baseline is already in place | keep `pyproject.toml`, trusted publishing, wheel smoke tests, and metadata aligned with PyPA specs |
 | .NET Foundation | Stewardship packet | C# binding exists and is published | documented C# ownership/support policy, project-health summary, and maintainer statement |
-| Julia | Registry and community packet | Julia package is submitted and waiting on registry processing | keep package metadata, examples, issue routing, and release notes current until review completes |
+| Julia | Registry and community packet | Julia package registration is pending in Julia General (target identity `MarsEarth`, with `MarsRuntime` kept as superseded legacy) | keep package metadata, examples, issue routing, release notes, and registration status current for future releases |
 | R | Package-review packet | R package is locally publication-ready | keep `R CMD check`, manual, vignette, examples, and maintainer notes current for r-universe/CRAN review |
 | HPSF | HPC readiness packet | Benchmarking and Rust-core observability now exist | benchmark artifacts, portability notes, ABI story, and install smoke tests for HPC consumers |
 | E4S | HPC packaging readiness packet | Feasible only if packaging and portability evidence stay stable | packaging recipes, install smoke tests, dependency policy, and reproducible build notes |
@@ -78,16 +78,18 @@ publishing aligned with PyPA specs.
 .NET Foundation should be treated as ecosystem stewardship and project-health
 alignment, not as a package registry gate.
 
-Julia should be treated as a registry and community review workflow through
-General. Keep the package metadata, examples, and maintainer notes current
-while the review completes.
+Julia should be treated as a pending registry registration through Julia
+General (`MarsEarth` target, `MarsRuntime` retained as superseded legacy). Keep
+the package metadata, examples, and maintainer notes current so future releases
+are ready.
 
 R should be treated as a package-review and publication workflow through
 r-universe and CRAN.
 
 HPSF and E4S should be treated as HPC packaging and portability readiness
-packets. They make installation easier for HPC users; they do not imply GPU,
-TPU, MPI, or distributed execution support.
+packets until higher contract levels in [HPC Contracts](hpc_contracts.md) are
+implemented. They make installation easier for HPC users; this remains H0-only and
+does not imply H0-level GPU, TPU, MPI, or distributed execution support.
 
 ## Required repository artifacts
 
@@ -113,7 +115,7 @@ These items cannot be completed purely from source edits:
 - rOpenSci: review queue decision and maintainer follow-through
 - NumFOCUS: stewardship and governance application review
 - JOSS: editorial and reviewer decision
-- Julia: General registry review
+- Julia: General registry publication
 - R: r-universe and CRAN submission/review decision
 - HPSF and E4S: external packaging community review and feedback
 

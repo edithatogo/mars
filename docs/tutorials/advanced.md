@@ -1,8 +1,74 @@
 # Advanced Tutorial
 
-Advanced workflows include:
+Advanced workflows include portable model-spec export, interpretability, and
+pipeline integration.
 
-- exporting portable model specs
-- inspecting basis functions and coefficients
-- plotting partial dependence and ICE curves
-- integrating estimators into scikit-learn pipelines
+## Export and validate a portable model spec
+
+```python
+import numpy as np
+import pymars as earth
+
+X = np.array(
+    [
+        [-1.0, 0.0, 0.5],
+        [-0.2, 0.3, 0.0],
+        [0.1, -0.4, 0.2],
+        [0.5, 0.2, -0.3],
+        [1.0, -0.7, 0.8],
+        [1.4, -1.1, 1.1],
+    ],
+    dtype=float,
+)
+y = np.array([0.8, 1.3, 2.0, 2.6, 4.9, 6.2], dtype=float)
+
+model = earth.Earth(max_degree=1, penalty=3.0)
+model.fit(X, y)
+spec = model.export_model(format="json")
+validated_spec = earth.validate(spec)
+```
+
+## Inspect basis functions and coefficients
+
+```python
+explanation = earth.get_model_explanation(model, X)
+basis_summary = explanation["basis_functions"]
+```
+
+For a quick visual check, the plotting helpers can be used directly:
+
+```python
+from pymars import plot_basis_functions, plot_residuals
+
+plot_basis_functions(model, X)
+plot_residuals(model, X, y)
+```
+
+## Plot partial dependence and ICE curves
+
+```python
+from pymars import plot_individual_conditional_expectation, plot_partial_dependence
+
+plot_partial_dependence(model, X, features=[0, 1])
+plot_individual_conditional_expectation(model, X, features=[0])
+```
+
+## Integrate with scikit-learn pipelines
+
+```python
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+
+pipeline = Pipeline(
+    [
+        ("scale", StandardScaler()),
+        ("earth", earth.Earth(max_degree=1, penalty=3.0)),
+    ]
+)
+pipeline.fit(X, y)
+pipeline_predictions = pipeline.predict(X)
+```
+
+The advanced tutorial is intended to demonstrate the broader workflow surface
+without depending on any unsupported accelerator or distributed-execution
+behavior.

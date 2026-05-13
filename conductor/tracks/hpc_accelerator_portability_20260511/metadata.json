@@ -1,0 +1,8 @@
+{
+  "track_id": "hpc_accelerator_portability_20260511",
+  "type": "feature",
+  "status": "in_progress",
+  "created_at": "2026-05-10T15:07:03Z",
+  "updated_at": "2026-05-10T16:17:03Z",
+  "description": "Implement the H3 accelerator-ready runtime contract with optional device backends and CPU fallback."
+}

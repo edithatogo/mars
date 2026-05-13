@@ -1,9 +1,47 @@
+"""Public package entrypoint for the pymars library."""
+
 from __future__ import annotations
 
 __version__ = "1.0.4"
 
 from ._categorical import CategoricalImputer
 from ._sklearn_compat import EarthClassifier, EarthRegressor
+from .accelerator import (
+    AcceleratorBackend,
+    AcceleratorCapabilities,
+    accelerator_backend_summary,
+    available_accelerator_backends,
+    clear_accelerator_backends,
+    detect_requested_accelerator_backend,
+    get_registered_accelerator_backend,
+    register_accelerator_backend,
+    select_accelerator_backend,
+)
+from .accelerator_backends import (
+    OptionalModuleBackend,
+    make_cuda_backend,
+    make_metal_backend,
+    make_rocm_backend,
+)
+from .cluster import (
+    CLUSTER_CHUNK_SIZE_ENV_VAR,
+    CLUSTER_MODE_ENV_VAR,
+    CLUSTER_PRESERVE_ORDER_ENV_VAR,
+    CLUSTER_SCHEDULER_ENV_VAR,
+    CLUSTER_WORKERS_ENV_VAR,
+    CPU_CLUSTER_MODE,
+    MULTI_NODE_CLUSTER_MODE,
+    ClusterBackend,
+    ClusterConfig,
+    DeferredMultiNodeBackend,
+    cluster_backend_summary,
+    cluster_config_from_environment,
+    cluster_config_summary,
+    design_matrix_cluster,
+    detect_requested_cluster_mode,
+    predict_cluster,
+    select_cluster_backend,
+)
 from .cv import EarthCV
 from .earth import Earth
 from .explain import (
@@ -15,31 +53,85 @@ from .glm import GLMEarth
 from .plot import plot_basis_functions, plot_residuals
 from .runtime import (
     design_matrix,
+    design_matrix_cpu_cluster,
+    design_matrix_distributed,
     inspect,
     load_model,
     load_model_spec,
     predict,
+    predict_cpu_cluster,
+    predict_distributed,
+    runtime_threads,
     save_model,
+    set_runtime_threads,
     validate,
+)
+from .specialized_accelerator_backends import (
+    SPECIALIZED_DEFERRED_TARGETS,
+    SpecializedModuleBackend,
+    make_asic_backend,
+    make_fpga_backend,
+    make_tpu_backend,
 )
 
 __all__ = [
+    "CLUSTER_CHUNK_SIZE_ENV_VAR",
+    "CLUSTER_MODE_ENV_VAR",
+    "CLUSTER_PRESERVE_ORDER_ENV_VAR",
+    "CLUSTER_SCHEDULER_ENV_VAR",
+    "CLUSTER_WORKERS_ENV_VAR",
+    "CPU_CLUSTER_MODE",
+    "MULTI_NODE_CLUSTER_MODE",
+    "SPECIALIZED_DEFERRED_TARGETS",
+    "AcceleratorBackend",
+    "AcceleratorCapabilities",
     "CategoricalImputer",
+    "ClusterBackend",
+    "ClusterConfig",
+    "DeferredMultiNodeBackend",
     "Earth",
     "EarthCV",
     "EarthClassifier",
     "EarthRegressor",
     "GLMEarth",
+    "OptionalModuleBackend",
+    "SpecializedModuleBackend",
+    "accelerator_backend_summary",
+    "available_accelerator_backends",
+    "clear_accelerator_backends",
+    "cluster_backend_summary",
+    "cluster_config_from_environment",
+    "cluster_config_summary",
     "design_matrix",
+    "design_matrix_cluster",
+    "design_matrix_cpu_cluster",
+    "design_matrix_distributed",
+    "detect_requested_accelerator_backend",
+    "detect_requested_cluster_mode",
     "get_model_explanation",
+    "get_registered_accelerator_backend",
     "inspect",
     "load_model",
     "load_model_spec",
+    "make_asic_backend",
+    "make_cuda_backend",
+    "make_fpga_backend",
+    "make_metal_backend",
+    "make_rocm_backend",
+    "make_tpu_backend",
     "plot_basis_functions",
     "plot_individual_conditional_expectation",
     "plot_partial_dependence",
     "plot_residuals",
     "predict",
+    "predict_cluster",
+    "predict_cpu_cluster",
+    "predict_distributed",
+    "register_accelerator_backend",
+    "runtime_threads",
     "save_model",
+    "select_accelerator_backend",
+    "select_cluster_backend",
+    "set_runtime_threads",
     "validate",
 ]

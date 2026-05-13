@@ -1,8 +1,11 @@
-Package: marsruntime
+Package: marsearth
 Title: Portable Mars Runtime Replay
 Version: 0.0.0
-Authors@R: person("Dylan", "A Mordaunt", email = "dylan@mordaunt.dev", role = c("aut", "cre"))
-Description: Thin R runtime surface for replaying portable mars ModelSpec artifacts.
+Authors@R: person("Dylan", "A Mordaunt", email = "dylan.mordaunt@vuw.ac.nz", role = c("aut", "cre"))
+Description: Loads, validates, and replays portable 'mars' ModelSpec artifacts
+    from R. The package provides helpers for constructing design matrices,
+    generating predictions, and, when the companion runtime helper is available,
+    fitting portable model specifications for cross-language replay.
 License: Apache License (>= 2)
 Encoding: UTF-8
 URL: https://github.com/edithatogo/mars

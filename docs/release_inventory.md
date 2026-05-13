@@ -7,7 +7,9 @@ tracks. The canonical machine-readable source of truth is
 [release_metadata.json](release_metadata.json).
 
 The public project brand is `mars-earth`. Language-specific package and module
-names remain ecosystem-native when a registry or toolchain requires them.
+names remain ecosystem-native when a registry or toolchain requires them. HPC
+readiness and external HPC packaging claims are governed by
+[HPC Contracts](hpc_contracts.md).
 
 ## Package Matrix
 
@@ -15,8 +17,8 @@ names remain ecosystem-native when a registry or toolchain requires them.
 | --- | --- | --- | --- | --- |
 | Python | `mars-earth` / `pymars` import name | `pyproject.toml` + `pymars/__init__.py` | `logging` module in package code and CLI | Published on PyPI as `1.0.4`; trusted publishing and workflow wiring are already configured |
 | Rust | `mars-earth` | `rust-runtime/Cargo.toml` | Rust logging is not yet centralized | Published on crates.io as `0.1.0`; native extension source remains |
-| R | `marsruntime` | `bindings/r/DESCRIPTION` | Host errors are surfaced from runtime helpers | Runtime replay package with package-level help, vignette, manual build path, and CRAN-safe checks complete; awaiting external submission through the r-universe/CRAN path |
-| Julia | `MarsRuntime` | `bindings/julia/Project.toml` | Host errors are surfaced from runtime helpers | Registration submitted to Julia General; package-local license files added; release notes retriggered; auto-merge checks passed; the PR is waiting out the mandatory review period |
+| R | `marsearth` | `bindings/r/DESCRIPTION` | Host errors are surfaced from runtime helpers | Runtime replay package renamed to the R-valid `marsearth`; CRAN maintainer confirmation is complete and the package is queued in `incoming/newbies/` after superseding earlier uploads |
+| Julia | `MarsEarth` | `bindings/julia/Project.toml` | Host errors are surfaced from runtime helpers | Renamed from the already-published `MarsRuntime`; `MarsEarth` needs a new Julia General registration and `MarsRuntime` should be treated as superseded |
 | C# | `mars-earth` | `bindings/csharp/MarsRuntime.csproj` | Host exceptions from runtime bridge/helpers | Published on NuGet as `0.0.0` |
 | Go | `github.com/edithatogo/mars/bindings/go` | `bindings/go/go.mod` | Host errors from runtime bridge/helpers | Published via signed annotated `bindings/go/v0.1.0` tag; release is tag-driven |
 | TypeScript | `mars-earth` | `bindings/typescript/package.json` | JavaScript exceptions from runtime helpers | Published on npm as `0.0.0` |
@@ -25,8 +27,12 @@ names remain ecosystem-native when a registry or toolchain requires them.
 
 | Package | Owner / credential status | Action | Status | Date |
 | --- | --- | --- | --- | --- |
-| R `marsruntime` | Maintainer-owned package name; r-universe / CRAN requirements verified locally | Confirm external submission path and maintainer review steps | Ready for external submission | 2026-05-07 |
-| Julia `MarsRuntime` | Maintainer-owned package name; registration submitted to Julia General | Await General review and merge | Submitted; waiting period active | 2026-05-07 |
+| Spack `mars-earth` | Upstream Spack review workflow not accessible from this workspace | Submit the prepared H0-only recipe PR and record the review URL | PR open: https://github.com/spack/spack-packages/pull/4781; no human review feedback yet | 2026-05-11 |
+| EasyBuild `MarsEarth` / `pymars-0.1.0` | Upstream EasyBuild review workflow not accessible from this workspace | Submit the prepared H0-only easyconfig PR and record the review URL | PR open: https://github.com/easybuilders/easybuild-easyconfigs/pull/25951; no human review feedback yet | 2026-05-11 |
+| conda-forge `mars-earth` | staged-recipes workflow not accessible from this workspace | Submit the prepared H0-only recipe PR and record the review URL | PR open: https://github.com/conda-forge/staged-recipes/pull/33290; automated conda-forge lint feedback addressed; no human review yet | 2026-05-11 |
+| HPSF/E4S packet drafts | TAC review pending; forum selection remains a follow-up | Review the H0/H1 readiness inquiry and decide whether a fuller packet should advance | TAC readiness inquiry submitted: https://github.com/hpsfoundation/tac/issues/88; no TAC comments yet | 2026-05-11 |
+| R `marsearth` | Maintainer-owned package name; r-universe registry configured for source repository | Monitor CRAN incoming/screening and check-result pages; treat earlier `marsruntime` / `mars.earth` uploads as superseded. `marsearth_0.0.0.tar.gz` is confirmed in incoming; check-result page is not yet available | Maintainer confirmation complete; queued as `incoming/newbies/marsearth_0.0.0.tar.gz`; `incoming/pretest/` is currently empty | 2026-05-11 |
+| Julia `MarsEarth` | New package identity; `MarsRuntime` is already published | Register `MarsEarth` in Julia General; keep `MarsRuntime` as superseded legacy package (raw query `https://raw.githubusercontent.com/JuliaRegistries/General/master/M/MarsRuntime/Package.toml` exists; `.../MarsEarth/Package.toml` currently returns 404) | Needs new registration; no registration PR yet | 2026-05-11 |
 
 ## Registry Audit Results
 
@@ -40,8 +46,8 @@ The public registry-name audit has been run against the current package set.
 | npm `mars-earth` | Present | [npm package page](https://www.npmjs.com/package/mars-earth) | Package is live as `0.0.0` |
 | NuGet `mars-earth` | Present | [NuGet package page](https://www.nuget.org/packages/mars-earth) | Package is live as `0.0.0` |
 | Go module path | Controlled by repository tags | `bindings/go/go.mod` | Keep the module path aligned with signed `bindings/go/v<version>` tags; `bindings/go/v0.1.0` has been published |
-| R `marsruntime` | Not published in a public registry yet | `bindings/r/DESCRIPTION` | Locally complete; ready for r-universe submission and later CRAN review |
-| Julia `MarsRuntime` | Not published in a public registry yet; registration PR open and auto-merge waiting period active | `bindings/julia/Project.toml` | Waiting out mandatory General review period |
+| R `marsearth` | r-universe registry repo configured; earlier `marsruntime` / `mars.earth` uploads superseded | `bindings/r/DESCRIPTION`, `bindings/r/cran-comments.md`, `marsearth.Rcheck/00check.log`, `https://cran.r-project.org/incoming/newbies/` | CRAN-style check passes; CRAN upload confirmed and queued in `incoming/newbies/` pending screening |
+| Julia `MarsEarth` | Not yet registered in Julia General; `MarsRuntime` published as `0.1.0` | `bindings/julia/Project.toml`; Julia General query: `MarsRuntime` exists, `MarsEarth` currently not found | New registration required because Julia registry identity is package-name plus UUID |
 
 ## Parity Notes
 
@@ -50,15 +56,21 @@ The public registry-name audit has been run against the current package set.
 - Logging should remain quiet by default; verbose diagnostics should be
   opt-in and should preserve the Rust core error context when available.
 - Registry ownership and credentials are no longer blockers for PyPI, crates.io,
-  npm, or NuGet. R is complete locally and awaiting external submission, Go is
-  a documented tag-driven release policy, and Julia is submitted with
-  package-local license files, release notes, and auto-merge checks passed; the
-  PR is waiting out the mandatory period.
+  npm, or NuGet. R has been submitted to CRAN as `marsearth` after earlier
+  `marsruntime` / `mars.earth` CRAN uploads were superseded, Go is
+  a documented tag-driven release policy, and Julia needs a new `MarsEarth`
+  registration because `MarsRuntime` is a separate published package identity.
 
 ## Next Steps
 
-- Confirm the remaining manual-review registry path for R and submit the
-  package through r-universe/CRAN when the maintainer is ready.
+- Monitor the open H0-only Spack, EasyBuild, and conda-forge upstream PRs and
+  respond to maintainer review.
+- Monitor the HPSF TAC readiness inquiry and decide whether it should advance
+  to a fuller HPSF/E4S packet after TAC feedback.
+- Monitor the R `marsearth` CRAN incoming queue and check-result page for
+  screening feedback.
+- Register the Julia package as `MarsEarth`; keep `MarsRuntime` documented as
+  a superseded legacy package.
 - Use the [Release Checklist](release_checklist.md) to record the manual
   confirmations and to fill in any remaining blocker rows.
 - Decide whether the next release line will keep package versions aligned or
@@ -74,6 +86,6 @@ The public registry-name audit has been run against the current package set.
 - Go release remains tag-driven via signed annotated `bindings/go/v<version>`
   tags; `bindings/go/v0.1.0` is published.
 - R release notes already point to the registry-specific release path, the
-  package-level help topic, vignette, and manual build path are in place, and
-  the Julia registry submission is already open with retriggered release notes
-  and an active waiting period.
+  package-level help topic, packaged fixtures, vignette, and manual build path
+  are in place, and the `marsearth` CRAN upload is confirmed and queued in
+  `incoming/newbies/` pending screening.

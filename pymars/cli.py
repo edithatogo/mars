@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Command line interface for pymars."""
+
+from __future__ import annotations
 
 import argparse
 import importlib
@@ -35,7 +35,7 @@ def _load_model(model_path: str) -> Any:
         return Earth.from_model(payload)
 
     with path.open("rb") as file_obj:
-        return pickle.load(file_obj)
+        return pickle.load(file_obj)  # nosec B301 - legacy local artifact loading
 
 
 def main() -> None:

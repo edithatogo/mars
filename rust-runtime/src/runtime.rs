@@ -1,9 +1,10 @@
-use std::fs;
 use std::path::Path;
+use std::{env, fs, thread};
 
 use crate::errors::{MarsError, MarsResult};
 use crate::model_spec::{BasisTermSpec, ModelSpec};
 use crate::observability;
+use rayon::prelude::*;
 
 pub fn load_model_spec_str(raw: &str) -> MarsResult<ModelSpec> {
     let _span = observability::span("runtime::load_model_spec_str");
@@ -156,29 +157,62 @@ pub fn design_matrix(spec: &ModelSpec, rows: &[Vec<f64>]) -> MarsResult<Vec<Vec<
     let _span = observability::span("runtime::design_matrix");
     validate_model_spec(spec)?;
     validate_rows(spec, rows)?;
+    let thread_count = runtime_thread_count();
 
-    rows.iter()
-        .map(|row| {
-            spec.basis_terms
-                .iter()
-                .map(|basis| evaluate_basis(basis, row))
+    if should_use_parallel(thread_count, rows.len()) {
+        let thread_pool = rayon::ThreadPoolBuilder::new()
+            .num_threads(thread_count)
+            .build()
+            .map_err(|error| {
+                MarsError::MalformedArtifact(format!("failed to configure thread pool: {error}"))
+            })?;
+
+        thread_pool.install(|| {
+            rows.par_iter()
+                .map(|row| evaluate_design_row(spec, row))
                 .collect()
         })
-        .collect()
+    } else {
+        rows.iter()
+            .map(|row| evaluate_design_row(spec, row))
+            .collect()
+    }
 }
 
 pub fn predict(spec: &ModelSpec, rows: &[Vec<f64>]) -> MarsResult<Vec<f64>> {
     let _span = observability::span("runtime::predict");
-    let matrix = design_matrix(spec, rows)?;
-    Ok(matrix
+    let thread_count = runtime_thread_count();
+    validate_model_spec(spec)?;
+    validate_rows(spec, rows)?;
+
+    if should_use_parallel(thread_count, rows.len()) {
+        let thread_pool = rayon::ThreadPoolBuilder::new()
+            .num_threads(thread_count)
+            .build()
+            .map_err(|error| {
+                MarsError::MalformedArtifact(format!("failed to configure thread pool: {error}"))
+            })?;
+
+        thread_pool.install(|| rows.par_iter().map(|row| predict_row(spec, row)).collect())
+    } else {
+        rows.iter().map(|row| predict_row(spec, row)).collect()
+    }
+}
+
+fn evaluate_design_row(spec: &ModelSpec, row: &[f64]) -> MarsResult<Vec<f64>> {
+    spec.basis_terms
         .iter()
-        .map(|row| {
-            row.iter()
-                .zip(spec.coefficients.iter())
-                .map(|(value, coefficient)| value * coefficient)
-                .sum()
+        .map(|basis| evaluate_basis(basis, row))
+        .collect()
+}
+
+fn predict_row(spec: &ModelSpec, row: &[f64]) -> MarsResult<f64> {
+    spec.basis_terms
+        .iter()
+        .zip(spec.coefficients.iter())
+        .try_fold(0.0, |total, (basis, coefficient)| {
+            evaluate_basis(basis, row).map(|value| total + value * coefficient)
         })
-        .collect())
 }
 
 fn validate_rows(spec: &ModelSpec, rows: &[Vec<f64>]) -> MarsResult<()> {
@@ -345,4 +379,131 @@ fn numeric_category_value(basis: &BasisTermSpec) -> MarsResult<f64> {
             "categorical basis terms currently require a numeric category".to_string(),
         )
     })
+}
+
+const DEFAULT_THREAD_HINT: usize = 1;
+const THREAD_ENV_VAR: &str = "MARS_EARTH_RUNTIME_THREADS";
+
+fn runtime_thread_count() -> usize {
+    let configured = env::var(THREAD_ENV_VAR)
+        .ok()
+        .and_then(|value| value.parse::<usize>().ok())
+        .filter(|value| *value > 0)
+        .unwrap_or(DEFAULT_THREAD_HINT);
+
+    configured.min(available_threads())
+}
+
+fn should_use_parallel(thread_count: usize, rows: usize) -> bool {
+    thread_count > 1 && rows > 1
+}
+
+fn available_threads() -> usize {
+    thread::available_parallelism()
+        .map_or(1, std::num::NonZeroUsize::get)
+        .max(1)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{design_matrix, load_model_spec_path, predict, runtime_thread_count};
+    use std::env;
+    use std::path::PathBuf;
+
+    #[test]
+    fn runtime_thread_count_defaults_to_single_when_unset() {
+        let _guard = ThreadOverrideGuard::new(None);
+        assert_eq!(runtime_thread_count(), 1);
+    }
+
+    #[test]
+    fn runtime_thread_count_clamps_to_env_request() {
+        let _guard = ThreadOverrideGuard::new(Some("1"));
+        assert_eq!(runtime_thread_count(), 1);
+    }
+
+    #[test]
+    fn design_matrix_uses_default_single_thread_mode() {
+        let spec = load_model_spec_fixture();
+        let rows = vec![
+            vec![0.0, 0.0, 0.1],
+            vec![0.5, 0.25, 0.2],
+            vec![1.0, 0.75, 0.3],
+        ];
+
+        let _guard = ThreadOverrideGuard::new(Some("1"));
+        let matrix = design_matrix(&spec, &rows).expect("design matrix should compute");
+        let single = predict(&spec, &rows).expect("prediction should compute");
+        assert_eq!(matrix.len(), 3);
+        assert_eq!(single.len(), 3);
+    }
+
+    #[test]
+    fn design_matrix_prediction_matches_across_thread_modes() {
+        let spec = load_model_spec_fixture();
+        let rows = vec![
+            vec![0.0, 0.0, 0.1],
+            vec![0.5, 0.25, 0.2],
+            vec![1.0, 0.75, 0.3],
+            vec![1.5, 1.0, 0.4],
+        ];
+
+        let _single = ThreadOverrideGuard::new(Some("1"));
+        let single = predict(&spec, &rows).expect("single-thread prediction should compute");
+
+        let _parallel = ThreadOverrideGuard::new(Some("2"));
+        let parallel = predict(&spec, &rows).expect("parallel prediction should compute");
+
+        assert_eq!(single.len(), parallel.len());
+        assert!(single
+            .iter()
+            .zip(parallel.iter())
+            .all(|(left, right)| (left - right).abs() < 1e-12));
+    }
+
+    #[test]
+    fn set_thread_override_defaults_to_single_when_invalid() {
+        let _clear_guard = ThreadOverrideGuard::new(None);
+        let _invalid_guard = ThreadOverrideGuard::new(Some("not-a-number"));
+        let threads = runtime_thread_count();
+        assert_eq!(threads, 1);
+    }
+
+    fn load_model_spec_fixture() -> crate::model_spec::ModelSpec {
+        load_model_spec_path(repo_root().join("tests/fixtures/model_spec_v1.json"))
+            .expect("fixture should load")
+    }
+
+    fn repo_root() -> PathBuf {
+        PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .parent()
+            .expect("rust-runtime should sit under the repository root")
+            .to_path_buf()
+    }
+
+    struct ThreadOverrideGuard {
+        previous: Option<String>,
+    }
+
+    impl ThreadOverrideGuard {
+        fn new(value: Option<&'static str>) -> Self {
+            let previous = env::var(super::THREAD_ENV_VAR).ok();
+            if let Some(raw) = value {
+                env::set_var(super::THREAD_ENV_VAR, raw);
+            } else {
+                env::remove_var(super::THREAD_ENV_VAR);
+            }
+            ThreadOverrideGuard { previous }
+        }
+    }
+
+    impl Drop for ThreadOverrideGuard {
+        fn drop(&mut self) {
+            if let Some(previous) = self.previous.take() {
+                env::set_var(super::THREAD_ENV_VAR, previous);
+            } else {
+                env::remove_var(super::THREAD_ENV_VAR);
+            }
+        }
+    }
 }

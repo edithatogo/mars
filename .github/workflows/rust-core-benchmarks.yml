@@ -35,7 +35,7 @@ jobs:
         run: |
           mkdir -p release-artifacts
           set -o pipefail
-          cargo bench | tee release-artifacts/cargo-bench.log || true
+          cargo bench | tee release-artifacts/cargo-bench.log
           cargo metadata --format-version 1 --no-deps | tee release-artifacts/cargo-metadata.json
         working-directory: rust-runtime
 

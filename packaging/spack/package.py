@@ -1,20 +1,20 @@
+"""Spack upstream-facing package definition for the mars-earth family."""
+
 from spack.package import PythonPackage, depends_on, version
 
 
-class Pymars(PythonPackage):
-    """Feasibility sketch for packaging pymars in Spack.
-
-    This file is intentionally lane-local and does not change the runtime API.
-    It records the minimum shape of a source-install recipe and the dependency
-    policy needed for HPC-style feasibility checks.
-    """
+class MarsEarth(PythonPackage):
+    """Spack recipe for the `mars-earth` source distribution."""
 
     homepage = "https://github.com/edithatogo/mars"
-    pypi = "mars-earth/mars-earth-{version}.tar.gz"
+    url = "https://files.pythonhosted.org/packages/source/m/mars_earth/mars_earth-{0}.tar.gz"
 
-    version("0.1.0", sha256="0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef")
+    version(
+        "1.0.4",
+        sha256="0755aa79c879e06bb83d5e2811435c20e4f81623e1ddd8451b528cd8fe6d7972",
+    )
 
-    depends_on("python@3.10:", type=("build", "run"))
+    depends_on("python@3.9:", type=("build", "run"))
     depends_on("py-numpy", type=("build", "run"))
     depends_on("py-scipy", type=("build", "run"))
     depends_on("py-scikit-learn", type=("build", "run"))

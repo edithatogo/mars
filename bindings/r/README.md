@@ -1,4 +1,4 @@
-# marsruntime
+# marsearth
 
 Portable R runtime replay for mars `ModelSpec` artifacts.
 
@@ -13,7 +13,7 @@ R release path is complete.
 ## Usage
 
 ```r
-library(marsruntime)
+library(marsearth)
 spec <- list(
   spec_version = "1.0",
   basis_terms = list(),

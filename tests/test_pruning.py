@@ -14,6 +14,7 @@ class MockEarth(Earth):
     """Test double for Earth with a simplified constructor."""
 
     def __init__(self, penalty=3.0, allow_missing=False, **kwargs):
+        """Initialize the pruning test double with the chosen penalty."""
         super().__init__(penalty=penalty, allow_missing=allow_missing, **kwargs)
         self.record_ = None
 

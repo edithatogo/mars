@@ -30,6 +30,7 @@ class MockEarth(Earth):
         allow_linear=True,
         allow_missing=False,
     ):
+        """Initialize a controllable Earth instance for forward-pass tests."""
         super().__init__(
             max_degree=max_degree,
             penalty=penalty,

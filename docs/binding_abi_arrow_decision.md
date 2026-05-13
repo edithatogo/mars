@@ -49,4 +49,3 @@ If that happens, the right shape is:
 - `priority`: optional prototype only
 - `next_action`: revisit only if bulk transfer or zero-copy exchange becomes a
   demonstrated bottleneck
-

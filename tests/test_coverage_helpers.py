@@ -1,3 +1,5 @@
+"""Shared coverage helpers and support doubles for test coverage."""
+
 import argparse
 import logging
 import pickle
@@ -25,6 +27,7 @@ class FakeSeries:
     """Minimal stand-in for a pandas Series."""
 
     def __init__(self, values):
+        """Store the backing values for fake Series behavior."""
         self.values = np.asarray(values)
 
 
@@ -32,6 +35,7 @@ class FakeFrame:
     """Minimal stand-in for a pandas DataFrame."""
 
     def __init__(self, data):
+        """Store columnar data and expose a pandas-like columns attribute."""
         self._data = {key: np.asarray(value) for key, value in data.items()}
         self.columns = list(self._data)
 
@@ -40,6 +44,7 @@ class FakeFrame:
         return FakeFrame({k: v for k, v in self._data.items() if k not in columns})
 
     def __getitem__(self, key):
+        """Return the requested fake column."""
         return FakeSeries(self._data[key])
 
     @property
@@ -52,6 +57,7 @@ class FakePredFrame:
     """Minimal stand-in for a prediction output frame."""
 
     def __init__(self, data):
+        """Store prediction payload state for later assertions."""
         self.data = data
         self.saved = None
 
@@ -64,6 +70,7 @@ class FakePandasModule:
     """Minimal stand-in for the pandas module."""
 
     def __init__(self, frame):
+        """Record the backing frame used for fake CSV reads."""
         self._frame = frame
         self.pred_frames = []
 
@@ -82,6 +89,7 @@ class FakeEarth:
     """Minimal Earth-like estimator used by CLI and demo tests."""
 
     def __init__(self, **kwargs):
+        """Store construction arguments and seed fitted-model attributes."""
         self.kwargs = kwargs
         self.basis_ = [object(), object()]
         self.gcv_ = 1.2345
@@ -123,6 +131,7 @@ class FakePlotModel:
     """Minimal model used to exercise plotting helpers."""
 
     def __init__(self):
+        """Expose the minimal plot-time attributes used by helpers."""
         self.basis_ = [object()]
         self.earth_ = FakeInternalEarth()
 
@@ -136,6 +145,7 @@ class FakeExplainModel:
     """Minimal fitted model used by explanation helpers."""
 
     def __init__(self):
+        """Seed fitted-model attributes for explanation assertions."""
         self.fitted_ = True
         self.basis_ = [SimpleNamespace(name="b0"), SimpleNamespace(name="b1")]
         self.coef_ = np.array([1.0, 2.0])
@@ -161,6 +171,7 @@ class FakeCliModel:
     """Minimal fitted model used by CLI prediction tests."""
 
     def __init__(self):
+        """Seed the minimum attributes required by CLI prediction tests."""
         self.basis_ = [object()]
 
     def predict(self, X):
@@ -178,6 +189,7 @@ class FakeDemoModel:
     """Minimal demo model used to exercise the example entry points."""
 
     def __init__(self, *args, **kwargs):
+        """Store demo constructor arguments and expose a fake summary hook."""
         del args
         self.kwargs = kwargs
         self.earth_ = SimpleNamespace(summary=lambda: None)
@@ -212,6 +224,7 @@ class FakeAdvancedExampleModel:
     """Minimal model used by the advanced example path."""
 
     def __init__(self, **kwargs):
+        """Store kwargs and seed explanation-friendly fitted attributes."""
         self.kwargs = kwargs
         self.basis_ = [object(), object(), object()]
         self.gcv_ = 0.321
@@ -244,6 +257,7 @@ class DummyBasisFunction:
         gcv_score: float = 0.0,
         rss_score: float = 0.0,
     ):
+        """Store the basis configuration used by the coverage helpers."""
         self._involved = involved
         self._constant = constant
         self.gcv_score_ = gcv_score

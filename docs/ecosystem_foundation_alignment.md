@@ -11,7 +11,7 @@ they define what would make the project credible in each ecosystem.
 | Apache Arrow | Arrow is the main cross-language data interchange story for columnar analytics and memory-oriented interop | no Arrow runtime surface yet | evaluate Arrow C Data / C Stream as an optional data boundary for matrix and table inputs |
 | PyPA | Python packaging standards define the Python distribution baseline | PyPI package and release metadata exist | keep `pyproject.toml`, trusted publishing, metadata, and wheel smoke tests aligned with PyPA specs |
 | .NET Foundation | C# ecosystem stewardship and project-health framing | NuGet package exists | document C# binding ownership, support policy, and whether foundation membership is useful |
-| Julia communities | Julia General is the registry path and community discovery route | Julia package submitted and waiting on registry processing | keep Julia docs, package metadata, examples, and issue routing current |
+| Julia communities | Julia General is the registry path and community discovery route | Julia package registration is pending for `MarsEarth`; `MarsRuntime` is a separate legacy identity | keep Julia docs, package metadata, examples, issue routing, and registration status current for future releases |
 | R communities | R package review and discovery depend on R-specific documentation and checks | R package is locally publication-ready | complete r-universe/CRAN path, then align examples and review notes |
 
 ## Apache Arrow Position
@@ -47,10 +47,11 @@ surface. Before that, the repo needs:
 
 ## Julia and R Position
 
-Julia and R should be treated as language communities with their own review and
-publication norms:
+Julia and R should be treated as language communities with their own publication
+norms:
 
-- Julia: General registry, package metadata, examples, and issue routing
+- Julia: General registration for `MarsEarth` (legacy `MarsRuntime` separate),
+  package metadata, examples, issue routing, and review status tracking
 - R: r-universe/CRAN, `R CMD check`, manual/vignette quality, and maintainer
   communication
 

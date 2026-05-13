@@ -1,5 +1,5 @@
-name = "MarsRuntime"
-uuid = "dd07e42f-8d4e-4e9e-9c0b-000000000001"
+name = "MarsEarth"
+uuid = "0d300d88-95b8-4e41-9fc4-3785e98d20dd"
 version = "0.1.0"
 authors = ["Dylan A Mordaunt"]
 license = "Apache-2.0"

@@ -1,3 +1,5 @@
+"""Cross-validation helpers for Earth estimators."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, cast
@@ -16,6 +18,7 @@ class EarthCV:
     def __init__(
         self, estimator: Earth | None = None, cv: int = 5, scoring: str | None = None
     ) -> None:
+        """Configure the estimator, fold count, and optional scoring rule."""
         self.estimator = estimator or Earth()
         self.cv = cv
         self.scoring = scoring

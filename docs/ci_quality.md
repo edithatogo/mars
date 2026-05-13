@@ -18,6 +18,15 @@ This repo enforces a conservative quality gate:
 - release rehearsal and artifact inspection
 - package alignment checks so docs, manifests, and `release_metadata.json` stay in sync
 
+The primary CI and local validation paths are strict. The intentionally
+advisory jobs are limited to exploratory or release-adjacent workflows:
+
+- profiling
+- benchmark collection
+- mutation testing
+- release publish rehearsal gates where external registries or approvals are the
+  blocking factor
+
 Recommended local Rust commands:
 
 ```bash

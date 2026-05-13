@@ -1,12 +1,15 @@
-from __future__ import annotations
-
 """Spec-driven runtime helpers for portable pymars models."""
+
+from __future__ import annotations
 
 import json
 import logging
+import os
 import sys
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
+from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, cast
+from typing import Any, Callable, cast
 
 import numpy as np
 
@@ -40,13 +43,185 @@ _RUST_RUNTIME_SUPPORTED_KINDS = {
     "linear",
     "missingness",
 }
+_RUNTIME_THREAD_ENV_VAR = "MARS_EARTH_RUNTIME_THREADS"
+
+
+def _normalize_workers(workers: int | None) -> int:
+    if workers is None:
+        return 1
+    if workers < 1:
+        raise ValueError("workers must be >= 1")
+    return workers
+
+
+def _normalize_chunk_size(
+    chunk_size: int | None, rows: list[list[float]], workers: int
+) -> int:
+    if chunk_size is None:
+        return max(1, len(rows) // workers) if len(rows) >= workers else 1
+    if chunk_size < 1:
+        raise ValueError("chunk_size must be >= 1")
+    return chunk_size
+
+
+def _chunked_row_indices(n_rows: int, chunk_size: int) -> list[tuple[int, int]]:
+    if n_rows <= 0:
+        return []
+    chunks: list[tuple[int, int]] = []
+    for start in range(0, n_rows, chunk_size):
+        end = min(n_rows, start + chunk_size)
+        chunks.append((start, end))
+    return chunks
+
+
+def _distributed_map(
+    rows: list[list[float]],
+    workers: int,
+    chunk_size: int,
+    worker_fn: Callable[[list[list[float]]], list[Any]],
+    preserve_order: bool,
+) -> list[Any]:
+    indices = _chunked_row_indices(len(rows), chunk_size)
+    if not indices:
+        return []
+
+    if workers <= 1 or len(indices) == 1:
+        ordered_results: list[Any] = []
+        for start, end in indices:
+            ordered_results.extend(worker_fn(rows[start:end]))
+        return ordered_results[: len(rows)]
+
+    with ThreadPoolExecutor(max_workers=workers) as executor:
+        futures = {
+            executor.submit(worker_fn, rows[start:end]): (start, end)
+            for start, end in indices
+        }
+        if preserve_order:
+            ordered_pairs = sorted(
+                (
+                    (start, end, future.result())
+                    for future, (start, end) in futures.items()
+                ),
+                key=lambda item: item[0],
+            )
+            ordered_results: list[Any] = []
+            for _, _, chunk_values in ordered_pairs:
+                ordered_results.extend(chunk_values)
+            return ordered_results
+
+        flat: list[Any] = []
+        for _, _, chunk_values in [
+            (start, end, future.result()) for future, (start, end) in futures.items()
+        ]:
+            flat.extend(chunk_values)
+        return flat
+
+
+def _process_cluster_map(
+    rows: list[list[float]],
+    workers: int,
+    chunk_size: int,
+    worker_fn: Callable[[list[list[float]]], list[Any]],
+    preserve_order: bool,
+) -> list[Any]:
+    indices = _chunked_row_indices(len(rows), chunk_size)
+    if not indices:
+        return []
+
+    if workers <= 1 or len(indices) == 1:
+        ordered_results: list[Any] = []
+        for start, end in indices:
+            ordered_results.extend(worker_fn(rows[start:end]))
+        return ordered_results[: len(rows)]
+
+    with ProcessPoolExecutor(max_workers=workers) as executor:
+        futures = {
+            executor.submit(worker_fn, rows[start:end]): (start, end)
+            for start, end in indices
+        }
+        if preserve_order:
+            ordered_pairs = sorted(
+                (
+                    (start, end, future.result())
+                    for future, (start, end) in futures.items()
+                ),
+                key=lambda item: item[0],
+            )
+            ordered_results: list[Any] = []
+            for _, _, chunk_values in ordered_pairs:
+                ordered_results.extend(chunk_values)
+            return ordered_results
+
+        flat: list[Any] = []
+        for _, _, chunk_values in [
+            (start, end, future.result()) for future, (start, end) in futures.items()
+        ]:
+            flat.extend(chunk_values)
+        return flat
+
+
+def _predict_cpu_cluster_chunk(
+    spec_json: str, batch: list[list[float]]
+) -> list[float]:
+    """Predict a batch in a process worker using the portable Python model."""
+    model = load_model(spec_from_json(spec_json))
+    return cast("list[float]", model.predict(np.asarray(batch)).tolist())
+
+
+def _design_matrix_cpu_cluster_chunk(
+    spec_json: str, batch: list[list[float]]
+) -> list[list[float]]:
+    """Build a design matrix batch in a process worker using the portable model."""
+    model = load_model(spec_from_json(spec_json))
+    X_processed, missing_mask = model._prepare_prediction_data(
+        np.asarray(batch, dtype=float)
+    )
+    basis = model.basis_
+    if basis is None:
+        raise ValueError("Portable model is missing basis functions.")
+    return cast(
+        "list[list[float]]",
+        model._build_basis_matrix(X_processed, basis, missing_mask).tolist(),
+    )
+
+
+def set_runtime_threads(thread_count: int | None) -> None:
+    """Set runtime thread hint for Rust replay.
+
+    Args:
+        thread_count: If ``None``, remove the override and use runtime defaults.
+            If ``1``, force deterministic single-thread execution.
+    """
+    if thread_count is None:
+        os.environ.pop(_RUNTIME_THREAD_ENV_VAR, None)
+        return
+    if thread_count < 1:
+        raise ValueError("thread_count must be >= 1")
+    os.environ[_RUNTIME_THREAD_ENV_VAR] = str(thread_count)
+
+
+@contextmanager
+def runtime_threads(thread_count: int | None):
+    """Temporarily configure runtime thread hint and restore afterwards.
+
+    Args:
+        thread_count: Optional thread count. ``1`` enforces deterministic
+            single-thread replay. ``None`` removes the override.
+    """
+    previous = os.environ.get(_RUNTIME_THREAD_ENV_VAR)
+    set_runtime_threads(thread_count)
+    try:
+        yield thread_count
+    finally:
+        if previous is None:
+            os.environ.pop(_RUNTIME_THREAD_ENV_VAR, None)
+        else:
+            os.environ[_RUNTIME_THREAD_ENV_VAR] = previous
 
 
 def _should_use_rust_backend() -> bool:
     """Return whether runtime helpers should route through the active backend."""
-    return _rust_backend is not None and not getattr(
-        _rust_backend, "_IS_COMPILED", False
-    )
+    return _rust_backend is not None and getattr(_rust_backend, "_IS_COMPILED", False)
 
 
 def _rust_backend_supports(method_name: str) -> bool:
@@ -225,6 +400,202 @@ def design_matrix(spec_or_path: dict[str, Any] | str | Path, X: Any) -> np.ndarr
     if basis is None:
         raise ValueError("Portable model is missing basis functions.")
     return model._build_basis_matrix(X_processed, basis, missing_mask)
+
+
+def predict_distributed(
+    spec_or_path: dict[str, Any] | str | Path,
+    X: Any,
+    *,
+    workers: int | None = 1,
+    chunk_size: int | None = None,
+    preserve_order: bool = True,
+) -> np.ndarray:
+    """Replay a spec with local row chunking for preview distributed execution.
+
+    This helper is a replay-only, opt-in H4 preview surface. It does not require
+    cluster provisioning and must not initialize external services.
+    """
+    spec = load_model_spec(spec_or_path)
+    rows = _coerce_rows_for_rust(X)
+    resolved_workers = _normalize_workers(workers)
+    resolved_chunk_size = _normalize_chunk_size(chunk_size, rows, resolved_workers)
+    use_rust = _predict_with_rust(spec, rows[:0]) is not None
+    if use_rust and not _spec_is_rust_runtime_compatible(spec):
+        use_rust = False
+
+    worker_model = None if use_rust else load_model(spec)
+
+    def predict_chunk(batch: list[list[float]]) -> list[float]:
+        if use_rust:
+            return cast("list[float]", _predict_with_rust(spec, batch).tolist())
+        return cast("list[float]", worker_model.predict(np.asarray(batch)).tolist())
+
+    return np.asarray(
+        _distributed_map(
+            rows=rows,
+            workers=resolved_workers,
+            chunk_size=resolved_chunk_size,
+            worker_fn=predict_chunk,
+            preserve_order=preserve_order,
+        ),
+        dtype=float,
+    )
+
+
+def design_matrix_distributed(
+    spec_or_path: dict[str, Any] | str | Path,
+    X: Any,
+    *,
+    workers: int | None = 1,
+    chunk_size: int | None = None,
+    preserve_order: bool = True,
+) -> np.ndarray:
+    """Build model matrices with local chunked replay execution.
+
+    This helper is a replay-only, opt-in H4 preview surface. It does not require
+    cluster provisioning and must not initialize external services.
+    """
+    spec = load_model_spec(spec_or_path)
+    rows = _coerce_rows_for_rust(X)
+    resolved_workers = _normalize_workers(workers)
+    resolved_chunk_size = _normalize_chunk_size(chunk_size, rows, resolved_workers)
+    use_rust = _design_matrix_with_rust(spec, rows[:0]) is not None
+    if use_rust and not _spec_is_rust_runtime_compatible(spec):
+        use_rust = False
+
+    worker_model = None if use_rust else load_model(spec)
+
+    def design_chunk(batch: list[list[float]]) -> list[list[float]]:
+        if use_rust:
+            matrix = _design_matrix_with_rust(spec, batch)
+            return cast("list[list[float]]", matrix.tolist())
+        X_processed, missing_mask = worker_model._prepare_prediction_data(
+            np.asarray(batch, dtype=float)
+        )
+        basis = worker_model.basis_
+        if basis is None:
+            raise ValueError("Portable model is missing basis functions.")
+        return cast(
+            "list[list[float]]",
+            worker_model._build_basis_matrix(X_processed, basis, missing_mask).tolist(),
+        )
+
+    return np.asarray(
+        _distributed_map(
+            rows=rows,
+            workers=resolved_workers,
+            chunk_size=resolved_chunk_size,
+            worker_fn=design_chunk,
+            preserve_order=preserve_order,
+        ),
+        dtype=float,
+    )
+
+
+def predict_cpu_cluster(
+    spec_or_path: dict[str, Any] | str | Path,
+    X: Any,
+    *,
+    workers: int | None = 1,
+    chunk_size: int | None = None,
+    preserve_order: bool = True,
+) -> np.ndarray:
+    """Replay a spec through process-based CPU cluster parallelism.
+
+    This is an opt-in H4 CPU-cluster preview surface. It uses process workers
+    for partitioned CPU replay and falls back to serial execution when workers
+    are not greater than one.
+    """
+    spec = load_model_spec(spec_or_path)
+    rows = _coerce_rows_for_rust(X)
+    resolved_workers = _normalize_workers(workers)
+    resolved_chunk_size = _normalize_chunk_size(chunk_size, rows, resolved_workers)
+    spec_json = spec_to_json(spec)
+
+    indices = _chunked_row_indices(len(rows), resolved_chunk_size)
+    if not indices:
+        return np.asarray([], dtype=float)
+    if resolved_workers <= 1 or len(indices) == 1:
+        ordered_results: list[float] = []
+        for start, end in indices:
+            ordered_results.extend(_predict_cpu_cluster_chunk(spec_json, rows[start:end]))
+        return np.asarray(ordered_results[: len(rows)], dtype=float)
+
+    with ProcessPoolExecutor(max_workers=resolved_workers) as executor:
+        futures = {
+            executor.submit(_predict_cpu_cluster_chunk, spec_json, rows[start:end]): (
+                start,
+                end,
+            )
+            for start, end in indices
+        }
+        if preserve_order:
+            ordered_pairs = sorted(
+                (
+                    (start, end, future.result())
+                    for future, (start, end) in futures.items()
+                ),
+                key=lambda item: item[0],
+            )
+        else:
+            ordered_pairs = [
+                (start, end, future.result()) for future, (start, end) in futures.items()
+            ]
+    ordered_results: list[float] = []
+    for _, _, chunk_values in ordered_pairs:
+        ordered_results.extend(chunk_values)
+    return np.asarray(ordered_results, dtype=float)
+
+
+def design_matrix_cpu_cluster(
+    spec_or_path: dict[str, Any] | str | Path,
+    X: Any,
+    *,
+    workers: int | None = 1,
+    chunk_size: int | None = None,
+    preserve_order: bool = True,
+) -> np.ndarray:
+    """Build model matrices through process-based CPU cluster parallelism."""
+    spec = load_model_spec(spec_or_path)
+    rows = _coerce_rows_for_rust(X)
+    resolved_workers = _normalize_workers(workers)
+    resolved_chunk_size = _normalize_chunk_size(chunk_size, rows, resolved_workers)
+    spec_json = spec_to_json(spec)
+
+    indices = _chunked_row_indices(len(rows), resolved_chunk_size)
+    if not indices:
+        return np.asarray([], dtype=float)
+    if resolved_workers <= 1 or len(indices) == 1:
+        ordered_results: list[list[float]] = []
+        for start, end in indices:
+            ordered_results.extend(
+                _design_matrix_cpu_cluster_chunk(spec_json, rows[start:end])
+            )
+        return np.asarray(ordered_results, dtype=float)
+
+    with ProcessPoolExecutor(max_workers=resolved_workers) as executor:
+        futures = {
+            executor.submit(
+                _design_matrix_cpu_cluster_chunk, spec_json, rows[start:end]
+            ): (start, end)
+            for start, end in indices
+        }
+        if preserve_order:
+            ordered_pairs = sorted(
+                (
+                    (start, end, future.result())
+                    for future, (start, end) in futures.items()
+                ),
+                key=lambda item: item[0],
+            )
+        else:
+            ordered_pairs = [
+                (start, end, future.result()) for future, (start, end) in futures.items()
+            ]
+    ordered_results: list[list[float]] = []
+    for _, _, chunk_values in ordered_pairs:
+        ordered_results.extend(chunk_values)
+    return np.asarray(ordered_results, dtype=float)
 
 
 def inspect(spec_or_path: dict[str, Any] | str | Path) -> dict[str, Any]:

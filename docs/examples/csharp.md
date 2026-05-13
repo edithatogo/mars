@@ -1,0 +1,10 @@
+# C# Quickstart
+
+The C# binding is exercised through the native ABI smoke tests and the runtime
+wrapper.
+
+## First Stop
+
+- [`bindings/csharp/README.md`](/Users/doughnut/GitHub/pymars/bindings/csharp/README.md)
+- [`bindings/csharp/Runtime.cs`](/Users/doughnut/GitHub/pymars/bindings/csharp/Runtime.cs)
+- [`bindings/csharp/MarsRuntime.Tests/NativeAbiSmokeTests.cs`](/Users/doughnut/GitHub/pymars/bindings/csharp/MarsRuntime.Tests/NativeAbiSmokeTests.cs)

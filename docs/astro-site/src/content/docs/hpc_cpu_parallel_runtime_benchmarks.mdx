@@ -1,0 +1,72 @@
+---
+title: "H1 CPU Runtime Benchmark Baselines"
+description: "This document records the first runnable baseline set for the H1 replay-path benchmark requirement in docs/hpc_contracts.md."
+sidebar:
+  order: 11
+---
+
+
+This document records the first runnable baseline set for the H1 replay-path
+benchmark requirement in `docs/hpc_contracts.md`.
+
+## Environment and Scope
+
+- Runtime: `rust-runtime`
+- Kernel functions: `design_matrix` and `predict`
+- Model spec: `tests/fixtures/model_spec_v1.json`
+- Run shape: small/medium/large row counts with thread counts 1 and 4
+- Regression policy reference: retain single-thread behavior and allow measured
+  parallel speedup only if the median time is non-regressing for target workloads
+  unless a documented tradeoff is approved.
+
+## Commands
+
+Rust criterion baselines:
+
+```bash
+cd rust-runtime
+cargo bench --bench runtime_bench -- --noplot
+```
+
+Python smoke wrapper (thread controls and memory deltas; requires local pymars
+runtime dependencies):
+
+```bash
+python3 scripts/benchmark_runtime_threads.py \
+  --mode predict \
+  --rows 1024,8192 \
+  --threads 1,4 \
+  --repeats 3
+```
+
+## Recorded Rust Criterion Results (2026-05-11)
+
+All runs used `thread_count=1` and `thread_count=4`.  Medians below are from
+the criterion output above.
+
+| Workload | Operation | Threads=1 Median | Threads=4 Median | Delta |
+| --- | --- | ---: | ---: | ---: |
+| 64 rows | `design_matrix` | 6.4 us | 81.4 us | 11.3x slower |
+| 1,024 rows | `design_matrix` | 93.3 us | 413.7 us | 4.4x slower |
+| 8,192 rows | `design_matrix` | 712.0 us | 1.90 ms | 2.7x slower |
+| 64 rows | `predict` | 2.4 us | 77.1 us | 32.0x slower |
+| 1,024 rows | `predict` | 26.7 us | 133.3 us | 5.0x slower |
+| 8,192 rows | `predict` | 215.7 µs | 201.3 µs | 0.93x (7% faster) |
+
+Interpretation:
+
+- `design_matrix` and most `predict` workloads are currently slower in this benchmark
+  shape with a 4-thread override, and the delta is dominated by thread-pool
+  overhead.
+- `predict` on 8,192 rows shows a small median improvement for `threads=4`.
+- These results should be revisited once workload granularity increases or a longer-
+  running kernel slice is used; currently this is evidence that parallelism overhead
+  is the gating factor for the tested shapes.
+
+## Memory and Regression Tracking
+
+- The Python wrapper includes process RSS delta capture when dependencies are
+  available.
+- A future pass should capture and persist process-memory and CI-stored artifact
+  snapshots for the same workloads above a larger row count to establish the H1 memory
+  evidence requirement before any H1 marketing claim.

@@ -10,7 +10,7 @@ runtime_source <- file.path(script_dir, "..", "R", "runtime.R")
 if (file.exists(runtime_source)) {
   source(runtime_source)
 } else {
-  library(marsruntime)
+  library(marsearth)
 }
 
 if (Sys.getenv("MARS_RUNTIME_BIN", unset = "") == "") {
@@ -24,7 +24,7 @@ rust_runtime_available <- function() {
   if (exists(".rust_runtime_available", mode = "function")) {
     return(.rust_runtime_available())
   }
-  getFromNamespace(".rust_runtime_available", "marsruntime")()
+  getFromNamespace(".rust_runtime_available", "marsearth")()
 }
 
 assert_vector_close <- function(actual, expected) {
@@ -47,7 +47,13 @@ assert_matrix_close <- function(actual, expected) {
   }
 }
 
-fixtures_dir <- file.path(script_dir, "..", "..", "..", "tests", "fixtures")
+fixtures_dir <- system.file("extdata", "fixtures", package = "marsearth")
+if (!nzchar(fixtures_dir)) {
+  fixtures_dir <- file.path(script_dir, "..", "inst", "extdata", "fixtures")
+}
+if (!dir.exists(fixtures_dir)) {
+  fixtures_dir <- file.path(script_dir, "..", "..", "..", "tests", "fixtures")
+}
 if (dir.exists(fixtures_dir)) {
   model_specs <- sort(list.files(fixtures_dir, pattern = "^model_spec_.*\\.json$"))
   if (length(model_specs) > 0) {

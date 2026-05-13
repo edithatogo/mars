@@ -1,24 +1,23 @@
-# conda-forge Feasibility Notes
+# conda-forge Feedstock Notes
 
-This lane treats conda-forge as an optional scientific distribution path.
-There is no staged-recipes submission in this work slice.
+This lane prepares a staged-recipes-ready draft for `mars-earth` under H0 rules.
+It does not imply accelerator, distributed, or training claims (H0).
 
 ## Assumptions
 
-- The package should remain source-installable without accelerator runtimes.
-- Any conda-forge recipe would be a separate community submission effort.
+- The H0 package should remain source-installable without accelerator runtimes.
+- The lane remains isolated from runtime and release registries while keeping the
+  feedstock draft and readiness evidence explicit.
 - The current release story remains anchored in the existing Python, Rust, and
   binding build commands.
 
 ## What This Lane Does
 
-- Records whether a conda-forge recipe is plausible after the source build
-  story is stable.
-- Keeps the feasibility discussion separate from release registries.
-- Avoids API or accelerator changes.
+- Tracks `recipe/meta.yaml` for a `mars-earth` feedstock draft.
+- Keeps feasibility and submission details separate from release registries.
+- Keeps API and runtime unchanged.
 
 ## What This Lane Does Not Do
 
-- Submit to staged-recipes.
-- Define a live feedstock or bot automation.
+- Prepare a staged-recipes PR submission in place of this draft lane.
 - Change the public package API.

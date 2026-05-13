@@ -28,7 +28,7 @@ jobs:
         run: uv sync --extra dev
 
       - name: Run benchmarks
-        run: uv run pytest tests/test_benchmark.py -v --benchmark-only --benchmark-json=benchmark.json || true
+        run: uv run pytest tests/test_benchmark.py -v --benchmark-only --benchmark-json=benchmark.json
 
       - name: Upload benchmark results
         if: always()

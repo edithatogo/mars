@@ -1,0 +1,8 @@
+{
+  "track_id": "hpc_accelerator_specialized_backends_20260511",
+  "type": "feature",
+  "status": "done",
+  "created_at": "2026-05-11T09:07:37Z",
+  "updated_at": "2026-05-11T10:27:00Z",
+  "description": "Implement H3 specialized accelerator backends for TPU, FPGA, ASIC, and similar compute targets."
+}

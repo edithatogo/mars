@@ -1,0 +1,8 @@
+{
+  "track_id": "quality_gate_strictness_20260511",
+  "type": "feature",
+  "status": "done",
+  "created_at": "2026-05-11T09:07:37Z",
+  "updated_at": "2026-05-11T10:52:00Z",
+  "description": "Make linting, formatting, typing, docstrings, validation, and security gates uniformly strict."
+}

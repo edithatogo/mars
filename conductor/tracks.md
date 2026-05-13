@@ -32,14 +32,16 @@ The remaining-track dependency gates are summarized in
   *Link: [./archive/rust_backed_language_bindings_20260428/](./archive/rust_backed_language_bindings_20260428/)*
 - [x] **Track: Harden CI/CD, quality gates, security checks, and automation**
   *Link: [./archive/ci_quality_automation_hardening_20260428/](./archive/ci_quality_automation_hardening_20260428/)*
-- [~] **Track: Prepare release readiness and registry governance**
-  *Link: [./tracks/release_readiness_registry_governance_20260428/](./tracks/release_readiness_registry_governance_20260428/)*
+- [x] **Track: Prepare release readiness and registry governance**
+  *Link: [./archive/release_readiness_registry_governance_20260428/](./archive/release_readiness_registry_governance_20260428/)*
 - [x] **Track: Advance Rust training orchestration and Python integration**
   *Link: [./archive/rust_training_orchestration_python_integration_20260428/](./archive/rust_training_orchestration_python_integration_20260428/)*
 - [x] **Track: R package publication readiness**
   *Link: [./archive/r_package_publication_readiness_20260504/](./archive/r_package_publication_readiness_20260504/)*
 - [~] **Track: Publish packages to language package managers with release governance**
   *Link: [./tracks/package_publication_release_governance_20260428/](./tracks/package_publication_release_governance_20260428/)*
+- [x] **Track: Prepare and submit the R package for publication with browser-based registry workflow**
+  *Link: [./archive/r_package_publication_submission_20260510/](./archive/r_package_publication_submission_20260510/)*
 - [x] **Track: Starlight docs stack versioning and plugin governance**
   *Link: [./archive/starlight_docs_stack_versioning_and_plugins_20260506/](./archive/starlight_docs_stack_versioning_and_plugins_20260506/)*
 - [x] **Track: Canonical versioning and release metadata governance**
@@ -92,3 +94,91 @@ The remaining-track dependency gates are summarized in
 
 - [x] **Track: Prepare Linear and Notion workspace exports**
   *Link: [./archive/workspace_automation_export_20260506/](./archive/workspace_automation_export_20260506/)*
+
+---
+
+- [x] **Track: Govern HPC contract levels and prevent unsupported HPC claims**
+  *Link: [./tracks/hpc_contract_governance_20260511/](./tracks/hpc_contract_governance_20260511/)*
+
+---
+
+- [x] **Track: Implement H1 CPU parallel runtime for HPC replay workloads**
+  *Link: [./tracks/hpc_cpu_parallel_runtime_20260511/](./tracks/hpc_cpu_parallel_runtime_20260511/)*
+
+---
+
+- [x] **Track: Implement H2 ABI and Arrow runtime boundary for HPC consumers**
+  *Link: [./tracks/hpc_abi_arrow_runtime_boundary_20260511/](./tracks/hpc_abi_arrow_runtime_boundary_20260511/)*
+
+---
+
+- [~] **Track: Implement H3 accelerator portability with optional device backends**
+  *Link: [./tracks/hpc_accelerator_portability_20260511/](./tracks/hpc_accelerator_portability_20260511/)*
+
+- [ ] **Track: Define the shared H3 accelerator backend foundation and fallback contract**
+  *Link: [./tracks/hpc_accelerator_backend_foundation_20260511/](./tracks/hpc_accelerator_backend_foundation_20260511/)*
+
+- [x] **Track: Implement H3 GPU-family accelerator backends**
+  *Link: [./tracks/hpc_accelerator_gpu_backends_20260511/](./tracks/hpc_accelerator_gpu_backends_20260511/)*
+
+- [x] **Track: Implement H3 specialized accelerator backends**
+  *Link: [./tracks/hpc_accelerator_specialized_backends_20260511/](./tracks/hpc_accelerator_specialized_backends_20260511/)*
+
+- [x] **Track: Validate H3 accelerator backends with parity tests and benchmarks**
+  *Link: [./tracks/hpc_accelerator_validation_20260511/](./tracks/hpc_accelerator_validation_20260511/)*
+
+- [x] **Track: Make quality gates uniformly strict across CI and local automation**
+  *Link: [./tracks/quality_gate_strictness_20260511/](./tracks/quality_gate_strictness_20260511/)*
+
+- [x] **Track: Create comprehensive docs, examples, and notebooks for all languages**
+  *Link: [./tracks/docs_examples_notebooks_20260511/](./tracks/docs_examples_notebooks_20260511/)*
+
+- [x] **Track: Audit roadmap closure and remaining gaps**
+  *Link: [./tracks/roadmap_closure_audit_20260511/](./tracks/roadmap_closure_audit_20260511/)*
+
+---
+
+- [x] **Track: Implement H4 distributed execution for partitioned replay**
+  *Link: [./tracks/hpc_distributed_execution_20260511/](./tracks/hpc_distributed_execution_20260511/)*
+
+- [ ] **Track: Implement remaining H4 multi-node distributed execution**
+  *Link: [./tracks/hpc_multi_node_distributed_execution_20260511/](./tracks/hpc_multi_node_distributed_execution_20260511/)*
+
+---
+
+- [~] **Track: Prepare and submit the H0 Spack recipe upstream**
+  *Link: [./tracks/spack_upstream_submission_20260511/](./tracks/spack_upstream_submission_20260511/)*
+
+---
+
+- [~] **Track: Prepare and submit the H0 EasyBuild easyconfig upstream**
+  *Link: [./tracks/easybuild_upstream_submission_20260511/](./tracks/easybuild_upstream_submission_20260511/)*
+
+---
+
+- [~] **Track: Prepare and submit the H0 conda-forge feedstock**
+  *Link: [./tracks/conda_forge_feedstock_submission_20260511/](./tracks/conda_forge_feedstock_submission_20260511/)*
+
+---
+
+- [~] **Track: Prepare HPSF and E4S readiness or submission packets**
+  *Link: [./tracks/hpsf_e4s_readiness_submission_20260511/](./tracks/hpsf_e4s_readiness_submission_20260511/)*
+
+---
+
+- [~] **Track: Prepare and submit Julia package registration in General**
+  *Link: [./tracks/julia_general_registration_submission_20260511/](./tracks/julia_general_registration_submission_20260511/)*
+
+---
+
+- [x] **Track: Coordinate remaining documentation, tutorial, and governance work**
+  *Link: [./tracks/docs_tutorials_governance_completion_20260511/](./tracks/docs_tutorials_governance_completion_20260511/)*
+
+- [x] **Track: Expand and normalize tutorial coverage across the Python API and language bindings**
+  *Link: [./tracks/docs_tutorial_coverage_20260511/](./tracks/docs_tutorial_coverage_20260511/)*
+
+- [x] **Track: Keep the docs-stack governance state explicit and accurate**
+  *Link: [./tracks/docs_stack_governance_alignment_20260511/](./tracks/docs_stack_governance_alignment_20260511/)*
+
+- [x] **Track: Keep external submission and registration status synchronized in repo docs**
+  *Link: [./tracks/submission_registration_sync_20260511/](./tracks/submission_registration_sync_20260511/)*

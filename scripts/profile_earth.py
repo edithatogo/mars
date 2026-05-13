@@ -8,6 +8,7 @@ from pymars import Earth
 
 
 def main() -> None:
+    """Profile the Earth estimator on a small synthetic regression problem."""
     np.random.seed(42)
     x_train = np.random.rand(500, 10)
     y_train = np.sin(x_train[:, 0]) + x_train[:, 1] + x_train[:, 2] ** 2

@@ -1,0 +1,81 @@
+---
+title: "Release Metadata"
+description: "Canonical release metadata for the mars-earth project"
+sidebar:
+  order: 46
+---
+
+import { Code } from '@astrojs/starlight/components';
+
+This page displays the canonical release metadata for the `mars-earth` project.
+
+```json
+{
+  "brand": "mars-earth",
+  "versioning_policy": {
+    "model": "ecosystem-native",
+    "intentional_version_skew": true,
+    "release_notes_required": true,
+    "logging_defaults": "quiet-by-default"
+  },
+  "packages": [
+    {
+      "language": "Python",
+      "package": "mars-earth",
+      "import_name": "pymars",
+      "version": "1.0.4",
+      "version_source": ["pyproject.toml", "pymars/__init__.py"],
+      "release_state": "published",
+      "logging_surface": "logging module in package code and CLI"
+    },
+    {
+      "language": "Rust",
+      "package": "mars-earth",
+      "version": "0.1.0",
+      "version_source": ["rust-runtime/Cargo.toml"],
+      "release_state": "published",
+      "logging_surface": "Rust logging is not yet centralized"
+    },
+    {
+      "language": "R",
+      "package": "marsearth",
+      "version": "0.0.0",
+      "version_source": ["bindings/r/DESCRIPTION"],
+      "release_state": "cran_confirmed_incoming_newbies_pending_screening",
+      "logging_surface": "Host errors are surfaced from runtime helpers"
+    },
+    {
+      "language": "Julia",
+      "package": "MarsEarth",
+      "version": "0.1.0",
+      "version_source": ["bindings/julia/Project.toml"],
+      "release_state": "needs_new_registration_marsruntime_superseded",
+      "logging_surface": "Host errors are surfaced from runtime helpers"
+    },
+    {
+      "language": "C#",
+      "package": "mars-earth",
+      "version": "0.0.0",
+      "version_source": ["bindings/csharp/MarsRuntime.csproj"],
+      "release_state": "published",
+      "logging_surface": "Host exceptions from runtime bridge/helpers"
+    },
+    {
+      "language": "Go",
+      "package": "github.com/edithatogo/mars/bindings/go",
+      "version": "0.1.0",
+      "version_source": ["bindings/go/go.mod", "bindings/go/v0.1.0"],
+      "release_state": "published",
+      "logging_surface": "Host errors from runtime bridge/helpers"
+    },
+    {
+      "language": "TypeScript",
+      "package": "mars-earth",
+      "version": "0.0.0",
+      "version_source": ["bindings/typescript/package.json"],
+      "release_state": "published",
+      "logging_surface": "JavaScript exceptions from runtime helpers"
+    }
+  ]
+}
+```

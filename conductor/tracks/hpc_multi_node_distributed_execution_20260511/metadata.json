@@ -1,0 +1,8 @@
+{
+  "track_id": "hpc_multi_node_distributed_execution_20260511",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-05-11T11:15:00Z",
+  "updated_at": "2026-05-11T11:15:00Z",
+  "description": "Implement the remaining H4 multi-node distributed execution contract beyond CPU cluster parallelism. The shared cluster API and CPU-cluster path are already implemented."
+}

@@ -1,3 +1,5 @@
+"""Comparison helpers for running local model-experiment checks."""
+
 import json
 from pathlib import Path
 

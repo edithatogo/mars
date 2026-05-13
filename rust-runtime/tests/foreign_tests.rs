@@ -4,10 +4,11 @@ use std::path::PathBuf;
 use std::ptr;
 
 use pymars_runtime::foreign::{
-    mars_foreign_error_free, mars_foreign_matrix_free, mars_foreign_vector_free,
-    mars_model_spec_design_matrix, mars_model_spec_free, mars_model_spec_from_json,
-    mars_model_spec_predict, mars_model_spec_validate, MarsForeignError, MarsForeignMatrix,
-    MarsForeignStatus, MarsForeignVector, MarsModelSpecHandle,
+    mars_batch_matrix_from_json, mars_foreign_error_free, mars_foreign_matrix_free,
+    mars_foreign_vector_free, mars_model_spec_design_matrix, mars_model_spec_free,
+    mars_model_spec_from_json, mars_model_spec_predict, mars_model_spec_validate,
+    mars_runtime_abi_check_compatibility, mars_runtime_abi_version, MarsForeignAbiVersion,
+    MarsForeignError, MarsForeignMatrix, MarsForeignStatus, MarsForeignVector, MarsModelSpecHandle,
 };
 use serde::Deserialize;
 
@@ -120,6 +121,49 @@ fn ffi_rejects_null_handles() {
     assert_eq!(status, MarsForeignStatus::NullPointer);
     assert!(!error.message.is_null());
     unsafe { mars_foreign_error_free(&mut error) };
+}
+
+#[test]
+fn ffi_exposes_version_and_compatibility_checks() {
+    let mut version = MarsForeignAbiVersion::default();
+    let mut error = MarsForeignError::default();
+
+    let status = unsafe { mars_runtime_abi_version(&mut version, &mut error) };
+    assert_eq!(status, MarsForeignStatus::Ok);
+    assert_eq!(version.major, 1);
+    assert_eq!(version.minor, 0);
+    assert_eq!(version.patch, 0);
+    assert!(error.message.is_null());
+
+    let status = unsafe { mars_runtime_abi_check_compatibility(1, 0, 0, &mut error) };
+    assert_eq!(status, MarsForeignStatus::Ok);
+    assert!(error.message.is_null());
+
+    let status = unsafe { mars_runtime_abi_check_compatibility(2, 0, 0, &mut error) };
+    assert_eq!(status, MarsForeignStatus::UnsupportedArtifactVersion);
+    assert!(!error.message.is_null());
+    unsafe { mars_foreign_error_free(&mut error) };
+}
+
+#[test]
+fn ffi_parses_row_major_batch_interchange() {
+    let mut matrix = MarsForeignMatrix::default();
+    let mut error = MarsForeignError::default();
+    let json = CString::new(r#"[[1.0, null], [3.0, 4.0]]"#).expect("valid cstring");
+
+    let status = unsafe { mars_batch_matrix_from_json(json.as_ptr(), &mut matrix, &mut error) };
+    assert_eq!(status, MarsForeignStatus::Ok);
+    assert_eq!(matrix.rows, 2);
+    assert_eq!(matrix.cols, 2);
+    assert_eq!(matrix.len, 4);
+
+    let actual = unsafe { std::slice::from_raw_parts(matrix.data, matrix.len) };
+    assert!(actual[0].is_finite());
+    assert!(actual[1].is_nan());
+    assert_eq!(actual[2], 3.0);
+    assert_eq!(actual[3], 4.0);
+
+    unsafe { mars_foreign_matrix_free(&mut matrix) };
 }
 
 #[derive(Debug, Deserialize)]

@@ -25,6 +25,7 @@ path can be scripted later without inventing extra structure.
 | Supply chain scorecard and SBOM | Project | `Release State` | CI, provenance, and evidence snapshots |
 | HPC packaging feasibility | Project or initiative | `HPC and ABI` | packaging notes and feasibility evidence |
 | ABI and Arrow interop feasibility | Project | `HPC and ABI` | contract notes and proof-of-concept evidence |
+| Active HPC contracts and implementation | Project or initiative | `HPC and ABI` | H0-H4 contract status, dependencies, and parallel worker ownership |
 | Community submission packets | Initiative | `Scientific Stewardship` and `Ecosystem Alignment` | review packets and maintainer actions |
 | Workspace automation export | Project | `Workspace Reviews` | review notes and exported snapshots |
 

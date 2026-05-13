@@ -1,0 +1,8 @@
+{
+  "track_id": "docs_tutorial_coverage_20260511",
+  "type": "chore",
+  "status": "completed",
+  "created_at": "2026-05-11T07:14:12Z",
+  "updated_at": "2026-05-11T07:27:06Z",
+  "description": "Expand and normalize tutorial coverage across the Python API and language bindings."
+}

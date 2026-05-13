@@ -110,7 +110,6 @@ class EarthRegressor(RegressorMixin, BaseEstimator):
         endspan_alpha: float = 0.0,
         allow_linear: bool = True,
     ):
-
         super().__init__()  # Recommended for BaseEstimator subclasses
 
         self.max_degree = max_degree
@@ -130,6 +129,8 @@ class EarthRegressor(RegressorMixin, BaseEstimator):
             Training input samples.
         y : array-like of shape (n_samples,)
             Target values (continuous).
+        sample_weight : array-like of shape (n_samples,), optional
+            Per-sample weights used during fitting.
 
         Returns
         -------
@@ -267,7 +268,6 @@ class EarthClassifier(ClassifierMixin, BaseEstimator):
         allow_linear: bool = True,
         classifier: Any | None = None,
     ):
-
         super().__init__()
 
         self.max_degree = max_degree
@@ -294,6 +294,8 @@ class EarthClassifier(ClassifierMixin, BaseEstimator):
             Training input samples.
         y : array-like of shape (n_samples,)
             Target values (discrete classes).
+        sample_weight : array-like of shape (n_samples,), optional
+            Per-sample weights used during fitting.
 
         Returns
         -------
@@ -465,10 +467,12 @@ class EarthClassifier(ClassifierMixin, BaseEstimator):
 
         Parameters
         ----------
-        X : XType
+        X : array-like of shape (n_samples, n_features)
             Test samples.
-        y : YType
-            True labels for X.
+        y : array-like of shape (n_samples,)
+            True labels.
+        sample_weight : array-like of shape (n_samples,), optional
+            Per-sample weights used when computing accuracy.
 
         Returns
         -------

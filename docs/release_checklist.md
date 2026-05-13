@@ -12,7 +12,14 @@ capture the remaining registry inputs from the maintainer.
 To move the remaining publication gates forward, the maintainer needs to
 confirm or configure:
 
-- the R release path through r-universe and CRAN
+- Spack upstream PR submission for the prepared H0-only recipe
+- EasyBuild upstream PR submission for the prepared H0-only easyconfig
+- conda-forge staged-recipes PR submission for the prepared H0-only feedstock
+- HPSF/E4S packet approval or explicit deferral decision
+- CRAN screening review for confirmed `marsearth` submission; do not use the
+  superseded `marsruntime` or `mars.earth` names
+- confirmation that Julia should register `MarsEarth` as a new package while
+  treating the already-published `MarsRuntime` as superseded legacy
 
 ## Before a Release Rehearsal
 
@@ -32,16 +39,22 @@ confirm or configure:
 
 - Confirm the R submission path through r-universe and CRAN is available for
   external submission.
+- Confirm the R DESCRIPTION maintainer address matches the CRAN form email.
+- Confirm the R DESCRIPTION package name is `marsearth`; `mars-earth` is not a
+  valid R package name and the earlier `marsruntime` / `mars.earth` submissions
+  are superseded.
+- Confirm `bindings/r/cran-comments.md` summarizes only unresolved check notes
+  and any special treatment; for the current package this is the new-submission
+  NOTE plus optional runtime-helper behavior.
 - Confirm `R CMD check` and `R CMD Rd2pdf` are part of the release rehearsal
   path when local tooling supports them.
 - Confirm the vignette build path is part of the release rehearsal path when
   the vignette dependency stack is installed.
 - If a republish or ownership change is planned later, re-check the PyPI,
   crates.io, npm, and NuGet paths against the release inventory.
-- Julia is already submitted to General; no new maintainer input is needed
-  unless the review period stalls or metadata changes are requested. Check the
-  open General registration PR in the release inventory rather than re-running
-  the initial Registrator flow.
+- Julia `MarsEarth` needs a new General registration because `MarsRuntime` is
+  already published as a separate legacy package identity. Check the release
+  inventory before starting Registrator.
 - Go release is tag-driven via signed annotated tags named
   `bindings/go/v<version>`; `bindings/go/v0.1.0` is already published.
 
@@ -59,6 +72,10 @@ confirm or configure:
 ## After Publishing
 
 - Confirm the published artifact matches the rehearsal artifact.
+- For CRAN, monitor `https://CRAN.R-project.org/incoming/newbies/` for
+  `marsearth_0.0.0.tar.gz`, watch for screening/pretest email, and then review
+  `https://CRAN.R-project.org/web/checks/check_results_marsearth.html` after
+  CRAN creates the check page.
 - Confirm the registry page and README links point to the canonical project.
 - Confirm any release notes or changelog entries were updated to match the
   published version.

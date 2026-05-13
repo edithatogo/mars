@@ -28,7 +28,7 @@ does intentionally differently.
 
 ## Generated Manual Expectations
 
-For the R `marsruntime` package, the release docs expect:
+For the R `marsearth` package, the release docs expect:
 
 - per-function Rd pages
 - a package-level help topic
@@ -37,8 +37,8 @@ For the R `marsruntime` package, the release docs expect:
 - `R CMD Rd2pdf` as the manual build path when the local toolchain supports it
 - source-tree and installed-package validation of the same runtime helpers
 
-The checked-in R docs already reflect that structure: `man/marsruntime-package.Rd`
-describes the package-level help topic, and `bindings/r/vignettes/marsruntime.Rmd`
+The checked-in R docs already reflect that structure: `man/marsearth-package.Rd`
+describes the package-level help topic, and `bindings/r/vignettes/marsearth.Rmd`
 documents the vignette and manual build commands.
 
 ## Intentional Release-Boundary Differences
@@ -46,7 +46,7 @@ documents the vignette and manual build commands.
 - Upstream `py-earth` is a single Python project; this repo is intentionally a
   multi-language package family with separate registry paths.
 - Upstream R `earth` is a CRAN / r-universe package named `earth`; this repo’s
-  R surface is `marsruntime`, with its own release checklist and publication
+  R surface is `marsearth`, with its own release checklist and publication
   handoff.
 - The repository keeps the `mars-earth` brand visible across ecosystems, but the
   concrete package names remain ecosystem-native where required.
@@ -65,7 +65,7 @@ documents the vignette and manual build commands.
 - [docs/parity_audit_r_earth_matrix.md](parity_audit_r_earth_matrix.md)
 - [docs/parity_audit_repo_gap_matrix.md](parity_audit_repo_gap_matrix.md)
 - `bindings/r/README.md`
-- `bindings/r/man/marsruntime-package.Rd`
-- `bindings/r/vignettes/marsruntime.Rmd`
+- `bindings/r/man/marsearth-package.Rd`
+- `bindings/r/vignettes/marsearth.Rmd`
 - `pyproject.toml`
 - `README.md`

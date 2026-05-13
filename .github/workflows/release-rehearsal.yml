@@ -44,6 +44,9 @@ jobs:
       - name: Build Rust runtime CLI
         run: cargo build --manifest-path rust-runtime/Cargo.toml --bin mars-runtime-cli
 
+      - name: Build Rust runtime native library
+        run: cargo build --manifest-path rust-runtime/Cargo.toml --lib
+
       - name: Inspect Rust package contents
         run: |
           mkdir -p release-artifacts
@@ -67,6 +70,13 @@ jobs:
         with:
           name: mars-runtime-cli
           path: rust-runtime/target/debug/mars-runtime-cli
+          retention-days: 14
+
+      - name: Upload Rust runtime native library
+        uses: actions/upload-artifact@v7
+        with:
+          name: mars-runtime-native
+          path: rust-runtime/target/debug/libpymars_runtime.*
           retention-days: 14
 
       - name: Upload Rust release artifacts
@@ -97,6 +107,11 @@ jobs:
         with:
           name: mars-runtime-cli
           path: .ci-artifacts
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: mars-runtime-native
+          path: .ci-artifacts/native
 
       - run: chmod +x "$MARS_RUNTIME_BIN"
 
@@ -201,6 +216,7 @@ jobs:
     environment: release-rehearsal
     env:
       MARS_RUNTIME_BIN: ${{ github.workspace }}/.ci-artifacts/mars-runtime-cli
+      MARS_RUNTIME_NATIVE_LIB: ${{ github.workspace }}/.ci-artifacts/native
     steps:
       - uses: actions/checkout@v6
 
@@ -208,6 +224,11 @@ jobs:
         with:
           name: mars-runtime-cli
           path: .ci-artifacts
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: mars-runtime-native
+          path: .ci-artifacts/native
 
       - run: chmod +x "$MARS_RUNTIME_BIN"
 
@@ -284,32 +305,32 @@ jobs:
         run: |
           mkdir -p release-artifacts
           R CMD build .
-          tarball=$(ls marsruntime_*.tar.gz | tail -n 1)
+          tarball=$(ls marsearth_*.tar.gz | tail -n 1)
           if [ -z "$tarball" ]; then
-            tarball=$(find . .. ../.. -name 'marsruntime_*.tar.gz' -print -quit)
+            tarball=$(find . .. ../.. -name 'marsearth_*.tar.gz' -print -quit)
           fi
           tar -tzf "$tarball" | tee release-artifacts/r-package-list.txt
           R CMD check --no-manual --as-cran "$tarball"
-          cp marsruntime.Rcheck/00check.log release-artifacts/r-check.log
+          cp marsearth.Rcheck/00check.log release-artifacts/r-check.log
           if [ "${{ inputs.smoke_tests }}" = "true" ]; then
             libdir=$(mktemp -d)
             R CMD INSTALL --library="$libdir" "$tarball"
-            Rscript -e "library(marsruntime, lib.loc = '$libdir')"
+            Rscript -e "library(marsearth, lib.loc = '$libdir')"
           fi
         working-directory: bindings/r
 
       - name: Generate R provenance attestation
         uses: actions/attest@v4
         with:
-          subject-path: bindings/r/marsruntime_*.tar.gz
+          subject-path: bindings/r/marsearth_*.tar.gz
 
       - name: Upload R release artifacts
         uses: actions/upload-artifact@v7
         with:
           name: release-r
           path: |
-            bindings/r/marsruntime_*.tar.gz
-            bindings/r/marsruntime.Rcheck/00check.log
+            bindings/r/marsearth_*.tar.gz
+            bindings/r/marsearth.Rcheck/00check.log
             bindings/r/release-artifacts/*
           retention-days: 14
 

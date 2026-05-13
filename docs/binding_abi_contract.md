@@ -14,6 +14,8 @@ The ABI boundary is intentionally narrow:
 - host wrappers remain responsible for local parsing, CLI wiring, and package
   ergonomics
 - no general-purpose object ABI is introduced
+- row-major batch interchange is explicit through the foreign matrix struct and
+  its matching free function; this is the current H2-adjacent batch contract
 
 ## Ownership
 
@@ -51,6 +53,30 @@ Errors are surfaced as structured status codes plus owned error text:
 - unsupported artifacts and basis terms map to stable status codes
 - numerical failures stay distinct from parse or validation failures
 - host wrappers may translate these errors into idiomatic exceptions
+
+## Batch Interchange
+
+The current batch interchange contract is row-major and explicit:
+
+- host code can construct a native matrix from JSON array-of-array payloads
+- the matrix representation stores a flat `f64` buffer with row and column
+  counts
+- native buffers are always released with the matching free function
+- the contract remains compatible with future Arrow-adjacent adapters if a
+  later contract adds them
+
+## Version Negotiation
+
+The C ABI surface exposes a queryable version contract so host bindings can
+negotiate compatibility before using the boundary:
+
+- the current ABI version is represented as `major.minor.patch`
+- host code can query the exported ABI version struct
+- host code can check whether a requested ABI version is compatible before
+  using handle or buffer entry points
+- compatibility is conservative: a mismatched major version is rejected, and a
+  newer minor/patch request is rejected unless a later contract explicitly
+  relaxes that rule
 
 ## Arrow Decision
 

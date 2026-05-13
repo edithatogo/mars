@@ -1,3 +1,5 @@
+"""Model-spec and CLI artifact round-trip tests."""
+
 from __future__ import annotations
 
 import json

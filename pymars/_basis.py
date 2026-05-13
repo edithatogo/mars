@@ -55,8 +55,10 @@ class BasisFunction(ABC):
 
         Parameters
         ----------
-        X : numpy.ndarray of shape (n_samples, n_features)
-            The input data.
+        X_processed : numpy.ndarray of shape (n_samples, n_features)
+            The processed input data.
+        missing_mask : numpy.ndarray of shape (n_samples, n_features)
+            Boolean mask marking missing values that should be preserved.
 
         Returns
         -------

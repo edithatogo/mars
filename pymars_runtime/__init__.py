@@ -19,9 +19,7 @@ _IS_COMPILED = _native is not None
 
 def _require_native() -> object:
     if _native is None:
-        raise NotImplementedError(
-            "The compiled pymars_runtime extension is not built."
-        )
+        raise NotImplementedError("The compiled pymars_runtime extension is not built.")
     return _native
 
 

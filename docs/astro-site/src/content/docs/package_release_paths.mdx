@@ -1,0 +1,140 @@
+---
+title: "Package Release Paths"
+description: "This page documents the package-manager-specific release paths for the current binding surface."
+sidebar:
+  order: 16
+---
+
+
+This page documents the package-manager-specific release paths for the current
+binding surface. It is the policy source for the publication track and the
+release-rehearsal workflow. The canonical machine-readable release metadata
+is [release_metadata.json](release_metadata.json).
+
+`mars-earth` is the public project brand for the whole package family. The
+canonical package matrix lives in [Release Inventory](release_inventory)
+and the canonical machine-readable metadata lives in
+[release_metadata.json](release_metadata.json). Where an ecosystem requires
+a concrete package or module identifier, that identifier stays
+ecosystem-native, while the docs and release metadata should keep the shared
+`mars-earth` brand visible.
+
+HPC-oriented package submissions and claims are governed by
+[HPC Contracts](hpc_contracts). Spack, EasyBuild, and conda-forge submissions
+must satisfy H0 before upstream submission and must not imply H1-H4 capabilities
+until those implementation tracks are complete.
+
+## Release Criteria
+
+- Stable runtime releases require Rust-backed conformance, artifact inspection,
+  and approval in the protected release environment.
+- Stable training releases additionally require Rust training orchestration and
+  training-capable bindings to pass shared training conformance.
+- Packages may be released as pre-release or experimental only when the release
+  notes and registry metadata say so explicitly.
+- Duplicate MVP replay implementations must not be published as stable unless
+  they are removed or isolated as tested fallbacks.
+
+## Versioning and Logging
+
+- Use semantic versioning for the package line in each registry.
+- Keep release notes and changelog entries aligned with the published version.
+- Surface package version and, where practical, runtime/core version reporting
+  from each binding.
+- Keep logging quiet by default and preserve opt-in access to Rust-core error
+  context.
+
+## Package-Manager Paths
+
+### Python
+
+- Registry: PyPI.
+- Package name: `mars-earth`.
+- Release path: trusted publishing or the configured PyPI token workflow.
+- Avoid publishing `pymars`, which already belongs to another project.
+- Rehearse with `uv build`, artifact inspection, and install-from-wheel smoke
+  tests.
+
+### Rust
+
+- Registry: crates.io.
+- Package name: `mars-earth`.
+- Release path: `cargo package` followed by `cargo publish` with
+  `CARGO_REGISTRY_TOKEN` once ownership is confirmed.
+- Rehearse with `cargo package --allow-dirty --list` and `cargo package`.
+
+### TypeScript
+
+- Registry: npm.
+- Package name: `mars-earth`.
+- Release scope: runtime-only for now; the package uses Rust CLI acceleration
+  where a built binary is available and keeps a JavaScript fallback for
+  compatibility. Training is intentionally unsupported in this package line
+  until a separate training surface is designed.
+- Release path: `npm pack --dry-run`, artifact inspection, and `npm publish`
+  with an automation token in `NODE_AUTH_TOKEN` for the first release. Switch
+  to trusted publishing after the package exists and the trusted publisher can
+  be registered in npm package settings.
+- Rehearse with `npm test`, `npm pack --dry-run`, and install-from-tarball
+  smoke tests.
+
+### R
+
+- Registry: r-universe first, then CRAN when the package is ready for formal
+  submission.
+- Package name: `marsearth`.
+- Release path: the r-universe registry repository is configured. For CRAN,
+  build the source tarball, inspect package contents, run
+  `R CMD check --no-manual --as-cran marsearth_0.0.0.tar.gz`, upload the
+  tarball through the CRAN form, accept the maintainer confirmation email, and
+  monitor CRAN incoming/check-result pages. The `marsearth` submission is
+  confirmed and queued in `incoming/newbies/` pending screening.
+- Package docs: keep the per-function Rd pages plus a package-level help topic
+  and a build-ready vignette source; use `R CMD Rd2pdf` as the manual build path
+  when the local toolchain supports it.
+- Rehearse with `R CMD build`, `R CMD check`, local install, conformance
+  tests, the vignette build path, and the manual build path where available.
+
+### Julia
+
+- Registry: Julia General via Registrator.jl.
+- Package name: `MarsEarth`.
+- Release path: register `MarsEarth` as a new Julia General package. The
+  already-published `MarsRuntime` package remains a superseded legacy identity.
+- Rehearse with `Pkg.instantiate()`, `Pkg.status()`, and `Pkg.test()`.
+
+### C#
+
+- Registry: NuGet.
+- Package name: `mars-earth`.
+- Release path: `dotnet pack`, then `NuGet/login@v1` to mint a short-lived
+  API key, then `dotnet nuget push` through the protected `release`
+  environment.
+- Rehearse with `dotnet test`, `dotnet pack`, and install-from-nupkg smoke
+  tests.
+
+### Go
+
+- Registry: Go modules.
+- Release path: publish by signed repository tag rather than by registry push.
+- Tag policy: create a signed annotated tag named `bindings/go/v<version>` from
+  the repository default branch after the release rehearsal passes and the
+  version has been recorded in the release inventory.
+- Rehearse with `go test`, `go mod verify`, and module metadata inspection.
+
+## Rollback, Yank, and Deprecation
+
+- If a release is wrong, prefer registry-native yanking or deletion policies
+  where the ecosystem allows it.
+- Use a follow-up patch release to correct metadata, README links, or logging
+  behavior.
+- Deprecation notices should be called out in changelog entries and release
+  notes.
+
+## Approval Gates
+
+- No stable publish without a successful rehearsal and explicit maintainer
+  approval.
+- No stable publish while external registry ownership or credential status is
+  unresolved.
+- Protected release environments must be used for real publication jobs.

@@ -30,12 +30,12 @@ for filename, statements, excluded, missing, _ in cov.get_data().measured_files(
     miss = set(missing)
     covered_count = len(stmts - miss)
     total_count = len(stmts)
-    
+
     if total_count > 0:
         file_cov = (covered_count / total_count) * 100
         status = 'PASSED' if file_cov >= 90 else 'FAILED'
         print(f'{filename}: {file_cov:.1f}% {status}')
-        
+
         if file_cov < 90:
             print(f'  Missing lines: {sorted(missing)}')
             sys.exit(1)

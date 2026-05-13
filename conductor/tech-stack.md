@@ -61,6 +61,9 @@
   operations once authenticated
 
 ## Documentation
-- **mkdocs** - Static site generation for documentation
-- **Starlight (planned)** - Future docs platform under governance review;
-  current mkdocs Material site remains live until a migration track is approved
+- **Starlight (Astro)** — Static site generation for documentation (ACTIVE; replaced mkdocs Material 2026-05-13)
+- **@astrojs/sitemap** — Sitemap generation for SEO
+- **starlight-polyglot** — Plugin generating API docs from Python source code (entryPoints: `pymars`)
+- **starlight-links-validator** — Internal link validation in CI
+- **starlight-versions** — Versioned docs support
+- **starlight-llms-txt** — LLM-friendly documentation export

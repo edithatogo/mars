@@ -1,3 +1,5 @@
+"""Categorical feature handling tests."""
+
 import numpy as np
 
 from pymars import CategoricalImputer, Earth

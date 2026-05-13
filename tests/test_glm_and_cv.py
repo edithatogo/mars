@@ -1,3 +1,5 @@
+"""GLM, cross-validation, and plotting tests."""
+
 import matplotlib
 import numpy as np
 

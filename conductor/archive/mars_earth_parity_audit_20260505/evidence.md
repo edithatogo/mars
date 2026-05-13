@@ -36,4 +36,3 @@ The `earth` manual exposes a broader operator-facing surface, including:
 This track should classify which upstream behaviors are parity-critical for the
 current repository, which are intentionally out of scope, and which are
 reasonable later extensions once the Rust core and bindings are stable.
-

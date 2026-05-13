@@ -13,6 +13,11 @@ a concrete package or module identifier, that identifier stays
 ecosystem-native, while the docs and release metadata should keep the shared
 `mars-earth` brand visible.
 
+HPC-oriented package submissions and claims are governed by
+[HPC Contracts](hpc_contracts.md). Spack, EasyBuild, and conda-forge submissions
+must satisfy H0 before upstream submission and must not imply H1-H4 capabilities
+until those implementation tracks are complete.
+
 ## Release Criteria
 
 - Stable runtime releases require Rust-backed conformance, artifact inspection,
@@ -71,10 +76,13 @@ ecosystem-native, while the docs and release metadata should keep the shared
 
 - Registry: r-universe first, then CRAN when the package is ready for formal
   submission.
-- Package name: `marsruntime`.
-- Release path: build the source tarball, inspect package contents, run
-  `R CMD check`, and submit through the maintainer-chosen r-universe / CRAN
-  path once review is ready.
+- Package name: `marsearth`.
+- Release path: the r-universe registry repository is configured. For CRAN,
+  build the source tarball, inspect package contents, run
+  `R CMD check --no-manual --as-cran marsearth_0.0.0.tar.gz`, upload the
+  tarball through the CRAN form, accept the maintainer confirmation email, and
+  monitor CRAN incoming/check-result pages. The `marsearth` submission is
+  confirmed and queued in `incoming/newbies/` pending screening.
 - Package docs: keep the per-function Rd pages plus a package-level help topic
   and a build-ready vignette source; use `R CMD Rd2pdf` as the manual build path
   when the local toolchain supports it.
@@ -84,9 +92,9 @@ ecosystem-native, while the docs and release metadata should keep the shared
 ### Julia
 
 - Registry: Julia General via Registrator.jl.
-- Package name: `MarsRuntime`.
-- Release path: already registered via Registrator.jl; wait out the General
-  review period and keep metadata stable until the PR merges.
+- Package name: `MarsEarth`.
+- Release path: register `MarsEarth` as a new Julia General package. The
+  already-published `MarsRuntime` package remains a superseded legacy identity.
 - Rehearse with `Pkg.instantiate()`, `Pkg.status()`, and `Pkg.test()`.
 
 ### C#

@@ -33,11 +33,11 @@ jobs:
         run: uv sync --extra dev --extra profiling
 
       - name: Run Scalene profiler
-        run: make profile || true
+        run: make profile
 
       - name: Run py-spy on demo
         run: |
-          uv run py-spy record -o flame_graph.svg -- python -m pymars.demos.basic_regression_demo || true
+          uv run py-spy record -o flame_graph.svg -- python -m pymars.demos.basic_regression_demo
 
       - name: Upload profiling results
         if: always()

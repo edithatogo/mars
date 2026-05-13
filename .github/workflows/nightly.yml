@@ -32,10 +32,10 @@ jobs:
           uv sync --extra dev --prerelease=allow
 
       - name: Run full test suite
-        run: uv run pytest tests/ -v --tb=short || true
+        run: uv run pytest tests/ -v --tb=short
 
       - name: Run type checks
-        run: uv run ty check pymars/ || true
+        run: uv run ty check pymars/
 
       - name: Report status
         if: failure()

@@ -445,3 +445,121 @@ through Python, R, Julia, Rust, C#, Go, and TypeScript APIs.
    * Python binding strategy
    * R, Julia, Rust, C#, Go, and TypeScript package surfaces
    * shared conformance testing across bindings
+
+---
+
+## 2026-05-10 Retire External Planning Docs
+
+**Summary:**
+
+Retired the standalone roadmap/plan pages that were still living outside the
+Conductor track system and aligned the docs landing page with Conductor as the
+source of truth for active planning.
+
+**Changes:**
+
+1. Retired these external planning docs:
+   * `docs/scientific_stewardship_and_hpc_roadmap.md`
+   * `docs/sota_dependency_parallelization_plan.md`
+   * `docs/hpc_sota_roadmap.md`
+   * `docs/performance_optimization_plan.md`
+   * `docs/robustness_improvement_plan.md`
+   * `docs/remaining_roadmap.md`
+2. Updated `docs/index.md` to state that active planning now lives in
+   `conductor/tracks.md`.
+3. Preserved the historical notes as retired reference pages instead of active
+   planning sources.
+
+---
+
+## 2026-05-10 R CRAN Submission Preparation
+
+**Summary:**
+
+Prepared the R `marsruntime` package for CRAN upload after checking CRAN policy
+requirements and the current package-check artifacts.
+
+**Changes:**
+
+1. Corrected the R DESCRIPTION maintainer email to the maintainer's VUW
+   address.
+2. Added `bindings/r/cran-comments.md` and excluded it from source builds with
+   `bindings/r/.Rbuildignore`.
+3. Packaged the JSON conformance fixtures under `bindings/r/inst/extdata` and
+   updated `bindings/r/tests/conformance.R` so package checks exercise replay
+   fixtures from the built tarball.
+4. Rebuilt `marsruntime_0.0.0.tar.gz` and reran
+   `R CMD check --no-manual --as-cran`; result was 0 errors, 0 warnings, and
+   1 expected new-submission NOTE.
+5. Submitted the package through the CRAN web form; CRAN is awaiting the
+   maintainer email confirmation before review begins.
+6. Updated release inventory, release checklist, package release paths,
+   publication handoff, release metadata, and the R publication submission
+   Conductor track with the prepared CRAN state and follow-up review flow.
+
+**Follow-up:**
+
+The `marsruntime` CRAN upload was later superseded by the intended R package
+name `mars.earth`, because `mars-earth` is not valid as an R package name and
+`mars.earth` preserves the brand more closely than `marsruntime`. The renamed
+`mars.earth_0.0.0.tar.gz` artifact was rebuilt and checked with
+`R CMD check --no-manual --as-cran`; it passed with 0 errors, 0 warnings, and
+the expected new-submission NOTE.
+
+The package names were subsequently aligned again to `marsearth` for R and
+`MarsEarth` for Julia. This supersedes both earlier R upload names and requires
+a new Julia General registration because `MarsRuntime` was already published as
+a separate package identity.
+
+Validation after this rename:
+
+1. `R CMD check --no-manual --as-cran marsearth_0.0.0.tar.gz` passed with
+   0 errors, 0 warnings, and the expected new-submission NOTE.
+2. `julia --project=bindings/julia -e 'using Pkg; Pkg.resolve(); Pkg.instantiate(); Pkg.test()'`
+   passed for `MarsEarth`.
+
+The `marsearth_0.0.0.tar.gz` artifact was submitted through the CRAN web
+submission flow on 2026-05-11. CRAN accepted the upload handoff and sent the
+maintainer confirmation email; at that point, review was blocked on confirming
+that email link.
+
+The `marsearth` maintainer confirmation link was opened in the browser on
+2026-05-11. CRAN reported that the submission had already been confirmed. The
+package is visible in `https://cran.r-project.org/incoming/newbies/` as
+`marsearth_0.0.0.tar.gz`, timestamped `2026-05-10 16:16` on the CRAN listing.
+`https://cran.r-project.org/incoming/pretest/` was empty at the time of review,
+and `https://CRAN.R-project.org/web/checks/check_results_marsearth.html`
+returned 404 because CRAN has not created the public check-results page yet.
+The remaining R release blocker is CRAN screening/check-result feedback.
+
+---
+
+## 2026-05-11 HPC Contract and Track Setup
+
+**Summary:**
+
+Converted the earlier HPC roadmap and packaging-feasibility state into explicit
+contract levels and active Conductor tracks.
+
+**Changes:**
+
+1. Added `docs/hpc_contracts.md` with H0-H4 contract levels:
+   * H0 HPC-packaging ready
+   * H1 CPU throughput runtime
+   * H2 stable runtime boundary
+   * H3 accelerator-ready runtime
+   * H4 distributed execution
+2. Added active tracks for HPC contract governance, H1 CPU parallel runtime,
+   H2 ABI/Arrow boundary, H3 accelerator portability, H4 distributed execution,
+   Spack upstream submission, EasyBuild upstream submission, conda-forge
+   feedstock submission, and HPSF/E4S readiness submission.
+3. Updated release/community docs and the Conductor track registry so future
+   implementation and external submissions are gated against the contract
+   level they actually satisfy.
+
+**Follow-up hardening:**
+
+Added dependency ordering, parallel subagent write ownership, H1 benchmark
+thresholds, H0 package-identity cleanup gates, and a claim-check requirement.
+Added `docs/hpc_parallel_execution_guide.md` so parallel workers can take
+disjoint slices without re-deriving dependencies.

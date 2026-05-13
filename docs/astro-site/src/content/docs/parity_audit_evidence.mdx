@@ -1,0 +1,55 @@
+---
+title: "Parity Audit Evidence Format"
+description: "This note defines the evidence record shape for the mars / earth parity audit."
+sidebar:
+  order: 19
+---
+
+
+This note defines the evidence record shape for the mars / earth parity audit.
+It is intentionally small and source-oriented so the audit can stay reproducible
+without embedding the full findings in the track files.
+
+## Canonical upstream references
+
+- `py-earth` repository README and documentation:
+  - https://github.com/scikit-learn-contrib/py-earth
+  - https://contrib.scikit-learn.org/py-earth/
+  - https://contrib.scikit-learn.org/py-earth/content.html
+- R `earth` package reference manual and package docs:
+  - https://cran.r-universe.dev/earth/doc/manual.html
+  - https://www.r-pkg.org/pkg/earth
+- R package documentation and vignette guidance:
+  - https://docs.r-universe.dev/browse/packages.html
+  - https://mirrors.ibiblio.org/pub/mirrors/CRAN/doc/manuals/r-devel/R-exts.pdf
+
+## Evidence record format
+
+Each audit entry should capture:
+
+1. `source_family`: `py-earth`, `r-earth`, or `r-packaging`
+2. `source_type`: README, reference manual, vignette, PDF manual, package page,
+   or source code
+3. `canonical_url`: the stable upstream URL
+4. `retrieved_at`: ISO-8601 retrieval date
+5. `claim`: the specific behavior or expectation being captured
+6. `evidence`: line numbers, page numbers, or a short quoted excerpt
+7. `reproduction`: local command or fixture used to verify the claim when
+   applicable
+8. `parity_classification`: `parity-critical`, `nice-to-have`, or
+   `upstream-only or intentionally out of scope`
+
+## Recording rules
+
+- Prefer source-backed evidence over memory or inference.
+- Record the upstream claim before recording any local divergence.
+- If a claim is only inferable, label it as an inference and cite the source
+  that supports it.
+- Keep reproduction commands minimal and deterministic.
+- Use one evidence record per claim; do not bundle unrelated behaviors.
+
+## Suggested storage
+
+- Track files should refer to this note for format only.
+- Detailed audit findings should live in the parity audit track artifacts rather
+  than in this note.

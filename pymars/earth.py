@@ -1,8 +1,6 @@
-from __future__ import annotations
+"""Core Earth estimator implementation and model fitting logic."""
 
-"""
-The main Earth class, coordinating the model fitting process.
-"""
+from __future__ import annotations
 
 import logging
 from typing import Any, cast
@@ -136,6 +134,7 @@ class Earth(BaseEstimator, RegressorMixin):
         feature_importance_type: str | None = None,
         categorical_features: list[int] | None = None,
     ):
+        """Store the estimator hyperparameters and reset learned state."""
         super().__init__()
 
         self.max_degree = max_degree
@@ -193,6 +192,8 @@ class Earth(BaseEstimator, RegressorMixin):
             The training input samples.
         y : array-like of shape (n_samples,)
             The target values. Multi-output y is not currently supported.
+        sample_weight : array-like of shape (n_samples,), optional
+            Per-sample weights used during fitting.
 
         Returns
         -------
@@ -678,12 +679,13 @@ class Earth(BaseEstimator, RegressorMixin):
         Parameters
         ----------
         X : array-like of shape (n_samples, n_features)
-        The input samples.
+            The input samples.
 
         Returns
         -------
         y_pred : array of shape (n_samples,)
-        The predicted values. (Multi-output not currently supported for predict).
+            The predicted values. Multi-output predictions are not currently
+            supported.
         """
         record = self.record_
 

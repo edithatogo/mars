@@ -1,0 +1,27 @@
+---
+title: "Usage"
+description: "How to use the pymars library for MARS modeling"
+sidebar:
+  order: 3
+---
+
+
+The supported compatibility style remains:
+
+```python
+import pymars as earth
+
+model = earth.Earth(max_degree=1, penalty=3.0)
+```
+
+Stable estimators are `Earth`, `EarthRegressor`, and `EarthClassifier`.
+`EarthCV` and `GLMEarth` remain experimental.
+
+The tutorial landing page is [Tutorials](tutorials/), which walks
+through fit, predict, spec export, validation, and interpretability examples.
+The runnable example hub is [Examples](examples/), which collects the
+canonical notebook and binding quickstarts.
+
+Binding entry points are summarized in [Bindings](bindings).
+
+See [Bindings](bindings) for the current cross-language release surface.

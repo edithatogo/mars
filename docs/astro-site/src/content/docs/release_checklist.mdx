@@ -1,0 +1,88 @@
+---
+title: "Release Checklist"
+description: "This checklist is for maintainers who are preparing an actual publication run."
+sidebar:
+  order: 35
+---
+
+
+This checklist is for maintainers who are preparing an actual publication run.
+It captures the manual confirmation steps that cannot be inferred safely from
+the repository alone.
+
+The [Publication Handoff](publication_handoff) page is the quickest way to
+capture the remaining registry inputs from the maintainer.
+
+## Maintainer Inputs Needed
+
+To move the remaining publication gates forward, the maintainer needs to
+confirm or configure:
+
+- Spack upstream PR submission for the prepared H0-only recipe
+- EasyBuild upstream PR submission for the prepared H0-only easyconfig
+- conda-forge staged-recipes PR submission for the prepared H0-only feedstock
+- HPSF/E4S packet approval or explicit deferral decision
+- CRAN screening review for confirmed `marsearth` submission; do not use the
+  superseded `marsruntime` or `mars.earth` names
+- confirmation that Julia should register `MarsEarth` as a new package while
+  treating the already-published `MarsRuntime` as superseded legacy
+
+## Before a Release Rehearsal
+
+- Confirm the package family being rehearsed and whether it is runtime-only or
+  includes training APIs.
+- Confirm the protected release environment exists and is required for the
+  publish job.
+- Confirm the latest release candidate artifacts were produced by the current
+  commit.
+- Confirm the rehearsal workflow uploaded reviewable artifacts for the target
+  package family.
+- Confirm the R package check and manual build commands succeeded when the R
+  track is being published.
+- Confirm the vignette source can be built by the installed R toolchain.
+
+## Registry Ownership and Credentials
+
+- Confirm the R submission path through r-universe and CRAN is available for
+  external submission.
+- Confirm the R DESCRIPTION maintainer address matches the CRAN form email.
+- Confirm the R DESCRIPTION package name is `marsearth`; `mars-earth` is not a
+  valid R package name and the earlier `marsruntime` / `mars.earth` submissions
+  are superseded.
+- Confirm `bindings/r/cran-comments.md` summarizes only unresolved check notes
+  and any special treatment; for the current package this is the new-submission
+  NOTE plus optional runtime-helper behavior.
+- Confirm `R CMD check` and `R CMD Rd2pdf` are part of the release rehearsal
+  path when local tooling supports them.
+- Confirm the vignette build path is part of the release rehearsal path when
+  the vignette dependency stack is installed.
+- If a republish or ownership change is planned later, re-check the PyPI,
+  crates.io, npm, and NuGet paths against the release inventory.
+- Julia `MarsEarth` needs a new General registration because `MarsRuntime` is
+  already published as a separate legacy package identity. Check the release
+  inventory before starting Registrator.
+- Go release is tag-driven via signed annotated tags named
+  `bindings/go/v<version>`; `bindings/go/v0.1.0` is already published.
+
+## Before Publishing
+
+- Confirm the blocker table in `release_inventory.md` has an owner, action,
+  date, and status for every unresolved item.
+- Confirm the release notes describe any intentional version skew between
+  package ecosystems.
+- Confirm the stable-versus-pre-release label matches the package contents.
+- Confirm the package-specific smoke test passed from the built artifact.
+- Confirm provenance or attestation artifacts were generated where the
+  ecosystem supports them.
+
+## After Publishing
+
+- Confirm the published artifact matches the rehearsal artifact.
+- For CRAN, monitor `https://CRAN.R-project.org/incoming/newbies/` for
+  `marsearth_0.0.0.tar.gz`, watch for screening/pretest email, and then review
+  `https://CRAN.R-project.org/web/checks/check_results_marsearth.html` after
+  CRAN creates the check page.
+- Confirm the registry page and README links point to the canonical project.
+- Confirm any release notes or changelog entries were updated to match the
+  published version.
+- Record any post-publish issue in the blocker table or the release notes.

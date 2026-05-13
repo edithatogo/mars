@@ -22,12 +22,16 @@ class FixtureCase:
     runtime_fixture: Path
 
 
-def load_manifest(path: Path = DEFAULT_MANIFEST) -> tuple[list[FixtureCase], float, float]:
+def load_manifest(
+    path: Path = DEFAULT_MANIFEST,
+) -> tuple[list[FixtureCase], float, float]:
     """Load and validate the conformance manifest."""
     raw = json.loads(path.read_text())
     binding_modes = raw.get("binding_modes", {})
     if "runtime_mvp" not in binding_modes:
-        raise AssertionError("Conformance manifest must declare runtime_mvp binding mode")
+        raise AssertionError(
+            "Conformance manifest must declare runtime_mvp binding mode"
+        )
     if "runtime_rust_backed" not in binding_modes:
         raise AssertionError(
             "Conformance manifest must declare runtime_rust_backed binding mode"
@@ -141,9 +145,7 @@ def assert_nested_close(
             raise AssertionError(f"{label} expected NaN, got {actual_float}")
         return
     if not math.isclose(actual_float, expected_float, abs_tol=atol, rel_tol=rtol):
-        raise AssertionError(
-            f"{label} mismatch: {actual_float} != {expected_float}"
-        )
+        raise AssertionError(f"{label} mismatch: {actual_float} != {expected_float}")
 
 
 def _json_number_to_float(value: Any) -> float:

@@ -1,21 +1,22 @@
-# EasyBuild Feasibility Notes
+# EasyBuild Upstream Notes
 
-This directory contains a proof-of-concept EasyBuild easyconfig sketch for
-`pymars`.
+This directory contains an EasyBuild easyconfig for `MarsEarth` (HPC identity) and
+the `pymars` Python import name.
 
 ## Assumptions
 
 - The lane targets source installation on Linux HPC-style systems.
-- The package is built from a stable source archive or release tag.
+- The package is built from a stable source archive and pinned package metadata.
 - Python, NumPy, SciPy, and scikit-learn are available as build dependencies.
 - Rust tooling is available during build because the project currently uses a
   Rust core and bridge.
 
 ## Current EasyConfig Shape
 
-- `pymars-0.1.0.eb` is a feasibility sketch, not a submission artifact.
-- The sketch records dependency expectations and the module-install layout.
-- No accelerator runtime, MPI layer, or public API change is implied.
+- `pymars-0.1.0.eb` is the current upstream-ready draft and uses pinned
+  release metadata.
+- The draft records dependency expectations and the module-install layout.
+- No accelerator runtime, MPI layer, or public API change is implied (H0).
 
 ## Local Checks
 

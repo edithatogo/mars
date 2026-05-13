@@ -1,63 +1,39 @@
 # Starlight Docs Stack Governance
 
-This page records the current evaluation state for a possible Starlight-based
-documentation stack. It is a governance document, not a migration commitment.
+> **Migration completed 2026-05-13.** This page now records the governance
+> state of the adopted Starlight documentation stack.
 
-The current live docs site remains mkdocs Material. Any Starlight adoption must
-be approved explicitly and version-pinned before it replaces or coexists with
-the existing site.
+The docs site has been migrated from mkdocs Material to Starlight+polyglot.
+The migration was executed under track `starlight_migration_20260513`.
 
-## Core Version Target
+## Adopted Stack
 
-- `@astrojs/starlight` `0.38.5`
+- **`@astrojs/starlight` `^0.39.0`** — Core documentation framework
+- **`@astrojs/sitemap` `^3.3.0`** — Sitemap generation for SEO
+- **`starlight-polyglot` `^0.1.0`** — Plugin for generating API docs from Python
+  (`pymars`) source code
+- **`starlight-links-validator` `^0.19.2`** — Internal link validation in CI
+- **`starlight-versions` `^0.8.0`** — Versioned docs support for future releases
+- **`starlight-llms-txt` `^1.0.0`** — LLM-friendly documentation export
 
-This is the latest Starlight release we have verified against the public
-release notes and package metadata. If the project adopts Starlight later, the
-exact version should still be checked again before a migration lands.
+## Migration Artifacts
 
-## Required and Relevant Plugins
+- Starlight site scaffold: `docs/astro-site/`
+- Converted content: `docs/astro-site/src/content/docs/` (74 MDX pages)
+- Sidebar configured in `docs/astro-site/astro.config.mjs`
+- CI/CD: `.github/workflows/docs.yml` builds with pnpm + Node.js
 
-### Required for governance
+## Validation Requirements
 
-- `starlight-links-validator` `0.19.2`
+The Starlight build is validated in CI via:
 
-Use this to keep internal links and docs references checked in CI.
+1. `pnpm install --frozen-lockfile` — reproducible dependency install
+2. `pnpm run build` — production Starlight build (outputs to `site/`)
+3. `starlight-links-validator` — checks internal links during build
+4. GitHub Pages deployment via `actions/deploy-pages@v4`
 
-### Required if versioned docs are approved
+## Migration Policy (Historical)
 
-- `starlight-versions` `0.8.0`
-
-Use this only if the docs site needs versioned content. The plugin currently
-requires `Starlight >= 0.38.0`, so the core version target above is compatible.
-
-### Optional depending on future scope
-
-- `@astrojs/starlight-docsearch` `0.6.0`
-  - Use if the docs search experience is moved to Algolia DocSearch.
-- `starlight-typedoc` `0.21.3`
-  - Use if the docs site later publishes TypeScript API reference pages.
-- `@astrojs/starlight-tailwind` `4.0.1`
-  - Use if custom styling or a Tailwind-based theme layer is needed.
-
-## Validation Policy
-
-If a Starlight migration is approved later, the docs stack should be pinned and
-validated with:
-
-- a reproducible install step for the Node/astro toolchain
-- a production build command for the Starlight site
-- a link-validation step
-- a content/version smoke test for any versioned-docs setup
-
-The current mkdocs build remains the source of truth until a migration track
-explicitly replaces it.
-
-## Migration Policy
-
-- Keep mkdocs Material live until a Starlight migration is approved.
-- Do not treat Starlight as the live docs stack just because the version
-  decision is recorded.
-- Re-evaluate the Starlight core and plugin versions before a migration is
-  implemented.
-- Keep versioned docs and search plugins optional until there is a confirmed
-  content need.
+- Previous stack: mkdocs Material (retired 2026-05-13)
+- Backup of previous documentation remains in `docs/` for reference
+- All future doc content additions should target `docs/astro-site/src/content/docs/`

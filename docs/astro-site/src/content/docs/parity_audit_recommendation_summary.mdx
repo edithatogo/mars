@@ -1,0 +1,45 @@
+---
+title: "Parity Audit Recommendation Summary"
+description: "This page condenses the phase-2 recommendations into a short roadmap view."
+sidebar:
+  order: 28
+---
+
+
+This page condenses the phase-2 recommendations into a short roadmap view.
+It is grounded in the gap classification note and the longer recommendations
+memo, which should be read first for the bucket logic.
+
+## Recommended Track Order
+
+1. [Parity-critical example outputs and documented claims](parity_audit_recommendations)
+2. [Parity-critical estimator serialization and save/load round-trips](parity_audit_recommendations)
+3. [Parity-critical multioutput regression](parity_audit_recommendations)
+4. Keep tie handling in the evidence queue.
+
+## Intentional Boundaries
+
+- warning behavior
+- formula/interface ergonomics
+- packaging/versioning/release behavior
+
+The upstream R `earth` surfaces for plots, prediction intervals, GLM-style
+extensions, and update workflows are still audit-visible parity requirements,
+but they remain outside the current repo gap matrix and should be treated as a
+separate future track family if the repo chooses to close them.
+
+These stay documented as explicit boundaries rather than parity defects.
+
+## Summary
+
+The audit says the remaining work should stay narrow:
+
+- preserve the upstream public contract with fixtures first
+- make fitted-state persistence explicit and robust
+- treat multioutput as a separate contract
+- keep the intentional boundaries visible so they are not reopened as gaps
+
+## Sources
+
+- [Parity Audit Gap Classification](parity_audit_gap_classification)
+- [Parity Audit Recommendations](parity_audit_recommendations)

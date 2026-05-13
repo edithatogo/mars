@@ -1,0 +1,9 @@
+{
+  "track": "starlight_migration_20260513",
+  "title": "Starlight Docs Migration (MkDocs → Starlight+polyglot)",
+  "status": "completed",
+  "completed": "2026-05-13",
+  "requirements": ["REQ-MIG-003"],
+  "supersedes": [],
+  "related_tracks": []
+}

@@ -1,0 +1,8 @@
+{
+  "track_id": "submission_registration_sync_20260511",
+  "type": "chore",
+  "status": "completed",
+  "created_at": "2026-05-11T07:14:12Z",
+  "updated_at": "2026-05-11T07:29:11Z",
+  "description": "Keep external submission and registration status synchronized in repo docs."
+}

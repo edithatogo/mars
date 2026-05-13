@@ -44,10 +44,10 @@ jobs:
         run: uv sync --extra dev
 
       - name: Run Bandit security scan
-        run: uv run bandit -r pymars -f json -o bandit-report.json || true
+        run: uv run bandit -ll -r pymars -f json -o bandit-report.json
 
       - name: Run Safety check
-        run: uv run safety check --json --output safety-report.json || true
+        run: uv run safety check --output json > safety-report.json
 
       - name: Install cargo-audit
         run: cargo install cargo-audit --locked

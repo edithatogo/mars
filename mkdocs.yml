@@ -24,6 +24,20 @@ nav:
   - Installation: installation.md
   - Usage: usage.md
   - Model Spec: model_spec.md
+  - Tutorials:
+    - Overview: tutorials/index.md
+    - Basic: tutorials/basic.md
+    - Advanced: tutorials/advanced.md
+  - Examples:
+    - Overview: examples/index.md
+    - Python: examples/python.md
+    - Python Notebook: examples/python_workflows.ipynb
+    - Rust: examples/rust.md
+    - Go: examples/go.md
+    - Julia: examples/julia.md
+    - R: examples/r.md
+    - C#: examples/csharp.md
+    - TypeScript: examples/typescript.md
   - Rust Core: rust_core.md
   - Rust Core Ownership Boundary: rust_core_ownership.md
   - Rust Core Full Conversion Boundary: rust_core_full_conversion_boundary.md
@@ -32,6 +46,7 @@ nav:
   - SOTA Dependency and Parallelization Plan: sota_dependency_parallelization_plan.md
   - Community Submission Readiness: community_submission_readiness.md
   - Ecosystem and Foundation Alignment: ecosystem_foundation_alignment.md
+  - Roadmap Closure Audit: roadmap_closure_audit.md
   - Rust Migration and ABI Compatibility: rust_migration_abi_compatibility.md
   - SOTA HPC Roadmap: hpc_sota_roadmap.md
   - Workspace Automation: workspace_automation.md
@@ -74,9 +89,6 @@ nav:
   - Design: design.md
   - Requirements: requirements.md
   - Tasks: tasks.md
-  - Tutorials:
-    - Basic: tutorials/basic.md
-    - Advanced: tutorials/advanced.md
   - Performance: performance_optimization_plan.md
   - Robustness: robustness_improvement_plan.md
 plugins:

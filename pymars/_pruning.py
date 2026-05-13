@@ -220,7 +220,6 @@ class PruningPasser:
         initial_coefficients: np.ndarray,
         sample_weight: np.ndarray | None = None,
     ) -> tuple[list[BasisFunction], np.ndarray, float]:
-
         self.X_train = X_fit_processed
         self.y_train = y_fit.ravel()
         self.missing_mask = missing_mask

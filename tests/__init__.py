@@ -1,1 +1,1 @@
-# Tests for the pymars library
+"""Tests for the pymars library."""

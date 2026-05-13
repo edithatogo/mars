@@ -1,4 +1,4 @@
-using MarsRuntime
+using MarsEarth
 using Test
 
 fitted_spec = fit_model([[0.0], [1.0], [2.0]], [1.0, 3.0, 5.0]; max_terms = 5, max_degree = 1, penalty = 3.0)

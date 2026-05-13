@@ -1,0 +1,16 @@
+{
+  "spec_version": "1.0",
+  "model_type": "regression",
+  "feature_schema": {
+    "n_features": 1,
+    "feature_names": ["x0"],
+    "categorical": [false]
+  },
+  "params": {},
+  "basis_terms": [
+    {"kind": "constant"},
+    {"kind": "categorical", "variable_idx": 0, "variable_name": "x0", "category": 1.0}
+  ],
+  "coefficients": [1.5, 2.0],
+  "intercept": 0.0
+}

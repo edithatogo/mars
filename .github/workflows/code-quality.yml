@@ -41,17 +41,18 @@ jobs:
         run: |
           mkdir -p "$CI_LOG_DIR"
           set -o pipefail
-          uv run pytest tests/ -q --tb=short -x --cov-fail-under=80 | tee "$CI_LOG_DIR/pytest.log"
+          uv run pytest tests/ -q --tb=short -x --cov-fail-under=90 | tee "$CI_LOG_DIR/pytest.log"
 
-      - name: Run ruff check
+      - name: Run pre-commit hygiene checks
         run: |
           set -o pipefail
-          uv run ruff check pymars | tee "$CI_LOG_DIR/ruff-check.log"
-
-      - name: Run ruff format check
-        run: |
-          set -o pipefail
-          uv run ruff format --check pymars tests | tee "$CI_LOG_DIR/ruff-format.log"
+          uv run pre-commit run --all-files ruff | tee "$CI_LOG_DIR/pre-commit-ruff.log"
+          uv run pre-commit run --all-files ruff-format | tee "$CI_LOG_DIR/pre-commit-ruff-format.log"
+          uv run pre-commit run --all-files codespell | tee "$CI_LOG_DIR/pre-commit-codespell.log"
+          uv run pre-commit run --all-files check-yaml | tee "$CI_LOG_DIR/pre-commit-yaml.log"
+          uv run pre-commit run --all-files check-toml | tee "$CI_LOG_DIR/pre-commit-toml.log"
+          uv run pre-commit run --all-files check-merge-conflict | tee "$CI_LOG_DIR/pre-commit-merge.log"
+          uv run pre-commit run --all-files detect-private-key | tee "$CI_LOG_DIR/pre-commit-private-key.log"
 
       - name: Run ty type check
         run: |
@@ -73,11 +74,6 @@ jobs:
 
       - name: Build Python package
         run: uv build
-
-      - name: Check for spelling errors
-        run: |
-          uv tool install codespell || pip install codespell
-          codespell pymars tests README.md CONTRIBUTING.md || echo "Spelling check completed with warnings"
 
       - name: Upload diagnostic logs
         if: always()

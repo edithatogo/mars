@@ -26,18 +26,18 @@
     },
     {
       "language": "R",
-      "package": "marsruntime",
+      "package": "marsearth",
       "version": "0.0.0",
       "version_source": ["bindings/r/DESCRIPTION"],
-      "release_state": "ready_for_submission",
+      "release_state": "cran_confirmed_incoming_newbies_pending_screening",
       "logging_surface": "Host errors are surfaced from runtime helpers"
     },
     {
       "language": "Julia",
-      "package": "MarsRuntime",
+      "package": "MarsEarth",
       "version": "0.1.0",
       "version_source": ["bindings/julia/Project.toml"],
-      "release_state": "waiting_period",
+      "release_state": "needs_new_registration_marsruntime_superseded",
       "logging_surface": "Host errors are surfaced from runtime helpers"
     },
     {

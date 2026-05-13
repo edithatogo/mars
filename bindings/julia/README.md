@@ -1,4 +1,4 @@
-# MarsRuntime
+# MarsEarth
 
 Portable Julia runtime replay for mars `ModelSpec` artifacts.
 

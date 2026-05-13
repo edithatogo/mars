@@ -1,0 +1,25 @@
+{
+  "name": "pymars-docs",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.39.0",
+    "@astrojs/sitemap": "^3.3.0",
+    "astro": "^6.0.0",
+    "starlight-links-validator": "^0.19.2",
+    "starlight-llms-txt": "^1.0.0",
+    "starlight-polyglot": "file:/Users/doughnut/GitHub/starlight-polyglot/packages/starlight-polyglot",
+    "starlight-versions": "^0.8.0"
+  },
+  "packageManager": "pnpm@10.32.1",
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

@@ -1,3 +1,5 @@
+"""GLM-backed Earth estimator variants."""
+
 from __future__ import annotations
 
 from typing import Any, cast
@@ -12,6 +14,7 @@ class GLMEarth(EarthRegressor):
     """Earth model that fits GLM coefficients."""
 
     def __init__(self, family: str = "logistic", **kwargs: Any) -> None:
+        """Configure the GLM family and inherited Earth settings."""
         super().__init__(**kwargs)
         self.family = family
 

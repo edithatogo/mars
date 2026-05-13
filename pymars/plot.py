@@ -1,3 +1,5 @@
+"""Plotting helpers for inspecting fitted Earth models."""
+
 from __future__ import annotations
 
 from typing import Any

@@ -72,7 +72,7 @@ def profile_forward_pass():
     pr.enable()
 
     forward_passer = ForwardPasser(earth_model)
-    basis_functions, coefficients = forward_passer.run(
+    _basis_functions, _coefficients = forward_passer.run(
         X_fit_processed=X,
         y_fit=y,
         missing_mask=np.zeros_like(X, dtype=bool),
@@ -116,7 +116,7 @@ def profile_pruning_pass():
     pr.enable()
 
     pruning_passer = PruningPasser(earth_model)
-    pruned_bfs, pruned_coeffs, best_gcv = pruning_passer.run(
+    _pruned_bfs, _pruned_coeffs, _best_gcv = pruning_passer.run(
         X_fit_processed=X,
         y_fit=y,
         missing_mask=np.zeros_like(X, dtype=bool),

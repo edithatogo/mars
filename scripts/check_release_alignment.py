@@ -5,15 +5,16 @@ from __future__ import annotations
 
 import json
 import sys
-import tomllib
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+import tomllib
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
 def main() -> int:
+    """Run the release-alignment checks and report any mismatches."""
     errors: list[str] = []
 
     errors.extend(check_canonical_release_metadata())
@@ -31,6 +32,7 @@ def main() -> int:
 
 
 def check_canonical_release_metadata() -> list[str]:
+    """Validate docs/release_metadata.json against the canonical manifest."""
     errors: list[str] = []
     path = ROOT / "docs/release_metadata.json"
     if not path.exists():
@@ -53,17 +55,24 @@ def check_canonical_release_metadata() -> list[str]:
     for language, (package, version) in expected.items():
         item = packages.get(language)
         if item is None:
-            errors.append(f"docs/release_metadata.json missing package entry for {language}")
+            errors.append(
+                f"docs/release_metadata.json missing package entry for {language}"
+            )
             continue
         if item.get("package") != package:
-            errors.append(f"docs/release_metadata.json {language} package must be {package}")
+            errors.append(
+                f"docs/release_metadata.json {language} package must be {package}"
+            )
         if item.get("version") != version:
-            errors.append(f"docs/release_metadata.json {language} version must be {version}")
+            errors.append(
+                f"docs/release_metadata.json {language} version must be {version}"
+            )
 
     return errors
 
 
 def check_manifest_names() -> list[str]:
+    """Validate package and project names across language manifests."""
     errors: list[str] = []
 
     pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text())
@@ -78,7 +87,7 @@ def check_manifest_names() -> list[str]:
     if typescript.get("name") != "mars-earth":
         errors.append("bindings/typescript/package.json name must be mars-earth")
 
-    csproj = ET.fromstring((ROOT / "bindings/csharp/MarsRuntime.csproj").read_text())
+    csproj = ET.fromstring((ROOT / "bindings/csharp/MarsRuntime.csproj").read_text())  # noqa: S314 - trusted local manifest
     package_id = csproj.findtext(".//PackageId")
     if package_id != "mars-earth":
         errors.append("bindings/csharp/MarsRuntime.csproj PackageId must be mars-earth")
@@ -87,6 +96,7 @@ def check_manifest_names() -> list[str]:
 
 
 def check_release_inventory() -> list[str]:
+    """Validate the release inventory includes the expected package rows."""
     text = (ROOT / "docs/release_inventory.md").read_text()
     expected = [
         "| Python | `mars-earth` / `pymars` import name |",
@@ -99,10 +109,15 @@ def check_release_inventory() -> list[str]:
         "| npm `mars-earth` |",
         "| NuGet `mars-earth` |",
     ]
-    return [f"docs/release_inventory.md missing expected row: {row}" for row in expected if row not in text]
+    return [
+        f"docs/release_inventory.md missing expected row: {row}"
+        for row in expected
+        if row not in text
+    ]
 
 
 def check_package_paths() -> list[str]:
+    """Validate release path documentation for the published packages."""
     text = (ROOT / "docs/package_release_paths.md").read_text()
     expected = [
         "Package name: `mars-earth`.",
@@ -110,7 +125,11 @@ def check_package_paths() -> list[str]:
         "Package name: `MarsRuntime`.",
     ]
 
-    errors = [f"docs/package_release_paths.md missing expected line: {line}" for line in expected if line not in text]
+    errors = [
+        f"docs/package_release_paths.md missing expected line: {line}"
+        for line in expected
+        if line not in text
+    ]
 
     sections = {
         "Rust": "Package name: `mars-earth`.",
@@ -119,7 +138,9 @@ def check_package_paths() -> list[str]:
     }
     for section, expected_line in sections.items():
         if section not in text or expected_line not in text:
-            errors.append(f"docs/package_release_paths.md missing {section} release path details")
+            errors.append(
+                f"docs/package_release_paths.md missing {section} release path details"
+            )
 
     return errors
 

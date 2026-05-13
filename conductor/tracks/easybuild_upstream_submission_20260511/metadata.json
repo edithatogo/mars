@@ -1,0 +1,8 @@
+{
+  "track_id": "easybuild_upstream_submission_20260511",
+  "type": "chore",
+  "status": "in_progress",
+  "created_at": "2026-05-10T15:07:03Z",
+  "updated_at": "2026-05-10T20:34:40Z",
+  "description": "Prepare and submit the H0 EasyBuild easyconfig upstream."
+}

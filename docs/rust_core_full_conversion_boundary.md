@@ -101,7 +101,7 @@ The inventory above is supported by the current repository state in:
 - `pymars/earth.py`
 - `pymars/_model_spec.py`
 - `bindings/r/R/runtime.R`
-- `bindings/julia/src/MarsRuntime.jl`
+- `bindings/julia/src/MarsEarth.jl`
 - `bindings/go/runtime.go`
 - `bindings/csharp/Runtime.cs`
 - `bindings/typescript/src/runtime.js`

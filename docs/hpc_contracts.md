@@ -1,0 +1,253 @@
+# HPC Contracts
+
+This page defines what an HPC-ready `mars-earth` release is allowed to claim.
+It converts the archived HPC roadmap and packaging feasibility notes into
+testable contracts before implementation or external submission work starts.
+Parallel subagent execution guidance lives in
+[HPC Parallel Execution Guide](hpc_parallel_execution_guide.md).
+
+The current project is not yet an HPC runtime. The contracts below are gates:
+a release, registry recipe, or foundation packet must not claim an HPC tier
+until the corresponding contract is implemented, tested, and documented.
+
+## Contract Levels
+
+| Level | Name | Claim allowed | Required evidence |
+| --- | --- | --- | --- |
+| H0 | HPC-packaging ready | Source-installable in HPC-style environments | Spack, EasyBuild, and conda-forge recipes or submission artifacts; clean Linux smoke tests; no accelerator claims |
+| H1 | CPU throughput runtime | Faster, deterministic batch replay on shared-memory CPU systems | Rust CPU-parallel prediction/design-matrix paths, benchmark baselines, regression thresholds, thread controls, conformance parity |
+| H2 | Stable runtime boundary | Host-language and packaging boundary is stable enough for HPC consumers | Narrow C ABI or equivalent FFI, Arrow-compatible batch interchange where practical, ABI/version tests, documented error and memory ownership |
+| H3 | Accelerator-ready runtime | GPU/accelerator execution is available for replay workloads | Optional accelerator backend, CPU fallback parity, device capability detection, numerical tolerance contract, no mandatory accelerator dependency |
+| H4 | Distributed execution | Multi-node or distributed replay is supported | Explicit partitioning semantics, deterministic aggregation, distributed smoke tests, failure-mode documentation |
+
+## Cross-Cutting Guarantees
+
+- The public Python API remains compatible with `import pymars as earth` and
+  `earth.Earth(...)`.
+- Host-language packages keep ecosystem-native names while documenting the
+  shared `mars-earth` brand.
+- CPU fallback remains available for every accelerator or distributed feature (H3/H4)
+  (H1 for CPU, H3/H4 for accelerator/distributed), once those tiers are
+  implemented.
+- ModelSpec replay semantics are identical across Python, Rust, R, Julia, C#,
+  Go, and TypeScript unless a binding explicitly documents an unsupported
+  capability.
+- Parallel and accelerator (H0/H1) paths must be opt-in or resource-bounded by
+  default; importing the package must not spawn worker pools or initialize
+  devices.
+- In the current H0/H1 workstream, accelerator and distributed paths are not yet
+  implemented.
+- In the current H0/H1 lanes, no accelerator or distributed runtime is
+  implemented yet.
+- Numerical differences must be bounded by a documented tolerance and validated
+  against shared fixtures.
+- Every external packaging or foundation submission must state its implemented
+  HPC contract level and must not imply higher levels.
+
+## Implementation Dependency Graph
+
+The HPC tracks should be implemented in this order unless a later explicit
+design review changes the dependency graph:
+
+1. H0 packaging readiness can run in parallel with H1 benchmark baseline work,
+   but upstream submissions must wait until package names, source URLs,
+   checksums, and smoke tests are real rather than placeholders.
+2. H1 CPU throughput runtime is the first compute contract. It establishes
+   benchmark baselines, serial/parallel parity, resource controls, and memory
+   visibility that later contracts depend on.
+3. H2 stable runtime boundary depends on H1 semantics being stable enough to
+   expose through an ABI or batch interchange layer.
+4. H3 accelerator portability depends on H1 benchmark data and should not
+   choose a backend until CPU kernel shape and packaging constraints are known.
+5. H4 distributed execution depends on H1 partitioning semantics. It should
+   depend on H3 only when distributed accelerator claims are being made.
+6. HPSF and E4S packets require H0 plus credible H1/H2 evidence, or must be
+   explicitly framed as pre-submission feedback for packaging readiness only.
+
+## Parallel Work Ownership
+
+When using parallel subagents, assign disjoint write scopes:
+
+| Lane | Primary files | Must not edit |
+| --- | --- | --- |
+| Contract governance | `docs/hpc_contracts.md`, claim-check docs/scripts | Runtime kernels and upstream recipe contents |
+| H0 Spack | `packaging/spack/**`, Spack submission notes | EasyBuild, conda-forge, Rust kernels |
+| H0 EasyBuild | `packaging/easybuild/**`, EasyBuild submission notes | Spack, conda-forge, Rust kernels |
+| H0 conda-forge | `packaging/conda-forge/**`, recipe drafts | Spack, EasyBuild, Rust kernels |
+| H1 CPU runtime | `rust-runtime/src/**`, Rust/Python benchmark and parity tests | H2 ABI files, H3 accelerator files, packaging recipes |
+| H2 ABI/Arrow | FFI boundary files, ABI docs/tests, Arrow/batch adapters | H1 kernel internals unless required through an agreed interface |
+| H3 accelerator | optional backend files and accelerator docs/tests | H1 serial semantics, H0 recipes, H4 distributed adapter |
+| H4 distributed | distributed adapter files and cluster recipe docs/tests | H1 kernel internals, H3 backend internals |
+| HPSF/E4S packets | community packet docs and evidence summaries | Runtime implementation and packaging recipe internals |
+
+Cross-lane changes must be proposed in the owning track first. Workers should
+not revert or rewrite another lane's files.
+
+## Claim-Check Gate
+
+Before any HPC implementation or submission phase is marked complete, run a
+docs claim check that flags unsupported use of these terms unless the nearby
+text names the implemented contract level and limitation:
+
+- The script in `scripts/check_hpc_claims.py` is the canonical term/level gate.
+- The reviewer checklist lives in
+  [docs/hpc_claim_review_checklist.md](hpc_claim_review_checklist.md) and captures
+  explicit H0-H4 review requirements.
+
+The claim check should start as a lightweight repository script and may later
+be promoted to CI.
+
+## H0: HPC-Packaging Ready
+
+H0 means the project can be packaged by HPC-oriented package managers without
+- claiming accelerator or distributed execution (H0/H1 does not claim these).
+This level is explicitly packaging-only at this time.
+
+Required deliverables:
+
+- Upstream-ready Spack recipe or submission PR.
+- Upstream-ready EasyBuild easyconfig or submission PR.
+- conda-forge staged-recipes PR or documented decision to defer.
+- Container or clean Linux install smoke tests for Python plus the Rust runtime.
+- Dependency policy documenting Rust, Python, NumPy, SciPy, scikit-learn, and
+  optional binding dependencies.
+
+Non-goals:
+
+- GPU, TPU, MPI, or distributed execution are not claimed at H0.
+- A stable ABI claim beyond normal source packaging.
+
+## H1: CPU Throughput Runtime
+
+H1 means replay workloads can use shared-memory CPU parallelism while preserving
+single-thread deterministic behavior.
+
+Required deliverables:
+
+- Rust batch prediction and design-matrix kernels with measured benchmark
+  baselines.
+- Configurable thread controls, including a deterministic single-thread mode.
+- Regression thresholds in CI or a documented benchmark review gate.
+- Shared fixture parity across bindings for serial and parallel execution.
+- Memory allocation visibility for large batch replay workloads.
+
+Initial success thresholds:
+
+- Single-thread mode must be behaviorally identical to the existing serial
+  path and must not regress representative benchmark medians by more than 5%
+  unless a documented tradeoff is approved.
+- Parallel mode must show a measurable speedup on large replay batches on a
+  multi-core host, or the track must record why the current kernel shape is not
+  parallelism-limited.
+- Thread controls must support at least deterministic single-thread execution
+  and bounded multi-thread execution.
+  - Memory use for large batches must be measured and documented before any H1
+  release claim.
+
+Non-goals:
+
+- H1 non-goal: GPU execution.
+- H1 non-goal: Distributed execution.
+- Changing estimator training semantics unless separately specified.
+
+## H2: Stable Runtime Boundary
+
+H2 means HPC consumers have a stable, narrow runtime boundary that can be used
+without depending on Python internals.
+
+Required deliverables:
+
+- Versioned ABI or FFI contract for loading ModelSpec artifacts, validating
+  batches, computing design matrices, and predicting outputs.
+- Explicit memory ownership, error-code, and version-negotiation rules.
+- Arrow-compatible or Arrow-adjacent batch interchange decision with tests.
+- Host-language conformance tests that exercise the stable boundary.
+- Documentation that distinguishes stable ABI from internal Rust APIs.
+
+Non-goals:
+
+- Exposing training internals through the ABI unless a later contract extends
+  the boundary.
+
+## H3: Accelerator-Ready Runtime
+
+H3 means replay workloads can run through an optional backend.
+The shared backend registry and CPU-fallback selection layer are implemented,
+but no vendor-specific backend is yet attached to that contract.
+
+Required deliverables:
+
+- Device discovery and capability checks that fail safely to CPU.
+- H3-required optional dependency model; users without accelerator runtimes can
+  still install and use CPU packages.
+- Fixture parity against CPU replay within documented tolerances.
+- H3 benchmarks that compare CPU and accelerator paths on representative
+  batches.
+- Clear unsupported-feature behavior for basis terms or data layouts that the
+  accelerator backend cannot handle (H3 scope).
+
+Non-goals:
+
+- Mandatory CUDA, ROCm, Metal, TPU, or vendor-specific dependencies (H3 scope).
+- Distributed multi-node execution (H4 scope).
+
+## H4: Distributed Execution
+
+H4 means replay can be partitioned across workers or nodes with documented
+semantics.
+
+Required deliverables:
+
+- Partitioning contract for row batches and output ordering.
+- Deterministic aggregation and failure behavior.
+- H4 distributed smoke tests and at least one documented cluster-oriented
+  execution recipe.
+- Resource controls for worker count, chunk size, and memory limits.
+- Explicit statement of whether training is supported or replay-only.
+
+Non-goals:
+
+- Implicit cluster management.
+- Hidden network activity during import or simple local prediction.
+
+## External Submission Contract
+
+External submissions must map to the contract level they actually satisfy:
+
+- Spack, EasyBuild, and conda-forge submissions require H0.
+- HPSF and E4S readiness packets require H0 plus credible H1/H2 evidence, or
+  must explicitly present the project as packaging-ready but not HPC-compute
+  complete.
+- Any accelerator-focused packet requires H3.
+- Any distributed-computing claim requires H4.
+
+## Claim Review Command
+
+- Run the governance gate locally before opening or updating upstream submissions:
+
+```bash
+uv run python3 scripts/check_hpc_claims.py --strict
+```
+
+- For a non-strict pass that skips optional reference files, run:
+
+```bash
+./scripts/check_hpc_claims.sh
+```
+
+## Current State
+
+As of 2026-05-11:
+
+- H0 packaging feasibility artifacts and downstream tracks are prepared (Spack,
+  EasyBuild, and conda-forge lanes are drafted); upstream PRs are still pending
+  in external portals.
+- H1 parallel replay is implemented and measured with baseline runs in
+  [`docs/hpc_cpu_parallel_runtime_benchmarks.md`](hpc_cpu_parallel_runtime_benchmarks.md).
+- H2 stable runtime boundary is implemented in the repository as an additive
+  ABI versioned boundary with explicit row-major batch interchange, but release
+  claims still require the documented host validation evidence.
+- H3 and H4 remain deferred and intentionally unclaimed.
+- The package family has language-registry publication progress, and draft HPSF/E4S
+  readiness packets are prepared at `docs/hpsf_e4s_readiness_packets_20260511.md` but
+  still blocked on external submission review and maintainer clearance.

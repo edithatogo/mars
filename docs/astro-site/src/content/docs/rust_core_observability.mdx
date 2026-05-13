@@ -1,0 +1,68 @@
+---
+title: "Rust Core Observability and Profiling"
+description: "Internal observability and profiling guidance for the Rust core"
+sidebar:
+  order: 10
+---
+
+
+This page records the internal-only observability and profiling guidance for
+the Rust core. It does not expand the public API surface and should be treated
+as implementation guidance for the core crate and its local development
+tooling.
+
+## Goals
+
+- Keep the Rust core measurable without exposing new user-facing knobs.
+- Prefer lightweight, opt-in diagnostics that help isolate regressions.
+- Keep profiling artifacts reproducible enough to compare across commits.
+- Separate always-on quality checks from local-only performance tooling.
+
+## Recommended Tooling
+
+- `criterion` for stable microbenchmarking and regression tracking.
+- `tracing` for structured internal spans and events when the Rust core needs
+  richer diagnostic context.
+- `cargo deny` for dependency and license hygiene.
+- `cargo nextest` for faster and more robust Rust test execution.
+
+## Recommended Local Commands
+
+Use these commands before pushing Rust-core changes:
+
+```bash
+cargo deny --manifest-path rust-runtime/Cargo.toml check
+cargo nextest run --manifest-path rust-runtime/Cargo.toml
+cargo test --manifest-path rust-runtime/Cargo.toml
+cargo bench --manifest-path rust-runtime/Cargo.toml --bench runtime_bench --no-run
+```
+
+## Profiling and Artifact Guidance
+
+- Keep benchmark outputs and profiling artifacts under a predictable local
+  output location so they can be compared across revisions without changing
+  the public API.
+- Prefer checked-in or reproducible benchmark baselines when the goal is to
+  detect performance regressions in CI or release rehearsal.
+- Use flamegraphs and memory profiling as optional local developer tooling when
+  investigating a specific regression or allocation pattern.
+- Do not require GPU profiling unless the Rust core grows GPU kernels or other
+  GPU-bound execution paths that materially change the execution model.
+
+## Observability Boundaries
+
+- Treat logs, spans, and benchmark output as implementation details of the Rust
+  core, not part of the package's public contract.
+- Preserve concise, actionable error context without turning the runtime or
+  training surface into a diagnostics API.
+- Keep production defaults quiet; make additional instrumentation opt-in.
+
+## Practical Split
+
+- CI should focus on correctness, dependency hygiene, and fast regression
+  detection.
+- Local development can use flamegraphs, allocation profiling, and benchmark
+  comparisons for deeper analysis.
+- Release documentation should point to the same profiling artifacts when a
+  regression needs to be explained, but should not require end users to install
+  the profiling toolchain.

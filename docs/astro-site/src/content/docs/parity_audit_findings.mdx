@@ -1,0 +1,68 @@
+---
+title: "Parity Audit Findings"
+description: "This page consolidates the phase-3 parity-audit outputs into a single reading order."
+sidebar:
+  order: 22
+---
+
+
+This page consolidates the phase-3 parity-audit outputs into a single reading
+order. It is intentionally summary-level: the detailed evidence lives in the
+feature matrices, gap matrix, classification note, and recommendations memo.
+
+## Upstream Source Inventory
+
+- [py-earth feature matrix](parity_audit_feature_matrix)
+- [R earth feature matrix](parity_audit_r_earth_matrix)
+- [Parity audit evidence note](parity_audit_evidence)
+
+The upstream references establish the core mars / earth contract around the
+estimator surface, basis-term vocabulary, training/pruning behavior,
+diagnostics, and release expectations.
+
+## Feature Parity
+
+- [Feature parity summary](parity_audit_feature_parity_summary)
+- [Consolidated parity table](parity_audit_parity_table)
+
+The current repo is closest to the upstream contract on the core model surface,
+basis-term support, missingness, and the diagnostics already implemented in the
+Rust-backed runtime. Formula ergonomics and package-release style are explicit
+boundaries, not regressions.
+
+The R `earth` lineage still carries upstream parity-critical surfaces that are
+not yet part of the current repo gap matrix: plotting, prediction intervals /
+variance models, GLM-style extensions, and update workflows. Those should stay
+visible as future audit lanes rather than being read as already-closed parity.
+
+## Behavioral Divergence
+
+- [repo gap matrix](parity_audit_repo_gap_matrix)
+- [Gap classification](parity_audit_gap_classification)
+- [Behavioral divergence summary](parity_audit_behavioral_divergence_summary)
+
+The remaining parity-critical gaps are the documented example-output contract
+and the serialization / multioutput edge cases. Tie handling is still in the
+evidence queue. Warning policy, formula ergonomics, and packaging/release
+behavior remain intentional boundaries.
+
+## Packaging And Docs
+
+- [Packaging and docs summary](parity_audit_packaging_docs_summary)
+
+The repo intentionally follows a Rust-first, multi-registry release model, and
+the R package keeps the CRAN-style manual / PDF expectations while staying
+aligned with the Rust core.
+
+## Recommendations
+
+- [Parity audit recommendations](parity_audit_recommendations)
+
+The next Rust-first implementation order is:
+
+1. example outputs and documented claims
+2. estimator serialization and save/load round-trips
+3. multioutput regression
+
+The audit keeps tie handling in the evidence queue and leaves warning policy,
+formula ergonomics, and packaging/release behavior as documented boundaries.

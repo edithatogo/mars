@@ -1,0 +1,145 @@
+{
+  "basis_terms": [
+    {
+      "category": null,
+      "gcv_score": 0.0,
+      "is_right_hinge": null,
+      "kind": "constant",
+      "knot_val": null,
+      "parent1": null,
+      "parent2": null,
+      "rss_score": 0.0,
+      "variable_idx": null,
+      "variable_name": null
+    },
+    {
+      "category": null,
+      "gcv_score": 0.6351714614952643,
+      "is_right_hinge": null,
+      "kind": "linear",
+      "knot_val": null,
+      "parent1": {
+        "category": null,
+        "gcv_score": 0.0,
+        "is_right_hinge": null,
+        "kind": "constant",
+        "knot_val": null,
+        "parent1": null,
+        "parent2": null,
+        "rss_score": 0.0,
+        "variable_idx": null,
+        "variable_name": null
+      },
+      "parent2": null,
+      "rss_score": 50.15058790009553,
+      "variable_idx": 0,
+      "variable_name": "x0"
+    },
+    {
+      "category": null,
+      "gcv_score": 0.25545879920160935,
+      "is_right_hinge": null,
+      "kind": "linear",
+      "knot_val": null,
+      "parent1": {
+        "category": null,
+        "gcv_score": 0.0,
+        "is_right_hinge": null,
+        "kind": "constant",
+        "knot_val": null,
+        "parent1": null,
+        "parent2": null,
+        "rss_score": 0.0,
+        "variable_idx": null,
+        "variable_name": null
+      },
+      "parent2": null,
+      "rss_score": 19.524330449016624,
+      "variable_idx": 1,
+      "variable_name": "x1"
+    },
+    {
+      "category": null,
+      "gcv_score": 0.04989913077212484,
+      "is_right_hinge": true,
+      "kind": "hinge",
+      "knot_val": 0.19208510646874566,
+      "parent1": {
+        "category": null,
+        "gcv_score": 0.0,
+        "is_right_hinge": null,
+        "kind": "constant",
+        "knot_val": null,
+        "parent1": null,
+        "parent2": null,
+        "rss_score": 0.0,
+        "variable_idx": null,
+        "variable_name": null
+      },
+      "parent2": null,
+      "rss_score": 3.698202058578519,
+      "variable_idx": 2,
+      "variable_name": "x2"
+    },
+    {
+      "category": null,
+      "gcv_score": 4.750381028465906e-06,
+      "is_right_hinge": true,
+      "kind": "hinge",
+      "knot_val": 0.2546176814048864,
+      "parent1": {
+        "category": null,
+        "gcv_score": 0.0,
+        "is_right_hinge": null,
+        "kind": "constant",
+        "knot_val": null,
+        "parent1": null,
+        "parent2": null,
+        "rss_score": 0.0,
+        "variable_idx": null,
+        "variable_name": null
+      },
+      "parent2": null,
+      "rss_score": 0.0002993333845562079,
+      "variable_idx": 2,
+      "variable_name": "x2"
+    }
+  ],
+  "categorical_imputer": null,
+  "coefficients": [
+    1.9999999999999996,
+    1.4999999999999984,
+    -0.7500000000000054,
+    0.8734276728675054,
+    0.12657232713249483
+  ],
+  "feature_schema": {
+    "feature_names": [
+      "x0",
+      "x1",
+      "x2"
+    ],
+    "n_features": 3
+  },
+  "metrics": {
+    "gcv": 1.1037860217654159e-30,
+    "mse": 1.2911511384369804e-29,
+    "rss": 1.0329209107495844e-27
+  },
+  "model_type": "Earth",
+  "module_version": null,
+  "params": {
+    "allow_linear": true,
+    "allow_missing": false,
+    "categorical_features": [],
+    "endspan": -1,
+    "endspan_alpha": 0.0,
+    "feature_importance_type": null,
+    "max_degree": 1,
+    "max_terms": null,
+    "minspan": -1,
+    "minspan_alpha": 0.0,
+    "penalty": 2.0
+  },
+  "spec_version": "1.0"
+}

@@ -84,4 +84,3 @@ export function evaluateBasis(basis, row) {
       throw new Error(`unsupported basis term: ${basis.kind}`);
   }
 }
-

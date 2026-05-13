@@ -10,7 +10,7 @@ runtime_source <- file.path(script_dir, "..", "R", "runtime.R")
 if (file.exists(runtime_source)) {
   source(runtime_source)
 } else {
-  library(marsruntime)
+  library(marsearth)
 }
 
 if (Sys.getenv("MARS_RUNTIME_BIN", unset = "") == "") {
@@ -24,7 +24,7 @@ rust_runtime_available <- function() {
   if (exists(".rust_runtime_available", mode = "function")) {
     return(.rust_runtime_available())
   }
-  getFromNamespace(".rust_runtime_available", "marsruntime")()
+  getFromNamespace(".rust_runtime_available", "marsearth")()
 }
 
 if (!rust_runtime_available()) {

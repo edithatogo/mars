@@ -1,8 +1,6 @@
-from __future__ import annotations
+"""Interpretability and explanation helpers for Earth models."""
 
-"""
-Advanced interpretability features for Earth models.
-"""
+from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Sequence
 

@@ -46,4 +46,3 @@ where ecosystems require independent versions.
 - CI checks verify manifests, docs, and release metadata stay aligned.
 - The repo documents when version skew is intentional and acceptable.
 - The release docs continue to show the current live registry state accurately.
-

@@ -26,7 +26,7 @@ the same fixture pairs from `tests/fixtures`.
 | Rust | crates.io | Publish `mars-earth` once crate ownership and API stability are confirmed |
 | TypeScript | npm | Publish `mars-earth` |
 | R | CRAN or r-universe | Start with r-universe, graduate to CRAN when API and checks are mature |
-| Julia | Julia General registry | Register `MarsRuntime.jl` after package UUID and API are stable |
+| Julia | Julia General registry | Register `MarsEarth` (legacy `MarsRuntime` package already exists) |
 | C# | NuGet | Publish `mars-earth` package |
 | Go | Go modules | Publish from repository tags under the Go module path |
 

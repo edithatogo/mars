@@ -1,9 +1,15 @@
-# Performance Optimization Plan
+# Retired Planning Doc
 
-Performance work stays secondary to correctness and parity.
+This page was retired on `2026-05-10`.
 
-The current priorities are:
+Active planning for performance, observability, runtime readiness, and related
+work now lives in `conductor/tracks.md`.
 
-- keep the Rust runtime as the shared acceleration path
-- preserve deterministic behavior
-- avoid changing the public API to chase micro-optimizations
+Relevant Conductor references:
+
+- `conductor/tracks/rust_core_profiling_observability_20260504/`
+- `conductor/tracks/public_api_surface_docs_20260420/`
+- `conductor/tracks/complete_mars_implementation_20260411/`
+
+The historical notes from this page are kept only as context. They are no
+longer the source of truth for planning.

@@ -3,6 +3,15 @@
 `mars` is the project brand for the `pymars` Python package and the
 `mars-earth` distribution family.
 
+Active planning now lives in `conductor/tracks.md`. The roadmap-style pages
+linked below are historical references unless they point directly at a
+Conductor track or archive.
+
+HPC implementation and external packaging claims are governed by
+[HPC Contracts](hpc_contracts.md).
+Parallel implementation guidance for these tracks lives in
+[HPC Parallel Execution Guide](hpc_parallel_execution_guide.md).
+
 ## Installation
 
 ```bash
@@ -22,6 +31,7 @@ model = earth.Earth()
 - [Installation](installation.md)
 - [Usage](usage.md)
 - [Model Spec](model_spec.md)
+- [Tutorials](tutorials/index.md)
 - [Rust Core](rust_core.md)
 - [Rust Core Observability and Profiling](rust_core_observability.md)
 - [Training Core Migration](training_core_migration.md)

@@ -3,14 +3,15 @@ repos:
     rev: v0.9.6
     hooks:
       - id: ruff
-        args: [--fix]
+        files: ^(pymars|tests)/
       - id: ruff-format
+        files: ^(pymars|tests)/
 
   - repo: https://github.com/codespell-project/codespell
     rev: v2.4.1
     hooks:
       - id: codespell
-        args: [--write-changes]
+        args: []
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
@@ -19,6 +20,7 @@ repos:
       - id: end-of-file-fixer
       - id: check-yaml
         args: [--allow-multiple-documents]
+        exclude: ^mkdocs\.yml$
       - id: check-toml
       - id: check-merge-conflict
       - id: detect-private-key

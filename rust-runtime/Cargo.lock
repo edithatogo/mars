@@ -285,6 +285,7 @@ dependencies = [
  "anyhow",
  "criterion",
  "pyo3",
+ "rayon",
  "serde",
  "serde_json",
 ]

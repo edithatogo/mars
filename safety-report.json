@@ -1,0 +1,2554 @@
+
+
++===========================================================================================================================================================================================+
+
+
+DEPRECATED: this command (`check`) has been DEPRECATED, and will be unsupported beyond 01 June 2024.
+
+
+We highly encourage switching to the new `scan` command which is easier to use, more powerful, and can be set up to mimic the deprecated command if required.
+
+
++===========================================================================================================================================================================================+
+
+
+{
+    "report_meta": {
+        "scan_target": "environment",
+        "scanned": [
+            "/Users/doughnut/GitHub/pymars",
+            "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages"
+        ],
+        "scanned_full_path": [
+            "/Users/doughnut/GitHub/pymars",
+            "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages"
+        ],
+        "target_languages": [
+            "python"
+        ],
+        "policy_file": null,
+        "policy_file_source": "local",
+        "audit_and_monitor": false,
+        "api_key": false,
+        "account": "",
+        "local_database_path": null,
+        "safety_version": "3.7.0",
+        "timestamp": "2026-05-11 18:34:01",
+        "packages_found": 165,
+        "vulnerabilities_found": 0,
+        "vulnerabilities_ignored": 0,
+        "remediations_recommended": 0,
+        "telemetry": {
+            "safety_options": {
+                "output": {
+                    "--output": 1
+                }
+            },
+            "safety_version": "3.7.0",
+            "safety_source": "cli",
+            "os_type": "Darwin",
+            "os_release": "25.3.0",
+            "os_description": "macOS-26.3.1-arm64-arm-64bit-Mach-O",
+            "python_version": "3.14.4",
+            "safety_command": "check"
+        },
+        "git": {
+            "branch": "main",
+            "tag": "",
+            "commit": "d8c50f431ed9ccc5f4ce822d6a8b2c454c5d18c1",
+            "dirty": "True",
+            "origin": "https://github.com/edithatogo/mars.git"
+        },
+        "project": null,
+        "json_version": "1.1",
+        "remediations_attempted": 0,
+        "remediations_completed": 0,
+        "remediation_mode": "NON_INTERACTIVE"
+    },
+    "scanned_packages": {
+        "shellingham": {
+            "name": "shellingham",
+            "version": "1.5.4",
+            "requirements": [
+                {
+                    "raw": "shellingham==1.5.4",
+                    "extras": [],
+                    "marker": null,
+                    "name": "shellingham",
+                    "specifier": "==1.5.4",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/shellingham-1.5.4.dist-info"
+                }
+            ]
+        },
+        "mkdocs": {
+            "name": "mkdocs",
+            "version": "1.6.1",
+            "requirements": [
+                {
+                    "raw": "mkdocs==1.6.1",
+                    "extras": [],
+                    "marker": null,
+                    "name": "mkdocs",
+                    "specifier": "==1.6.1",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/mkdocs-1.6.1.dist-info"
+                }
+            ]
+        },
+        "mergedeep": {
+            "name": "mergedeep",
+            "version": "1.3.4",
+            "requirements": [
+                {
+                    "raw": "mergedeep==1.3.4",
+                    "extras": [],
+                    "marker": null,
+                    "name": "mergedeep",
+                    "specifier": "==1.3.4",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/mergedeep-1.3.4.dist-info"
+                }
+            ]
+        },
+        "mkdocstrings": {
+            "name": "mkdocstrings",
+            "version": "1.0.3",
+            "requirements": [
+                {
+                    "raw": "mkdocstrings==1.0.3",
+                    "extras": [],
+                    "marker": null,
+                    "name": "mkdocstrings",
+                    "specifier": "==1.0.3",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/mkdocstrings-1.0.3.dist-info"
+                }
+            ]
+        },
+        "termcolor": {
+            "name": "termcolor",
+            "version": "3.3.0",
+            "requirements": [
+                {
+                    "raw": "termcolor==3.3.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "termcolor",
+                    "specifier": "==3.3.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/termcolor-3.3.0.dist-info"
+                }
+            ]
+        },
+        "python-discovery": {
+            "name": "python-discovery",
+            "version": "1.2.2",
+            "requirements": [
+                {
+                    "raw": "python-discovery==1.2.2",
+                    "extras": [],
+                    "marker": null,
+                    "name": "python-discovery",
+                    "specifier": "==1.2.2",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/python_discovery-1.2.2.dist-info"
+                }
+            ]
+        },
+        "threadpoolctl": {
+            "name": "threadpoolctl",
+            "version": "3.6.0",
+            "requirements": [
+                {
+                    "raw": "threadpoolctl==3.6.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "threadpoolctl",
+                    "specifier": "==3.6.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/threadpoolctl-3.6.0.dist-info"
+                }
+            ]
+        },
+        "pytest-benchmark": {
+            "name": "pytest-benchmark",
+            "version": "5.2.3",
+            "requirements": [
+                {
+                    "raw": "pytest-benchmark==5.2.3",
+                    "extras": [],
+                    "marker": null,
+                    "name": "pytest-benchmark",
+                    "specifier": "==5.2.3",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/pytest_benchmark-5.2.3.dist-info"
+                }
+            ]
+        },
+        "ruamel.yaml": {
+            "name": "ruamel.yaml",
+            "version": "0.19.1",
+            "requirements": [
+                {
+                    "raw": "ruamel.yaml==0.19.1",
+                    "extras": [],
+                    "marker": null,
+                    "name": "ruamel.yaml",
+                    "specifier": "==0.19.1",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/ruamel_yaml-0.19.1.dist-info"
+                }
+            ]
+        },
+        "requests": {
+            "name": "requests",
+            "version": "2.33.1",
+            "requirements": [
+                {
+                    "raw": "requests==2.33.1",
+                    "extras": [],
+                    "marker": null,
+                    "name": "requests",
+                    "specifier": "==2.33.1",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/requests-2.33.1.dist-info"
+                }
+            ]
+        },
+        "pyproject-api": {
+            "name": "pyproject-api",
+            "version": "1.10.0",
+            "requirements": [
+                {
+                    "raw": "pyproject-api==1.10.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "pyproject-api",
+                    "specifier": "==1.10.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/pyproject_api-1.10.0.dist-info"
+                }
+            ]
+        },
+        "rich": {
+            "name": "rich",
+            "version": "14.3.4",
+            "requirements": [
+                {
+                    "raw": "rich==14.3.4",
+                    "extras": [],
+                    "marker": null,
+                    "name": "rich",
+                    "specifier": "==14.3.4",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/rich-14.3.4.dist-info"
+                }
+            ]
+        },
+        "pexpect": {
+            "name": "pexpect",
+            "version": "4.9.0",
+            "requirements": [
+                {
+                    "raw": "pexpect==4.9.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "pexpect",
+                    "specifier": "==4.9.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/pexpect-4.9.0.dist-info"
+                }
+            ]
+        },
+        "nbmake": {
+            "name": "nbmake",
+            "version": "1.5.5",
+            "requirements": [
+                {
+                    "raw": "nbmake==1.5.5",
+                    "extras": [],
+                    "marker": null,
+                    "name": "nbmake",
+                    "specifier": "==1.5.5",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/nbmake-1.5.5.dist-info"
+                }
+            ]
+        },
+        "traitlets": {
+            "name": "traitlets",
+            "version": "5.14.3",
+            "requirements": [
+                {
+                    "raw": "traitlets==5.14.3",
+                    "extras": [],
+                    "marker": null,
+                    "name": "traitlets",
+                    "specifier": "==5.14.3",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/traitlets-5.14.3.dist-info"
+                }
+            ]
+        },
+        "tornado": {
+            "name": "tornado",
+            "version": "6.5.5",
+            "requirements": [
+                {
+                    "raw": "tornado==6.5.5",
+                    "extras": [],
+                    "marker": null,
+                    "name": "tornado",
+                    "specifier": "==6.5.5",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/tornado-6.5.5.dist-info"
+                }
+            ]
+        },
+        "nest-asyncio": {
+            "name": "nest-asyncio",
+            "version": "1.6.0",
+            "requirements": [
+                {
+                    "raw": "nest-asyncio==1.6.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "nest-asyncio",
+                    "specifier": "==1.6.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/nest_asyncio-1.6.0.dist-info"
+                }
+            ]
+        },
+        "asttokens": {
+            "name": "asttokens",
+            "version": "3.0.1",
+            "requirements": [
+                {
+                    "raw": "asttokens==3.0.1",
+                    "extras": [],
+                    "marker": null,
+                    "name": "asttokens",
+                    "specifier": "==3.0.1",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/asttokens-3.0.1.dist-info"
+                }
+            ]
+        },
+        "dparse": {
+            "name": "dparse",
+            "version": "0.6.4",
+            "requirements": [
+                {
+                    "raw": "dparse==0.6.4",
+                    "extras": [],
+                    "marker": null,
+                    "name": "dparse",
+                    "specifier": "==0.6.4",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/dparse-0.6.4.dist-info"
+                }
+            ]
+        },
+        "ptyprocess": {
+            "name": "ptyprocess",
+            "version": "0.7.0",
+            "requirements": [
+                {
+                    "raw": "ptyprocess==0.7.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "ptyprocess",
+                    "specifier": "==0.7.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/ptyprocess-0.7.0.dist-info"
+                }
+            ]
+        },
+        "certifi": {
+            "name": "certifi",
+            "version": "2026.2.25",
+            "requirements": [
+                {
+                    "raw": "certifi==2026.2.25",
+                    "extras": [],
+                    "marker": null,
+                    "name": "certifi",
+                    "specifier": "==2026.2.25",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/certifi-2026.2.25.dist-info"
+                }
+            ]
+        },
+        "setproctitle": {
+            "name": "setproctitle",
+            "version": "1.3.7",
+            "requirements": [
+                {
+                    "raw": "setproctitle==1.3.7",
+                    "extras": [],
+                    "marker": null,
+                    "name": "setproctitle",
+                    "specifier": "==1.3.7",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/setproctitle-1.3.7.dist-info"
+                }
+            ]
+        },
+        "iniconfig": {
+            "name": "iniconfig",
+            "version": "2.3.0",
+            "requirements": [
+                {
+                    "raw": "iniconfig==2.3.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "iniconfig",
+                    "specifier": "==2.3.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/iniconfig-2.3.0.dist-info"
+                }
+            ]
+        },
+        "click-option-group": {
+            "name": "click-option-group",
+            "version": "0.5.9",
+            "requirements": [
+                {
+                    "raw": "click-option-group==0.5.9",
+                    "extras": [],
+                    "marker": null,
+                    "name": "click-option-group",
+                    "specifier": "==0.5.9",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/click_option_group-0.5.9.dist-info"
+                }
+            ]
+        },
+        "mkdocs-autorefs": {
+            "name": "mkdocs-autorefs",
+            "version": "1.4.4",
+            "requirements": [
+                {
+                    "raw": "mkdocs-autorefs==1.4.4",
+                    "extras": [],
+                    "marker": null,
+                    "name": "mkdocs-autorefs",
+                    "specifier": "==1.4.4",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/mkdocs_autorefs-1.4.4.dist-info"
+                }
+            ]
+        },
+        "nodeenv": {
+            "name": "nodeenv",
+            "version": "1.10.0",
+            "requirements": [
+                {
+                    "raw": "nodeenv==1.10.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "nodeenv",
+                    "specifier": "==1.10.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/nodeenv-1.10.0.dist-info"
+                }
+            ]
+        },
+        "mkdocs-material-extensions": {
+            "name": "mkdocs-material-extensions",
+            "version": "1.3.1",
+            "requirements": [
+                {
+                    "raw": "mkdocs-material-extensions==1.3.1",
+                    "extras": [],
+                    "marker": null,
+                    "name": "mkdocs-material-extensions",
+                    "specifier": "==1.3.1",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/mkdocs_material_extensions-1.3.1.dist-info"
+                }
+            ]
+        },
+        "colorama": {
+            "name": "colorama",
+            "version": "0.4.6",
+            "requirements": [
+                {
+                    "raw": "colorama==0.4.6",
+                    "extras": [],
+                    "marker": null,
+                    "name": "colorama",
+                    "specifier": "==0.4.6",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/colorama-0.4.6.dist-info"
+                }
+            ]
+        },
+        "safety": {
+            "name": "safety",
+            "version": "3.7.0",
+            "requirements": [
+                {
+                    "raw": "safety==3.7.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "safety",
+                    "specifier": "==3.7.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/safety-3.7.0.dist-info"
+                }
+            ]
+        },
+        "cfgv": {
+            "name": "cfgv",
+            "version": "3.5.0",
+            "requirements": [
+                {
+                    "raw": "cfgv==3.5.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "cfgv",
+                    "specifier": "==3.5.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/cfgv-3.5.0.dist-info"
+                }
+            ]
+        },
+        "jsonschema-specifications": {
+            "name": "jsonschema-specifications",
+            "version": "2025.9.1",
+            "requirements": [
+                {
+                    "raw": "jsonschema-specifications==2025.9.1",
+                    "extras": [],
+                    "marker": null,
+                    "name": "jsonschema-specifications",
+                    "specifier": "==2025.9.1",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/jsonschema_specifications-2025.9.1.dist-info"
+                }
+            ]
+        },
+        "executing": {
+            "name": "executing",
+            "version": "2.2.1",
+            "requirements": [
+                {
+                    "raw": "executing==2.2.1",
+                    "extras": [],
+                    "marker": null,
+                    "name": "executing",
+                    "specifier": "==2.2.1",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/executing-2.2.1.dist-info"
+                }
+            ]
+        },
+        "regex": {
+            "name": "regex",
+            "version": "2026.4.4",
+            "requirements": [
+                {
+                    "raw": "regex==2026.4.4",
+                    "extras": [],
+                    "marker": null,
+                    "name": "regex",
+                    "specifier": "==2026.4.4",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/regex-2026.4.4.dist-info"
+                }
+            ]
+        },
+        "pydantic": {
+            "name": "pydantic",
+            "version": "2.12.5",
+            "requirements": [
+                {
+                    "raw": "pydantic==2.12.5",
+                    "extras": [],
+                    "marker": null,
+                    "name": "pydantic",
+                    "specifier": "==2.12.5",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/pydantic-2.12.5.dist-info"
+                }
+            ]
+        },
+        "wrapt": {
+            "name": "wrapt",
+            "version": "2.1.2",
+            "requirements": [
+                {
+                    "raw": "wrapt==2.1.2",
+                    "extras": [],
+                    "marker": null,
+                    "name": "wrapt",
+                    "specifier": "==2.1.2",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/wrapt-2.1.2.dist-info"
+                }
+            ]
+        },
+        "paginate": {
+            "name": "paginate",
+            "version": "0.5.7",
+            "requirements": [
+                {
+                    "raw": "paginate==0.5.7",
+                    "extras": [],
+                    "marker": null,
+                    "name": "paginate",
+                    "specifier": "==0.5.7",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/paginate-0.5.7.dist-info"
+                }
+            ]
+        },
+        "pytest-cov": {
+            "name": "pytest-cov",
+            "version": "7.1.0",
+            "requirements": [
+                {
+                    "raw": "pytest-cov==7.1.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "pytest-cov",
+                    "specifier": "==7.1.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/pytest_cov-7.1.0.dist-info"
+                }
+            ]
+        },
+        "jsonschema": {
+            "name": "jsonschema",
+            "version": "4.26.0",
+            "requirements": [
+                {
+                    "raw": "jsonschema==4.26.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "jsonschema",
+                    "specifier": "==4.26.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/jsonschema-4.26.0.dist-info"
+                }
+            ]
+        },
+        "contourpy": {
+            "name": "contourpy",
+            "version": "1.3.3",
+            "requirements": [
+                {
+                    "raw": "contourpy==1.3.3",
+                    "extras": [],
+                    "marker": null,
+                    "name": "contourpy",
+                    "specifier": "==1.3.3",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/contourpy-1.3.3.dist-info"
+                }
+            ]
+        },
+        "ty": {
+            "name": "ty",
+            "version": "0.0.30",
+            "requirements": [
+                {
+                    "raw": "ty==0.0.30",
+                    "extras": [],
+                    "marker": null,
+                    "name": "ty",
+                    "specifier": "==0.0.30",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/ty-0.0.30.dist-info"
+                }
+            ]
+        },
+        "python-semantic-release": {
+            "name": "python-semantic-release",
+            "version": "10.5.3",
+            "requirements": [
+                {
+                    "raw": "python-semantic-release==10.5.3",
+                    "extras": [],
+                    "marker": null,
+                    "name": "python-semantic-release",
+                    "specifier": "==10.5.3",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/python_semantic_release-10.5.3.dist-info"
+                }
+            ]
+        },
+        "babel": {
+            "name": "babel",
+            "version": "2.18.0",
+            "requirements": [
+                {
+                    "raw": "babel==2.18.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "babel",
+                    "specifier": "==2.18.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/babel-2.18.0.dist-info"
+                }
+            ]
+        },
+        "safety-schemas": {
+            "name": "safety-schemas",
+            "version": "0.0.16",
+            "requirements": [
+                {
+                    "raw": "safety-schemas==0.0.16",
+                    "extras": [],
+                    "marker": null,
+                    "name": "safety-schemas",
+                    "specifier": "==0.0.16",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/safety_schemas-0.0.16.dist-info"
+                }
+            ]
+        },
+        "jedi": {
+            "name": "jedi",
+            "version": "0.19.2",
+            "requirements": [
+                {
+                    "raw": "jedi==0.19.2",
+                    "extras": [],
+                    "marker": null,
+                    "name": "jedi",
+                    "specifier": "==0.19.2",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/jedi-0.19.2.dist-info"
+                }
+            ]
+        },
+        "pillow": {
+            "name": "pillow",
+            "version": "12.2.0",
+            "requirements": [
+                {
+                    "raw": "pillow==12.2.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "pillow",
+                    "specifier": "==12.2.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/pillow-12.2.0.dist-info"
+                }
+            ]
+        },
+        "kiwisolver": {
+            "name": "kiwisolver",
+            "version": "1.5.0",
+            "requirements": [
+                {
+                    "raw": "kiwisolver==1.5.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "kiwisolver",
+                    "specifier": "==1.5.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/kiwisolver-1.5.0.dist-info"
+                }
+            ]
+        },
+        "pytest-xdist": {
+            "name": "pytest-xdist",
+            "version": "3.8.0",
+            "requirements": [
+                {
+                    "raw": "pytest-xdist==3.8.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "pytest-xdist",
+                    "specifier": "==3.8.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/pytest_xdist-3.8.0.dist-info"
+                }
+            ]
+        },
+        "idna": {
+            "name": "idna",
+            "version": "3.11",
+            "requirements": [
+                {
+                    "raw": "idna==3.11",
+                    "extras": [],
+                    "marker": null,
+                    "name": "idna",
+                    "specifier": "==3.11",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/idna-3.11.dist-info"
+                }
+            ]
+        },
+        "ghp-import": {
+            "name": "ghp-import",
+            "version": "2.1.0",
+            "requirements": [
+                {
+                    "raw": "ghp-import==2.1.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "ghp-import",
+                    "specifier": "==2.1.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/ghp_import-2.1.0.dist-info"
+                }
+            ]
+        },
+        "debugpy": {
+            "name": "debugpy",
+            "version": "1.8.20",
+            "requirements": [
+                {
+                    "raw": "debugpy==1.8.20",
+                    "extras": [],
+                    "marker": null,
+                    "name": "debugpy",
+                    "specifier": "==1.8.20",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/debugpy-1.8.20.dist-info"
+                }
+            ]
+        },
+        "cffi": {
+            "name": "cffi",
+            "version": "2.0.0",
+            "requirements": [
+                {
+                    "raw": "cffi==2.0.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "cffi",
+                    "specifier": "==2.0.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/cffi-2.0.0.dist-info"
+                }
+            ]
+        },
+        "distlib": {
+            "name": "distlib",
+            "version": "0.4.0",
+            "requirements": [
+                {
+                    "raw": "distlib==0.4.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "distlib",
+                    "specifier": "==0.4.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/distlib-0.4.0.dist-info"
+                }
+            ]
+        },
+        "mdit-py-plugins": {
+            "name": "mdit-py-plugins",
+            "version": "0.5.0",
+            "requirements": [
+                {
+                    "raw": "mdit-py-plugins==0.5.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "mdit-py-plugins",
+                    "specifier": "==0.5.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/mdit_py_plugins-0.5.0.dist-info"
+                }
+            ]
+        },
+        "dotty-dict": {
+            "name": "dotty-dict",
+            "version": "1.3.1",
+            "requirements": [
+                {
+                    "raw": "dotty-dict==1.3.1",
+                    "extras": [],
+                    "marker": null,
+                    "name": "dotty-dict",
+                    "specifier": "==1.3.1",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/dotty_dict-1.3.1.dist-info"
+                }
+            ]
+        },
+        "libcst": {
+            "name": "libcst",
+            "version": "1.8.6",
+            "requirements": [
+                {
+                    "raw": "libcst==1.8.6",
+                    "extras": [],
+                    "marker": null,
+                    "name": "libcst",
+                    "specifier": "==1.8.6",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/libcst-1.8.6.dist-info"
+                }
+            ]
+        },
+        "pandas": {
+            "name": "pandas",
+            "version": "3.0.2",
+            "requirements": [
+                {
+                    "raw": "pandas==3.0.2",
+                    "extras": [],
+                    "marker": null,
+                    "name": "pandas",
+                    "specifier": "==3.0.2",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/pandas-3.0.2.dist-info"
+                }
+            ]
+        },
+        "virtualenv": {
+            "name": "virtualenv",
+            "version": "21.2.1",
+            "requirements": [
+                {
+                    "raw": "virtualenv==21.2.1",
+                    "extras": [],
+                    "marker": null,
+                    "name": "virtualenv",
+                    "specifier": "==21.2.1",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/virtualenv-21.2.1.dist-info"
+                }
+            ]
+        },
+        "click": {
+            "name": "click",
+            "version": "8.1.8",
+            "requirements": [
+                {
+                    "raw": "click==8.1.8",
+                    "extras": [],
+                    "marker": null,
+                    "name": "click",
+                    "specifier": "==8.1.8",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/click-8.1.8.dist-info"
+                }
+            ]
+        },
+        "ipython_pygments_lexers": {
+            "name": "ipython_pygments_lexers",
+            "version": "1.1.1",
+            "requirements": [
+                {
+                    "raw": "ipython_pygments_lexers==1.1.1",
+                    "extras": [],
+                    "marker": null,
+                    "name": "ipython_pygments_lexers",
+                    "specifier": "==1.1.1",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/ipython_pygments_lexers-1.1.1.dist-info"
+                }
+            ]
+        },
+        "appnope": {
+            "name": "appnope",
+            "version": "0.1.4",
+            "requirements": [
+                {
+                    "raw": "appnope==0.1.4",
+                    "extras": [],
+                    "marker": null,
+                    "name": "appnope",
+                    "specifier": "==0.1.4",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/appnope-0.1.4.dist-info"
+                }
+            ]
+        },
+        "matplotlib": {
+            "name": "matplotlib",
+            "version": "3.10.8",
+            "requirements": [
+                {
+                    "raw": "matplotlib==3.10.8",
+                    "extras": [],
+                    "marker": null,
+                    "name": "matplotlib",
+                    "specifier": "==3.10.8",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/matplotlib-3.10.8.dist-info"
+                }
+            ]
+        },
+        "tenacity": {
+            "name": "tenacity",
+            "version": "9.1.4",
+            "requirements": [
+                {
+                    "raw": "tenacity==9.1.4",
+                    "extras": [],
+                    "marker": null,
+                    "name": "tenacity",
+                    "specifier": "==9.1.4",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/tenacity-9.1.4.dist-info"
+                }
+            ]
+        },
+        "prompt_toolkit": {
+            "name": "prompt_toolkit",
+            "version": "3.0.52",
+            "requirements": [
+                {
+                    "raw": "prompt_toolkit==3.0.52",
+                    "extras": [],
+                    "marker": null,
+                    "name": "prompt_toolkit",
+                    "specifier": "==3.0.52",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/prompt_toolkit-3.0.52.dist-info"
+                }
+            ]
+        },
+        "tomli_w": {
+            "name": "tomli_w",
+            "version": "1.2.0",
+            "requirements": [
+                {
+                    "raw": "tomli_w==1.2.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "tomli_w",
+                    "specifier": "==1.2.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/tomli_w-1.2.0.dist-info"
+                }
+            ]
+        },
+        "httpcore": {
+            "name": "httpcore",
+            "version": "1.0.9",
+            "requirements": [
+                {
+                    "raw": "httpcore==1.0.9",
+                    "extras": [],
+                    "marker": null,
+                    "name": "httpcore",
+                    "specifier": "==1.0.9",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/httpcore-1.0.9.dist-info"
+                }
+            ]
+        },
+        "filelock": {
+            "name": "filelock",
+            "version": "3.25.2",
+            "requirements": [
+                {
+                    "raw": "filelock==3.25.2",
+                    "extras": [],
+                    "marker": null,
+                    "name": "filelock",
+                    "specifier": "==3.25.2",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/filelock-3.25.2.dist-info"
+                }
+            ]
+        },
+        "decorator": {
+            "name": "decorator",
+            "version": "5.2.1",
+            "requirements": [
+                {
+                    "raw": "decorator==5.2.1",
+                    "extras": [],
+                    "marker": null,
+                    "name": "decorator",
+                    "specifier": "==5.2.1",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/decorator-5.2.1.dist-info"
+                }
+            ]
+        },
+        "chardet": {
+            "name": "chardet",
+            "version": "7.4.1",
+            "requirements": [
+                {
+                    "raw": "chardet==7.4.1",
+                    "extras": [],
+                    "marker": null,
+                    "name": "chardet",
+                    "specifier": "==7.4.1",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/chardet-7.4.1.dist-info"
+                }
+            ]
+        },
+        "mkdocs-material": {
+            "name": "mkdocs-material",
+            "version": "9.7.6",
+            "requirements": [
+                {
+                    "raw": "mkdocs-material==9.7.6",
+                    "extras": [],
+                    "marker": null,
+                    "name": "mkdocs-material",
+                    "specifier": "==9.7.6",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/mkdocs_material-9.7.6.dist-info"
+                }
+            ]
+        },
+        "jupyter_client": {
+            "name": "jupyter_client",
+            "version": "8.8.0",
+            "requirements": [
+                {
+                    "raw": "jupyter_client==8.8.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "jupyter_client",
+                    "specifier": "==8.8.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/jupyter_client-8.8.0.dist-info"
+                }
+            ]
+        },
+        "nbformat": {
+            "name": "nbformat",
+            "version": "5.10.4",
+            "requirements": [
+                {
+                    "raw": "nbformat==5.10.4",
+                    "extras": [],
+                    "marker": null,
+                    "name": "nbformat",
+                    "specifier": "==5.10.4",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/nbformat-5.10.4.dist-info"
+                }
+            ]
+        },
+        "cachetools": {
+            "name": "cachetools",
+            "version": "7.0.5",
+            "requirements": [
+                {
+                    "raw": "cachetools==7.0.5",
+                    "extras": [],
+                    "marker": null,
+                    "name": "cachetools",
+                    "specifier": "==7.0.5",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/cachetools-7.0.5.dist-info"
+                }
+            ]
+        },
+        "stack-data": {
+            "name": "stack-data",
+            "version": "0.6.3",
+            "requirements": [
+                {
+                    "raw": "stack-data==0.6.3",
+                    "extras": [],
+                    "marker": null,
+                    "name": "stack-data",
+                    "specifier": "==0.6.3",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/stack_data-0.6.3.dist-info"
+                }
+            ]
+        },
+        "cryptography": {
+            "name": "cryptography",
+            "version": "46.0.7",
+            "requirements": [
+                {
+                    "raw": "cryptography==46.0.7",
+                    "extras": [],
+                    "marker": null,
+                    "name": "cryptography",
+                    "specifier": "==46.0.7",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/cryptography-46.0.7.dist-info"
+                }
+            ]
+        },
+        "tomlkit": {
+            "name": "tomlkit",
+            "version": "0.13.3",
+            "requirements": [
+                {
+                    "raw": "tomlkit==0.13.3",
+                    "extras": [],
+                    "marker": null,
+                    "name": "tomlkit",
+                    "specifier": "==0.13.3",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/tomlkit-0.13.3.dist-info"
+                }
+            ]
+        },
+        "verspec": {
+            "name": "verspec",
+            "version": "0.1.0",
+            "requirements": [
+                {
+                    "raw": "verspec==0.1.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "verspec",
+                    "specifier": "==0.1.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/verspec-0.1.0.dist-info"
+                }
+            ]
+        },
+        "marshmallow": {
+            "name": "marshmallow",
+            "version": "4.3.0",
+            "requirements": [
+                {
+                    "raw": "marshmallow==4.3.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "marshmallow",
+                    "specifier": "==4.3.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/marshmallow-4.3.0.dist-info"
+                }
+            ]
+        },
+        "markdown-it-py": {
+            "name": "markdown-it-py",
+            "version": "4.0.0",
+            "requirements": [
+                {
+                    "raw": "markdown-it-py==4.0.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "markdown-it-py",
+                    "specifier": "==4.0.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/markdown_it_py-4.0.0.dist-info"
+                }
+            ]
+        },
+        "ipykernel": {
+            "name": "ipykernel",
+            "version": "7.2.0",
+            "requirements": [
+                {
+                    "raw": "ipykernel==7.2.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "ipykernel",
+                    "specifier": "==7.2.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/ipykernel-7.2.0.dist-info"
+                }
+            ]
+        },
+        "hypothesis": {
+            "name": "hypothesis",
+            "version": "6.151.12",
+            "requirements": [
+                {
+                    "raw": "hypothesis==6.151.12",
+                    "extras": [],
+                    "marker": null,
+                    "name": "hypothesis",
+                    "specifier": "==6.151.12",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/hypothesis-6.151.12.dist-info"
+                }
+            ]
+        },
+        "matplotlib-inline": {
+            "name": "matplotlib-inline",
+            "version": "0.2.1",
+            "requirements": [
+                {
+                    "raw": "matplotlib-inline==0.2.1",
+                    "extras": [],
+                    "marker": null,
+                    "name": "matplotlib-inline",
+                    "specifier": "==0.2.1",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/matplotlib_inline-0.2.1.dist-info"
+                }
+            ]
+        },
+        "platformdirs": {
+            "name": "platformdirs",
+            "version": "4.9.6",
+            "requirements": [
+                {
+                    "raw": "platformdirs==4.9.6",
+                    "extras": [],
+                    "marker": null,
+                    "name": "platformdirs",
+                    "specifier": "==4.9.6",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/platformdirs-4.9.6.dist-info"
+                }
+            ]
+        },
+        "identify": {
+            "name": "identify",
+            "version": "2.6.18",
+            "requirements": [
+                {
+                    "raw": "identify==2.6.18",
+                    "extras": [],
+                    "marker": null,
+                    "name": "identify",
+                    "specifier": "==2.6.18",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/identify-2.6.18.dist-info"
+                }
+            ]
+        },
+        "ipython": {
+            "name": "ipython",
+            "version": "9.12.0",
+            "requirements": [
+                {
+                    "raw": "ipython==9.12.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "ipython",
+                    "specifier": "==9.12.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/ipython-9.12.0.dist-info"
+                }
+            ]
+        },
+        "uc-micro-py": {
+            "name": "uc-micro-py",
+            "version": "2.0.0",
+            "requirements": [
+                {
+                    "raw": "uc-micro-py==2.0.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "uc-micro-py",
+                    "specifier": "==2.0.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/uc_micro_py-2.0.0.dist-info"
+                }
+            ]
+        },
+        "h11": {
+            "name": "h11",
+            "version": "0.16.0",
+            "requirements": [
+                {
+                    "raw": "h11==0.16.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "h11",
+                    "specifier": "==0.16.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/h11-0.16.0.dist-info"
+                }
+            ]
+        },
+        "gitdb": {
+            "name": "gitdb",
+            "version": "4.0.12",
+            "requirements": [
+                {
+                    "raw": "gitdb==4.0.12",
+                    "extras": [],
+                    "marker": null,
+                    "name": "gitdb",
+                    "specifier": "==4.0.12",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/gitdb-4.0.12.dist-info"
+                }
+            ]
+        },
+        "coverage": {
+            "name": "coverage",
+            "version": "7.13.5",
+            "requirements": [
+                {
+                    "raw": "coverage==7.13.5",
+                    "extras": [],
+                    "marker": null,
+                    "name": "coverage",
+                    "specifier": "==7.13.5",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/coverage-7.13.5.dist-info"
+                }
+            ]
+        },
+        "smmap": {
+            "name": "smmap",
+            "version": "5.0.3",
+            "requirements": [
+                {
+                    "raw": "smmap==5.0.3",
+                    "extras": [],
+                    "marker": null,
+                    "name": "smmap",
+                    "specifier": "==5.0.3",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/smmap-5.0.3.dist-info"
+                }
+            ]
+        },
+        "pycparser": {
+            "name": "pycparser",
+            "version": "3.0",
+            "requirements": [
+                {
+                    "raw": "pycparser==3.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "pycparser",
+                    "specifier": "==3.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/pycparser-3.0.dist-info"
+                }
+            ]
+        },
+        "mkdocstrings-python": {
+            "name": "mkdocstrings-python",
+            "version": "2.0.3",
+            "requirements": [
+                {
+                    "raw": "mkdocstrings-python==2.0.3",
+                    "extras": [],
+                    "marker": null,
+                    "name": "mkdocstrings-python",
+                    "specifier": "==2.0.3",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/mkdocstrings_python-2.0.3.dist-info"
+                }
+            ]
+        },
+        "fonttools": {
+            "name": "fonttools",
+            "version": "4.62.1",
+            "requirements": [
+                {
+                    "raw": "fonttools==4.62.1",
+                    "extras": [],
+                    "marker": null,
+                    "name": "fonttools",
+                    "specifier": "==4.62.1",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/fonttools-4.62.1.dist-info"
+                }
+            ]
+        },
+        "Pygments": {
+            "name": "Pygments",
+            "version": "2.20.0",
+            "requirements": [
+                {
+                    "raw": "Pygments==2.20.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "Pygments",
+                    "specifier": "==2.20.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/pygments-2.20.0.dist-info"
+                }
+            ]
+        },
+        "mdurl": {
+            "name": "mdurl",
+            "version": "0.1.2",
+            "requirements": [
+                {
+                    "raw": "mdurl==0.1.2",
+                    "extras": [],
+                    "marker": null,
+                    "name": "mdurl",
+                    "specifier": "==0.1.2",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/mdurl-0.1.2.dist-info"
+                }
+            ]
+        },
+        "pymdown-extensions": {
+            "name": "pymdown-extensions",
+            "version": "10.21.2",
+            "requirements": [
+                {
+                    "raw": "pymdown-extensions==10.21.2",
+                    "extras": [],
+                    "marker": null,
+                    "name": "pymdown-extensions",
+                    "specifier": "==10.21.2",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/pymdown_extensions-10.21.2.dist-info"
+                }
+            ]
+        },
+        "pathspec": {
+            "name": "pathspec",
+            "version": "1.0.4",
+            "requirements": [
+                {
+                    "raw": "pathspec==1.0.4",
+                    "extras": [],
+                    "marker": null,
+                    "name": "pathspec",
+                    "specifier": "==1.0.4",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/pathspec-1.0.4.dist-info"
+                }
+            ]
+        },
+        "mkdocs-get-deps": {
+            "name": "mkdocs-get-deps",
+            "version": "0.2.2",
+            "requirements": [
+                {
+                    "raw": "mkdocs-get-deps==0.2.2",
+                    "extras": [],
+                    "marker": null,
+                    "name": "mkdocs-get-deps",
+                    "specifier": "==0.2.2",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/mkdocs_get_deps-0.2.2.dist-info"
+                }
+            ]
+        },
+        "python-dateutil": {
+            "name": "python-dateutil",
+            "version": "2.9.0.post0",
+            "requirements": [
+                {
+                    "raw": "python-dateutil==2.9.0.post0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "python-dateutil",
+                    "specifier": "==2.9.0.post0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/python_dateutil-2.9.0.post0.dist-info"
+                }
+            ]
+        },
+        "PyYAML": {
+            "name": "PyYAML",
+            "version": "6.0.3",
+            "requirements": [
+                {
+                    "raw": "PyYAML==6.0.3",
+                    "extras": [],
+                    "marker": null,
+                    "name": "PyYAML",
+                    "specifier": "==6.0.3",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/pyyaml-6.0.3.dist-info"
+                }
+            ]
+        },
+        "sortedcontainers": {
+            "name": "sortedcontainers",
+            "version": "2.4.0",
+            "requirements": [
+                {
+                    "raw": "sortedcontainers==2.4.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "sortedcontainers",
+                    "specifier": "==2.4.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/sortedcontainers-2.4.0.dist-info"
+                }
+            ]
+        },
+        "textual": {
+            "name": "textual",
+            "version": "8.2.3",
+            "requirements": [
+                {
+                    "raw": "textual==8.2.3",
+                    "extras": [],
+                    "marker": null,
+                    "name": "textual",
+                    "specifier": "==8.2.3",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/textual-8.2.3.dist-info"
+                }
+            ]
+        },
+        "bandit": {
+            "name": "bandit",
+            "version": "1.9.4",
+            "requirements": [
+                {
+                    "raw": "bandit==1.9.4",
+                    "extras": [],
+                    "marker": null,
+                    "name": "bandit",
+                    "specifier": "==1.9.4",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/bandit-1.9.4.dist-info"
+                }
+            ]
+        },
+        "parso": {
+            "name": "parso",
+            "version": "0.8.6",
+            "requirements": [
+                {
+                    "raw": "parso==0.8.6",
+                    "extras": [],
+                    "marker": null,
+                    "name": "parso",
+                    "specifier": "==0.8.6",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/parso-0.8.6.dist-info"
+                }
+            ]
+        },
+        "uv": {
+            "name": "uv",
+            "version": "0.11.6",
+            "requirements": [
+                {
+                    "raw": "uv==0.11.6",
+                    "extras": [],
+                    "marker": null,
+                    "name": "uv",
+                    "specifier": "==0.11.6",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/uv-0.11.6.dist-info"
+                }
+            ]
+        },
+        "mars-earth": {
+            "name": "mars-earth",
+            "version": "1.0.4",
+            "requirements": [
+                {
+                    "raw": "mars-earth==1.0.4",
+                    "extras": [],
+                    "marker": null,
+                    "name": "mars-earth",
+                    "specifier": "==1.0.4",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/mars_earth.egg-info"
+                }
+            ]
+        },
+        "pydantic_core": {
+            "name": "pydantic_core",
+            "version": "2.41.5",
+            "requirements": [
+                {
+                    "raw": "pydantic_core==2.41.5",
+                    "extras": [],
+                    "marker": null,
+                    "name": "pydantic_core",
+                    "specifier": "==2.41.5",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/pydantic_core-2.41.5.dist-info"
+                }
+            ]
+        },
+        "urllib3": {
+            "name": "urllib3",
+            "version": "2.6.3",
+            "requirements": [
+                {
+                    "raw": "urllib3==2.6.3",
+                    "extras": [],
+                    "marker": null,
+                    "name": "urllib3",
+                    "specifier": "==2.6.3",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/urllib3-2.6.3.dist-info"
+                }
+            ]
+        },
+        "nbclient": {
+            "name": "nbclient",
+            "version": "0.10.4",
+            "requirements": [
+                {
+                    "raw": "nbclient==0.10.4",
+                    "extras": [],
+                    "marker": null,
+                    "name": "nbclient",
+                    "specifier": "==0.10.4",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/nbclient-0.10.4.dist-info"
+                }
+            ]
+        },
+        "wcwidth": {
+            "name": "wcwidth",
+            "version": "0.6.0",
+            "requirements": [
+                {
+                    "raw": "wcwidth==0.6.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "wcwidth",
+                    "specifier": "==0.6.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/wcwidth-0.6.0.dist-info"
+                }
+            ]
+        },
+        "typer": {
+            "name": "typer",
+            "version": "0.23.1",
+            "requirements": [
+                {
+                    "raw": "typer==0.23.1",
+                    "extras": [],
+                    "marker": null,
+                    "name": "typer",
+                    "specifier": "==0.23.1",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/typer-0.23.1.dist-info"
+                }
+            ]
+        },
+        "diff_cover": {
+            "name": "diff_cover",
+            "version": "10.2.0",
+            "requirements": [
+                {
+                    "raw": "diff_cover==10.2.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "diff_cover",
+                    "specifier": "==10.2.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/diff_cover-10.2.0.dist-info"
+                }
+            ]
+        },
+        "typing_extensions": {
+            "name": "typing_extensions",
+            "version": "4.15.0",
+            "requirements": [
+                {
+                    "raw": "typing_extensions==4.15.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "typing_extensions",
+                    "specifier": "==4.15.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/typing_extensions-4.15.0.dist-info"
+                }
+            ]
+        },
+        "jupyter_core": {
+            "name": "jupyter_core",
+            "version": "5.9.1",
+            "requirements": [
+                {
+                    "raw": "jupyter_core==5.9.1",
+                    "extras": [],
+                    "marker": null,
+                    "name": "jupyter_core",
+                    "specifier": "==5.9.1",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/jupyter_core-5.9.1.dist-info"
+                }
+            ]
+        },
+        "fastjsonschema": {
+            "name": "fastjsonschema",
+            "version": "2.21.2",
+            "requirements": [
+                {
+                    "raw": "fastjsonschema==2.21.2",
+                    "extras": [],
+                    "marker": null,
+                    "name": "fastjsonschema",
+                    "specifier": "==2.21.2",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/fastjsonschema-2.21.2.dist-info"
+                }
+            ]
+        },
+        "execnet": {
+            "name": "execnet",
+            "version": "2.1.2",
+            "requirements": [
+                {
+                    "raw": "execnet==2.1.2",
+                    "extras": [],
+                    "marker": null,
+                    "name": "execnet",
+                    "specifier": "==2.1.2",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/execnet-2.1.2.dist-info"
+                }
+            ]
+        },
+        "scipy": {
+            "name": "scipy",
+            "version": "1.17.1",
+            "requirements": [
+                {
+                    "raw": "scipy==1.17.1",
+                    "extras": [],
+                    "marker": null,
+                    "name": "scipy",
+                    "specifier": "==1.17.1",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/scipy-1.17.1.dist-info"
+                }
+            ]
+        },
+        "joblib": {
+            "name": "joblib",
+            "version": "1.5.3",
+            "requirements": [
+                {
+                    "raw": "joblib==1.5.3",
+                    "extras": [],
+                    "marker": null,
+                    "name": "joblib",
+                    "specifier": "==1.5.3",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/joblib-1.5.3.dist-info"
+                }
+            ]
+        },
+        "cycler": {
+            "name": "cycler",
+            "version": "0.12.1",
+            "requirements": [
+                {
+                    "raw": "cycler==0.12.1",
+                    "extras": [],
+                    "marker": null,
+                    "name": "cycler",
+                    "specifier": "==0.12.1",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/cycler-0.12.1.dist-info"
+                }
+            ]
+        },
+        "pytest-sugar": {
+            "name": "pytest-sugar",
+            "version": "1.1.1",
+            "requirements": [
+                {
+                    "raw": "pytest-sugar==1.1.1",
+                    "extras": [],
+                    "marker": null,
+                    "name": "pytest-sugar",
+                    "specifier": "==1.1.1",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/pytest_sugar-1.1.1.dist-info"
+                }
+            ]
+        },
+        "Jinja2": {
+            "name": "Jinja2",
+            "version": "3.1.6",
+            "requirements": [
+                {
+                    "raw": "Jinja2==3.1.6",
+                    "extras": [],
+                    "marker": null,
+                    "name": "Jinja2",
+                    "specifier": "==3.1.6",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/jinja2-3.1.6.dist-info"
+                }
+            ]
+        },
+        "referencing": {
+            "name": "referencing",
+            "version": "0.37.0",
+            "requirements": [
+                {
+                    "raw": "referencing==0.37.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "referencing",
+                    "specifier": "==0.37.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/referencing-0.37.0.dist-info"
+                }
+            ]
+        },
+        "pyparsing": {
+            "name": "pyparsing",
+            "version": "3.3.2",
+            "requirements": [
+                {
+                    "raw": "pyparsing==3.3.2",
+                    "extras": [],
+                    "marker": null,
+                    "name": "pyparsing",
+                    "specifier": "==3.3.2",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/pyparsing-3.3.2.dist-info"
+                }
+            ]
+        },
+        "charset-normalizer": {
+            "name": "charset-normalizer",
+            "version": "3.4.7",
+            "requirements": [
+                {
+                    "raw": "charset-normalizer==3.4.7",
+                    "extras": [],
+                    "marker": null,
+                    "name": "charset-normalizer",
+                    "specifier": "==3.4.7",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/charset_normalizer-3.4.7.dist-info"
+                }
+            ]
+        },
+        "pyyaml_env_tag": {
+            "name": "pyyaml_env_tag",
+            "version": "1.1",
+            "requirements": [
+                {
+                    "raw": "pyyaml_env_tag==1.1",
+                    "extras": [],
+                    "marker": null,
+                    "name": "pyyaml_env_tag",
+                    "specifier": "==1.1",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/pyyaml_env_tag-1.1.dist-info"
+                }
+            ]
+        },
+        "pytest": {
+            "name": "pytest",
+            "version": "9.0.3",
+            "requirements": [
+                {
+                    "raw": "pytest==9.0.3",
+                    "extras": [],
+                    "marker": null,
+                    "name": "pytest",
+                    "specifier": "==9.0.3",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/pytest-9.0.3.dist-info"
+                }
+            ]
+        },
+        "MarkupSafe": {
+            "name": "MarkupSafe",
+            "version": "3.0.3",
+            "requirements": [
+                {
+                    "raw": "MarkupSafe==3.0.3",
+                    "extras": [],
+                    "marker": null,
+                    "name": "MarkupSafe",
+                    "specifier": "==3.0.3",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/markupsafe-3.0.3.dist-info"
+                }
+            ]
+        },
+        "Deprecated": {
+            "name": "Deprecated",
+            "version": "1.3.1",
+            "requirements": [
+                {
+                    "raw": "Deprecated==1.3.1",
+                    "extras": [],
+                    "marker": null,
+                    "name": "Deprecated",
+                    "specifier": "==1.3.1",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/deprecated-1.3.1.dist-info"
+                }
+            ]
+        },
+        "python-gitlab": {
+            "name": "python-gitlab",
+            "version": "6.5.0",
+            "requirements": [
+                {
+                    "raw": "python-gitlab==6.5.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "python-gitlab",
+                    "specifier": "==6.5.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/python_gitlab-6.5.0.dist-info"
+                }
+            ]
+        },
+        "pure_eval": {
+            "name": "pure_eval",
+            "version": "0.2.3",
+            "requirements": [
+                {
+                    "raw": "pure_eval==0.2.3",
+                    "extras": [],
+                    "marker": null,
+                    "name": "pure_eval",
+                    "specifier": "==0.2.3",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/pure_eval-0.2.3.dist-info"
+                }
+            ]
+        },
+        "GitPython": {
+            "name": "GitPython",
+            "version": "3.1.46",
+            "requirements": [
+                {
+                    "raw": "GitPython==3.1.46",
+                    "extras": [],
+                    "marker": null,
+                    "name": "GitPython",
+                    "specifier": "==3.1.46",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/gitpython-3.1.46.dist-info"
+                }
+            ]
+        },
+        "tox": {
+            "name": "tox",
+            "version": "4.52.1",
+            "requirements": [
+                {
+                    "raw": "tox==4.52.1",
+                    "extras": [],
+                    "marker": null,
+                    "name": "tox",
+                    "specifier": "==4.52.1",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/tox-4.52.1.dist-info"
+                }
+            ]
+        },
+        "pluggy": {
+            "name": "pluggy",
+            "version": "1.6.0",
+            "requirements": [
+                {
+                    "raw": "pluggy==1.6.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "pluggy",
+                    "specifier": "==1.6.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/pluggy-1.6.0.dist-info"
+                }
+            ]
+        },
+        "stevedore": {
+            "name": "stevedore",
+            "version": "5.7.0",
+            "requirements": [
+                {
+                    "raw": "stevedore==5.7.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "stevedore",
+                    "specifier": "==5.7.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/stevedore-5.7.0.dist-info"
+                }
+            ]
+        },
+        "attrs": {
+            "name": "attrs",
+            "version": "26.1.0",
+            "requirements": [
+                {
+                    "raw": "attrs==26.1.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "attrs",
+                    "specifier": "==26.1.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/attrs-26.1.0.dist-info"
+                }
+            ]
+        },
+        "linkify-it-py": {
+            "name": "linkify-it-py",
+            "version": "2.1.0",
+            "requirements": [
+                {
+                    "raw": "linkify-it-py==2.1.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "linkify-it-py",
+                    "specifier": "==2.1.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/linkify_it_py-2.1.0.dist-info"
+                }
+            ]
+        },
+        "ruff": {
+            "name": "ruff",
+            "version": "0.15.10",
+            "requirements": [
+                {
+                    "raw": "ruff==0.15.10",
+                    "extras": [],
+                    "marker": null,
+                    "name": "ruff",
+                    "specifier": "==0.15.10",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/ruff-0.15.10.dist-info"
+                }
+            ]
+        },
+        "requests-toolbelt": {
+            "name": "requests-toolbelt",
+            "version": "1.0.0",
+            "requirements": [
+                {
+                    "raw": "requests-toolbelt==1.0.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "requests-toolbelt",
+                    "specifier": "==1.0.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/requests_toolbelt-1.0.0.dist-info"
+                }
+            ]
+        },
+        "pre_commit": {
+            "name": "pre_commit",
+            "version": "4.5.1",
+            "requirements": [
+                {
+                    "raw": "pre_commit==4.5.1",
+                    "extras": [],
+                    "marker": null,
+                    "name": "pre_commit",
+                    "specifier": "==4.5.1",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/pre_commit-4.5.1.dist-info"
+                }
+            ]
+        },
+        "packaging": {
+            "name": "packaging",
+            "version": "26.0",
+            "requirements": [
+                {
+                    "raw": "packaging==26.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "packaging",
+                    "specifier": "==26.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/packaging-26.0.dist-info"
+                }
+            ]
+        },
+        "Authlib": {
+            "name": "Authlib",
+            "version": "1.6.9",
+            "requirements": [
+                {
+                    "raw": "Authlib==1.6.9",
+                    "extras": [],
+                    "marker": null,
+                    "name": "Authlib",
+                    "specifier": "==1.6.9",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/authlib-1.6.9.dist-info"
+                }
+            ]
+        },
+        "py-cpuinfo": {
+            "name": "py-cpuinfo",
+            "version": "9.0.0",
+            "requirements": [
+                {
+                    "raw": "py-cpuinfo==9.0.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "py-cpuinfo",
+                    "specifier": "==9.0.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/py_cpuinfo-9.0.0.dist-info"
+                }
+            ]
+        },
+        "httpx": {
+            "name": "httpx",
+            "version": "0.28.1",
+            "requirements": [
+                {
+                    "raw": "httpx==0.28.1",
+                    "extras": [],
+                    "marker": null,
+                    "name": "httpx",
+                    "specifier": "==0.28.1",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/httpx-0.28.1.dist-info"
+                }
+            ]
+        },
+        "tqdm": {
+            "name": "tqdm",
+            "version": "4.67.3",
+            "requirements": [
+                {
+                    "raw": "tqdm==4.67.3",
+                    "extras": [],
+                    "marker": null,
+                    "name": "tqdm",
+                    "specifier": "==4.67.3",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/tqdm-4.67.3.dist-info"
+                }
+            ]
+        },
+        "numpy": {
+            "name": "numpy",
+            "version": "2.4.4",
+            "requirements": [
+                {
+                    "raw": "numpy==2.4.4",
+                    "extras": [],
+                    "marker": null,
+                    "name": "numpy",
+                    "specifier": "==2.4.4",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/numpy-2.4.4.dist-info"
+                }
+            ]
+        },
+        "griffelib": {
+            "name": "griffelib",
+            "version": "2.0.2",
+            "requirements": [
+                {
+                    "raw": "griffelib==2.0.2",
+                    "extras": [],
+                    "marker": null,
+                    "name": "griffelib",
+                    "specifier": "==2.0.2",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/griffelib-2.0.2.dist-info"
+                }
+            ]
+        },
+        "psutil": {
+            "name": "psutil",
+            "version": "7.2.2",
+            "requirements": [
+                {
+                    "raw": "psutil==7.2.2",
+                    "extras": [],
+                    "marker": null,
+                    "name": "psutil",
+                    "specifier": "==7.2.2",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/psutil-7.2.2.dist-info"
+                }
+            ]
+        },
+        "watchdog": {
+            "name": "watchdog",
+            "version": "6.0.0",
+            "requirements": [
+                {
+                    "raw": "watchdog==6.0.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "watchdog",
+                    "specifier": "==6.0.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/watchdog-6.0.0.dist-info"
+                }
+            ]
+        },
+        "typing-inspection": {
+            "name": "typing-inspection",
+            "version": "0.4.2",
+            "requirements": [
+                {
+                    "raw": "typing-inspection==0.4.2",
+                    "extras": [],
+                    "marker": null,
+                    "name": "typing-inspection",
+                    "specifier": "==0.4.2",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/typing_inspection-0.4.2.dist-info"
+                }
+            ]
+        },
+        "annotated-types": {
+            "name": "annotated-types",
+            "version": "0.7.0",
+            "requirements": [
+                {
+                    "raw": "annotated-types==0.7.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "annotated-types",
+                    "specifier": "==0.7.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/annotated_types-0.7.0.dist-info"
+                }
+            ]
+        },
+        "Markdown": {
+            "name": "Markdown",
+            "version": "3.10.2",
+            "requirements": [
+                {
+                    "raw": "Markdown==3.10.2",
+                    "extras": [],
+                    "marker": null,
+                    "name": "Markdown",
+                    "specifier": "==3.10.2",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/markdown-3.10.2.dist-info"
+                }
+            ]
+        },
+        "rpds-py": {
+            "name": "rpds-py",
+            "version": "0.30.0",
+            "requirements": [
+                {
+                    "raw": "rpds-py==0.30.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "rpds-py",
+                    "specifier": "==0.30.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/rpds_py-0.30.0.dist-info"
+                }
+            ]
+        },
+        "six": {
+            "name": "six",
+            "version": "1.17.0",
+            "requirements": [
+                {
+                    "raw": "six==1.17.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "six",
+                    "specifier": "==1.17.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/six-1.17.0.dist-info"
+                }
+            ]
+        },
+        "importlib_resources": {
+            "name": "importlib_resources",
+            "version": "6.5.2",
+            "requirements": [
+                {
+                    "raw": "importlib_resources==6.5.2",
+                    "extras": [],
+                    "marker": null,
+                    "name": "importlib_resources",
+                    "specifier": "==6.5.2",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/importlib_resources-6.5.2.dist-info"
+                }
+            ]
+        },
+        "pyzmq": {
+            "name": "pyzmq",
+            "version": "27.1.0",
+            "requirements": [
+                {
+                    "raw": "pyzmq==27.1.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "pyzmq",
+                    "specifier": "==27.1.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/pyzmq-27.1.0.dist-info"
+                }
+            ]
+        },
+        "scikit-learn": {
+            "name": "scikit-learn",
+            "version": "1.8.0",
+            "requirements": [
+                {
+                    "raw": "scikit-learn==1.8.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "scikit-learn",
+                    "specifier": "==1.8.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/scikit_learn-1.8.0.dist-info"
+                }
+            ]
+        },
+        "mike": {
+            "name": "mike",
+            "version": "2.1.4",
+            "requirements": [
+                {
+                    "raw": "mike==2.1.4",
+                    "extras": [],
+                    "marker": null,
+                    "name": "mike",
+                    "specifier": "==2.1.4",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/mike-2.1.4.dist-info"
+                }
+            ]
+        },
+        "nltk": {
+            "name": "nltk",
+            "version": "3.9.4",
+            "requirements": [
+                {
+                    "raw": "nltk==3.9.4",
+                    "extras": [],
+                    "marker": null,
+                    "name": "nltk",
+                    "specifier": "==3.9.4",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/nltk-3.9.4.dist-info"
+                }
+            ]
+        },
+        "backrefs": {
+            "name": "backrefs",
+            "version": "6.2",
+            "requirements": [
+                {
+                    "raw": "backrefs==6.2",
+                    "extras": [],
+                    "marker": null,
+                    "name": "backrefs",
+                    "specifier": "==6.2",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/backrefs-6.2.dist-info"
+                }
+            ]
+        },
+        "annotated-doc": {
+            "name": "annotated-doc",
+            "version": "0.0.4",
+            "requirements": [
+                {
+                    "raw": "annotated-doc==0.0.4",
+                    "extras": [],
+                    "marker": null,
+                    "name": "annotated-doc",
+                    "specifier": "==0.0.4",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/annotated_doc-0.0.4.dist-info"
+                }
+            ]
+        },
+        "anyio": {
+            "name": "anyio",
+            "version": "4.13.0",
+            "requirements": [
+                {
+                    "raw": "anyio==4.13.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "anyio",
+                    "specifier": "==4.13.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/anyio-4.13.0.dist-info"
+                }
+            ]
+        },
+        "mutmut": {
+            "name": "mutmut",
+            "version": "3.5.0",
+            "requirements": [
+                {
+                    "raw": "mutmut==3.5.0",
+                    "extras": [],
+                    "marker": null,
+                    "name": "mutmut",
+                    "specifier": "==3.5.0",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/mutmut-3.5.0.dist-info"
+                }
+            ]
+        },
+        "comm": {
+            "name": "comm",
+            "version": "0.2.3",
+            "requirements": [
+                {
+                    "raw": "comm==0.2.3",
+                    "extras": [],
+                    "marker": null,
+                    "name": "comm",
+                    "specifier": "==0.2.3",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/.venv/lib/python3.14/site-packages/comm-0.2.3.dist-info"
+                }
+            ]
+        },
+        "pymars": {
+            "name": "pymars",
+            "version": "1.0.1",
+            "requirements": [
+                {
+                    "raw": "pymars==1.0.1",
+                    "extras": [],
+                    "marker": null,
+                    "name": "pymars",
+                    "specifier": "==1.0.1",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/pymars.egg-info"
+                }
+            ]
+        },
+        "mars": {
+            "name": "mars",
+            "version": "1.0.1",
+            "requirements": [
+                {
+                    "raw": "mars==1.0.1",
+                    "extras": [],
+                    "marker": null,
+                    "name": "mars",
+                    "specifier": "==1.0.1",
+                    "url": null,
+                    "found": "/Users/doughnut/GitHub/pymars/mars.egg-info"
+                }
+            ]
+        }
+    },
+    "affected_packages": {},
+    "announcements": [],
+    "vulnerabilities": [],
+    "ignored_vulnerabilities": [],
+    "remediations": {},
+    "remediations_results": {
+        "vulnerabilities_fixed": [],
+        "remediations_applied": {},
+        "remediations_skipped": {}
+    }
+}
+
+
++===========================================================================================================================================================================================+
+
+
+DEPRECATED: this command (`check`) has been DEPRECATED, and will be unsupported beyond 01 June 2024.
+
+
+We highly encourage switching to the new `scan` command which is easier to use, more powerful, and can be set up to mimic the deprecated command if required.
+
+
++===========================================================================================================================================================================================+
+
+

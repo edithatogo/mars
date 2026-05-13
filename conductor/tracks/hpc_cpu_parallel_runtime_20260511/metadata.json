@@ -1,0 +1,8 @@
+{
+  "track_id": "hpc_cpu_parallel_runtime_20260511",
+  "type": "feature",
+  "status": "done",
+  "created_at": "2026-05-10T15:07:03Z",
+  "updated_at": "2026-05-11T00:00:00Z",
+  "description": "Implement the H1 CPU throughput runtime contract for shared-memory batch replay."
+}
