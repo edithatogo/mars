@@ -23,6 +23,7 @@ node_modules/
 
 # Astro
 docs/astro-site/dist/
+package-lock.json
 
 # OS files
 .DS_Store
