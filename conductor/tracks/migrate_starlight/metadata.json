@@ -1,0 +1,22 @@
+{
+  "track": "migrate_starlight",
+  "title": "Migrate to Starlight Documentation",
+  "status": "in_progress",
+  "priority": "high",
+  "started": "2025-07-16",
+  "description": "Set up a Starlight documentation site with starlight-polyglot integration for the Mars Go project",
+  "dependencies": [],
+  "deliverables": [
+    "Working Starlight documentation site",
+    "starlight-polyglot Go handler integration",
+    "GitHub Pages deployment workflow",
+    "Documentation content (index, getting-started, API reference)"
+  ],
+  "definition_of_done": [
+    "Site builds without errors",
+    "CI deploys to GitHub Pages on push",
+    "Polyglot handler extracts Go doc comments",
+    "All navigation links work correctly",
+    "Custom theme applied"
+  ]
+}

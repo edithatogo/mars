@@ -1,0 +1,53 @@
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+*.test.exe
+/go/bin/
+/go/pkg/
+/vendor/
+/dist/
+
+# Go build cache
+go.work
+
+# Node / npm / pnpm
+node_modules/
+.pnpm-store/
+.next/
+.cache/
+
+# Astro
+docs/astro-site/dist/
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.Directory
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.sublime-*
+
+# Editor temp files
+*.bak
+*.orig
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Coverage
+coverage.out
+cover.html
+*.cov

@@ -1,0 +1,58 @@
+---
+title: Mars Overview
+description: Welcome to Mars — a Go data analysis toolkit for structured time-series data
+---
+
+import { Steps, Tabs, TabItem, Card, CardGrid } from '@astrojs/starlight/components';
+
+# Welcome to Mars
+
+Mars is a **Go library and CLI tool** for analyzing structured time-series data. It provides statistical analysis, filtering, grouping, moving averages, time bucketing, and I/O utilities for CSV and JSON formats.
+
+## Quick Start
+
+```bash
+# Install the CLI
+go install github.com/edithatogo/mars/cmd/mars@latest
+
+# Analyze a CSV file
+mars --input data.csv --format table
+```
+
+## Features
+
+<CardGrid>
+  <Card title="Statistical Analysis">
+    Compute mean, median, standard deviation, quartiles, min/max, and duration from any dataset.
+  </Card>
+  <Card title="Filtering">
+    Filter records by time range, label, or value thresholds with composable filter options.
+  </Card>
+  <Card title="Grouping">
+    Group analysis results by label for per-category insights.
+  </Card>
+  <Card title="Moving Average">
+    Smooth noisy data with configurable sliding window averages.
+  </Card>
+  <Card title="Time Bucketing">
+    Aggregate records into fixed-duration buckets with mean value computation.
+  </Card>
+  <Card title="I/O Utilities">
+    Read and write CSV and JSON data with automatic format detection.
+  </Card>
+</CardGrid>
+
+## Project Structure
+
+The project follows standard Go module layout:
+
+- **`mars/`** — Core library package with all analysis logic
+- **`cmd/mars/`** — CLI entry point
+- **`docs/`** — Starlight-powered documentation site
+- **`conductor/`** — Project planning and design artifacts
+
+## Getting Help
+
+- [Getting Started](/mars/getting-started/) — Full walkthrough
+- [API Reference](/mars/api-reference/) — Complete API documentation
+- [GitHub](https://github.com/edithatogo/mars) — Source code and issues

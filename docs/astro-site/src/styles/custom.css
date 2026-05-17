@@ -1,0 +1,50 @@
+/* Mars documentation custom styles */
+
+:root {
+  --sl-color-accent-low: #4a0015;
+  --sl-color-accent: #c0392b;
+  --sl-color-accent-high: #e74c3c;
+  --sl-color-white: #ffffff;
+  --sl-color-gray-1: #eeeeee;
+  --sl-color-gray-2: #c2c2c2;
+  --sl-color-gray-3: #8b8b8b;
+  --sl-color-gray-4: #585858;
+  --sl-color-gray-5: #383838;
+  --sl-color-gray-6: #272727;
+  --sl-color-black: #181818;
+}
+
+/* Hero section styling */
+.hero {
+  padding-block: 3rem;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.card {
+  border-radius: 0.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Code blocks */
+code {
+  font-size: 0.875em;
+}
+
+/* Tables */
+.content table {
+  font-size: 0.9rem;
+}
+
+.content th {
+  font-weight: 600;
+}
