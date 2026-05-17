@@ -1,7 +1,7 @@
 {
   "track": "migrate_starlight",
   "title": "Migrate to Starlight Documentation",
-  "status": "in_progress",
+  "status": "completed",
   "priority": "high",
   "started": "2025-07-16",
   "description": "Set up a Starlight documentation site with starlight-polyglot integration for the Mars Go project",

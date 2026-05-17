@@ -2,9 +2,7 @@
 
 ## Active Tracks
 
-| Track | Status | Description |
-|-------|--------|-------------|
-| [migrate_starlight](tracks/migrate_starlight/) | In Progress | Set up Starlight documentation with polyglot integration |
+*None currently active.*
 
 ## Planned Tracks
 
@@ -19,6 +17,7 @@
 
 | Track | Completed | Description |
 |-------|-----------|-------------|
+| `migrate_starlight` | ✓ | Set up Starlight documentation with polyglot integration |
 | `initial_setup` | ✓ | Go module, package structure, CLI, tests |
 | `docs_site` | ✓ | Starlight docs with index, getting-started, API reference |
 | `ci_cd` | ✓ | GitHub Actions workflows for CI and doc deployment |
