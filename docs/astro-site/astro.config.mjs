@@ -1,7 +1,7 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import starlightLinksValidator from 'starlight-links-validator';
-import polyglot from 'starlight-polyglot';
+import polyglot from '@edithatogo/starlight-polyglot';
 
 export default defineConfig({
   site: 'https://edithatogo.github.io/mars',
