@@ -12,6 +12,6 @@
   "dependencies": {
     "@astrojs/starlight": "^0.39.0",
     "astro": "^6.0.0",
-    "starlight-polyglot": "file:../../../starlight-polyglot/packages/starlight-polyglot"
+    "@edithatogo/starlight-polyglot": "file:../../../starlight-polyglot/packages/starlight-polyglot"
   }
 }
