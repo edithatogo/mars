@@ -112,7 +112,7 @@ The remaining-track dependency gates are summarized in
 
 ---
 
-- [~] **Track: Implement H3 accelerator portability with optional device backends**
+- [x] **Track: Implement H3 accelerator portability with optional device backends**
   *Link: [./tracks/hpc_accelerator_portability_20260511/](./tracks/hpc_accelerator_portability_20260511/)*
 
 - [x] **Track: Define the shared H3 accelerator backend foundation and fallback contract**
@@ -141,7 +141,7 @@ The remaining-track dependency gates are summarized in
 - [x] **Track: Implement H4 distributed execution for partitioned replay**
   *Link: [./tracks/hpc_distributed_execution_20260511/](./tracks/hpc_distributed_execution_20260511/)*
 
-- [~] **Track: Implement remaining H4 multi-node distributed execution**
+- [x] **Track: Implement remaining H4 multi-node distributed execution**
   *Link: [./tracks/hpc_multi_node_distributed_execution_20260511/](./tracks/hpc_multi_node_distributed_execution_20260511/)*
 
 ---
