@@ -56,10 +56,10 @@ uv run python3 scripts/check_hpc_claims.py --strict
 - [ ] Confirm `H3` capability checks and unsupported feature behavior are documented.
 - [ ] Confirm numerical tolerances are explicit for backend parity in the `H3` scope.
 - [ ] Confirm no `H3` accelerated package creates hard installation requirements.
-- [ ] If H3 is deferred, confirm docs explicitly state:
-  - CPU replay is the only supported path in this release set.
-  - `H3` accelerator-ready execution is intentionally not yet implemented.
-  - wording uses `not yet` / `non-goal` / `deferred` and links to a non-claim checkpoint.
+- [ ] Confirm H3 benchmark wording distinguishes the `array-test` validation
+  backend from vendor H3 GPU/TPU/FPGA/ASIC speedup claims.
+- [ ] Confirm H3 CUDA, ROCm, Metal, TPU, FPGA, and ASIC wording still names
+  optional adapters unless vendor-specific parity and benchmark evidence is present.
 
 ### H4 - Distributed Execution
 
@@ -67,6 +67,8 @@ uv run python3 scripts/check_hpc_claims.py --strict
 - [ ] Confirm failure and retries semantics are documented.
 - [ ] Confirm `H4` cluster smoke/aggregation evidence is present.
 - [ ] Confirm no implicit cluster start-up in default import/runtime behavior for `H4`.
+- [ ] Confirm H4 command-backed multi-node claims mention explicit
+  worker-command configuration rather than implicit cluster provisioning.
 
 ## Reviewer Sign-off
 

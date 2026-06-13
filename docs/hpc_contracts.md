@@ -26,19 +26,17 @@ until the corresponding contract is implemented, tested, and documented.
   `earth.Earth(...)`.
 - Host-language packages keep ecosystem-native names while documenting the
   shared `mars-earth` brand.
-- CPU fallback remains available for every accelerator or distributed feature (H3/H4)
-  (H1 for CPU, H3/H4 for accelerator/distributed), once those tiers are
-  implemented.
+- CPU fallback remains available for every H3 accelerator or H4 distributed feature,
+  with H3/H4 surfaces remaining opt-in.
 - ModelSpec replay semantics are identical across Python, Rust, R, Julia, C#,
   Go, and TypeScript unless a binding explicitly documents an unsupported
   capability.
 - Parallel and accelerator (H0/H1) paths must be opt-in or resource-bounded by
   default; importing the package must not spawn worker pools or initialize
   devices.
-- In the current H0/H1 workstream, accelerator and distributed paths are not yet
-  implemented.
-- In the current H0/H1 lanes, no accelerator or distributed runtime is
-  implemented yet.
+- H3 accelerator replay and H4 command-backed multi-node replay are opt-in
+  runtime surfaces; H0/H1 packaging text must still avoid implying mandatory
+  H3 accelerator or hidden cluster behavior.
 - Numerical differences must be bounded by a documented tolerance and validated
   against shared fixtures.
 - Every external packaging or foundation submission must state its implemented
@@ -172,17 +170,21 @@ Non-goals:
 ## H3: Accelerator-Ready Runtime
 
 H3 means replay workloads can run through an optional backend.
-The shared backend registry and CPU-fallback selection layer are implemented,
-but no vendor-specific backend is yet attached to that contract.
+The shared backend registry, CPU-fallback selection layer, and optional H3
+array-module replay adapter are implemented. H3 CUDA, ROCm, Metal, TPU, FPGA,
+and ASIC factories remain optional module-backed adapters and do not add
+mandatory vendor dependencies.
 
 Required deliverables:
 
 - Device discovery and capability checks that fail safely to CPU.
 - H3-required optional dependency model; users without accelerator runtimes can
   still install and use CPU packages.
-- Fixture parity against CPU replay within documented tolerances.
-- H3 benchmarks that compare CPU and accelerator paths on representative
-  batches.
+- Fixture parity against CPU replay within documented tolerances. Current
+  tolerance evidence uses `numpy.allclose` on the shared ModelSpec fixture.
+- H3 benchmarks that compare CPU and optional accelerator-entrypoint paths on
+  representative batches. Current benchmark evidence uses the
+  `array-test` validation backend and does not claim vendor speedup.
 - Clear unsupported-feature behavior for basis terms or data layouts that the
   accelerator backend cannot handle (H3 scope).
 
@@ -195,6 +197,10 @@ Non-goals:
 
 H4 means replay can be partitioned across workers or nodes with documented
 semantics.
+The current H4 implementation includes a CPU-cluster replay path and an explicit
+H4 command-backed multi-node adapter. The command adapter is unavailable unless
+a worker command such as `python -m pymars.cluster_worker` is configured, so
+imports and local predictions do not start cluster workers.
 
 Required deliverables:
 
@@ -203,6 +209,7 @@ Required deliverables:
 - H4 distributed smoke tests and at least one documented cluster-oriented
   execution recipe.
 - Resource controls for worker count, chunk size, and memory limits.
+- Bounded retry controls for command-backed worker failures.
 - Explicit statement of whether training is supported or replay-only.
 
 Non-goals:
@@ -247,7 +254,9 @@ As of 2026-05-11:
 - H2 stable runtime boundary is implemented in the repository as an additive
   ABI versioned boundary with explicit row-major batch interchange, but release
   claims still require the documented host validation evidence.
-- H3 and H4 remain deferred and intentionally unclaimed.
+- H3 optional array-module replay and H4 command-backed replay are implemented
+  as opt-in surfaces; vendor H3 accelerator speedups and implicit cluster
+  management remain intentionally unclaimed.
 - The package family has language-registry publication progress, and draft HPSF/E4S
   readiness packets are prepared at `docs/hpsf_e4s_readiness_packets_20260511.md` but
   still blocked on external submission review and maintainer clearance.

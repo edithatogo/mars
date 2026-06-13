@@ -22,6 +22,7 @@ def test_accelerator_validation_benchmark_reports_fallback(monkeypatch) -> None:
 
     assert [row["requested"] for row in rows] == ["cpu", "cuda"]
     assert all("registry_median_us" in row for row in rows)
+    assert all("accelerated_predict_median_us" in row for row in rows)
     assert all("cpu_predict_median_us" in row for row in rows)
     assert rows[0]["selected"] == "cpu"
     assert rows[0]["fallback"] is True

@@ -35,8 +35,7 @@ def run_benchmarks(
     """Measure selection and fallback paths for the shared accelerator layer."""
     results: list[dict[str, Any]] = []
     fixture_path = (
-        Path(__file__).resolve().parents[1]
-        / "tests/fixtures/model_spec_v1.json"
+        Path(__file__).resolve().parents[1] / "tests/fixtures/model_spec_v1.json"
     )
     spec = runtime_module.load_model_spec(fixture_path)
     rows = [[0.0, 0.1, 0.2], [0.2, 0.3, 0.4]]
@@ -54,6 +53,12 @@ def run_benchmarks(
                 durations.append(time.perf_counter() - start)
 
             summary = accelerator_module.accelerator_backend_summary()
+            accelerated_durations: list[float] = []
+            for _ in range(iterations):
+                start = time.perf_counter()
+                accelerator_module.predict_accelerated(spec, rows)
+                accelerated_durations.append(time.perf_counter() - start)
+
             cpu_durations: list[float] = []
             for _ in range(iterations):
                 start = time.perf_counter()
@@ -66,6 +71,10 @@ def run_benchmarks(
                     "selected": summary["selected"],
                     "fallback": summary["fallback"],
                     "registry_median_us": statistics.median(durations) * 1e6,
+                    "accelerated_predict_median_us": statistics.median(
+                        accelerated_durations
+                    )
+                    * 1e6,
                     "cpu_predict_median_us": statistics.median(cpu_durations) * 1e6,
                 }
             )

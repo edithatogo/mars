@@ -105,24 +105,31 @@ active 2026-05-11 track set.
 ### Track: `hpc_accelerator_portability_20260511`
 
 - Contract governance exists in `docs/hpc_contracts.md` and track files. Phase 0
-  backend selection is complete as an adapter-only selection: the shared optional
-  module-backed backend layer is the initial portability surface, and no vendor
-  compute kernel is claimed.
-- Phase 0 deferral hygiene is now recorded in the track plan:
-  - CPU replay only remains the supported runtime for this revision set.
-  - accelerator backend support is intentionally not yet implemented.
-  - the release-facing checkpoint language uses `not yet` / `non-goal` /
-    `deferred` wording.
-- H3 capability checks, fallback selection, and validation scaffolding are attached
-  through `pymars.accelerator`, `pymars.accelerator_backends`,
-  `pymars.specialized_accelerator_backends`, and `pymars.accelerator_validation`.
-  No vendor compute kernel, parity threshold, or accelerator speedup evidence is
-  claimed yet.
-- Explicit non-claim checkpoint for deferred state is in place:
-  - `H3` accelerator-ready replay is explicitly out of scope in this revision set.
-  - CPU replay remains the only supported runtime contract for this track cycle.
-  - No package release or external-facing docs must not claim accelerator execution
-    until this checkpoint is replaced with implementation evidence.
+  backend selection chose the shared optional module-backed backend layer as the
+  first portability surface.
+- Optional H3 replay is now implemented:
+  - `pymars.accelerator.predict_accelerated(...)` and
+    `pymars.accelerator.design_matrix_accelerated(...)` select an available
+    backend and fall back to CPU replay when none is available.
+  - `pymars.accelerator_backends.ArrayModuleAcceleratorBackend` evaluates
+    supported portable ModelSpec terms through a lazily imported array module.
+  - CUDA, ROCm, Metal, TPU, FPGA, and ASIC factories remain optional
+    module-backed adapters and do not add mandatory vendor dependencies.
+- Validation evidence:
+  - `tests/test_accelerator_runtime.py` covers CPU-vs-H3 parity for prediction
+    and design matrix replay using the `array-test` validation backend.
+  - fallback behavior is covered when a requested backend is unavailable.
+  - `pymars/accelerator_validation.py` and
+    `scripts/benchmark_accelerator_validation.py` now report both accelerated
+    entrypoint timing and CPU replay timing.
+  - local smoke command:
+    `uv run python3 scripts/benchmark_accelerator_validation.py --iterations 3 --requested cpu,array-test,missing`
+    completed with `array-test` selected without fallback and `cpu`/`missing`
+    requests using CPU fallback.
+- Claim boundary:
+  - H3 optional replay is implemented for supported ModelSpec basis terms.
+  - No vendor GPU/TPU/FPGA/ASIC speedup claim is made.
+  - Distributed multi-node execution remains H4 scope, not H3 scope.
 
 ### Track: `hpc_accelerator_backend_foundation_20260511`
 
@@ -258,23 +265,21 @@ active 2026-05-11 track set.
 
 ### Track: `hpc_multi_node_distributed_execution_20260511`
 
-- New deferred track created to own the remaining H4 work beyond CPU-cluster
-  replay:
+- Track created to own H4 work beyond CPU-cluster replay:
   - scheduler-backed or node-backed partitioning
-  - retry and aggregation semantics for true multi-node execution
+  - retry and aggregation semantics for multi-node execution
   - network and resource assumptions for cluster-oriented smoke coverage
 - This track intentionally does not duplicate the already implemented
   CPU-cluster replay path in `pymars.runtime`.
-- Phase 0 contract definition is complete. The multi-node implementation remains
-  deferred until a real scheduler-backed adapter exists.
+- Phase 0 contract definition is complete.
 - The reusable cluster abstraction layer is now present in `pymars.cluster`,
-  so the eventual multi-node backend can plug into a stable interface without
+  so multi-node and CPU-cluster paths share a stable dispatch interface without
   changing the CPU-cluster replay contract.
 - `ClusterConfig` now validates worker and chunk settings eagerly, so invalid
   multi-node inputs fail before backend dispatch.
 - `pymars.cluster` also supports environment-backed configuration for mode,
-  worker count, chunk size, preserve-order, and scheduler hints via the
-  `MARS_EARTH_CLUSTER_*` variables.
+  worker count, chunk size, preserve-order, retry count, scheduler hints, and
+  explicit worker command via the `MARS_EARTH_CLUSTER_*` variables.
 - Invalid numeric cluster environment inputs now fail with explicit messages,
   rather than bubbling raw parsing errors from the config constructor.
 - `pymars.cluster` also exposes a normalized config summary helper so the
@@ -282,12 +287,27 @@ active 2026-05-11 track set.
 - `pymars.cluster` also exposes a deferred multi-node backend placeholder that
   fails clearly if invoked, keeping the non-implemented path explicit without
   pretending the scheduler-backed contract exists yet.
+- `pymars.cluster.CommandMultiNodeBackend` now provides an explicit
+  command-backed multi-node path:
+  - rows are partitioned into deterministic chunks
+  - each chunk is sent to a configured worker command through a JSON payload
+  - outputs are aggregated in stable order when `preserve_order=True`
+  - failed worker commands use bounded retries via `ClusterConfig.retries`
+- `pymars.cluster_worker` provides a smoke worker that supports
+  `python -m pymars.cluster_worker <payload.json>` for `predict` and
+  `design_matrix` operations.
 - The stable cluster API now exposes `predict_cluster(...)` and
   `design_matrix_cluster(...)` so callers have one entrypoint for the CPU
-  cluster path and the deferred multi-node path.
-- In practical terms, the only remaining in-repo H4 gap is the real
-  scheduler-backed multi-node backend; the CPU-cluster path and shared control
-  surface are already implemented.
+  cluster path, deferred multi-node state, and configured command-backed
+  multi-node path.
+- Validation evidence:
+  - `tests/test_cluster_runtime.py` covers command-backed prediction parity,
+    design-matrix parity, environment-backed command configuration, and
+    deterministic aggregation.
+- Claim boundary:
+  - H4 replay is implemented only when an explicit worker command is configured.
+  - There is no implicit cluster provisioning, hidden network activity, or
+    training support claim.
 
 ### Track: `hpsf_e4s_readiness_submission_20260511`
 

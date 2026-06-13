@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-"""Benchmark accelerator registry selection and CPU fallback behavior.
+"""Benchmark accelerator registry selection, replay, and CPU fallback behavior.
 
-This script measures the shared H3 contract layer rather than any vendor
-kernel, which keeps the evidence honest while GPU/TPU/FPGA/ASIC implementations
-remain deferred.
+This script measures the shared H3 contract layer and a NumPy-backed validation
+adapter. It does not claim a vendor GPU/TPU/FPGA/ASIC speedup.
 """
 
 from __future__ import annotations
@@ -32,7 +31,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--requested",
-        default="cpu,cuda,metal,tpu",
+        default="cpu,array-test,cuda,metal,tpu",
         help="Comma-separated requested backend names or empty entries.",
     )
     return parser.parse_args()
@@ -43,12 +42,18 @@ def main() -> int:
     args = parse_args()
     if args.iterations < 1:
         raise SystemExit("--iterations must be >= 1")
-    requested_backends = [
-        item.strip() or None for item in args.requested.split(",")
-    ]
+    requested_backends = [item.strip() or None for item in args.requested.split(",")]
     import pymars.accelerator as accelerator_module
     import pymars.runtime as runtime_module
+    from pymars.accelerator_backends import ArrayModuleAcceleratorBackend
 
+    accelerator_module.register_accelerator_backend(
+        ArrayModuleAcceleratorBackend(
+            name="array-test",
+            marker_module="numpy",
+            device_kind="array-api-validation",
+        )
+    )
     for row in run_benchmarks(
         runtime_module=runtime_module,
         accelerator_module=accelerator_module,
@@ -58,6 +63,7 @@ def main() -> int:
         print(
             "requested={requested} selected={selected} fallback={fallback} "
             "registry_median_us={registry_median_us:.2f} "
+            "accelerated_predict_median_us={accelerated_predict_median_us:.2f} "
             "cpu_predict_median_us={cpu_predict_median_us:.2f}".format(**row)
         )
     return 0

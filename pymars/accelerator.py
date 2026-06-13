@@ -6,6 +6,8 @@ import os
 from dataclasses import dataclass
 from typing import Any, Protocol, runtime_checkable
 
+import numpy as np
+
 ACCELERATOR_ENV_VAR = "MARS_EARTH_ACCELERATOR_BACKEND"
 CPU_BACKEND_NAME = "cpu"
 
@@ -121,3 +123,42 @@ def accelerator_backend_summary() -> dict[str, Any]:
             "supports_batch_replay": capabilities.supports_batch_replay,
         },
     }
+
+
+def predict_accelerated(
+    spec_or_path: dict[str, Any] | str,
+    X: Any,
+    *,
+    preferred: str | None = None,
+) -> np.ndarray:
+    """Predict through an optional H3 backend with CPU fallback.
+
+    Accelerator dependencies remain optional. If no requested backend is
+    available, or if the selected backend does not expose executable replay, the
+    portable CPU runtime is used.
+    """
+    from . import runtime
+
+    backend = select_accelerator_backend(preferred)
+    predict_fn = getattr(backend, "predict", None) if backend is not None else None
+    if callable(predict_fn):
+        return np.asarray(predict_fn(spec_or_path, X), dtype=float)
+    return runtime.predict(spec_or_path, X)
+
+
+def design_matrix_accelerated(
+    spec_or_path: dict[str, Any] | str,
+    X: Any,
+    *,
+    preferred: str | None = None,
+) -> np.ndarray:
+    """Build a design matrix through an optional H3 backend with CPU fallback."""
+    from . import runtime
+
+    backend = select_accelerator_backend(preferred)
+    design_matrix_fn = (
+        getattr(backend, "design_matrix", None) if backend is not None else None
+    )
+    if callable(design_matrix_fn):
+        return np.asarray(design_matrix_fn(spec_or_path, X), dtype=float)
+    return runtime.design_matrix(spec_or_path, X)

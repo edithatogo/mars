@@ -24,10 +24,11 @@ source of truth for planning.
 Current remaining work is tracked in Conductor and is intentionally split into
 auditable lanes:
 
-- true multi-node scheduler-backed distributed execution
 - open external registry submissions and review threads
 - already-implemented in-repo lanes remain documented for traceability, but are
   not active implementation gaps:
+  - optional H3 array-module accelerator replay and CPU fallback
+  - command-backed H4 multi-node replay and worker-command control surface
   - accelerator foundation/adapters/validation scaffolding
   - CPU cluster replay and shared cluster control surface
   - docs/examples/notebooks

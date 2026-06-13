@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+import numpy as np
+
 from pymars import (
     AcceleratorCapabilities,
     accelerator_backend_summary,
@@ -14,6 +16,8 @@ from pymars import (
     select_accelerator_backend,
 )
 from pymars import accelerator as accelerator_module
+from pymars.accelerator_backends import ArrayModuleAcceleratorBackend
+from pymars.runtime import design_matrix, predict
 
 
 @dataclass
@@ -85,3 +89,57 @@ def test_accelerator_registry_reports_capabilities(monkeypatch) -> None:
     assert summary["fallback"] is False
     assert summary["capabilities"]["backend_name"] == "metal"
     assert summary["capabilities"]["device_kind"] == "test-device"
+
+
+def test_accelerated_prediction_matches_cpu_replay(monkeypatch) -> None:
+    """Executable accelerator backends should match CPU portable replay."""
+    clear_accelerator_backends()
+    monkeypatch.setenv(accelerator_module.ACCELERATOR_ENV_VAR, "array-test")
+    backend = ArrayModuleAcceleratorBackend(
+        name="array-test",
+        marker_module="numpy",
+        device_kind="test-array",
+    )
+    register_accelerator_backend(backend)
+    spec_path = "tests/fixtures/model_spec_v1.json"
+    rows = np.array([[0.0, 0.1, 0.2], [0.2, 0.3, 0.4]], dtype=float)
+
+    accelerated = accelerator_module.predict_accelerated(spec_path, rows)
+    cpu = predict(spec_path, rows)
+
+    assert np.allclose(accelerated, cpu)
+    assert accelerator_module.accelerator_backend_summary()["fallback"] is False
+
+
+def test_accelerated_design_matrix_matches_cpu_replay(monkeypatch) -> None:
+    """Accelerator design-matrix replay should match CPU fixture output."""
+    clear_accelerator_backends()
+    monkeypatch.setenv(accelerator_module.ACCELERATOR_ENV_VAR, "array-test")
+    register_accelerator_backend(
+        ArrayModuleAcceleratorBackend(
+            name="array-test",
+            marker_module="numpy",
+            device_kind="test-array",
+        )
+    )
+    spec_path = "tests/fixtures/model_spec_v1.json"
+    rows = np.array([[0.0, 0.1, 0.2], [0.2, 0.3, 0.4]], dtype=float)
+
+    accelerated = accelerator_module.design_matrix_accelerated(spec_path, rows)
+    cpu = design_matrix(spec_path, rows)
+
+    assert np.allclose(accelerated, cpu)
+
+
+def test_accelerated_replay_falls_back_to_cpu_when_backend_missing(monkeypatch) -> None:
+    """Requested but unavailable accelerator paths should preserve CPU behavior."""
+    clear_accelerator_backends()
+    monkeypatch.setenv(accelerator_module.ACCELERATOR_ENV_VAR, "missing")
+    spec_path = "tests/fixtures/model_spec_v1.json"
+    rows = np.array([[0.0, 0.1, 0.2], [0.2, 0.3, 0.4]], dtype=float)
+
+    accelerated = accelerator_module.predict_accelerated(spec_path, rows)
+    cpu = predict(spec_path, rows)
+
+    assert np.allclose(accelerated, cpu)
+    assert accelerator_module.accelerator_backend_summary()["fallback"] is True

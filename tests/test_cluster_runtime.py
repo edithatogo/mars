@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import sys
+
 import numpy as np
 
 from pymars import (
@@ -9,6 +11,7 @@ from pymars import (
     CLUSTER_MODE_ENV_VAR,
     CLUSTER_PRESERVE_ORDER_ENV_VAR,
     CLUSTER_SCHEDULER_ENV_VAR,
+    CLUSTER_WORKER_COMMAND_ENV_VAR,
     CLUSTER_WORKERS_ENV_VAR,
     CPU_CLUSTER_MODE,
     MULTI_NODE_CLUSTER_MODE,
@@ -99,6 +102,9 @@ def test_cluster_config_from_environment(monkeypatch) -> None:
     monkeypatch.setenv(CLUSTER_CHUNK_SIZE_ENV_VAR, "8")
     monkeypatch.setenv(CLUSTER_PRESERVE_ORDER_ENV_VAR, "false")
     monkeypatch.setenv(CLUSTER_SCHEDULER_ENV_VAR, "slurm")
+    monkeypatch.setenv(
+        CLUSTER_WORKER_COMMAND_ENV_VAR, "python -m pymars.cluster_worker"
+    )
 
     config = cluster_config_from_environment()
 
@@ -107,6 +113,7 @@ def test_cluster_config_from_environment(monkeypatch) -> None:
     assert config.chunk_size == 8
     assert config.preserve_order is False
     assert config.scheduler == "slurm"
+    assert config.worker_command == "python -m pymars.cluster_worker"
 
 
 def test_cluster_config_from_environment_rejects_invalid_values(monkeypatch) -> None:
@@ -126,6 +133,7 @@ def test_cluster_config_summary_matches_config() -> None:
     config = ClusterConfig(
         mode=CPU_CLUSTER_MODE,
         scheduler="pbs",
+        worker_command="python -m pymars.cluster_worker",
         workers=3,
         chunk_size=2,
         preserve_order=False,
@@ -136,9 +144,11 @@ def test_cluster_config_summary_matches_config() -> None:
     assert summary == {
         "mode": CPU_CLUSTER_MODE,
         "scheduler": "pbs",
+        "worker_command_configured": True,
         "workers": 3,
         "chunk_size": 2,
         "preserve_order": False,
+        "retries": 0,
     }
 
 
@@ -182,8 +192,12 @@ def test_cluster_api_dispatches_to_cpu_backend() -> None:
     spec = model.get_model_spec()
     config = ClusterConfig(mode=CPU_CLUSTER_MODE, workers=2, chunk_size=1)
 
-    cluster_predictions = predict_cluster(spec, np.array([[0.5], [1.5]], dtype=float), config)
-    cluster_matrix = design_matrix_cluster(spec, np.array([[0.5], [1.5]], dtype=float), config)
+    cluster_predictions = predict_cluster(
+        spec, np.array([[0.5], [1.5]], dtype=float), config
+    )
+    cluster_matrix = design_matrix_cluster(
+        spec, np.array([[0.5], [1.5]], dtype=float), config
+    )
 
     assert cluster_predictions.shape == (2,)
     assert cluster_matrix.shape[0] == 2
@@ -199,3 +213,54 @@ def test_cluster_api_rejects_deferred_multi_node_mode() -> None:
         assert "deferred" in str(exc).lower()
     else:
         raise AssertionError("Expected NotImplementedError")
+
+
+def test_command_backed_multi_node_predict_matches_cpu_replay() -> None:
+    """Configured multi-node worker commands should replay chunks deterministically."""
+    from pymars import Earth, runtime
+
+    X = np.array([[0.0], [1.0], [2.0], [3.0], [4.0]], dtype=float)
+    y = np.array([1.0, 3.0, 5.0, 7.0, 9.0], dtype=float)
+    model = Earth(max_degree=1, max_terms=5, penalty=3.0)
+    model.fit(X, y)
+    spec = model.get_model_spec()
+    probe = np.array([[0.5], [1.5], [2.5]], dtype=float)
+    config = ClusterConfig(
+        mode=MULTI_NODE_CLUSTER_MODE,
+        scheduler="command",
+        worker_command=f"{sys.executable} -m pymars.cluster_worker",
+        workers=2,
+        chunk_size=1,
+    )
+
+    actual = predict_cluster(spec, probe, config)
+    expected = runtime.predict(spec, probe)
+    summary = cluster_backend_summary(config)
+
+    assert np.allclose(actual, expected)
+    assert summary["selected"] == MULTI_NODE_CLUSTER_MODE
+    assert summary["fallback"] is False
+
+
+def test_command_backed_multi_node_design_matrix_matches_cpu_replay() -> None:
+    """The command-backed H4 adapter should aggregate design-matrix chunks."""
+    from pymars import Earth, runtime
+
+    X = np.array([[0.0], [1.0], [2.0], [3.0], [4.0]], dtype=float)
+    y = np.array([1.0, 3.0, 5.0, 7.0, 9.0], dtype=float)
+    model = Earth(max_degree=1, max_terms=5, penalty=3.0)
+    model.fit(X, y)
+    spec = model.get_model_spec()
+    probe = np.array([[0.5], [1.5], [2.5]], dtype=float)
+    config = ClusterConfig(
+        mode=MULTI_NODE_CLUSTER_MODE,
+        scheduler="command",
+        worker_command=f"{sys.executable} -m pymars.cluster_worker",
+        workers=2,
+        chunk_size=1,
+    )
+
+    actual = design_matrix_cluster(spec, probe, config)
+    expected = runtime.design_matrix(spec, probe)
+
+    assert np.allclose(actual, expected)

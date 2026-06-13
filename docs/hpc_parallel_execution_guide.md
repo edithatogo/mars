@@ -30,8 +30,8 @@ semantics and benchmark evidence.
 | B | H0 packaging lane | `packaging/spack/**`, `packaging/easybuild/**`, `packaging/conda-forge/**`, submission notes | Contract governance baseline |
 | C | H1 runtime lane | Rust runtime kernels, Rust/Python benchmark and parity tests | Contract governance baseline |
 | D | H2 ABI lane | ABI/boundary files and tests, interoperability notes | H1 semantics and benchmark thresholds |
-| E | H3 accelerator lane | Optional backend prototype and docs/tests | H1 benchmark data |
-| F | H4 distributed lane | CPU cluster parallelism and distributed adapter files and tests | H1 partitioning semantics; H3 only if accelerator-distributed |
+| E | H3 accelerator lane | Optional array-module replay backend and docs/tests | H1 benchmark data |
+| F | H4 distributed lane | CPU cluster parallelism, command-backed worker dispatch, and distributed adapter files and tests | H1 partitioning semantics; H3 only if accelerator-distributed |
 
 ## Parallel Team Assignment (6 Subagents)
 
@@ -43,17 +43,16 @@ The request for six parallel workers maps cleanly to one-lane ownership:
   any blockers from external tooling.
 - **Agent C**: H1 runtime optimization, benchmark evidence, and serial/parity tests.
 - **Agent D**: H2 boundary hardening, versioning contract, and boundary conformance.
-- **Agent E**: H3 accelerator feasibility, optional dependency/feature-gate design, and safety policy.
-- **Agent F**: H4 CPU cluster parallelism, distributed partitioning, and deterministic aggregation work.
+- **Agent E**: H3 optional replay, optional dependency/feature-gate design, and safety policy.
+- **Agent F**: H4 CPU cluster parallelism, command-backed worker dispatch, distributed partitioning, and deterministic aggregation work.
 
 Notes:
 
 - HPSF/E4S and Julia registration tracks are still handled as governance-facing
   follow-ups after the primary lanes above have clear checkpoint evidence.
-- The H4 lane currently refers to the replay-only local preview adapter; it is
-  fail-fast on invalid inputs and does not imply retry or cluster orchestration
-  semantics. CPU cluster parallelism remains the explicit cluster-oriented
-  target for this lane.
+- The H4 lane includes the replay-only local preview adapter and an explicit
+  command-backed worker adapter. The command adapter is available only when a
+  worker command is configured and does not imply hidden scheduler provisioning.
 
 ## Coordination Rules
 
@@ -63,8 +62,9 @@ Notes:
 - H0 agents must remove non-final URLs, versions, checksums, and stale
   package identities before upstream-bound files are considered complete.
 - H1 agents must define benchmark thresholds before changing kernel behavior.
-- H3 agents must not choose an accelerator backend until H1 benchmark data is
-  available.
+- H3 agents must keep vendor accelerator claims separate from the current
+  array-module validation backend unless vendor parity and benchmark evidence
+  has been added.
 - HPSF/E4S agents must not submit full packets unless H0 is complete and H1/H2
   evidence is credible; otherwise they should draft pre-submission inquiries or
   deferral notes.
