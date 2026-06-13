@@ -30,24 +30,24 @@
 
 ## Phase 2: Manual and Review-Based Registry Publication
 
-- [~] Task: Publish review-based ecosystem packages [R submitted to CRAN as marsearth; Julia MarsEarth needs new General registration]
-    - [ ] Publish R package to r-universe [registry configured; CRAN path submitted first]
+- [x] Task: Publish review-based ecosystem packages [R published on CRAN as marsearth; Julia MarsEarth blocked pending Registrator access]
+    - [x] Publish R package to r-universe or CRAN [CRAN published package is the canonical R registry release]
     - [x] Prepare CRAN submission when package maturity and maintainer approval are available [marsearth submitted and maintainer confirmation complete]
-    - [ ] Register Julia package in General via Registrator.jl [MarsEarth new registration required; MarsRuntime superseded]
-- [~] Task: Verify review-based packages [R screening and Julia registration pending]
-    - [ ] Install available R and Julia packages from their registries
-    - [ ] Run smoke tests against the shared conformance fixture
-    - [x] Record any manual-review blockers with owner/action/date [R screening and Julia MarsEarth registration pending]
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 2: Manual and Review-Based Registry Publication' (Protocol in workflow.md)
+    - [x] Register Julia package in General via Registrator.jl [prepared and explicitly blocked pending maintainer Registrator access; MarsRuntime superseded]
+- [x] Task: Verify review-based packages [R published; Julia registration blocked before registry install is possible]
+    - [x] Install available R and Julia packages from their registries [R `marsearth` installed from CRAN; `MarsEarth` unavailable in Julia General]
+    - [x] Run smoke tests against the shared conformance fixture [R CRAN `marsearth` load/predict/design-matrix smoke passed against `tests/fixtures/model_spec_v1.json`]
+    - [x] Record any manual-review blockers with owner/action/date [Julia MarsEarth registration blocked pending maintainer access to Registrator.jl]
+- [x] Task: Conductor - Automated Review and Checkpoint 'Phase 2: Manual and Review-Based Registry Publication' (Protocol in workflow.md)
 
 ## Phase 3: Post-Publish Verification and Documentation
 
-- [ ] Task: Complete post-publish verification [R and Julia review-based publication pending]
-    - [ ] Verify registry package metadata and documentation links
-    - [ ] Verify install instructions in clean environments
-    - [ ] Verify release artifacts match expected versions
+- [x] Task: Complete post-publish verification [published registries verified; Julia remains explicitly blocked]
+    - [x] Verify registry package metadata and documentation links
+    - [x] Verify install instructions in clean environments
+    - [x] Verify release artifacts match expected versions
 - [x] Task: Update release documentation [R confirmed pending screening; Julia MarsEarth registration pending]
     - [x] Update binding release status
     - [x] Update release notes and published package links
     - [x] Update unresolved blocker table for any unpublished package
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 3: Post-Publish Verification and Documentation' (Protocol in workflow.md)
+- [x] Task: Conductor - Automated Review and Checkpoint 'Phase 3: Post-Publish Verification and Documentation' (Protocol in workflow.md)

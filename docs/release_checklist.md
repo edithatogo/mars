@@ -73,6 +73,9 @@ confirm or configure:
 - For CRAN, confirm `https://CRAN.R-project.org/package=marsearth` and
   `https://CRAN.R-project.org/web/checks/check_results_marsearth.html` remain
   healthy for the published `0.0.0` package.
+- CRAN `marsearth` post-publish smoke passed on 2026-06-14 by installing from
+  CRAN into a temporary R library, loading the package, and running
+  `predict_model` plus `design_matrix` against `tests/fixtures/model_spec_v1.json`.
 - Confirm the registry page and README links point to the canonical project.
 - Confirm any release notes or changelog entries were updated to match the
   published version.

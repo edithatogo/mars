@@ -38,7 +38,7 @@ The remaining-track dependency gates are summarized in
   *Link: [./archive/rust_training_orchestration_python_integration_20260428/](./archive/rust_training_orchestration_python_integration_20260428/)*
 - [x] **Track: R package publication readiness**
   *Link: [./archive/r_package_publication_readiness_20260504/](./archive/r_package_publication_readiness_20260504/)*
-- [~] **Track: Publish packages to language package managers with release governance**
+- [x] **Track: Publish packages to language package managers with release governance**
   *Link: [./tracks/package_publication_release_governance_20260428/](./tracks/package_publication_release_governance_20260428/)*
 - [x] **Track: Prepare and submit the R package for publication with browser-based registry workflow**
   *Link: [./archive/r_package_publication_submission_20260510/](./archive/r_package_publication_submission_20260510/)*

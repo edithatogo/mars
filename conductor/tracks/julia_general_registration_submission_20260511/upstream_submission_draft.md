@@ -43,6 +43,8 @@ release package for this project.
 - Distribution identity: `MarsEarth` (Julia General)
 - Source: https://github.com/edithatogo/mars (subdir: bindings/julia)
 - Contract level currently satisfied: H0 (HPC packaging), with H1 runtime parallelism
-  implemented for replay in repository evidence. No H3/H4 accelerator or
-  multi-node claims are part of this registration.
+  implemented for replay in repository evidence. H3 optional array-module replay
+  and H4 command-backed replay are implemented in repository evidence, but this
+  registration should not claim vendor accelerator speedups, mandatory device
+  dependencies, implicit cluster provisioning, or training support.
 ```

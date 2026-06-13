@@ -21,7 +21,7 @@ release notes required for publishable changes, and quiet-by-default logging.
 | EasyBuild H0 easyconfig | External EasyBuild PR access and maintainer review | H0 submission track and upstream easyconfig draft | PR open: https://github.com/easybuilders/easybuild-easyconfigs/pull/25951; no human review feedback yet |
 | conda-forge H0 feedstock | staged-recipes submission access and maintainer review | H0 submission track and recipe draft | PR open: https://github.com/conda-forge/staged-recipes/pull/33290; automated conda-forge lint feedback addressed; no human review yet |
 | HPSF/E4S packet drafts | TAC review and follow-up forum selection | HPSF/E4S packet draft and tracker notes | TAC readiness inquiry submitted: https://github.com/hpsfoundation/tac/issues/88; no TAC comments yet |
-| R `marsearth` | Keep CRAN metadata and check-result links current; supersede the earlier `marsruntime` / `mars.earth` uploads | Release checklist, `bindings/r/cran-comments.md`, and maintainer notes | Published on CRAN as `0.0.0` |
+| R `marsearth` | Keep CRAN metadata and check-result links current; supersede the earlier `marsruntime` / `mars.earth` uploads | Release checklist, `bindings/r/cran-comments.md`, and maintainer notes | Published on CRAN as `0.0.0`; CRAN install/load/predict/design-matrix smoke passed on 2026-06-14 |
 | Julia `MarsEarth` | Register new Julia package; keep `MarsRuntime` as superseded legacy package | Release checklist and maintainer notes | Blocked pending maintainer access to Registrator.jl; no registration PR yet |
 
 ## How to Provide It
