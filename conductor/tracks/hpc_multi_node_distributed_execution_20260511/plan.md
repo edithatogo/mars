@@ -2,11 +2,11 @@
 
 ## Phase 0: Contract Definition
 
-- [ ] Task: Define the multi-node H4 contract
+- [x] Task: Define the multi-node H4 contract [real scheduler backend deferred]
   - [x] Specify partitioning, aggregation, and retry rules
   - [x] Specify network and scheduler assumptions
   - [x] Specify what remains replay-only versus cluster-backed
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 0: Contract Definition' (Protocol in workflow.md)
+- [x] Task: Conductor - Automated Review and Checkpoint 'Phase 0: Contract Definition' (Protocol in workflow.md)
 
 ## Phase 1: Implementation
 

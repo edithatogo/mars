@@ -5,6 +5,7 @@ sidebar:
   order: 16
 ---
 
+# Package Release Paths
 
 This page documents the package-manager-specific release paths for the current
 binding surface. It is the policy source for the publication track and the
@@ -12,7 +13,7 @@ release-rehearsal workflow. The canonical machine-readable release metadata
 is [release_metadata.json](release_metadata.json).
 
 `mars-earth` is the public project brand for the whole package family. The
-canonical package matrix lives in [Release Inventory](release_inventory)
+canonical package matrix lives in [Release Inventory](release_inventory.md)
 and the canonical machine-readable metadata lives in
 [release_metadata.json](release_metadata.json). Where an ecosystem requires
 a concrete package or module identifier, that identifier stays
@@ -20,7 +21,7 @@ ecosystem-native, while the docs and release metadata should keep the shared
 `mars-earth` brand visible.
 
 HPC-oriented package submissions and claims are governed by
-[HPC Contracts](hpc_contracts). Spack, EasyBuild, and conda-forge submissions
+[HPC Contracts](hpc_contracts.md). Spack, EasyBuild, and conda-forge submissions
 must satisfy H0 before upstream submission and must not imply H1-H4 capabilities
 until those implementation tracks are complete.
 
@@ -80,15 +81,15 @@ until those implementation tracks are complete.
 
 ### R
 
-- Registry: r-universe first, then CRAN when the package is ready for formal
-  submission.
+- Registry: CRAN is live; r-universe remains a supplementary source-build path
+  if configured by the maintainer.
 - Package name: `marsearth`.
 - Release path: the r-universe registry repository is configured. For CRAN,
   build the source tarball, inspect package contents, run
   `R CMD check --no-manual --as-cran marsearth_0.0.0.tar.gz`, upload the
   tarball through the CRAN form, accept the maintainer confirmation email, and
-  monitor CRAN incoming/check-result pages. The `marsearth` submission is
-  confirmed and queued in `incoming/newbies/` pending screening.
+  monitor CRAN check-result pages. The `marsearth` package is published on
+  CRAN as version `0.0.0`.
 - Package docs: keep the per-function Rd pages plus a package-level help topic
   and a build-ready vignette source; use `R CMD Rd2pdf` as the manual build path
   when the local toolchain supports it.

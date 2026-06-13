@@ -14,7 +14,7 @@
 ## Proposed Registry Text
 
 - Package name: `MarsEarth`
-- Package source: `https://github.com/earthanalyticsr/pymars`, subdir
+- Package source: `https://github.com/edithatogo/mars`, subdir
   `bindings/julia`
 - License: As declared in project metadata.
 - Description: Portable Mars runtime replay package surface backed by the Rust runtime.
@@ -27,7 +27,8 @@
 
 - Julia General registration requires external workflow access (Registrator/maintainer
   review).
-- External submission URL and review status are pending at this time.
+- External submission URL and review status are blocked pending maintainer
+  access to the Registrator.jl workflow.
 
 ## Suggested registry PR body
 
@@ -40,7 +41,8 @@ treated as a legacy/pre-existing identity and should not be treated as the targe
 release package for this project.
 
 - Distribution identity: `MarsEarth` (Julia General)
-- Source: https://github.com/earthanalyticsr/pymars (subdir: bindings/julia)
+- Source: https://github.com/edithatogo/mars (subdir: bindings/julia)
 - Contract level currently satisfied: H0 (HPC packaging), with H1 runtime parallelism
-  implemented for replay in repository evidence.
+  implemented for replay in repository evidence. No H3/H4 accelerator or
+  multi-node claims are part of this registration.
 ```

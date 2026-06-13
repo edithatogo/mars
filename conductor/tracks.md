@@ -115,7 +115,7 @@ The remaining-track dependency gates are summarized in
 - [~] **Track: Implement H3 accelerator portability with optional device backends**
   *Link: [./tracks/hpc_accelerator_portability_20260511/](./tracks/hpc_accelerator_portability_20260511/)*
 
-- [ ] **Track: Define the shared H3 accelerator backend foundation and fallback contract**
+- [x] **Track: Define the shared H3 accelerator backend foundation and fallback contract**
   *Link: [./tracks/hpc_accelerator_backend_foundation_20260511/](./tracks/hpc_accelerator_backend_foundation_20260511/)*
 
 - [x] **Track: Implement H3 GPU-family accelerator backends**
@@ -141,32 +141,32 @@ The remaining-track dependency gates are summarized in
 - [x] **Track: Implement H4 distributed execution for partitioned replay**
   *Link: [./tracks/hpc_distributed_execution_20260511/](./tracks/hpc_distributed_execution_20260511/)*
 
-- [ ] **Track: Implement remaining H4 multi-node distributed execution**
+- [~] **Track: Implement remaining H4 multi-node distributed execution**
   *Link: [./tracks/hpc_multi_node_distributed_execution_20260511/](./tracks/hpc_multi_node_distributed_execution_20260511/)*
 
 ---
 
-- [~] **Track: Prepare and submit the H0 Spack recipe upstream**
+- [x] **Track: Prepare and submit the H0 Spack recipe upstream**
   *Link: [./tracks/spack_upstream_submission_20260511/](./tracks/spack_upstream_submission_20260511/)*
 
 ---
 
-- [~] **Track: Prepare and submit the H0 EasyBuild easyconfig upstream**
+- [x] **Track: Prepare and submit the H0 EasyBuild easyconfig upstream**
   *Link: [./tracks/easybuild_upstream_submission_20260511/](./tracks/easybuild_upstream_submission_20260511/)*
 
 ---
 
-- [~] **Track: Prepare and submit the H0 conda-forge feedstock**
+- [x] **Track: Prepare and submit the H0 conda-forge feedstock**
   *Link: [./tracks/conda_forge_feedstock_submission_20260511/](./tracks/conda_forge_feedstock_submission_20260511/)*
 
 ---
 
-- [~] **Track: Prepare HPSF and E4S readiness or submission packets**
+- [x] **Track: Prepare HPSF and E4S readiness or submission packets**
   *Link: [./tracks/hpsf_e4s_readiness_submission_20260511/](./tracks/hpsf_e4s_readiness_submission_20260511/)*
 
 ---
 
-- [~] **Track: Prepare and submit Julia package registration in General**
+- [x] **Track: Prepare and submit Julia package registration in General**
   *Link: [./tracks/julia_general_registration_submission_20260511/](./tracks/julia_general_registration_submission_20260511/)*
 
 ---

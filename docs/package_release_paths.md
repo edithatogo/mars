@@ -74,15 +74,15 @@ until those implementation tracks are complete.
 
 ### R
 
-- Registry: r-universe first, then CRAN when the package is ready for formal
-  submission.
+- Registry: CRAN is live; r-universe remains a supplementary source-build path
+  if configured by the maintainer.
 - Package name: `marsearth`.
 - Release path: the r-universe registry repository is configured. For CRAN,
   build the source tarball, inspect package contents, run
   `R CMD check --no-manual --as-cran marsearth_0.0.0.tar.gz`, upload the
   tarball through the CRAN form, accept the maintainer confirmation email, and
-  monitor CRAN incoming/check-result pages. The `marsearth` submission is
-  confirmed and queued in `incoming/newbies/` pending screening.
+  monitor CRAN check-result pages. The `marsearth` package is published on
+  CRAN as version `0.0.0`.
 - Package docs: keep the per-function Rd pages plus a package-level help topic
   and a build-ready vignette source; use `R CMD Rd2pdf` as the manual build path
   when the local toolchain supports it.

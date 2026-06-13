@@ -27,16 +27,16 @@
     - [x] Include explicit note that this is a new package identity with `MarsRuntime`
       treated as legacy/superseded.
     - [x] Add the draft to [upstream_submission_draft.md](./upstream_submission_draft.md).
-- [ ] Task: Open or prepare Julia General registration PR
-    - [ ] Prepare the Registrator.jl submission body and package metadata bundle.
-    - [ ] Confirm no compute-contract misclaims are included in registry metadata.
-    - [ ] Capture PR URL or blocker state in evidence notes.
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 1: Upstream Registration Draft' (Protocol in workflow.md)
+- [x] Task: Open or prepare Julia General registration PR [external Registrator access required]
+    - [x] Prepare the Registrator.jl submission body and package metadata bundle.
+    - [x] Confirm no compute-contract misclaims are included in registry metadata.
+    - [x] Capture PR URL or blocker state in evidence notes.
+- [x] Task: Conductor - Automated Review and Checkpoint 'Phase 1: Upstream Registration Draft' (Protocol in workflow.md)
 
 ## Phase 2: Verification and Handoff
 
-- [ ] Task: Confirm submission visibility and follow-up owner
-    - [ ] Confirm registry status (or queue/blocked status) is recorded.
-    - [ ] Record response/owner/action/date and any follow-up review requirement.
-    - [ ] Update release and publication handoff docs with current status.
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 2: Verification and Handoff' (Protocol in workflow.md)
+- [x] Task: Confirm submission visibility and follow-up owner [blocked before external submission]
+    - [x] Confirm registry status (or queue/blocked status) is recorded.
+    - [x] Record response/owner/action/date and any follow-up review requirement.
+    - [x] Update release and publication handoff docs with current status.
+- [x] Task: Conductor - Automated Review and Checkpoint 'Phase 2: Verification and Handoff' (Protocol in workflow.md)

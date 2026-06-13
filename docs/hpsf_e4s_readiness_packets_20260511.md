@@ -4,12 +4,14 @@ This document contains draft readiness packets for community submission lanes th
 ready for maintainer review. Both packets are framed as **H0-first** packets and
 do not claim accelerator, MPI, multi-node, or distributed execution capabilities.
 
-Submission state as of `2026-05-11`:
+Submission state as of `2026-06-14`:
 - the HPSF readiness inquiry has been submitted to the HPSF TAC issue tracker
   at `https://github.com/hpsfoundation/tac/issues/88`
 - the E4S packet content remains in the repo as a draft while the same inquiry
   is used for packaging-readiness review
 - the current status is `submitted for TAC review` rather than `draft`
+- any full packet submission remains deferred until TAC feedback and explicit
+  maintainer approval
 - the current blocker record lives in `docs/release_inventory.md`
 
 Maintainer contact details used in outbound packets should be rendered as:

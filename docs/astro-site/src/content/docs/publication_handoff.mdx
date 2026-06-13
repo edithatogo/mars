@@ -5,6 +5,7 @@ sidebar:
   order: 34
 ---
 
+# Publication Handoff
 
 This page captures the remaining information needed to move from release
 readiness to actual publication. The canonical machine-readable release
@@ -27,16 +28,16 @@ release notes required for publishable changes, and quiet-by-default logging.
 | EasyBuild H0 easyconfig | External EasyBuild PR access and maintainer review | H0 submission track and upstream easyconfig draft | PR open: https://github.com/easybuilders/easybuild-easyconfigs/pull/25951; no human review feedback yet |
 | conda-forge H0 feedstock | staged-recipes submission access and maintainer review | H0 submission track and recipe draft | PR open: https://github.com/conda-forge/staged-recipes/pull/33290; automated conda-forge lint feedback addressed; no human review yet |
 | HPSF/E4S packet drafts | TAC review and follow-up forum selection | HPSF/E4S packet draft and tracker notes | TAC readiness inquiry submitted: https://github.com/hpsfoundation/tac/issues/88; no TAC comments yet |
-| R `marsearth` | Monitor CRAN incoming/screening and check-result pages; supersede the earlier `marsruntime` / `mars.earth` uploads | Release checklist, `bindings/r/cran-comments.md`, and maintainer notes | CRAN maintainer confirmation complete; queued in `incoming/newbies/` pending screening |
-| Julia `MarsEarth` | Register new Julia package; keep `MarsRuntime` as superseded legacy package | Release checklist and maintainer notes | Needs new Julia General registration; no registration PR yet |
+| R `marsearth` | Keep CRAN metadata and check-result links current; supersede the earlier `marsruntime` / `mars.earth` uploads | Release checklist, `bindings/r/cran-comments.md`, and maintainer notes | Published on CRAN as `0.0.0` |
+| Julia `MarsEarth` | Register new Julia package; keep `MarsRuntime` as superseded legacy package | Release checklist and maintainer notes | Blocked pending maintainer access to Registrator.jl; no registration PR yet |
 
 ## How to Provide It
 
 - Put secret values into GitHub Actions secret settings, not in the repository.
-- For R, monitor the renamed `marsearth` CRAN entry in `incoming/newbies/`,
-  watch for screening/pretest email, and treat the earlier `marsruntime` /
-  `mars.earth` CRAN uploads as superseded. For Julia, register `MarsEarth` as a
-  new package and keep `MarsRuntime` as superseded legacy.
+- For R, use the published CRAN `marsearth` package page and check-result page
+  as the release evidence, and treat the earlier `marsruntime` / `mars.earth`
+  CRAN uploads as superseded. For Julia, register `MarsEarth` as a new package
+  and keep `MarsRuntime` as superseded legacy.
 
 ## Once Set
 

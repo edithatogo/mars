@@ -24,13 +24,13 @@
 
 ## Phase 2: Submission or Deferral
 
-- [ ] Task: Submit or record deferral
-    - [ ] Confirm maintainer approval before any full packet submission
+- [x] Task: Submit or record deferral [HPSF inquiry submitted; full packet deferred]
+    - [x] Confirm maintainer approval before any full packet submission
         - Current state: HPSF TAC inquiry has been submitted first; full packet
-          advancement remains subject to TAC feedback.
+          advancement remains deferred until TAC feedback and explicit maintainer approval.
     - [x] Submit inquiry/packet or record blocker state
         - Current state: HPSF TAC readiness inquiry submitted at
           https://github.com/hpsfoundation/tac/issues/88; E4S packet remains a
           draft pending review.
     - [x] Update release/community docs with date and status
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 2: Submission or Deferral' (Protocol in workflow.md)
+- [x] Task: Conductor - Automated Review and Checkpoint 'Phase 2: Submission or Deferral' (Protocol in workflow.md)

@@ -16,8 +16,6 @@ confirm or configure:
 - EasyBuild upstream PR submission for the prepared H0-only easyconfig
 - conda-forge staged-recipes PR submission for the prepared H0-only feedstock
 - HPSF/E4S packet approval or explicit deferral decision
-- CRAN screening review for confirmed `marsearth` submission; do not use the
-  superseded `marsruntime` or `mars.earth` names
 - confirmation that Julia should register `MarsEarth` as a new package while
   treating the already-published `MarsRuntime` as superseded legacy
 
@@ -72,10 +70,9 @@ confirm or configure:
 ## After Publishing
 
 - Confirm the published artifact matches the rehearsal artifact.
-- For CRAN, monitor `https://CRAN.R-project.org/incoming/newbies/` for
-  `marsearth_0.0.0.tar.gz`, watch for screening/pretest email, and then review
-  `https://CRAN.R-project.org/web/checks/check_results_marsearth.html` after
-  CRAN creates the check page.
+- For CRAN, confirm `https://CRAN.R-project.org/package=marsearth` and
+  `https://CRAN.R-project.org/web/checks/check_results_marsearth.html` remain
+  healthy for the published `0.0.0` package.
 - Confirm the registry page and README links point to the canonical project.
 - Confirm any release notes or changelog entries were updated to match the
   published version.

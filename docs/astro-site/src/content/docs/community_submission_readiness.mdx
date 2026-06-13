@@ -5,6 +5,7 @@ sidebar:
   order: 6
 ---
 
+# Community Submission Readiness
 
 This page turns the scientific-stewardship roadmap into concrete submission
 prep. It does not submit the project anywhere; it defines what must be ready
@@ -50,7 +51,7 @@ The packet material should agree with `docs/release_metadata.json`,
 | PyPA | Packaging-alignment packet | Python packaging baseline is already in place | keep `pyproject.toml`, trusted publishing, wheel smoke tests, and metadata aligned with PyPA specs |
 | .NET Foundation | Stewardship packet | C# binding exists and is published | documented C# ownership/support policy, project-health summary, and maintainer statement |
 | Julia | Registry and community packet | Julia package registration is pending in Julia General (target identity `MarsEarth`, with `MarsRuntime` kept as superseded legacy) | keep package metadata, examples, issue routing, release notes, and registration status current for future releases |
-| R | Package-review packet | R package is locally publication-ready | keep `R CMD check`, manual, vignette, examples, and maintainer notes current for r-universe/CRAN review |
+| R | Package-review packet | R package is published on CRAN as `marsearth` | keep `R CMD check`, manual, vignette, examples, and maintainer notes current for CRAN follow-up and any r-universe mirror |
 | HPSF | HPC readiness packet | Benchmarking and Rust-core observability now exist | benchmark artifacts, portability notes, ABI story, and install smoke tests for HPC consumers |
 | E4S | HPC packaging readiness packet | Feasible only if packaging and portability evidence stay stable | packaging recipes, install smoke tests, dependency policy, and reproducible build notes |
 
@@ -89,11 +90,11 @@ General (`MarsEarth` target, `MarsRuntime` retained as superseded legacy). Keep
 the package metadata, examples, and maintainer notes current so future releases
 are ready.
 
-R should be treated as a package-review and publication workflow through
-r-universe and CRAN.
+R should be treated as a published CRAN package with ongoing package-review
+and maintenance obligations.
 
 HPSF and E4S should be treated as HPC packaging and portability readiness
-packets until higher contract levels in [HPC Contracts](hpc_contracts) are
+packets until higher contract levels in [HPC Contracts](hpc_contracts.md) are
 implemented. They make installation easier for HPC users; this remains H0-only and
 does not imply H0-level GPU, TPU, MPI, or distributed execution support.
 
@@ -122,7 +123,7 @@ These items cannot be completed purely from source edits:
 - NumFOCUS: stewardship and governance application review
 - JOSS: editorial and reviewer decision
 - Julia: General registry publication
-- R: r-universe and CRAN submission/review decision
+- R: ongoing CRAN maintenance/review follow-up
 - HPSF and E4S: external packaging community review and feedback
 
 ## References

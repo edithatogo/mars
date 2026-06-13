@@ -12,14 +12,15 @@
   - [x] Update `docs/hpc_claim_review_checklist.md` H3 non-claim verification items if needed
     before any H3 submission claim is considered.
 
-- [ ] Task: Select the initial accelerator backend
-    - [ ] Review H1 benchmark data and kernel shape
-    - [ ] Compare candidate backends against portability and packaging constraints
-    - [ ] Define optional dependency and fallback policy
-    - [ ] Update tech-stack notes if the backend adds new tooling
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 0: Backend Selection' (Protocol in workflow.md)
-- [ ] [Checkpoint] Conductor - Non-Claim Gate 'Phase 0: H3 Deferral State'
-    - [ ] Checkpoint evidence: `docs/hpc_track_checkpoint_notes.md`
+- [x] Task: Select the initial accelerator backend [adapter-only selection; no vendor kernel claimed]
+    - [x] Review H1 benchmark data and kernel shape
+    - [x] Compare candidate backends against portability and packaging constraints
+    - [x] Define optional dependency and fallback policy
+    - [x] Update tech-stack notes if the backend adds new tooling
+        - No mandatory accelerator tooling is added. The selected initial path is the existing optional module-backed adapter layer (`cuda`, `rocm`, `metal`, and specialized marker-module adapters) with CPU fallback.
+- [x] Task: Conductor - Automated Review and Checkpoint 'Phase 0: Backend Selection' (Protocol in workflow.md)
+- [x] [Checkpoint] Conductor - Non-Claim Gate 'Phase 0: H3 Deferral State'
+    - [x] Checkpoint evidence: `docs/hpc_track_checkpoint_notes.md`
 
 ## Phase 1: Accelerator Replay Prototype
 

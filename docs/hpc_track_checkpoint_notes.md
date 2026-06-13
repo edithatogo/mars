@@ -104,15 +104,20 @@ active 2026-05-11 track set.
 
 ### Track: `hpc_accelerator_portability_20260511`
 
-- Contract governance exists in `docs/hpc_contracts.md` and track files, but all
-  phase tasks remain unimplemented.
+- Contract governance exists in `docs/hpc_contracts.md` and track files. Phase 0
+  backend selection is complete as an adapter-only selection: the shared optional
+  module-backed backend layer is the initial portability surface, and no vendor
+  compute kernel is claimed.
 - Phase 0 deferral hygiene is now recorded in the track plan:
   - CPU replay only remains the supported runtime for this revision set.
   - accelerator backend support is intentionally not yet implemented.
   - the release-facing checkpoint language uses `not yet` / `non-goal` /
     `deferred` wording.
-- No H3 accelerator backend, capability checks, parity tests, or benchmark evidence
-  is attached in this phase yet.
+- H3 capability checks, fallback selection, and validation scaffolding are attached
+  through `pymars.accelerator`, `pymars.accelerator_backends`,
+  `pymars.specialized_accelerator_backends`, and `pymars.accelerator_validation`.
+  No vendor compute kernel, parity threshold, or accelerator speedup evidence is
+  claimed yet.
 - Explicit non-claim checkpoint for deferred state is in place:
   - `H3` accelerator-ready replay is explicitly out of scope in this revision set.
   - CPU replay remains the only supported runtime contract for this track cycle.
@@ -260,8 +265,8 @@ active 2026-05-11 track set.
   - network and resource assumptions for cluster-oriented smoke coverage
 - This track intentionally does not duplicate the already implemented
   CPU-cluster replay path in `pymars.runtime`.
-- The multi-node contract remains deferred until a real multi-node adapter or
-  scheduler-backed implementation exists.
+- Phase 0 contract definition is complete. The multi-node implementation remains
+  deferred until a real scheduler-backed adapter exists.
 - The reusable cluster abstraction layer is now present in `pymars.cluster`,
   so the eventual multi-node backend can plug into a stable interface without
   changing the CPU-cluster replay contract.
@@ -305,6 +310,8 @@ active 2026-05-11 track set.
   `https://github.com/hpsfoundation/tac/issues/88`.
 - The E4S packet remains a draft pending TAC feedback and any later forum
   selection decision.
+- Full packet submission is explicitly deferred until TAC feedback and maintainer
+  approval are available.
 - The blocker record is mirrored in the release inventory and publication handoff
   docs for maintainer review.
 
@@ -335,3 +342,8 @@ active 2026-05-11 track set.
   - This track is created to own the blocked upstream registration work.
 - Blockers:
   - Registration workflow and registry review require external submission tooling/access.
+  - The prepared Registrator body and package metadata bundle are in
+    `conductor/tracks/julia_general_registration_submission_20260511/upstream_submission_draft.md`.
+  - As of 2026-06-14, `MarsEarth` still returns 404 in Julia General while
+    `MarsRuntime` exists, so the track is complete as a prepared-and-blocked
+    external registration handoff.
