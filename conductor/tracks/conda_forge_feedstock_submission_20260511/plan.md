@@ -29,11 +29,10 @@
     - [x] Record URL, review status, and follow-up blockers
         - PR URL: https://github.com/conda-forge/staged-recipes/pull/33290
         - Review status: ready for review
-        - Follow-up blockers: await CI rerun and conda-forge staged-recipes review
+        - Follow-up blockers: await conda-forge staged-recipes review
         - 2026-06-14 update: prior Windows build failure addressed by making
           the H0 recipe non-`noarch`, adding a Windows skip selector, and
           using unconstrained non-noarch Python requirements on the PR branch;
-          latest conda-forge linter status is green and Azure build rerun is
-          pending.
+          latest conda-forge linter status and Azure builds are green.
     - Evidence: [upstream_submission_draft.md](upstream_submission_draft.md)
 - [x] Task: Conductor - Automated Review and Checkpoint 'Phase 2: staged-recipes Submission' (Protocol in workflow.md)
