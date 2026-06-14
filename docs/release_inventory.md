@@ -27,9 +27,9 @@ readiness and external HPC packaging claims are governed by
 
 | Package | Owner / credential status | Action | Status | Date |
 | --- | --- | --- | --- | --- |
-| Spack `mars-earth` | Upstream Spack review workflow not accessible from this workspace | Submit the prepared H0-only recipe PR and record the review URL | PR open: https://github.com/spack/spack-packages/pull/4781; no human review feedback yet | 2026-05-11 |
-| EasyBuild `MarsEarth` / `pymars-0.1.0` | Upstream EasyBuild review workflow not accessible from this workspace | Submit the prepared H0-only easyconfig PR and record the review URL | PR open: https://github.com/easybuilders/easybuild-easyconfigs/pull/25951; no human review feedback yet | 2026-05-11 |
-| conda-forge `mars-earth` | staged-recipes workflow not accessible from this workspace | Submit the prepared H0-only recipe PR and record the review URL | PR open: https://github.com/conda-forge/staged-recipes/pull/33290; automated conda-forge lint feedback addressed; no human review yet | 2026-05-11 |
+| Spack `mars-earth` | Maintainer review pending | Monitor the prepared H0-only recipe PR and respond to review | PR ready for review: https://github.com/spack/spack-packages/pull/4781; no comments/reviews as of 2026-06-14 | 2026-06-14 |
+| EasyBuild `MarsEarth` / `pymars-0.1.0` | Maintainer review pending | Monitor the prepared H0-only easyconfig PR and respond to review | PR ready for review: https://github.com/easybuilders/easybuild-easyconfigs/pull/25951; checks green; no comments/reviews as of 2026-06-14 | 2026-06-14 |
+| conda-forge `mars-earth` | staged-recipes Azure build rerun pending after Windows-build fix | Monitor the prepared H0-only recipe PR and respond to CI/review | PR ready for review: https://github.com/conda-forge/staged-recipes/pull/33290; Windows build failure addressed by making the H0 recipe non-`noarch`, skipping Windows, and using unconstrained non-noarch Python requirements in branch commits `256f1b2d`, `a413d30`, and `e0b1214`; latest conda-forge linter says recipe is excellent; Azure build rerun pending | 2026-06-14 |
 | HPSF/E4S packet drafts | TAC review pending; forum selection remains a follow-up | Review the H0/H1 readiness inquiry and decide whether a fuller packet should advance | TAC readiness inquiry submitted: https://github.com/hpsfoundation/tac/issues/88; no TAC comments yet | 2026-05-11 |
 | R `marsearth` | Maintainer-owned package name; r-universe registry configured for source repository | Keep CRAN package metadata and check-result links current; treat earlier `marsruntime` / `mars.earth` uploads as superseded | Published on CRAN as `0.0.0`: https://cran.r-project.org/web/packages/marsearth/index.html | 2026-05-19 |
 | Julia `MarsEarth` | New package identity; `MarsRuntime` is already published | Register `MarsEarth` in Julia General; keep `MarsRuntime` as superseded legacy package (raw query `https://raw.githubusercontent.com/JuliaRegistries/General/master/M/MarsRuntime/Package.toml` exists; `.../MarsEarth/Package.toml` currently returns 404) | Blocked pending maintainer access to Registrator.jl; no registration PR yet | 2026-06-14 |
@@ -63,8 +63,8 @@ The public registry-name audit has been run against the current package set.
 
 ## Next Steps
 
-- Monitor the open H0-only Spack, EasyBuild, and conda-forge upstream PRs and
-  respond to maintainer review.
+- Monitor the ready-for-review H0-only Spack, EasyBuild, and conda-forge upstream PRs and
+  respond to maintainer review or CI reruns.
 - Monitor the HPSF TAC readiness inquiry and decide whether it should advance
   to a fuller HPSF/E4S packet after TAC feedback.
 - Register the Julia package as `MarsEarth`; keep `MarsRuntime` documented as

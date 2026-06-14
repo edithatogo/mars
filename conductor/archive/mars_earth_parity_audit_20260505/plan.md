@@ -2,7 +2,7 @@
 
 ## Phase 0: Source Inventory and Audit Framing
 
-- [ ] Task: Inventory the upstream mars/earth references
+- [x] Task: Inventory the upstream mars/earth references
     - [x] Agent 1: audit the `py-earth` source and README
     - [x] Agent 2: audit the R `earth` package manual and reference docs
     - [x] Agent 3: list any other canonical mars/earth references that define expected behavior
@@ -11,7 +11,7 @@
     - [x] Agent 6: define the evidence collection format for the audit
     - [x] Companion note: `docs/parity_audit_evidence.md`
     - [x] Companion note: `docs/parity_audit_r_earth_matrix.md`
-- [ ] Task: Define the parity audit rubric
+- [x] Task: Define the parity audit rubric
     - [x] Agent 1: define what counts as parity-critical versus optional
     - [x] Agent 2: define how to compare defaults, errors, and warnings
     - [x] Agent 3: define how to compare examples and docs claims
@@ -31,7 +31,7 @@
     - [x] Agent 4: map diagnostics, summaries, plots, and uncertainty behavior
     - [x] Agent 5: map formula/interface ergonomics and defaults
     - [x] Agent 6: consolidate the feature matrix into a single parity table
-- [ ] Task: Compare behavior against the current repo
+- [x] Task: Compare behavior against the current repo
     - [x] Agent 1: compare validation, error, and warning behavior
     - [x] Agent 2: compare deterministic outputs and tie handling
     - [x] Agent 3: compare sample-weight and edge-case behavior
@@ -58,7 +58,7 @@
     - [x] Agent 4: recommend any release or package guidance changes
     - [x] Agent 5: recommend any parity evidence that should be preserved as fixtures
     - [x] Agent 6: consolidate the recommendations into an implementation memo
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 2: Gap Classification and Recommendation Synthesis' (Protocol in workflow.md)
+- [x] Task: Conductor - Automated Review and Checkpoint 'Phase 2: Gap Classification and Recommendation Synthesis' (Protocol in workflow.md)
 
 ## Phase 3: Documentation and Roadmap Sync
 

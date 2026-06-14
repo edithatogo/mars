@@ -19,7 +19,7 @@
 
 - [x] Task: Implement the H2 runtime boundary
   - [x] Keep Rust FFI ABI symbols additive and backward-compatible
-  - [ ] Add version query/compatibility surface (`major.minor` contract surface)
+  - [x] Add version query/compatibility surface (`major.minor` contract surface)
     - [x] Add FFI entry points and version checks
     - [x] Add batch interchange adapter and validation
     - [x] Preserve CLI and existing binding behavior

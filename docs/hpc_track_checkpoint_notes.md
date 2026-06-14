@@ -325,7 +325,8 @@ active 2026-05-11 track set.
     [docs/publication_handoff.md](publication_handoff.md).
 - Phase-1 drafting is complete with a maintainer-facing packet draft at
   [docs/hpsf_e4s_readiness_packets_20260511.md](hpsf_e4s_readiness_packets_20260511.md).
-- Packet content is explicitly H0-only and includes non-claims for H2-H4.
+- Packet content is explicitly H0-oriented and avoids vendor accelerator,
+  implicit cluster provisioning, or unsupported training claims.
 - A readiness inquiry has been submitted to the HPSF TAC at
   `https://github.com/hpsfoundation/tac/issues/88`.
 - The E4S packet remains a draft pending TAC feedback and any later forum
@@ -342,16 +343,15 @@ active 2026-05-11 track set.
   - queued CRAN state and supersession note for earlier package identities are
     documented in release inventory and handoff docs
 - Registry visibility verification:
-  - `marsearth_0.0.0.tar.gz` is present in
-    `https://cran.r-project.org/incoming/newbies/` (timestamped `2026-05-10 16:16`).
-  - `marsruntime_0.0.0.tar.gz` is present as the superseded legacy archive.
-  - `mars.earth` archive is not present in the incoming index at this time.
-  - `check_results_marsearth.html` is not yet available at
-    `https://CRAN.R-project.org/web/checks/check_results_marsearth.html`
-    (still pending screening workflow).
-- Phase 2 evidence remains incomplete:
-  - public registry/review-status page checks and maintainer-facing installability
-    instructions are pending
+  - `marsearth` is published on CRAN as version `0.0.0` at
+    `https://cran.r-project.org/web/packages/marsearth/index.html`.
+  - CRAN check results are available at
+    `https://CRAN.R-project.org/web/checks/check_results_marsearth.html` and
+    showed `OK` statuses in the 2026-06-14 registry check.
+  - `marsruntime` / `mars.earth` remain superseded legacy submission identities.
+- Phase 2 evidence is complete for the public CRAN package:
+  - CRAN install/load/predict/design-matrix smoke passed against
+    `tests/fixtures/model_spec_v1.json` on 2026-06-14.
 
 ### Track: `julia_general_registration_submission_20260511`
 

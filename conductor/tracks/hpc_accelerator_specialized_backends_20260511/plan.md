@@ -10,11 +10,11 @@
 
 ## Phase 1: Specialized Backend Work
 
-- [ ] Task: Implement approved specialized backends
+- [x] Task: Implement approved specialized backend adapters [optional module-backed H3 adapters; no vendor speedup claim]
   - [x] Add runtime wiring for approved targets
   - [x] Add parity and fallback tests
   - [x] Add optional dependency guards
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 1: Specialized Backend Work' (Protocol in workflow.md)
+- [x] Task: Conductor - Automated Review and Checkpoint 'Phase 1: Specialized Backend Work' (Protocol in workflow.md)
 
 ## Phase 2: Governance and Documentation
 
@@ -22,4 +22,4 @@
   - [x] Document supported and unsupported targets
   - [x] Update claim-check rules and checkpoint notes
   - [x] Validate docs and registry alignment
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 2: Governance and Documentation' (Protocol in workflow.md)
+- [x] Task: Conductor - Automated Review and Checkpoint 'Phase 2: Governance and Documentation' (Protocol in workflow.md)

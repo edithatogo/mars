@@ -3,13 +3,13 @@
 ## Phase 0: Binding Architecture Decision
 
 - [x] Task: Choose Rust-backed binding mechanisms
-    - [ ] Evaluate Python, R, Julia, C#, Go, and TypeScript binding mechanisms
-    - [ ] Decide whether the shared boundary is C ABI, PyO3/maturin, WebAssembly, or a mixed strategy
-    - [ ] Update `tech-stack.md` with selected tools before implementation
+    - [x] Evaluate Python, R, Julia, C#, Go, and TypeScript binding mechanisms
+    - [x] Decide whether the shared boundary is C ABI, PyO3/maturin, WebAssembly, or a mixed strategy
+    - [x] Update `tech-stack.md` with selected tools before implementation
 - [x] Task: Define ABI/API compatibility rules
-    - [ ] Define allocation, release, and ownership rules
-    - [ ] Define null, NaN, missingness, and categorical encoding behavior
-    - [ ] Define stable error codes, error payloads, and SemVer compatibility expectations
+    - [x] Define allocation, release, and ownership rules
+    - [x] Define null, NaN, missingness, and categorical encoding behavior
+    - [x] Define stable error codes, error payloads, and SemVer compatibility expectations
 - [x] Task: Add failing cross-language Rust-core conformance checks
     - [x] Extend the manifest to distinguish Rust-backed tests from MVP replay tests
     - [x] Add failure expectations for languages still using duplicated replay logic
