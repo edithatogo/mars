@@ -1,0 +1,201 @@
+---
+title: API Reference
+description: Complete API documentation for the Mars Go library
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+# API Reference
+
+The `mars` package provides functions for data analysis, filtering, and I/O operations on structured time-series data.
+
+## Core Types
+
+### `Record`
+
+Represents a single data point.
+
+```go
+type Record struct {
+    Timestamp time.Time
+    Label     string
+    Value     float64
+    Tags      map[string]string
+}
+```
+
+### `Summary`
+
+Statistical summary of a record set.
+
+```go
+type Summary struct {
+    Count    int
+    Mean     float64
+    Median   float64
+    StdDev   float64
+    Min      float64
+    Max      float64
+    P25      float64
+    P75      float64
+    Duration time.Duration
+}
+```
+
+### `FilterOptions`
+
+Options for filtering records.
+
+```go
+type FilterOptions struct {
+    Start    time.Time
+    End      time.Time
+    Labels   []string
+    MinValue *float64
+    MaxValue *float64
+}
+```
+
+## Analysis Functions
+
+### `Analyze`
+
+Computes a full statistical summary from records.
+
+```go
+func Analyze(records []Record) (Summary, error)
+```
+
+Returns `ErrEmptyInput` if records is empty, `ErrNilInput` if nil.
+
+### `AnalyzeGrouped`
+
+Groups records by `Label` and computes a `Summary` per group.
+
+```go
+func AnalyzeGrouped(records []Record) (GroupedSummary, error)
+```
+
+### `Filter`
+
+Filters records by the given options.
+
+```go
+func Filter(records []Record, opts FilterOptions) ([]Record, error)
+```
+
+Returns `ErrNoMatch` if no records match the filter.
+
+### `Merge`
+
+Merges multiple record slices sorted by timestamp.
+
+```go
+func Merge(sets ...[]Record) []Record
+```
+
+### `PercentileBounds`
+
+Returns the values at lower and upper percentile bounds.
+
+```go
+func PercentileBounds(records []Record, lower, upper float64) (lowerVal, upperVal float64, err error)
+```
+
+### `MovingAverage`
+
+Computes a simple moving average with a given window size.
+
+```go
+func MovingAverage(records []Record, windowSize int) ([]float64, error)
+```
+
+The first `windowSize-1` entries are `NaN`.
+
+### `TimeBucket`
+
+Aggregates records into fixed-duration time buckets.
+
+```go
+func TimeBucket(records []Record, bucketDur time.Duration) ([]time.Time, []float64, error)
+```
+
+## I/O Functions
+
+### `ReadCSV`
+
+Reads records from a CSV file.
+
+```go
+func ReadCSV(path string) ([]Record, error)
+```
+
+CSV must have headers: `timestamp`, `label`, `value`. Timestamps in RFC3339 format.
+
+### `ParseCSV`
+
+Parses records from an `io.Reader`.
+
+```go
+func ParseCSV(r io.Reader) ([]Record, error)
+```
+
+### `WriteCSV`
+
+Writes records to a CSV file.
+
+```go
+func WriteCSV(path string, records []Record) error
+```
+
+### `ReadJSON`
+
+Reads records from a JSON file.
+
+```go
+func ReadJSON(path string) ([]Record, error)
+```
+
+### `WriteJSON`
+
+Writes records to a JSON file.
+
+```go
+func WriteJSON(path string, records []Record) error
+```
+
+### `WriteSummaryJSON`
+
+Writes a Summary as JSON to a file.
+
+```go
+func WriteSummaryJSON(path string, s Summary) error
+```
+
+## Error Handling
+
+The package defines these sentinel errors:
+
+| Error | Description |
+|-------|-------------|
+| `ErrInvalidTimeRange` | Start time is after end time |
+| `ErrEmptyInput` | Input slice has no records |
+| `ErrNilInput` | Input slice is nil |
+| `ErrNoMatch` | No records match filter criteria |
+
+## CLI Flags
+
+The `mars` CLI tool accepts these flags:
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--input` | `""` | Path to input file (CSV or JSON) |
+| `--output` | `""` | Output file path (default: stdout) |
+| `--format` | `json` | Output format: `json` or `table` |
+| `--label` | `""` | Comma-separated label filter |
+| `--start` | `""` | Filter start time (RFC3339) |
+| `--end` | `""` | Filter end time (RFC3339) |
+| `--group` | `false` | Group analysis by label |
+| `--moving-avg` | `0` | Moving average window size |
+| `--bucket` | `""` | Time bucket duration (e.g., `1h`, `30m`) |
+| `--version` | `false` | Print version |

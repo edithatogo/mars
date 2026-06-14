@@ -1,0 +1,120 @@
+---
+title: Getting Started
+description: Install and start using the Mars data analysis toolkit
+---
+
+import { Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+
+# Getting Started
+
+This guide walks you through installing Mars, loading your first dataset, and running analyses.
+
+## Prerequisites
+
+- [Go](https://go.dev/dl/) 1.22 or later
+- A CSV or JSON file with time-series data
+
+## Installation
+
+### As a CLI tool
+
+```bash
+go install github.com/edithatogo/mars/cmd/mars@latest
+```
+
+### As a library
+
+```bash
+go get github.com/edithatogo/mars
+```
+
+## Your First Analysis
+
+Let's analyze a sample dataset. Create a CSV file named `sensors.csv`:
+
+```csv
+timestamp,label,value
+2024-01-01T00:00:00Z,temperature,22.5
+2024-01-01T01:00:00Z,temperature,23.1
+2024-01-01T02:00:00Z,temperature,21.8
+2024-01-01T03:00:00Z,temperature,22.9
+2024-01-01T04:00:00Z,temperature,24.0
+2024-01-01T00:00:00Z,humidity,45.0
+2024-01-01T01:00:00Z,humidity,47.2
+2024-01-01T02:00:00Z,humidity,44.5
+2024-01-01T03:00:00Z,humidity,46.8
+2024-01-01T04:00:00Z,humidity,48.1
+```
+
+### Run basic analysis
+
+```bash
+mars --input sensors.csv --format table
+```
+
+Output:
+
+```
+Metric   Value
+-----    -----
+Count    10
+Mean     34.5900
+Median   23.0000
+StdDev   11.3013
+Min      22.5000
+Max      48.1000
+P25      22.6750
+P75      46.5000
+Duration 4h0m0s
+```
+
+### Group by label
+
+```bash
+mars --input sensors.csv --group --format table
+```
+
+Output:
+
+```
+Label       Count  Mean    Median  StdDev  Min    Max
+-----       -----  ----    ------  ------  ---    ---
+humidity    5      46.3200 46.8000 1.3793  44.5000 48.1000
+temperature 5      22.8600 22.9000 0.8054  21.8000 24.0000
+```
+
+## Using Mars as a Library
+
+Here's how to use Mars in your own Go code:
+
+```go
+package main
+
+import (
+    "fmt"
+    "time"
+    "github.com/edithatogo/mars/mars"
+)
+
+func main() {
+    now := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
+    records := []mars.Record{
+        {Timestamp: now, Label: "cpu", Value: 45.2},
+        {Timestamp: now.Add(30 * time.Second), Label: "cpu", Value: 47.8},
+        {Timestamp: now.Add(60 * time.Second), Label: "cpu", Value: 43.1},
+    }
+
+    summary, err := mars.Analyze(records)
+    if err != nil {
+        panic(err)
+    }
+
+    fmt.Printf("Mean: %.2f, Max: %.2f\n", summary.Mean, summary.Max)
+    // Output: Mean: 45.37, Max: 47.80
+}
+```
+
+## Next Steps
+
+- Read the [API Reference](/mars/api-reference/) for full function documentation
+- Explore the [GitHub repository](https://github.com/edithatogo/mars) for examples
