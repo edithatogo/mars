@@ -206,6 +206,24 @@ def test_calculate_rss_and_coeffs(simple_data):
     assert num_valid_sing == len(y)
 
 
+@pytest.mark.parametrize("has_empty_matrix", [False, True])
+def test_calculate_rss_and_coeffs_handles_empty_basis(simple_data, has_empty_matrix):
+    """Preserve the distinct coefficient result for absent and empty matrices."""
+    X, y = simple_data
+    passer = ForwardPasser(MockEarth())
+    B_matrix = np.empty((X.shape[0], 0)) if has_empty_matrix else None
+
+    rss, coeffs, num_valid = passer._calculate_rss_and_coeffs(B_matrix, y)
+
+    assert np.isclose(rss, np.sum((y - np.mean(y)) ** 2))
+    assert num_valid == float(X.shape[0])
+    if has_empty_matrix:
+        assert coeffs is not None
+        assert np.allclose(coeffs, [np.mean(y)])
+    else:
+        assert coeffs is None
+
+
 def test_calculate_rss_and_coeffs_with_sample_weight(simple_data):
     """Check weighted RSS and coefficient calculation."""
     X, y = simple_data
