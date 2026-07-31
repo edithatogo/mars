@@ -84,6 +84,23 @@ def test_cpu_cluster_design_matrix_matches_serial(linear_spec: dict) -> None:
     assert np.allclose(cluster, serial)
 
 
+def test_cpu_cluster_worker_model_cache_is_bounded(linear_spec: dict) -> None:
+    """Worker model reuse should hit the cache without allowing unbounded growth."""
+    spec_json = runtime.spec_to_json(linear_spec)
+    runtime._get_cached_worker_model.cache_clear()
+    try:
+        first = runtime._get_cached_worker_model(spec_json)
+        second = runtime._get_cached_worker_model(spec_json)
+        cache_info = runtime._get_cached_worker_model.cache_info()
+
+        assert first is second
+        assert cache_info.hits == 1
+        assert cache_info.misses == 1
+        assert cache_info.maxsize == runtime._WORKER_MODEL_CACHE_SIZE
+    finally:
+        runtime._get_cached_worker_model.cache_clear()
+
+
 def test_distributed_runtime_validation_blocks_invalid_sizes(linear_spec: dict) -> None:
     """Invalid worker and chunk hints should be rejected early."""
     x = np.array([[1.0, 2.0], [3.0, 4.0]])
