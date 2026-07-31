@@ -8,6 +8,7 @@ import os
 import sys
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from contextlib import contextmanager
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Callable, cast
 
@@ -160,11 +161,15 @@ def _process_cluster_map(
         return flat
 
 
-def _predict_cpu_cluster_chunk(
-    spec_json: str, batch: list[list[float]]
-) -> list[float]:
+@lru_cache(maxsize=4)
+def _get_cached_model(spec_json: str) -> Earth:
+    """Return a cached portable model for cluster worker processes."""
+    return load_model(spec_json)
+
+
+def _predict_cpu_cluster_chunk(spec_json: str, batch: list[list[float]]) -> list[float]:
     """Predict a batch in a process worker using the portable Python model."""
-    model = load_model(spec_from_json(spec_json))
+    model = _get_cached_model(spec_json)
     return cast("list[float]", model.predict(np.asarray(batch)).tolist())
 
 
@@ -172,7 +177,7 @@ def _design_matrix_cpu_cluster_chunk(
     spec_json: str, batch: list[list[float]]
 ) -> list[list[float]]:
     """Build a design matrix batch in a process worker using the portable model."""
-    model = load_model(spec_from_json(spec_json))
+    model = _get_cached_model(spec_json)
     X_processed, missing_mask = model._prepare_prediction_data(
         np.asarray(batch, dtype=float)
     )
@@ -518,7 +523,9 @@ def predict_cpu_cluster(
     if resolved_workers <= 1 or len(indices) == 1:
         ordered_results: list[float] = []
         for start, end in indices:
-            ordered_results.extend(_predict_cpu_cluster_chunk(spec_json, rows[start:end]))
+            ordered_results.extend(
+                _predict_cpu_cluster_chunk(spec_json, rows[start:end])
+            )
         return np.asarray(ordered_results[: len(rows)], dtype=float)
 
     with ProcessPoolExecutor(max_workers=resolved_workers) as executor:
@@ -539,7 +546,8 @@ def predict_cpu_cluster(
             )
         else:
             ordered_pairs = [
-                (start, end, future.result()) for future, (start, end) in futures.items()
+                (start, end, future.result())
+                for future, (start, end) in futures.items()
             ]
     ordered_results: list[float] = []
     for _, _, chunk_values in ordered_pairs:
@@ -590,7 +598,8 @@ def design_matrix_cpu_cluster(
             )
         else:
             ordered_pairs = [
-                (start, end, future.result()) for future, (start, end) in futures.items()
+                (start, end, future.result())
+                for future, (start, end) in futures.items()
             ]
     ordered_results: list[list[float]] = []
     for _, _, chunk_values in ordered_pairs:
