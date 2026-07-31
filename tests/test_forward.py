@@ -566,9 +566,9 @@ def test_generate_candidates_for_interaction(interaction_data):
             assert bf1.get_involved_variables() == {0, 1}
             found_interaction_candidate = True
 
-    assert found_interaction_candidate, (
-        "Should generate degree 2 interaction candidates (hinge or linear)."
-    )
+    assert (
+        found_interaction_candidate
+    ), "Should generate degree 2 interaction candidates (hinge or linear)."
 
 
 def test_run_with_interaction(interaction_data):
@@ -591,9 +591,9 @@ def test_run_with_interaction(interaction_data):
     assert len(final_bfs) <= 7
 
     has_interaction_term = any(bf.degree() == 2 for bf in final_bfs)
-    assert has_interaction_term, (
-        "Expected at least one interaction term to be selected."
-    )
+    assert (
+        has_interaction_term
+    ), "Expected at least one interaction term to be selected."
 
     rss_intercept_only = np.sum((y - np.mean(y)) ** 2)
     final_B = passer._build_basis_matrix(X, final_bfs)
@@ -603,9 +603,9 @@ def test_run_with_interaction(interaction_data):
         y_pred = final_B @ final_coeffs
         final_rss = np.sum((y - y_pred) ** 2)
 
-    assert final_rss < rss_intercept_only * 0.1, (
-        "Interaction model should significantly reduce RSS."
-    )
+    assert (
+        final_rss < rss_intercept_only * 0.1
+    ), "Interaction model should significantly reduce RSS."
 
 
 def test_generate_linear_candidates(multi_feature_data):

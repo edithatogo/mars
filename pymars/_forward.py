@@ -154,11 +154,7 @@ class ForwardPasser:
         return cast("np.ndarray", B_matrix)
 
     def _get_effective_n_samples(self) -> float:
-        return (
-            self.effective_n_samples
-            if self.effective_n_samples > 0
-            else float(self.n_samples)
-        )
+        return self.effective_n_samples
 
     def run(
         self,
@@ -186,7 +182,7 @@ class ForwardPasser:
             if self.sample_weight is not None
             else float(self.n_samples)
         )
-        effective_n_samples = self._get_effective_n_samples()
+        effective_n_samples = self.effective_n_samples
 
         intercept_bf = ConstantBasisFunction()
         self.current_basis_functions = [intercept_bf]
@@ -351,11 +347,11 @@ class ForwardPasser:
                 num_terms_intercept,
                 num_hinge_terms_intercept,
                 self.model.penalty,
-                self._get_effective_n_samples(),
+                self.effective_n_samples,
             )
             gcv_intercept = calculate_gcv(
                 rss_intercept_only,
-                self._get_effective_n_samples(),
+                self.effective_n_samples,
                 effective_params_intercept,
             )
             return gcv_intercept, cast("np.ndarray", np.array([intercept]))
@@ -429,14 +425,16 @@ class ForwardPasser:
             except (ValueError, FloatingPointError):
                 endspan_abs = 1
 
-        count_parent_nonzero_for_minspan = 0  # Initialize for minspan calculation
+        count_parent_nonzero_for_minspan: float = (
+            0.0  # Initialize for minspan calculation
+        )
         p_parent_active: np.ndarray
         if parent_bf.is_constant():
             p_parent_active = np.ones(self.n_samples, dtype=bool)
             if positive_weight_mask is not None:
                 p_parent_active &= positive_weight_mask
             count_parent_nonzero_for_minspan = (
-                self._get_effective_n_samples()
+                self.effective_n_samples
                 if self.sample_weight is not None
                 else float(self.n_samples)
             )
@@ -447,7 +445,7 @@ class ForwardPasser:
             p_parent_active = (parent_transform != 0) & (~np.isnan(parent_transform))
             if positive_weight_mask is not None:
                 p_parent_active &= positive_weight_mask
-            count_parent_nonzero_for_minspan = (
+            count_parent_nonzero_for_minspan = (  # type: ignore
                 float(np.sum(self.sample_weight[p_parent_active]))
                 if self.sample_weight is not None
                 else float(np.sum(p_parent_active))
@@ -638,7 +636,7 @@ class ForwardPasser:
         max_terms_for_loop = self.model.max_terms
         if max_terms_for_loop is None:
             max_terms_for_loop = min(
-                max(1, int(np.floor(self._get_effective_n_samples())) - 1),
+                max(1, int(np.floor(self.effective_n_samples)) - 1),
                 max(21, 2 * self.n_features + 1),
             )
 
@@ -658,7 +656,7 @@ class ForwardPasser:
             if B_candidate.shape[1] == 0:
                 continue
             # Use n_samples (from processed X) for this check, num_valid_rows from _calc_rss_... will handle actual fit data size
-            if B_candidate.shape[1] >= self._get_effective_n_samples():
+            if B_candidate.shape[1] >= self.effective_n_samples:
                 continue
 
             drop_nans = True

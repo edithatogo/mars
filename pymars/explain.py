@@ -190,9 +190,11 @@ def get_model_explanation(
             "n_features": X_array.shape[1] if X_array.ndim > 1 else 1,
             "n_basis_functions": len(basis),
             "gcv_score": earth_model.gcv_,
-            "r2_score": earth_model.score(X_array, earth_model.predict(X_array))
-            if X_array.shape[0] < 10000
-            else "Too large to compute",
+            "r2_score": (
+                earth_model.score(X_array, earth_model.predict(X_array))
+                if X_array.shape[0] < 10000
+                else "Too large to compute"
+            ),
         },
         "basis_functions": [],
         "feature_importance": {},

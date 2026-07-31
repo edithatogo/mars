@@ -33,9 +33,9 @@ def test_python_baseline_fixture_structure():
     for key in required_keys:
         assert key in fixture, f"Missing key '{key}' in baseline fixture"
 
-    assert "metrics" in fixture or "rss" in fixture, (
-        "Missing metrics in baseline fixture"
-    )
+    assert (
+        "metrics" in fixture or "rss" in fixture
+    ), "Missing metrics in baseline fixture"
 
 
 def test_python_baseline_fixture_reproducible():
@@ -92,17 +92,17 @@ def test_interaction_fixture_has_interactions():
     # Check that basis_terms includes at least one term with parents (interaction)
     basis_terms = fixture.get("basis_terms", [])
     has_interaction = any(term.get("parent1") is not None for term in basis_terms)
-    assert has_interaction, (
-        "Interaction fixture should contain at least one term with parent1 (interaction)"
-    )
+    assert (
+        has_interaction
+    ), "Interaction fixture should contain at least one term with parent1 (interaction)"
 
 
 def test_rust_training_fixture_tests_exist():
     """Test that Rust tests for the full fit/export path exist."""
     rust_test_path = Path("rust-runtime/tests/training_fixture_tests.rs")
-    assert rust_test_path.exists(), (
-        "Rust fixture tests not found at rust-runtime/tests/training_fixture_tests.rs"
-    )
+    assert (
+        rust_test_path.exists()
+    ), "Rust fixture tests not found at rust-runtime/tests/training_fixture_tests.rs"
 
 
 def test_rust_can_load_python_baseline():
@@ -111,12 +111,12 @@ def test_rust_can_load_python_baseline():
     with open(rust_test_path) as f:
         content = f.read()
 
-    assert "training_full_fit_baseline" in content, (
-        "Rust tests should reference the Python baseline fixture"
-    )
-    assert "load_model_spec" in content or "from_json" in content, (
-        "Rust tests should load the fixture"
-    )
-    assert "predict" in content, (
-        "Rust tests should verify prediction from loaded fixture"
-    )
+    assert (
+        "training_full_fit_baseline" in content
+    ), "Rust tests should reference the Python baseline fixture"
+    assert (
+        "load_model_spec" in content or "from_json" in content
+    ), "Rust tests should load the fixture"
+    assert (
+        "predict" in content
+    ), "Rust tests should verify prediction from loaded fixture"

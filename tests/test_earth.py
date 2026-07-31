@@ -161,9 +161,9 @@ def test_earth_fit_predict_more_complex(more_complex_earth_data):
                     "Interaction term not selected for this data/param combination, "
                     "which can happen with greedy forward pass even with linear terms."
                 )
-            assert has_interaction, (
-                "Expected interaction terms with max_degree > 1 for this complex data."
-            )
+            assert (
+                has_interaction
+            ), "Expected interaction terms with max_degree > 1 for this complex data."
 
 
 def test_earth_summary_method(simple_earth_data, caplog):
@@ -226,18 +226,18 @@ def test_empty_model_after_pruning(simple_earth_data):
     assert model.fitted_
     assert model.basis_ is not None
     assert len(model.basis_) == 1, "Should default to intercept model"
-    assert isinstance(model.basis_[0], ConstantBasisFunction), (
-        "Basis should be ConstantBasisFunction"
-    )
+    assert isinstance(
+        model.basis_[0], ConstantBasisFunction
+    ), "Basis should be ConstantBasisFunction"
     assert model.coef_ is not None
     assert len(model.coef_) == 1, "Should have one coefficient for intercept"
     assert np.isclose(model.coef_[0], np.mean(y)), "Coefficient should be mean of y"
 
     # Predict should work and give mean of y
     predictions = model.predict(X)
-    assert np.allclose(predictions, np.mean(y), atol=1e-5), (
-        "Predictions should be mean of y"
-    )
+    assert np.allclose(
+        predictions, np.mean(y), atol=1e-5
+    ), "Predictions should be mean of y"
 
     # Check GCV (should be GCV of intercept-only model)
     rss = np.sum((y.ravel() - np.mean(y.ravel())) ** 2)
@@ -252,9 +252,9 @@ def test_empty_model_after_pruning(simple_earth_data):
     assert model.gcv_ is not None
     # Validate that the computed GCV for the fallback intercept-only model
     # matches the expected value within floating point tolerance.
-    assert np.isclose(model.gcv_, expected_gcv_intercept_only), (
-        f"GCV ({model.gcv_}) should match the expected value ({expected_gcv_intercept_only}) for an intercept-only model"
-    )
+    assert np.isclose(
+        model.gcv_, expected_gcv_intercept_only
+    ), f"GCV ({model.gcv_}) should match the expected value ({expected_gcv_intercept_only}) for an intercept-only model"
 
 
 def test_earth_feature_importance_parameter(simple_earth_data):
@@ -592,9 +592,9 @@ def test_earth_invalid_feature_importance_type(simple_earth_data, caplog):
     assert model.feature_importances_ is not None
     assert isinstance(model.feature_importances_, np.ndarray)
     assert len(model.feature_importances_) == X.shape[1]
-    assert np.all(model.feature_importances_ == 0.0), (
-        "Importances should be all zeros for invalid type"
-    )
+    assert np.all(
+        model.feature_importances_ == 0.0
+    ), "Importances should be all zeros for invalid type"
 
     # Check for the warning message
     assert any(

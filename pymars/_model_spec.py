@@ -145,12 +145,16 @@ class BasisTermSpec:
             category=payload.get("category"),
             gcv_score=float(gcv_score),
             rss_score=float(rss_score),
-            parent1=cls.from_dict(payload["parent1"])
-            if payload.get("parent1") is not None
-            else None,
-            parent2=cls.from_dict(payload["parent2"])
-            if payload.get("parent2") is not None
-            else None,
+            parent1=(
+                cls.from_dict(payload["parent1"])
+                if payload.get("parent1") is not None
+                else None
+            ),
+            parent2=(
+                cls.from_dict(payload["parent2"])
+                if payload.get("parent2") is not None
+                else None
+            ),
         )
 
 
@@ -180,12 +184,16 @@ def basis_function_to_spec(basis_function: BasisFunction) -> BasisTermSpec:
         category=getattr(basis_function, "category", None),
         gcv_score=float(getattr(basis_function, "gcv_score_", 0.0)),
         rss_score=float(getattr(basis_function, "rss_score_", 0.0)),
-        parent1=basis_function_to_spec(basis_function.parent1)
-        if basis_function.parent1 is not None
-        else None,
-        parent2=basis_function_to_spec(basis_function.parent2)
-        if basis_function.parent2 is not None
-        else None,
+        parent1=(
+            basis_function_to_spec(basis_function.parent1)
+            if basis_function.parent1 is not None
+            else None
+        ),
+        parent2=(
+            basis_function_to_spec(basis_function.parent2)
+            if basis_function.parent2 is not None
+            else None
+        ),
     )
 
 

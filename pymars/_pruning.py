@@ -163,15 +163,19 @@ class PruningPasser:
                 num_terms_intercept_only,
                 num_hinge_terms_intercept_only,
                 self.model.penalty,
-                self.effective_n_samples
-                if self.sample_weight is not None
-                else n_valid_rows_for_empty,
+                (
+                    self.effective_n_samples
+                    if self.sample_weight is not None
+                    else n_valid_rows_for_empty
+                ),
             )
             gcv_empty = calculate_gcv(
                 rss_empty,
-                self.effective_n_samples
-                if self.sample_weight is not None
-                else n_valid_rows_for_empty,
+                (
+                    self.effective_n_samples
+                    if self.sample_weight is not None
+                    else n_valid_rows_for_empty
+                ),
                 effective_params_empty,
             )
             return (
