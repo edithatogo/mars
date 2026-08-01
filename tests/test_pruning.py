@@ -102,6 +102,26 @@ def test_pruning_passer_instantiation():
     assert len(passer.best_basis_functions_so_far) == 0
 
 
+@pytest.mark.parametrize("has_empty_matrix", [False, True])
+def test_pruning_rss_handles_absent_and_empty_matrices(
+    simple_pruning_data, has_empty_matrix
+):
+    """Preserve the coefficient contract while caching the matrix column count."""
+    X, y = simple_pruning_data
+    B_matrix = np.empty((X.shape[0], 0)) if has_empty_matrix else None
+    passer = PruningPasser(MockEarth())
+
+    rss, coeffs, num_valid = passer._calculate_rss_and_coeffs(B_matrix, y)
+
+    assert np.isclose(rss, np.sum((y - np.mean(y)) ** 2))
+    assert num_valid == float(X.shape[0])
+    if has_empty_matrix:
+        assert coeffs is not None
+        assert np.allclose(coeffs, [np.mean(y)])
+    else:
+        assert coeffs is None
+
+
 def test_compute_gcv_for_subset(initial_model_for_pruning):
     """Subset GCV should be finite and consistent across basis choices."""
     X, y, initial_bfs, _ = initial_model_for_pruning
