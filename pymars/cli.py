@@ -27,15 +27,24 @@ def _save_model(model: Any, output_path: str) -> str:
     return "pickle"
 
 
-def _load_model(model_path: str) -> Any:
+def _load_model(model_path: str, *, allow_unsafe_pickle: bool = False) -> Any:
     """Load a portable JSON model spec or a legacy pickle model."""
     path = Path(model_path)
     if path.suffix.lower() == ".json":
         payload = json.loads(path.read_text())
         return Earth.from_model(payload)
 
+    if not allow_unsafe_pickle:
+        raise ValueError(
+            "Legacy pickle loading is disabled because pickle files can execute "
+            "arbitrary code. Use a JSON model, or explicitly opt in only for a "
+            "trusted local artifact."
+        )
+
+    logger.warning("Loading trusted legacy pickle model from %s", path)
     with path.open("rb") as file_obj:
-        return pickle.load(file_obj)  # nosec B301 - legacy local artifact loading
+        # This path is reachable only through the explicit trusted-artifact opt-in.
+        return pickle.load(file_obj)  # nosec B301
 
 
 def main() -> None:
@@ -81,12 +90,22 @@ def main() -> None:
     predict_parser.add_argument(
         "--output", required=True, help="Output predictions file (CSV)"
     )
+    predict_parser.add_argument(
+        "--allow-unsafe-pickle",
+        action="store_true",
+        help="Load a trusted local legacy pickle model (can execute arbitrary code)",
+    )
 
     # Score command
     score_parser = subparsers.add_parser("score", help="Score a fitted model")
     score_parser.add_argument("--model", required=True, help="Input model file")
     score_parser.add_argument("--input", required=True, help="Input data file (CSV)")
     score_parser.add_argument("--target", required=True, help="Target column name")
+    score_parser.add_argument(
+        "--allow-unsafe-pickle",
+        action="store_true",
+        help="Load a trusted local legacy pickle model (can execute arbitrary code)",
+    )
 
     args = parser.parse_args()
 
@@ -138,7 +157,10 @@ def make_predictions(args: argparse.Namespace) -> None:
     # Import pandas only when needed
     pd = cast("Any", importlib.import_module("pandas"))
 
-    model = _load_model(args.model)
+    model = _load_model(
+        args.model,
+        allow_unsafe_pickle=getattr(args, "allow_unsafe_pickle", False),
+    )
 
     # Load input data
     data = pd.read_csv(args.input)
@@ -159,7 +181,10 @@ def score_model(args: argparse.Namespace) -> None:
     # Import pandas only when needed
     pd = cast("Any", importlib.import_module("pandas"))
 
-    model = _load_model(args.model)
+    model = _load_model(
+        args.model,
+        allow_unsafe_pickle=getattr(args, "allow_unsafe_pickle", False),
+    )
 
     # Load data
     data = pd.read_csv(args.input)

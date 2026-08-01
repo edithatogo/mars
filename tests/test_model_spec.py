@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import pickle
 from pathlib import Path
 
 import numpy as np
@@ -14,6 +15,10 @@ from pymars.cli import _load_model, _save_model
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
 MODEL_SPEC_V1_PATH = FIXTURES_DIR / "model_spec_v1.json"
+
+
+def _write_pickle_marker(path: str) -> None:
+    Path(path).write_text("executed")
 
 
 def _fit_sample_model() -> Earth:
@@ -98,6 +103,37 @@ def test_cli_save_model_writes_json_and_pickle(tmp_path: Path):
     assert _save_model(model, str(pickle_target)) == "pickle"
     assert json_target.exists()
     assert pickle_target.exists()
+
+
+def test_cli_pickle_load_requires_explicit_opt_in(tmp_path: Path):
+    """Legacy pickle deserialization must fail closed unless explicitly trusted."""
+    model = _fit_sample_model()
+    target = tmp_path / "model.pkl"
+    _save_model(model, str(target))
+
+    with pytest.raises(ValueError, match="Legacy pickle loading is disabled"):
+        _load_model(str(target))
+
+    restored = _load_model(str(target), allow_unsafe_pickle=True)
+    probe = np.array([[0.0, 0.0, 0.1], [0.8, -0.5, 0.6]], dtype=float)
+    np.testing.assert_allclose(restored.predict(probe), model.predict(probe))
+
+
+def test_cli_default_pickle_rejection_does_not_execute_payload(tmp_path: Path):
+    """Reject a pickle before its reduction callable can run."""
+
+    class MaliciousPayload:
+        def __reduce__(self):
+            return _write_pickle_marker, (str(marker),)
+
+    marker = tmp_path / "pickle-executed"
+    target = tmp_path / "malicious.pkl"
+    target.write_bytes(pickle.dumps(MaliciousPayload()))
+
+    with pytest.raises(ValueError, match="Legacy pickle loading is disabled"):
+        _load_model(str(target))
+
+    assert not marker.exists()
 
 
 @pytest.mark.parametrize(

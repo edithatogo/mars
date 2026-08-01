@@ -526,6 +526,7 @@ def test_cli_helpers_cover_success_and_error_paths(tmp_path, monkeypatch, capsys
             model=str(model_path),
             input="ignored.csv",
             output=str(output_pred),
+            allow_unsafe_pickle=True,
         )
     )
     assert output_pred.exists() or fake_pd.pred_frames
@@ -535,6 +536,7 @@ def test_cli_helpers_cover_success_and_error_paths(tmp_path, monkeypatch, capsys
             model=str(model_path),
             input="ignored.csv",
             target="target",
+            allow_unsafe_pickle=True,
         )
     )
     out = capsys.readouterr().out
@@ -864,6 +866,7 @@ def test_cli_fit_and_score_branches(tmp_path, monkeypatch, capsys):
             model=str(model_path),
             input=str(input_path),
             target="target",
+            allow_unsafe_pickle=True,
         )
     )
     out = capsys.readouterr().out
