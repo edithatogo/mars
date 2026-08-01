@@ -1,0 +1,110 @@
+diff --git a/pymars/__init__.py b/pymars/__init__.py
+index 76bd874..90ef328 100644
+--- a/pymars/__init__.py
++++ b/pymars/__init__.py
+@@ -32,8 +32,8 @@ from .cluster import (
+     CLUSTER_PRESERVE_ORDER_ENV_VAR,
+     CLUSTER_RETRIES_ENV_VAR,
+     CLUSTER_SCHEDULER_ENV_VAR,
+-    CLUSTER_WORKERS_ENV_VAR,
+     CLUSTER_WORKER_COMMAND_ENV_VAR,
++    CLUSTER_WORKERS_ENV_VAR,
+     CPU_CLUSTER_MODE,
+     MULTI_NODE_CLUSTER_MODE,
+     ClusterBackend,
+diff --git a/pymars/_pruning.py b/pymars/_pruning.py
+index e342729..251d3fa 100644
+--- a/pymars/_pruning.py
++++ b/pymars/_pruning.py
+@@ -285,12 +285,13 @@ class PruningPasser:
+                 tuple[float, float, np.ndarray | None, int]
+             ] = []
+
+-            for i in range(len(active_bfs_for_loop)):
++            active_bfs_len = len(active_bfs_for_loop)
++            for i in range(active_bfs_len):
+                 bf_to_test_removal = active_bfs_for_loop[i]
+
+                 if (
+                     isinstance(bf_to_test_removal, ConstantBasisFunction)
+-                    and len(active_bfs_for_loop) == min_allowable_terms
++                    and active_bfs_len == min_allowable_terms
+                 ):
+                     gcv_for_removal_candidates.append(
+                         (float(np.inf), float(np.inf), None, i)
+diff --git a/pymars/runtime.py b/pymars/runtime.py
+index 3b0ba74..76ddeb9 100644
+--- a/pymars/runtime.py
++++ b/pymars/runtime.py
+@@ -160,9 +160,7 @@ def _process_cluster_map(
+         return flat
+
+
+-def _predict_cpu_cluster_chunk(
+-    spec_json: str, batch: list[list[float]]
+-) -> list[float]:
++def _predict_cpu_cluster_chunk(spec_json: str, batch: list[list[float]]) -> list[float]:
+     """Predict a batch in a process worker using the portable Python model."""
+     model = load_model(spec_from_json(spec_json))
+     return cast("list[float]", model.predict(np.asarray(batch)).tolist())
+@@ -518,7 +516,9 @@ def predict_cpu_cluster(
+     if resolved_workers <= 1 or len(indices) == 1:
+         ordered_results: list[float] = []
+         for start, end in indices:
+-            ordered_results.extend(_predict_cpu_cluster_chunk(spec_json, rows[start:end]))
++            ordered_results.extend(
++                _predict_cpu_cluster_chunk(spec_json, rows[start:end])
++            )
+         return np.asarray(ordered_results[: len(rows)], dtype=float)
+
+     with ProcessPoolExecutor(max_workers=resolved_workers) as executor:
+@@ -539,7 +539,8 @@ def predict_cpu_cluster(
+             )
+         else:
+             ordered_pairs = [
+-                (start, end, future.result()) for future, (start, end) in futures.items()
++                (start, end, future.result())
++                for future, (start, end) in futures.items()
+             ]
+     ordered_results: list[float] = []
+     for _, _, chunk_values in ordered_pairs:
+@@ -590,7 +591,8 @@ def design_matrix_cpu_cluster(
+             )
+         else:
+             ordered_pairs = [
+-                (start, end, future.result()) for future, (start, end) in futures.items()
++                (start, end, future.result())
++                for future, (start, end) in futures.items()
+             ]
+     ordered_results: list[list[float]] = []
+     for _, _, chunk_values in ordered_pairs:
+diff --git a/tests/test_accelerator_backends.py b/tests/test_accelerator_backends.py
+index 74add66..d398341 100644
+--- a/tests/test_accelerator_backends.py
++++ b/tests/test_accelerator_backends.py
+@@ -35,7 +35,9 @@ def test_optional_backend_factories_expose_expected_names(monkeypatch) -> None:
+
+ def test_optional_backends_fall_back_when_module_missing(monkeypatch) -> None:
+     """Optional backends should report unavailable when their marker module is absent."""
+-    monkeypatch.setattr(accelerator_backends.importlib.util, "find_spec", lambda _module_name: None)
++    monkeypatch.setattr(
++        accelerator_backends.importlib.util, "find_spec", lambda _module_name: None
++    )
+
+     assert make_cuda_backend().is_available() is False
+     assert make_rocm_backend().is_available() is False
+diff --git a/tests/test_specialized_accelerator_backends.py b/tests/test_specialized_accelerator_backends.py
+index 71fc7d4..1432101 100644
+--- a/tests/test_specialized_accelerator_backends.py
++++ b/tests/test_specialized_accelerator_backends.py
+@@ -37,7 +37,9 @@ def test_specialized_backend_factories_report_expected_targets(monkeypatch) -> N
+
+ def test_specialized_backends_fall_back_when_modules_missing(monkeypatch) -> None:
+     """Specialized backends should report unavailable when marker modules are absent."""
+-    monkeypatch.setattr(specialized_backends.importlib.util, "find_spec", lambda _module_name: None)
++    monkeypatch.setattr(
++        specialized_backends.importlib.util, "find_spec", lambda _module_name: None
++    )
+
+     assert make_tpu_backend().is_available() is False
+     assert make_fpga_backend().is_available() is False
