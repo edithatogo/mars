@@ -643,6 +643,10 @@ class ForwardPasser:
             )
 
         remaining_capacity = max_terms_for_loop - len(self.current_basis_functions)
+        current_num_hinge = sum(
+            isinstance(bf, HingeBasisFunction) for bf in self.current_basis_functions
+        )
+
 
         for bf1, bf2_or_None in candidate_additions:
             required_terms = 1 + (1 if bf2_or_None is not None else 0)
@@ -681,8 +685,8 @@ class ForwardPasser:
                 continue
 
             num_terms_candidate = len(temp_basis_list)
-            num_hinge_candidate = sum(
-                isinstance(bf, HingeBasisFunction) for bf in temp_basis_list
+            num_hinge_candidate = current_num_hinge + sum(
+                isinstance(bf, HingeBasisFunction) for bf in terms_to_add
             )
             eff_params = gcv_penalty_cost_effective_parameters(
                 num_terms_candidate,
