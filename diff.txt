@@ -1,0 +1,343 @@
+diff --git a/bandit-report.json b/bandit-report.json
+index bb7dc45..2df1b3e 100644
+--- a/bandit-report.json
++++ b/bandit-report.json
+@@ -290,4 +290,4 @@
+     }
+   },
+   "results": []
+-}
+\ No newline at end of file
++}
+diff --git a/bindings/r/inst/extdata/fixtures/training_full_fit_baseline_v1.json b/bindings/r/inst/extdata/fixtures/training_full_fit_baseline_v1.json
+index fdcf4dc..b261325 100644
+--- a/bindings/r/inst/extdata/fixtures/training_full_fit_baseline_v1.json
++++ b/bindings/r/inst/extdata/fixtures/training_full_fit_baseline_v1.json
+@@ -67,4 +67,4 @@
+     "mse": 1.9721522630525295e-30
+   },
+   "categorical_imputer": null
+-}
+\ No newline at end of file
++}
+diff --git a/bindings/r/inst/extdata/fixtures/training_interaction_baseline_v1.json b/bindings/r/inst/extdata/fixtures/training_interaction_baseline_v1.json
+index a17ebd2..4515436 100644
+--- a/bindings/r/inst/extdata/fixtures/training_interaction_baseline_v1.json
++++ b/bindings/r/inst/extdata/fixtures/training_interaction_baseline_v1.json
+@@ -128,4 +128,4 @@
+     "gcv": 8.05396100196335e-31
+   },
+   "categorical_imputer": null
+-}
+\ No newline at end of file
++}
+diff --git a/bindings/r/inst/extdata/fixtures/training_sample_weight_baseline_v1.json b/bindings/r/inst/extdata/fixtures/training_sample_weight_baseline_v1.json
+index 42e1a49..b401745 100644
+--- a/bindings/r/inst/extdata/fixtures/training_sample_weight_baseline_v1.json
++++ b/bindings/r/inst/extdata/fixtures/training_sample_weight_baseline_v1.json
+@@ -99,4 +99,4 @@
+     2,
+     1
+   ]
+-}
+\ No newline at end of file
++}
+diff --git a/cmd/mars/main.go b/cmd/mars/main.go
+index fe19416..bedd2c2 100644
+--- a/cmd/mars/main.go
++++ b/cmd/mars/main.go
+@@ -254,4 +254,4 @@ func writeJSON(v interface{}) {
+
+ func isNaN(f float64) bool {
+	return f != f
+-}
+\ No newline at end of file
++}
+diff --git a/conductor/tracks/docs_examples_notebooks_20260511/index.md b/conductor/tracks/docs_examples_notebooks_20260511/index.md
+index 0f046ca..22f1578 100644
+--- a/conductor/tracks/docs_examples_notebooks_20260511/index.md
++++ b/conductor/tracks/docs_examples_notebooks_20260511/index.md
+@@ -3,4 +3,3 @@
+ - [Specification](./spec.md)
+ - [Implementation Plan](./plan.md)
+ - [Metadata](./metadata.json)
+-
+diff --git a/conductor/tracks/docs_examples_notebooks_20260511/spec.md b/conductor/tracks/docs_examples_notebooks_20260511/spec.md
+index 71b3c2a..0bd1bed 100644
+--- a/conductor/tracks/docs_examples_notebooks_20260511/spec.md
++++ b/conductor/tracks/docs_examples_notebooks_20260511/spec.md
+@@ -31,4 +31,3 @@ and each language binding, including notebooks that cover the major workflows.
+ - Accelerator kernel implementation.
+ - Distributed execution.
+ - Packaging submission work.
+-
+diff --git a/conductor/tracks/hpc_accelerator_backend_foundation_20260511/index.md b/conductor/tracks/hpc_accelerator_backend_foundation_20260511/index.md
+index d5c6b91..959f228 100644
+--- a/conductor/tracks/hpc_accelerator_backend_foundation_20260511/index.md
++++ b/conductor/tracks/hpc_accelerator_backend_foundation_20260511/index.md
+@@ -3,4 +3,3 @@
+ - [Specification](./spec.md)
+ - [Implementation Plan](./plan.md)
+ - [Metadata](./metadata.json)
+-
+diff --git a/conductor/tracks/hpc_accelerator_backend_foundation_20260511/spec.md b/conductor/tracks/hpc_accelerator_backend_foundation_20260511/spec.md
+index 155ce81..876c3d4 100644
+--- a/conductor/tracks/hpc_accelerator_backend_foundation_20260511/spec.md
++++ b/conductor/tracks/hpc_accelerator_backend_foundation_20260511/spec.md
+@@ -31,4 +31,3 @@ hygiene.
+ - Vendor-specific backend kernels.
+ - Distributed execution.
+ - Multi-output regression.
+-
+diff --git a/conductor/tracks/hpc_accelerator_gpu_backends_20260511/index.md b/conductor/tracks/hpc_accelerator_gpu_backends_20260511/index.md
+index 348c35d..12b6eb8 100644
+--- a/conductor/tracks/hpc_accelerator_gpu_backends_20260511/index.md
++++ b/conductor/tracks/hpc_accelerator_gpu_backends_20260511/index.md
+@@ -3,4 +3,3 @@
+ - [Specification](./spec.md)
+ - [Implementation Plan](./plan.md)
+ - [Metadata](./metadata.json)
+-
+diff --git a/conductor/tracks/hpc_accelerator_gpu_backends_20260511/spec.md b/conductor/tracks/hpc_accelerator_gpu_backends_20260511/spec.md
+index f8fb265..788ba7a 100644
+--- a/conductor/tracks/hpc_accelerator_gpu_backends_20260511/spec.md
++++ b/conductor/tracks/hpc_accelerator_gpu_backends_20260511/spec.md
+@@ -30,4 +30,3 @@ honored.
+ - TPU, FPGA, and ASIC backends.
+ - Distributed execution.
+ - Backend-specific performance tuning beyond the first supported path.
+-
+diff --git a/conductor/tracks/hpc_accelerator_specialized_backends_20260511/index.md b/conductor/tracks/hpc_accelerator_specialized_backends_20260511/index.md
+index acdc5bc..32ddd65 100644
+--- a/conductor/tracks/hpc_accelerator_specialized_backends_20260511/index.md
++++ b/conductor/tracks/hpc_accelerator_specialized_backends_20260511/index.md
+@@ -3,4 +3,3 @@
+ - [Specification](./spec.md)
+ - [Implementation Plan](./plan.md)
+ - [Metadata](./metadata.json)
+-
+diff --git a/conductor/tracks/hpc_accelerator_specialized_backends_20260511/spec.md b/conductor/tracks/hpc_accelerator_specialized_backends_20260511/spec.md
+index 1f04a38..51033ca 100644
+--- a/conductor/tracks/hpc_accelerator_specialized_backends_20260511/spec.md
++++ b/conductor/tracks/hpc_accelerator_specialized_backends_20260511/spec.md
+@@ -29,4 +29,3 @@ as TPU, FPGA, and ASIC where the shared H3 contract can be honored.
+ - GPU-family backends.
+ - Distributed execution.
+ - Unbounded vendor-specific optimizations.
+-
+diff --git a/conductor/tracks/hpc_accelerator_validation_20260511/index.md b/conductor/tracks/hpc_accelerator_validation_20260511/index.md
+index 8c7a07e..36c0382 100644
+--- a/conductor/tracks/hpc_accelerator_validation_20260511/index.md
++++ b/conductor/tracks/hpc_accelerator_validation_20260511/index.md
+@@ -3,4 +3,3 @@
+ - [Specification](./spec.md)
+ - [Implementation Plan](./plan.md)
+ - [Metadata](./metadata.json)
+-
+diff --git a/conductor/tracks/hpc_accelerator_validation_20260511/spec.md b/conductor/tracks/hpc_accelerator_validation_20260511/spec.md
+index 86f19cb..7668b02 100644
+--- a/conductor/tracks/hpc_accelerator_validation_20260511/spec.md
++++ b/conductor/tracks/hpc_accelerator_validation_20260511/spec.md
+@@ -28,4 +28,3 @@ behavior and keeps accelerator claims honest.
+ - New backend implementations.
+ - Backend selection policy changes.
+ - Distributed execution.
+-
+diff --git a/conductor/tracks/quality_gate_strictness_20260511/index.md b/conductor/tracks/quality_gate_strictness_20260511/index.md
+index 5598468..3b50def 100644
+--- a/conductor/tracks/quality_gate_strictness_20260511/index.md
++++ b/conductor/tracks/quality_gate_strictness_20260511/index.md
+@@ -3,4 +3,3 @@
+ - [Specification](./spec.md)
+ - [Implementation Plan](./plan.md)
+ - [Metadata](./metadata.json)
+-
+diff --git a/conductor/tracks/quality_gate_strictness_20260511/spec.md b/conductor/tracks/quality_gate_strictness_20260511/spec.md
+index 68530af..3d2b0d6 100644
+--- a/conductor/tracks/quality_gate_strictness_20260511/spec.md
++++ b/conductor/tracks/quality_gate_strictness_20260511/spec.md
+@@ -28,4 +28,3 @@ security policy uniformly strict across CI and local automation.
+ - New product features.
+ - Accelerator kernels.
+ - Documentation content beyond quality-policy alignment.
+-
+diff --git a/conductor/tracks/roadmap_closure_audit_20260511/index.md b/conductor/tracks/roadmap_closure_audit_20260511/index.md
+index 1c2f42f..0414e21 100644
+--- a/conductor/tracks/roadmap_closure_audit_20260511/index.md
++++ b/conductor/tracks/roadmap_closure_audit_20260511/index.md
+@@ -3,4 +3,3 @@
+ - [Specification](./spec.md)
+ - [Implementation Plan](./plan.md)
+ - [Metadata](./metadata.json)
+-
+diff --git a/conductor/tracks/roadmap_closure_audit_20260511/spec.md b/conductor/tracks/roadmap_closure_audit_20260511/spec.md
+index 76e456f..f3c6146 100644
+--- a/conductor/tracks/roadmap_closure_audit_20260511/spec.md
++++ b/conductor/tracks/roadmap_closure_audit_20260511/spec.md
+@@ -29,4 +29,3 @@ confirm that nothing remains incorrectly claimed as done.
+ - New implementation work.
+ - New backend selection decisions.
+ - Registry submissions already handled by other tracks.
+-
+diff --git a/docs/astro-site/astro.config.mjs b/docs/astro-site/astro.config.mjs
+index 9e4bf1c..419622c 100644
+--- a/docs/astro-site/astro.config.mjs
++++ b/docs/astro-site/astro.config.mjs
+@@ -113,4 +113,4 @@ export default defineConfig({
+       ],
+     }),
+   ],
+-});
+\ No newline at end of file
++});
+diff --git a/mars/analyzer.go b/mars/analyzer.go
+index e9b3fdc..5bda555 100644
+--- a/mars/analyzer.go
++++ b/mars/analyzer.go
+@@ -295,4 +295,4 @@ func contains(slice []string, val string) bool {
+		}
+	}
+	return false
+-}
+\ No newline at end of file
++}
+diff --git a/pymars/_forward.py b/pymars/_forward.py
+index e81bdf7..2aea92c 100644
+--- a/pymars/_forward.py
++++ b/pymars/_forward.py
+@@ -273,8 +273,14 @@ class ForwardPasser:
+             candidate_model_terms_list = self.current_basis_functions + (
+                 [bf1_cand] if bf2_cand_or_None is None else [bf1_cand, bf2_cand_or_None]
+             )
+-            num_hinge_terms_candidate = sum(
+-                isinstance(bf, HingeBasisFunction) for bf in candidate_model_terms_list
++            current_hinge_terms_run = sum(
++                bf.is_hinge_term for bf in self.current_basis_functions
++            )
++            terms_to_add_candidate = (
++                [bf1_cand] if bf2_cand_or_None is None else [bf1_cand, bf2_cand_or_None]
++            )
++            num_hinge_terms_candidate = current_hinge_terms_run + sum(
++                bf.is_hinge_term for bf in terms_to_add_candidate
+             )
+             assert self._best_new_B_matrix is not None
+             num_total_terms_candidate = self._best_new_B_matrix.shape[
+@@ -393,9 +399,7 @@ class ForwardPasser:
+             # Defaulting to a very high GCV.
+             return np.inf, None
+
+-        num_hinge_terms = sum(
+-            isinstance(bf, HingeBasisFunction) for bf in basis_functions
+-        )
++        num_hinge_terms = sum(bf.is_hinge_term for bf in basis_functions)
+         effective_num_params = gcv_penalty_cost_effective_parameters(
+             num_actual_coeffs, num_hinge_terms, self.model.penalty, num_valid_rows
+         )
+@@ -644,6 +648,10 @@ class ForwardPasser:
+
+         remaining_capacity = max_terms_for_loop - len(self.current_basis_functions)
+
++        current_hinge_terms = sum(
++            bf.is_hinge_term for bf in self.current_basis_functions
++        )
++
+         for bf1, bf2_or_None in candidate_additions:
+             required_terms = 1 + (1 if bf2_or_None is not None else 0)
+             if required_terms > remaining_capacity:
+@@ -681,8 +689,8 @@ class ForwardPasser:
+                 continue
+
+             num_terms_candidate = len(temp_basis_list)
+-            num_hinge_candidate = sum(
+-                isinstance(bf, HingeBasisFunction) for bf in temp_basis_list
++            num_hinge_candidate = current_hinge_terms + sum(
++                bf.is_hinge_term for bf in terms_to_add
+             )
+             eff_params = gcv_penalty_cost_effective_parameters(
+                 num_terms_candidate,
+diff --git a/pymars/runtime.py b/pymars/runtime.py
+index 3b0ba74..76ddeb9 100644
+--- a/pymars/runtime.py
++++ b/pymars/runtime.py
+@@ -160,9 +160,7 @@ def _process_cluster_map(
+         return flat
+
+
+-def _predict_cpu_cluster_chunk(
+-    spec_json: str, batch: list[list[float]]
+-) -> list[float]:
++def _predict_cpu_cluster_chunk(spec_json: str, batch: list[list[float]]) -> list[float]:
+     """Predict a batch in a process worker using the portable Python model."""
+     model = load_model(spec_from_json(spec_json))
+     return cast("list[float]", model.predict(np.asarray(batch)).tolist())
+@@ -518,7 +516,9 @@ def predict_cpu_cluster(
+     if resolved_workers <= 1 or len(indices) == 1:
+         ordered_results: list[float] = []
+         for start, end in indices:
+-            ordered_results.extend(_predict_cpu_cluster_chunk(spec_json, rows[start:end]))
++            ordered_results.extend(
++                _predict_cpu_cluster_chunk(spec_json, rows[start:end])
++            )
+         return np.asarray(ordered_results[: len(rows)], dtype=float)
+
+     with ProcessPoolExecutor(max_workers=resolved_workers) as executor:
+@@ -539,7 +539,8 @@ def predict_cpu_cluster(
+             )
+         else:
+             ordered_pairs = [
+-                (start, end, future.result()) for future, (start, end) in futures.items()
++                (start, end, future.result())
++                for future, (start, end) in futures.items()
+             ]
+     ordered_results: list[float] = []
+     for _, _, chunk_values in ordered_pairs:
+@@ -590,7 +591,8 @@ def design_matrix_cpu_cluster(
+             )
+         else:
+             ordered_pairs = [
+-                (start, end, future.result()) for future, (start, end) in futures.items()
++                (start, end, future.result())
++                for future, (start, end) in futures.items()
+             ]
+     ordered_results: list[list[float]] = []
+     for _, _, chunk_values in ordered_pairs:
+diff --git a/safety-report.json b/safety-report.json
+index a2491d1..4f771b4 100644
+--- a/safety-report.json
++++ b/safety-report.json
+@@ -2550,5 +2550,3 @@ We highly encourage switching to the new `scan` command which is easier to use,
+
+
+ +===========================================================================================================================================================================================+
+-
+-
+diff --git a/tests/test_accelerator_backends.py b/tests/test_accelerator_backends.py
+index 74add66..d398341 100644
+--- a/tests/test_accelerator_backends.py
++++ b/tests/test_accelerator_backends.py
+@@ -35,7 +35,9 @@ def test_optional_backend_factories_expose_expected_names(monkeypatch) -> None:
+
+ def test_optional_backends_fall_back_when_module_missing(monkeypatch) -> None:
+     """Optional backends should report unavailable when their marker module is absent."""
+-    monkeypatch.setattr(accelerator_backends.importlib.util, "find_spec", lambda _module_name: None)
++    monkeypatch.setattr(
++        accelerator_backends.importlib.util, "find_spec", lambda _module_name: None
++    )
+
+     assert make_cuda_backend().is_available() is False
+     assert make_rocm_backend().is_available() is False
+diff --git a/tests/test_specialized_accelerator_backends.py b/tests/test_specialized_accelerator_backends.py
+index 71fc7d4..1432101 100644
+--- a/tests/test_specialized_accelerator_backends.py
++++ b/tests/test_specialized_accelerator_backends.py
+@@ -37,7 +37,9 @@ def test_specialized_backend_factories_report_expected_targets(monkeypatch) -> N
+
+ def test_specialized_backends_fall_back_when_modules_missing(monkeypatch) -> None:
+     """Specialized backends should report unavailable when marker modules are absent."""
+-    monkeypatch.setattr(specialized_backends.importlib.util, "find_spec", lambda _module_name: None)
++    monkeypatch.setattr(
++        specialized_backends.importlib.util, "find_spec", lambda _module_name: None
++    )
+
+     assert make_tpu_backend().is_available() is False
+     assert make_fpga_backend().is_available() is False

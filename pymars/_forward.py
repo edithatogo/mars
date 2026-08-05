@@ -273,8 +273,14 @@ class ForwardPasser:
             candidate_model_terms_list = self.current_basis_functions + (
                 [bf1_cand] if bf2_cand_or_None is None else [bf1_cand, bf2_cand_or_None]
             )
-            num_hinge_terms_candidate = sum(
-                isinstance(bf, HingeBasisFunction) for bf in candidate_model_terms_list
+            current_hinge_terms_run = sum(
+                bf.is_hinge_term for bf in self.current_basis_functions
+            )
+            terms_to_add_candidate = (
+                [bf1_cand] if bf2_cand_or_None is None else [bf1_cand, bf2_cand_or_None]
+            )
+            num_hinge_terms_candidate = current_hinge_terms_run + sum(
+                bf.is_hinge_term for bf in terms_to_add_candidate
             )
             assert self._best_new_B_matrix is not None
             num_total_terms_candidate = self._best_new_B_matrix.shape[
@@ -393,9 +399,7 @@ class ForwardPasser:
             # Defaulting to a very high GCV.
             return np.inf, None
 
-        num_hinge_terms = sum(
-            isinstance(bf, HingeBasisFunction) for bf in basis_functions
-        )
+        num_hinge_terms = sum(bf.is_hinge_term for bf in basis_functions)
         effective_num_params = gcv_penalty_cost_effective_parameters(
             num_actual_coeffs, num_hinge_terms, self.model.penalty, num_valid_rows
         )
@@ -644,6 +648,10 @@ class ForwardPasser:
 
         remaining_capacity = max_terms_for_loop - len(self.current_basis_functions)
 
+        current_hinge_terms = sum(
+            bf.is_hinge_term for bf in self.current_basis_functions
+        )
+
         for bf1, bf2_or_None in candidate_additions:
             required_terms = 1 + (1 if bf2_or_None is not None else 0)
             if required_terms > remaining_capacity:
@@ -681,8 +689,8 @@ class ForwardPasser:
                 continue
 
             num_terms_candidate = len(temp_basis_list)
-            num_hinge_candidate = sum(
-                isinstance(bf, HingeBasisFunction) for bf in temp_basis_list
+            num_hinge_candidate = current_hinge_terms + sum(
+                bf.is_hinge_term for bf in terms_to_add
             )
             eff_params = gcv_penalty_cost_effective_parameters(
                 num_terms_candidate,
