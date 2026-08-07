@@ -76,7 +76,6 @@ from .specialized_accelerator_backends import (
     SPECIALIZED_DEFERRED_TARGETS,
     SpecializedModuleBackend,
     make_asic_backend,
-    make_fpga_backend,
     make_tpu_backend,
 )
 
@@ -126,7 +125,6 @@ __all__ = [
     "load_model_spec",
     "make_asic_backend",
     "make_cuda_backend",
-    "make_fpga_backend",
     "make_metal_backend",
     "make_rocm_backend",
     "make_tpu_backend",
