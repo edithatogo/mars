@@ -32,8 +32,8 @@ from .cluster import (
     CLUSTER_PRESERVE_ORDER_ENV_VAR,
     CLUSTER_RETRIES_ENV_VAR,
     CLUSTER_SCHEDULER_ENV_VAR,
-    CLUSTER_WORKERS_ENV_VAR,
     CLUSTER_WORKER_COMMAND_ENV_VAR,
+    CLUSTER_WORKERS_ENV_VAR,
     CPU_CLUSTER_MODE,
     MULTI_NODE_CLUSTER_MODE,
     ClusterBackend,
@@ -77,7 +77,6 @@ from .specialized_accelerator_backends import (
     SpecializedModuleBackend,
     make_asic_backend,
     make_fpga_backend,
-    make_tpu_backend,
 )
 
 __all__ = [
@@ -129,7 +128,6 @@ __all__ = [
     "make_fpga_backend",
     "make_metal_backend",
     "make_rocm_backend",
-    "make_tpu_backend",
     "plot_basis_functions",
     "plot_individual_conditional_expectation",
     "plot_partial_dependence",

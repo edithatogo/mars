@@ -7,7 +7,7 @@ from dataclasses import dataclass
 
 from .accelerator import AcceleratorCapabilities
 
-SPECIALIZED_DEFERRED_TARGETS = ("tpu", "fpga", "asic")
+SPECIALIZED_DEFERRED_TARGETS = ("fpga", "asic")
 
 
 @dataclass(frozen=True, slots=True)
@@ -32,13 +32,6 @@ class SpecializedModuleBackend:
         return importlib.util.find_spec(self.marker_module) is not None
 
 
-def make_tpu_backend() -> SpecializedModuleBackend:
-    """Create a TPU-family backend adapter."""
-    return SpecializedModuleBackend(
-        name="tpu",
-        marker_module="jax",
-        device_kind="tpu",
-    )
 
 
 def make_fpga_backend() -> SpecializedModuleBackend:
