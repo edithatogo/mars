@@ -37,6 +37,7 @@ class BasisFunction(ABC):
         self._involved_variables: frozenset[int] = frozenset()
         self.gcv_score_: float = 0.0
         self.rss_score_: float = 0.0
+        self._degree: int | None = None
 
     def get_involved_variables(self) -> frozenset[int]:
         """
@@ -174,7 +175,11 @@ class ConstantBasisFunction(BasisFunction):
         """
         The degree of a constant basis function is 0.
         """
-        return 0
+        degree = getattr(self, "_degree", None)
+        if degree is None:
+            degree = 0
+            self._degree = degree
+        return degree
 
     def is_constant(self) -> bool:
         return True
@@ -269,9 +274,11 @@ class HingeBasisFunction(BasisFunction):
         If it's a simple hinge, degree is 1.
         If it's an interaction term (has a parent), its degree is parent.degree() + 1.
         """
-        if self.parent1:
-            return self.parent1.degree() + 1
-        return 1
+        degree = getattr(self, "_degree", None)
+        if degree is None:
+            degree = self.parent1.degree() + 1 if self.parent1 else 1
+            self._degree = degree
+        return degree
 
     def is_constant(self) -> bool:
         return False
@@ -349,9 +356,11 @@ class CategoricalBasisFunction(BasisFunction):
         If it's a simple categorical term, degree is 1.
         If it's an interaction term (has a parent), its degree is parent.degree() + 1.
         """
-        if self.parent1:
-            return self.parent1.degree() + 1
-        return 1
+        degree = getattr(self, "_degree", None)
+        if degree is None:
+            degree = self.parent1.degree() + 1 if self.parent1 else 1
+            self._degree = degree
+        return degree
 
     def is_constant(self) -> bool:
         return False
@@ -437,9 +446,11 @@ class LinearBasisFunction(BasisFunction):
         If it's a simple linear term, degree is 1.
         If it's an interaction term (has a parent), its degree is parent.degree() + 1.
         """
-        if self.parent1:
-            return self.parent1.degree() + 1
-        return 1
+        degree = getattr(self, "_degree", None)
+        if degree is None:
+            degree = self.parent1.degree() + 1 if self.parent1 else 1
+            self._degree = degree
+        return degree
 
     def is_constant(self) -> bool:
         return False
@@ -473,7 +484,11 @@ class InteractionBasisFunction(BasisFunction):
     def degree(self) -> int:
         assert self.parent1 is not None
         assert self.parent2 is not None
-        return self.parent1.degree() + self.parent2.degree()
+        degree = getattr(self, "_degree", None)
+        if degree is None:
+            degree = self.parent1.degree() + self.parent2.degree()
+            self._degree = degree
+        return degree
 
     def is_constant(self) -> bool:
         return False
@@ -537,7 +552,11 @@ class MissingnessBasisFunction(BasisFunction):
         The degree of a MissingnessBasisFunction is conventionally 1.
         It represents a condition on a single variable.
         """
-        return 1
+        degree = getattr(self, "_degree", None)
+        if degree is None:
+            degree = 1
+            self._degree = degree
+        return degree
 
     def is_constant(self) -> bool:
         return False

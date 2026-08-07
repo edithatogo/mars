@@ -57,6 +57,25 @@ def test_constant_basis_function():
         bf.transform(np.array([[[1]]]), np.array([[[False]]]))  # 3D array
 
 
+def test_degree_cache_supports_legacy_instances(monkeypatch) -> None:
+    """Degree lookup should cache once even when a legacy object lacks the cache."""
+    parent = LinearBasisFunction(variable_idx=0)
+    child = HingeBasisFunction(variable_idx=1, knot_val=0.0, parent_bf=parent)
+    del child._degree
+    calls = 0
+
+    def parent_degree() -> int:
+        nonlocal calls
+        calls += 1
+        return 1
+
+    monkeypatch.setattr(parent, "degree", parent_degree)
+
+    assert child.degree() == 2
+    assert child.degree() == 2
+    assert calls == 1
+
+
 @pytest.mark.parametrize("is_right", [True, False])
 @pytest.mark.parametrize("parent_type", [None, "Constant", "Hinge", "Linear"])
 def test_hinge_basis_function(is_right, parent_type):
