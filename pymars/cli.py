@@ -27,7 +27,7 @@ def _save_model(model: Any, output_path: str) -> str:
     return "pickle"
 
 
-def _load_model(model_path: str) -> Any:
+def _load_model(model_path: str, allow_pickle: bool = False) -> Any:
     """Load a portable JSON model spec or a legacy pickle model."""
     path = Path(model_path)
     if path.suffix.lower() == ".json":
@@ -35,6 +35,10 @@ def _load_model(model_path: str) -> Any:
         return Earth.from_model(payload)
 
     with path.open("rb") as file_obj:
+        if not allow_pickle:
+            raise ValueError(
+                "Loading pickle files is not allowed unless --allow-pickle is specified."
+            )
         return pickle.load(file_obj)  # nosec B301 - legacy local artifact loading
 
 
@@ -81,12 +85,22 @@ def main() -> None:
     predict_parser.add_argument(
         "--output", required=True, help="Output predictions file (CSV)"
     )
+    predict_parser.add_argument(
+        "--allow-pickle",
+        action="store_true",
+        help="Allow loading legacy pickle models (insecure)",
+    )
 
     # Score command
     score_parser = subparsers.add_parser("score", help="Score a fitted model")
     score_parser.add_argument("--model", required=True, help="Input model file")
     score_parser.add_argument("--input", required=True, help="Input data file (CSV)")
     score_parser.add_argument("--target", required=True, help="Target column name")
+    score_parser.add_argument(
+        "--allow-pickle",
+        action="store_true",
+        help="Allow loading legacy pickle models (insecure)",
+    )
 
     args = parser.parse_args()
 
@@ -138,7 +152,7 @@ def make_predictions(args: argparse.Namespace) -> None:
     # Import pandas only when needed
     pd = cast("Any", importlib.import_module("pandas"))
 
-    model = _load_model(args.model)
+    model = _load_model(args.model, allow_pickle=getattr(args, "allow_pickle", False))
 
     # Load input data
     data = pd.read_csv(args.input)
@@ -159,7 +173,7 @@ def score_model(args: argparse.Namespace) -> None:
     # Import pandas only when needed
     pd = cast("Any", importlib.import_module("pandas"))
 
-    model = _load_model(args.model)
+    model = _load_model(args.model, allow_pickle=getattr(args, "allow_pickle", False))
 
     # Load data
     data = pd.read_csv(args.input)
