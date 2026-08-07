@@ -264,3 +264,76 @@ def test_command_backed_multi_node_design_matrix_matches_cpu_replay() -> None:
     expected = runtime.design_matrix(spec, probe)
 
     assert np.allclose(actual, expected)
+
+def test_command_backed_multi_node_rejects_unsafe_executable() -> None:
+    """The H4 adapter should reject worker commands that use unsafe executables."""
+    from pymars import Earth
+
+    X = np.array([[0.0], [1.0]], dtype=float)
+    y = np.array([1.0, 3.0], dtype=float)
+    model = Earth(max_degree=1, max_terms=5)
+    model.fit(X, y)
+    spec = model.get_model_spec()
+    config = ClusterConfig(
+        mode=MULTI_NODE_CLUSTER_MODE,
+        scheduler="command",
+        worker_command="bash -c 'echo injected'",
+        workers=1,
+        chunk_size=1,
+    )
+
+    try:
+        predict_cluster(spec, X, config)
+    except ValueError as exc:
+        assert "Disallowed executable" in str(exc)
+    else:
+        raise AssertionError("Expected ValueError for unsafe executable")
+
+
+def test_command_backed_multi_node_rejects_unsafe_module() -> None:
+    """The H4 adapter should reject worker commands that invoke unsafe modules."""
+    from pymars import Earth
+
+    X = np.array([[0.0], [1.0]], dtype=float)
+    y = np.array([1.0, 3.0], dtype=float)
+    model = Earth(max_degree=1, max_terms=5)
+    model.fit(X, y)
+    spec = model.get_model_spec()
+    config = ClusterConfig(
+        mode=MULTI_NODE_CLUSTER_MODE,
+        scheduler="command",
+        worker_command=f"{sys.executable} -m http.server",
+        workers=1,
+        chunk_size=1,
+    )
+
+    try:
+        predict_cluster(spec, X, config)
+    except ValueError as exc:
+        assert "Worker command must invoke 'pymars.cluster_worker'" in str(exc)
+    else:
+        raise AssertionError("Expected ValueError for unsafe module")
+
+def test_command_backed_multi_node_rejects_empty_command() -> None:
+    """The H4 adapter should reject empty worker commands at dispatch time if missing executable."""
+    from pymars import Earth
+
+    X = np.array([[0.0], [1.0]], dtype=float)
+    y = np.array([1.0, 3.0], dtype=float)
+    model = Earth(max_degree=1, max_terms=5)
+    model.fit(X, y)
+    spec = model.get_model_spec()
+    config = ClusterConfig(
+        mode=MULTI_NODE_CLUSTER_MODE,
+        scheduler="command",
+        worker_command="   ",
+        workers=1,
+        chunk_size=1,
+    )
+
+    try:
+        predict_cluster(spec, X, config)
+    except NotImplementedError as exc:
+        assert "Multi-node worker command is not configured" in str(exc)
+    else:
+        raise AssertionError("Expected NotImplementedError for empty command")

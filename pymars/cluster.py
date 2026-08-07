@@ -6,6 +6,7 @@ import json
 import os
 import shlex
 import subprocess
+import sys
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
@@ -313,6 +314,18 @@ def _run_worker_command(
     command_parts: list[str], payload_path: Path, *, retries: int
 ) -> list[Any]:
     """Run a worker command with bounded retries and parse JSON output."""
+    if not command_parts:
+        raise ValueError("Worker command is empty.")
+
+    executable = Path(command_parts[0]).name
+    allowed_executables = {"python", "python3", "python.exe", "python3.exe", Path(sys.executable).name}
+
+    if executable not in allowed_executables:
+        raise ValueError(f"Disallowed executable in worker command: {executable}")
+
+    if len(command_parts) < 3 or command_parts[1] != "-m" or command_parts[2] != "pymars.cluster_worker":
+        raise ValueError("Worker command must invoke 'pymars.cluster_worker' via '-m'.")
+
     last_error: Exception | None = None
     for _attempt in range(retries + 1):
         try:
