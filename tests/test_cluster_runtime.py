@@ -264,3 +264,36 @@ def test_command_backed_multi_node_design_matrix_matches_cpu_replay() -> None:
     expected = runtime.design_matrix(spec, probe)
 
     assert np.allclose(actual, expected)
+
+
+def test_command_backed_multi_node_handles_invalid_json() -> None:
+    """The command-backed multi-node worker should raise RuntimeError on invalid JSON."""
+    import json
+
+    from pymars import Earth
+
+    X = np.array([[0.0], [1.0]], dtype=float)
+    y = np.array([1.0, 3.0], dtype=float)
+    model = Earth(max_degree=1, max_terms=5, penalty=3.0)
+    model.fit(X, y)
+    spec = model.get_model_spec()
+    probe = np.array([[0.5]], dtype=float)
+
+    bad_command = f"{sys.executable} -c \"print('{{invalid json')\""
+
+    config = ClusterConfig(
+        mode=MULTI_NODE_CLUSTER_MODE,
+        scheduler="command",
+        worker_command=bad_command,
+        workers=1,
+        chunk_size=1,
+        retries=0,
+    )
+
+    try:
+        predict_cluster(spec, probe, config)
+    except RuntimeError as exc:
+        assert "Multi-node worker command failed" in str(exc)
+        assert isinstance(exc.__cause__, json.JSONDecodeError)
+    else:
+        raise AssertionError("Expected RuntimeError")
