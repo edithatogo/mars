@@ -50,6 +50,7 @@ def test_python_fallback_used_until_rust_training_reaches_parity(monkeypatch) ->
     """A compiled backend must not change established Python fit semantics."""
 
     class IncompleteRustBackend:
+        _IS_COMPILED = True
         _SUPPORTS_TRAINING_PARITY = False
 
         def fit_model_json(self, request_json: str) -> str:

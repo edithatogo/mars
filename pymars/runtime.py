@@ -301,7 +301,9 @@ def fit_model(
     """Fit an Earth model through the Rust training bridge when available."""
     if not (_should_use_rust_backend() and _rust_backend_supports("fit_model_json")):
         return None
-    if not getattr(_rust_backend, "_SUPPORTS_TRAINING_PARITY", True):
+    if getattr(_rust_backend, "_IS_COMPILED", False) and not getattr(
+        _rust_backend, "_SUPPORTS_TRAINING_PARITY", False
+    ):
         return None
     if model.categorical_features and not getattr(
         _rust_backend, "_SUPPORTS_CATEGORICAL_TRAINING", True
