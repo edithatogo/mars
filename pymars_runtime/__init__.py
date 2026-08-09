@@ -20,6 +20,11 @@ _SUPPORTS_CATEGORICAL_TRAINING = (
     if _native is not None
     else False
 )
+_SUPPORTS_MISSINGNESS_TRAINING = (
+    getattr(_native, "_SUPPORTS_MISSINGNESS_TRAINING", False)
+    if _native is not None
+    else False
+)
 
 
 def _require_native() -> object:

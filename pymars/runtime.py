@@ -305,6 +305,10 @@ def fit_model(
         _rust_backend, "_SUPPORTS_CATEGORICAL_TRAINING", True
     ):
         return None
+    if model.allow_missing and not getattr(
+        _rust_backend, "_SUPPORTS_MISSINGNESS_TRAINING", True
+    ):
+        return None
     rows = _coerce_rows_for_rust(X)
     y_values = cast("list[float]", np.asarray(y, dtype=float).reshape(-1).tolist())
     weights = None
