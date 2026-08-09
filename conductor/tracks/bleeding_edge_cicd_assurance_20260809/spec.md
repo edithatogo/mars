@@ -35,11 +35,15 @@ second reviewer, team membership, CODEOWNERS approval, or another human input.
 ### Required Pull-Request Gates
 
 - Validate locked dependencies, generated files, configuration, and documentation.
-- Run Python formatting, linting, typing, unit, integration, property-based,
-  estimator, CLI, coverage, build, and clean-install checks.
+- Run Python formatting, linting, typing, unit, integration, end-to-end, smoke,
+  property-based, metamorphic, estimator, CLI, coverage, build, and
+  clean-install checks.
 - Run Rust formatting, Clippy, nextest, MSRV, licence, advisory, dependency,
   build, and public-interface checks.
 - Run targeted cross-language binding conformance and documentation checks.
+- Run consumer-driven contract tests for each supported binding against the
+  versioned ModelSpec schema, Rust core capabilities, error semantics, and
+  representative consumer fixtures.
 - Enforce repository and diff coverage of at least 90%.
 - Run CodeQL, dependency review, secret detection, and ecosystem audits.
 - Support GitHub merge queues through the `merge_group` event.
@@ -50,6 +54,13 @@ second reviewer, team membership, CODEOWNERS approval, or another human input.
   bindings through explicit compatibility matrices.
 - Schedule mutation testing, fuzzing, Miri, sanitizers, SemVer checks, flaky-test
   detection, and deterministic-seed validation.
+- Run Deterministic Simulation Testing (DST) with versioned scenarios, fixed
+  seeds, deterministic clocks and fault schedules, replayable inputs, stable
+  state digests, and cross-runtime equivalence assertions.
+- Run broader metamorphic suites over transformations such as row permutation,
+  feature scaling, serialization round trips, batching, and parallel execution.
+- Measure mutation scores by maintained source surface and reject regressions
+  against explicit, ratcheting thresholds.
 - Enforce performance and memory regression budgets.
 - Compare repeated builds and generated artifacts for reproducibility.
 - Retain machine-readable results and bounded failure evidence.
@@ -92,8 +103,32 @@ Non-blocking canaries may cover Ubuntu 26.04, ARM64 runners, free-threaded or
 pre-release Python, Rust nightly, uv malware checking, and guarded agentic
 automation for issue triage, CI diagnosis, or documentation drift.
 
-Agentic workflows must receive no publication credentials, have no merge
-authority, and must not replace deterministic required checks.
+Autonomous Agentic Testing may generate adversarial cases, explore state spaces,
+triage failures, and propose tests inside an isolated, read-only or disposable
+environment. Agents must receive no publication credentials, have no merge
+authority, and must not replace deterministic required checks. Any agentic
+finding must be minimized into a deterministic reproducer and pass ordinary
+reviewable tests before it can affect a required gate.
+
+### Test Architecture and Evidence
+
+- Unit tests isolate public and internal behavior with no network dependency.
+- Integration tests exercise Python, Rust, packaging, persistence, and binding
+  boundaries with controlled fixtures.
+- End-to-end tests build distributable artifacts, install them into clean
+  environments, fit or load a model, and validate predictions across supported
+  consumer paths.
+- Smoke tests provide a fast import, CLI, native-extension, artifact, and
+  binding sanity gate on every relevant change and release rehearsal.
+- Property-based tests generate bounded structured inputs with recorded seeds
+  and minimized counterexamples.
+- Metamorphic tests assert domain relations when a single exact oracle is
+  insufficient and retain the transformation and failing specimen.
+- Consumer-driven contract tests version provider and consumer expectations,
+  verify every supported binding, and fail on incompatible schema or behavior
+  drift before publication.
+- Every suite emits machine-readable results recording suite kind, seed or
+  scenario, artifact and source identity, environment, duration, and outcome.
 
 ## Non-Functional Requirements
 
@@ -116,6 +151,11 @@ authority, and must not replace deterministic required checks.
 - Renovate executes successfully before Dependabot automation is retired.
 - Release artifacts have generated and successfully verified attestations.
 - Stable controls pass and preview controls remain visibly non-blocking.
+- Unit, integration, end-to-end, smoke, property-based, metamorphic,
+  consumer-driven contract, mutation, and deterministic simulation suites have
+  passing evidence at their documented gate or schedule.
+- Autonomous agentic tests are sandboxed and every promoted finding has a
+  deterministic non-agentic reproducer.
 - No control requires a second reviewer or second human approval.
 - Evidence distinguishes configured, enabled, executed, passing, deferred, and
   blocked controls.

@@ -23,7 +23,7 @@
   - [ ] Define fast, full, security, release-rehearsal, and preview profiles.
   - [ ] Define deterministic environments, seeds, budgets, outputs, and platform behavior.
 - [ ] Task: Write failing harness contract tests
-  - [ ] Test discovery, non-interactive execution, exit codes, receipts, partial failures, and hosted parity.
+  - [ ] Test discovery, non-interactive execution, exit codes, receipts, partial failures, hosted parity, suite classification, deterministic seeds, and replay metadata.
 - [ ] Task: Implement the canonical harness
   - [ ] Extend existing Make, tox, and uv orchestration instead of creating competing entry points.
   - [ ] Add locked quality, test, security, build, docs, and evidence commands.
@@ -57,13 +57,17 @@
   - [ ] Verify check names, triggers, pull requests, merge groups, path behavior, and matrix failure propagation.
 - [ ] Task: Modernize Python assurance
   - [ ] Use locked uv and pinned toolchains.
-  - [ ] Run Ruff, `ty`, metadata, lock, unit, integration, property, estimator, CLI, and >=90% coverage checks.
+  - [ ] Run Ruff, `ty`, metadata, lock, unit, integration, property-based, metamorphic, estimator, CLI, and >=90% coverage checks.
   - [ ] Build and install wheels and sdists in clean environments.
 - [ ] Task: Modernize Rust assurance
   - [ ] Run formatting, Clippy, nextest, docs, features, MSRV, stable, cargo-deny, RustSec, licences, and source checks.
   - [ ] Build release artifacts and exercise public interfaces.
 - [ ] Task: Modernize binding and documentation assurance
   - [ ] Run targeted TypeScript, Go, C#, R, Julia, fixture, schema, generated-code, API-doc, Starlight, link, and package smoke checks.
+  - [ ] Add consumer-driven contracts covering ModelSpec schema versions, Rust capabilities, errors, serialization, and representative binding consumers.
+- [ ] Task: Add required smoke and end-to-end assurance
+  - [ ] Add a fast smoke matrix for imports, CLI commands, native extension loading, packaged artifacts, and each maintained binding.
+  - [ ] Build clean artifacts and run bounded end-to-end fit, serialization, replay, prediction, and cross-runtime equivalence journeys.
 - [ ] Task: Add cross-cutting security gates
   - [ ] Enable dependency review, ecosystem audits, CodeQL or SARIF analysis, and secret checks.
 - [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 3: Fast Required Pull-Request Assurance' (Protocol in workflow.md)
@@ -75,7 +79,11 @@
 - [ ] Task: Add exhaustive compatibility matrices
   - [ ] Cover supported runtimes, operating systems, stable ARM64, clean installs, and all maintained bindings.
 - [ ] Task: Add adversarial and semantic testing
-  - [ ] Schedule mutation, fuzzing, Miri, sanitizers, nightly, SemVer, flaky-test, and deterministic-seed checks.
+  - [ ] Schedule mutation, fuzzing, Miri, sanitizers, nightly, SemVer, flaky-test, property-based, and metamorphic checks.
+  - [ ] Establish mutation-score baselines by maintained source surface and ratchet thresholds without excluding surviving mutants silently.
+- [ ] Task: Add Deterministic Simulation Testing
+  - [ ] Define versioned model, data, concurrency, failure, retry, serialization, and cross-binding scenarios with fixed seeds, clocks, and fault schedules.
+  - [ ] Record replay inputs and state digests, prove repeatability, and compare equivalent Python, Rust, R, Julia, Go, TypeScript, and C# outcomes where supported.
 - [ ] Task: Add performance and reproducibility assurance
   - [ ] Enforce runtime and memory budgets, comparable benchmarks, repeated-build digests, and deterministic outputs.
 - [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 4: Scheduled Deep Assurance' (Protocol in workflow.md)
@@ -113,7 +121,8 @@
 - [ ] Task: Add platform and toolchain canaries
   - [ ] Add Ubuntu 26.04, ARM64, free-threaded or pre-release Python, Rust nightly, and uv malware-check experiments where feasible.
 - [ ] Task: Add guarded agentic experiments
-  - [ ] Limit agents to triage, diagnosis, or docs; grant no secrets, merge authority, or required-check ownership; validate outputs deterministically.
+  - [ ] Add Autonomous Agentic Testing for adversarial case generation, state-space exploration, failure triage, and test proposals in disposable sandboxes.
+  - [ ] Grant agents no secrets, write authority to protected refs, merge authority, or required-check ownership; require minimized deterministic reproducers before promotion.
 - [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 7: Preview Canaries and Emerging Capabilities' (Protocol in workflow.md)
 
 ## Phase 8: Evidence, Documentation, and Observability
@@ -129,7 +138,7 @@
 ## Phase 9: End-to-End Delivery and Closure
 
 - [ ] Task: Run the complete local acceptance harness
-  - [ ] Run quality, test, security, packaging, docs, policy, representative deep, and release-rehearsal checks.
+  - [ ] Run quality, unit, integration, end-to-end, smoke, mutation, property-based, DST, metamorphic, consumer-contract, security, packaging, docs, policy, representative agentic-canary, and release-rehearsal checks.
   - [ ] Record deviations, external gates, and preview limitations.
 - [ ] Task: Perform solo-maintainer formal self-review
   - [ ] Review the specification, diff, permissions, trust boundaries, rollback, evidence, and absence of second-human gates.
