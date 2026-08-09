@@ -19,16 +19,16 @@
 
 ## Phase 1: Canonical Local Harness and Context
 
-- [ ] Task: Specify the one-command assurance harness
-  - [ ] Define fast, full, security, release-rehearsal, and preview profiles.
-  - [ ] Define deterministic environments, seeds, budgets, outputs, and platform behavior.
-- [ ] Task: Write failing harness contract tests
-  - [ ] Test discovery, non-interactive execution, exit codes, receipts, partial failures, hosted parity, suite classification, deterministic seeds, and replay metadata.
-- [ ] Task: Implement the canonical harness
-  - [ ] Extend existing Make, tox, and uv orchestration instead of creating competing entry points.
-  - [ ] Add locked quality, test, security, build, docs, and evidence commands.
-  - [ ] Produce JUnit, coverage, SARIF, benchmark, and machine-readable receipts.
-  - [ ] Add usage and troubleshooting documentation.
+- [x] Task: Specify the one-command assurance harness (00f21c1)
+  - [x] Define fast, full, security, release-rehearsal, and preview profiles.
+  - [x] Define deterministic environments, seeds, budgets, outputs, and platform behavior.
+- [x] Task: Write failing harness contract tests (00f21c1)
+  - [x] Test discovery, non-interactive execution, exit codes, receipts, partial failures, hosted parity, suite classification, deterministic seeds, and replay metadata.
+- [x] Task: Implement the canonical harness (f2601d9)
+  - [x] Extend existing Make, tox, and uv orchestration instead of creating competing entry points.
+  - [x] Add locked quality, test, security, build, docs, and evidence commands.
+  - [x] Produce JUnit, coverage, SARIF, benchmark, and machine-readable receipts.
+  - [x] Add usage and troubleshooting documentation.
 - [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 1: Canonical Local Harness and Context' (Protocol in workflow.md)
 
 ## Phase 2: Workflow Supply-Chain Hardening
