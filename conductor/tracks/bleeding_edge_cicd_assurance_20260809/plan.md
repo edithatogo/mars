@@ -1,6 +1,6 @@
 # Implementation Plan
 
-## Phase 0: Baseline, Isolation, and Control Architecture
+## Phase 0: Baseline, Isolation, and Control Architecture [checkpoint: a47e3ea]
 
 - [x] Task: Establish the implementation baseline (7a342f2)
   - [x] Preserve and inventory existing staged and unstaged changes.
@@ -15,7 +15,7 @@
   - [x] Test action pinning, permissions, timeouts, concurrency, retention, merge-group coverage, and control declarations.
   - [x] Test required Codecov configuration, OIDC upload, XML generation, and blocking upload failures.
   - [x] Test Renovate monorepo manager coverage and reject non-portable local package dependencies.
-- [~] Task: Conductor - Automated Review and Checkpoint 'Phase 0: Baseline, Isolation, and Control Architecture' (Protocol in workflow.md)
+- [x] Task: Conductor - Automated Review and Checkpoint 'Phase 0: Baseline, Isolation, and Control Architecture' (Protocol in workflow.md) (a47e3ea)
 
 ## Phase 1: Canonical Local Harness and Context
 
