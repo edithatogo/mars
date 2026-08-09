@@ -1,0 +1,3 @@
+Task: Establish the implementation baseline
+
+Recorded local Git state, workflow inventory, hosted GitHub control readback, dependency automation evidence, and explicit evidence boundaries. Created baseline.md and baseline.json and linked them from the track index. This prevents configuration presence, queued runs, or partial automation from being misreported as passing enforcement.
