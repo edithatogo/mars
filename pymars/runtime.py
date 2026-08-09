@@ -437,7 +437,12 @@ def predict_distributed(
 
     def predict_chunk(batch: list[list[float]]) -> list[float]:
         if use_rust:
-            return cast("list[float]", _predict_with_rust(spec, batch).tolist())
+            prediction = _predict_with_rust(spec, batch)
+            if prediction is None:
+                raise RuntimeError("Rust prediction became unavailable during replay.")
+            return cast("list[float]", prediction.tolist())
+        if worker_model is None:
+            raise RuntimeError("Python prediction model is unavailable during replay.")
         return cast("list[float]", worker_model.predict(np.asarray(batch)).tolist())
 
     return np.asarray(
@@ -478,7 +483,13 @@ def design_matrix_distributed(
     def design_chunk(batch: list[list[float]]) -> list[list[float]]:
         if use_rust:
             matrix = _design_matrix_with_rust(spec, batch)
+            if matrix is None:
+                raise RuntimeError(
+                    "Rust design matrix became unavailable during replay."
+                )
             return cast("list[list[float]]", matrix.tolist())
+        if worker_model is None:
+            raise RuntimeError("Python design model is unavailable during replay.")
         X_processed, missing_mask = worker_model._prepare_prediction_data(
             np.asarray(batch, dtype=float)
         )
