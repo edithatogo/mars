@@ -1,0 +1,82 @@
+{
+  "$schema": "./assurance-controls.schema.json",
+  "schemaVersion": 1,
+  "soloMaintainer": {
+    "requiredHumanApprovals": 0,
+    "requiredTeams": false,
+    "requiredCodeOwners": false
+  },
+  "lifecycleStates": ["configured", "enabled", "executed", "passing", "deferred", "blocked"],
+  "controls": [
+    {
+      "id": "workflow-policy",
+      "title": "Workflow syntax and security policy",
+      "tier": "pull-request",
+      "trigger": ["pull_request", "merge_group"],
+      "implementation": ["actionlint", "zizmor", "tools/validate_ci_policy.py"],
+      "evidence": ["JUnit report", "SARIF report", "CI job summary"],
+      "failurePolicy": "block-merge",
+      "state": "configured"
+    },
+    {
+      "id": "python-quality",
+      "title": "Python quality, compatibility, and coverage",
+      "tier": "pull-request",
+      "trigger": ["pull_request", "merge_group"],
+      "implementation": ["uv lock --check", "ruff", "ty", "pytest"],
+      "evidence": ["coverage.xml", "JUnit report", "CI job summary"],
+      "failurePolicy": "block-merge",
+      "state": "configured"
+    },
+    {
+      "id": "rust-quality",
+      "title": "Rust quality, compatibility, and dependency policy",
+      "tier": "pull-request",
+      "trigger": ["pull_request", "merge_group"],
+      "implementation": ["cargo fmt", "cargo clippy", "cargo nextest", "cargo deny"],
+      "evidence": ["nextest report", "cargo-deny log", "CI job summary"],
+      "failurePolicy": "block-merge",
+      "state": "configured"
+    },
+    {
+      "id": "binding-conformance",
+      "title": "Cross-language binding conformance",
+      "tier": "pull-request",
+      "trigger": ["pull_request", "merge_group"],
+      "implementation": ["shared fixture conformance harness"],
+      "evidence": ["binding test artifacts", "CI job summary"],
+      "failurePolicy": "block-merge",
+      "state": "configured"
+    },
+    {
+      "id": "deep-assurance",
+      "title": "Mutation, fuzzing, sanitizer, compatibility, and performance assurance",
+      "tier": "scheduled",
+      "trigger": ["schedule", "workflow_dispatch"],
+      "implementation": ["mutation tests", "fuzz tests", "Miri", "sanitizers", "benchmarks"],
+      "evidence": ["scheduled workflow receipts", "retained reports"],
+      "failurePolicy": "surface",
+      "state": "configured"
+    },
+    {
+      "id": "release-integrity",
+      "title": "Trusted publishing, SBOM, provenance, and verification",
+      "tier": "release",
+      "trigger": ["release", "workflow_dispatch"],
+      "implementation": ["OIDC publishing", "SBOM generation", "artifact attestations", "attestation verification"],
+      "evidence": ["artifact digests", "SBOM", "attestation bundle", "registry receipt"],
+      "failurePolicy": "block-release",
+      "state": "configured"
+    },
+    {
+      "id": "emerging-canaries",
+      "title": "Emerging runner, runtime, toolchain, and agentic canaries",
+      "tier": "preview",
+      "trigger": ["schedule", "workflow_dispatch"],
+      "implementation": ["ARM64", "Ubuntu 26.04", "free-threaded Python", "Rust nightly", "guarded agentic diagnostics"],
+      "evidence": ["canary workflow receipts", "promotion decision record"],
+      "failurePolicy": "observe",
+      "state": "configured"
+    }
+  ]
+}
