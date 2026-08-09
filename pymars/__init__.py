@@ -32,8 +32,8 @@ from .cluster import (
     CLUSTER_PRESERVE_ORDER_ENV_VAR,
     CLUSTER_RETRIES_ENV_VAR,
     CLUSTER_SCHEDULER_ENV_VAR,
-    CLUSTER_WORKERS_ENV_VAR,
     CLUSTER_WORKER_COMMAND_ENV_VAR,
+    CLUSTER_WORKERS_ENV_VAR,
     CPU_CLUSTER_MODE,
     MULTI_NODE_CLUSTER_MODE,
     ClusterBackend,
@@ -75,7 +75,6 @@ from .runtime import (
 from .specialized_accelerator_backends import (
     SPECIALIZED_DEFERRED_TARGETS,
     SpecializedModuleBackend,
-    make_asic_backend,
     make_fpga_backend,
     make_tpu_backend,
 )
@@ -124,7 +123,6 @@ __all__ = [
     "inspect",
     "load_model",
     "load_model_spec",
-    "make_asic_backend",
     "make_cuda_backend",
     "make_fpga_backend",
     "make_metal_backend",
