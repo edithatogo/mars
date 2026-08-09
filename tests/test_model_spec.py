@@ -177,6 +177,8 @@ def test_runtime_uses_rust_backend_for_supported_specs(monkeypatch):
     calls: list[tuple[str, object]] = []
 
     class DummyRustBackend:
+        _IS_COMPILED = True
+
         def validate_model_spec_json(self, spec_json: str) -> None:
             calls.append(("validate", spec_json))
 

@@ -35,7 +35,9 @@ def test_optional_backend_factories_expose_expected_names(monkeypatch) -> None:
 
 def test_optional_backends_fall_back_when_module_missing(monkeypatch) -> None:
     """Optional backends should report unavailable when their marker module is absent."""
-    monkeypatch.setattr(accelerator_backends.importlib.util, "find_spec", lambda _module_name: None)
+    monkeypatch.setattr(
+        accelerator_backends.importlib.util, "find_spec", lambda _module_name: None
+    )
 
     assert make_cuda_backend().is_available() is False
     assert make_rocm_backend().is_available() is False

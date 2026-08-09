@@ -207,7 +207,7 @@ class CommandMultiNodeBackend:
         indices = _chunked_row_indices(len(row_payload), chunk_size)
         if not indices:
             return []
-        command_parts = shlex.split(self.command)
+        command_parts = shlex.split(self.command, posix=os.name != "nt")
         if not command_parts:
             raise NotImplementedError("Multi-node worker command is not configured.")
 

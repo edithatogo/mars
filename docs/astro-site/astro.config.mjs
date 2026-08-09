@@ -2,9 +2,7 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import sitemap from '@astrojs/sitemap';
 import starlightLinksValidator from 'starlight-links-validator';
-import starlightVersions from 'starlight-versions';
 import starlightLlmsTxt from 'starlight-llms-txt';
-import polyglot from 'starlight-polyglot';
 
 export default defineConfig({
   site: 'https://edithatogo.github.io/mars',
@@ -15,27 +13,22 @@ export default defineConfig({
   trailingSlash: 'never',
   integrations: [
     sitemap(),
-    starlightLinksValidator(),
-    starlightLlmsTxt(),
-    starlightVersions(),
     starlight({
       title: 'mars Documentation',
       description: 'Multivariate Adaptive Regression Splines — mars (pymars) library documentation',
-      logo: {
-        replacesTitle: true,
-      },
-      social: {
-        github: 'https://github.com/edithatogo/mars',
-      },
+      social: [
+        {
+          icon: 'github',
+          label: 'GitHub',
+          href: 'https://github.com/edithatogo/mars',
+        },
+      ],
       editLink: {
         baseUrl: 'https://github.com/edithatogo/mars/edit/main/docs/',
       },
       plugins: [
-        polyglot({
-          python: {
-            entryPoints: ['pymars'],
-          },
-        }),
+        starlightLinksValidator(),
+        starlightLlmsTxt(),
       ],
       sidebar: [
         {
@@ -60,7 +53,7 @@ export default defineConfig({
         },
         {
           label: 'API Reference',
-          autogenerate: { directory: 'api' },
+          items: [{ autogenerate: { directory: 'api' } }],
         },
         {
           label: 'Bindings',

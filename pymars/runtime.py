@@ -160,9 +160,7 @@ def _process_cluster_map(
         return flat
 
 
-def _predict_cpu_cluster_chunk(
-    spec_json: str, batch: list[list[float]]
-) -> list[float]:
+def _predict_cpu_cluster_chunk(spec_json: str, batch: list[list[float]]) -> list[float]:
     """Predict a batch in a process worker using the portable Python model."""
     model = load_model(spec_from_json(spec_json))
     return cast("list[float]", model.predict(np.asarray(batch)).tolist())
@@ -221,7 +219,7 @@ def runtime_threads(thread_count: int | None):
 
 def _should_use_rust_backend() -> bool:
     """Return whether runtime helpers should route through the active backend."""
-    return _rust_backend is not None and getattr(_rust_backend, "_IS_COMPILED", False)
+    return _rust_backend is not None and getattr(_rust_backend, "_IS_COMPILED", True)
 
 
 def _rust_backend_supports(method_name: str) -> bool:
@@ -300,6 +298,18 @@ def fit_model(
 ) -> Earth | None:
     """Fit an Earth model through the Rust training bridge when available."""
     if not (_should_use_rust_backend() and _rust_backend_supports("fit_model_json")):
+        return None
+    if getattr(_rust_backend, "_IS_COMPILED", False) and not getattr(
+        _rust_backend, "_SUPPORTS_TRAINING_PARITY", False
+    ):
+        return None
+    if model.categorical_features and not getattr(
+        _rust_backend, "_SUPPORTS_CATEGORICAL_TRAINING", True
+    ):
+        return None
+    if model.allow_missing and not getattr(
+        _rust_backend, "_SUPPORTS_MISSINGNESS_TRAINING", True
+    ):
         return None
     rows = _coerce_rows_for_rust(X)
     y_values = cast("list[float]", np.asarray(y, dtype=float).reshape(-1).tolist())
@@ -427,7 +437,12 @@ def predict_distributed(
 
     def predict_chunk(batch: list[list[float]]) -> list[float]:
         if use_rust:
-            return cast("list[float]", _predict_with_rust(spec, batch).tolist())
+            prediction = _predict_with_rust(spec, batch)
+            if prediction is None:
+                raise RuntimeError("Rust prediction became unavailable during replay.")
+            return cast("list[float]", prediction.tolist())
+        if worker_model is None:
+            raise RuntimeError("Python prediction model is unavailable during replay.")
         return cast("list[float]", worker_model.predict(np.asarray(batch)).tolist())
 
     return np.asarray(
@@ -468,7 +483,13 @@ def design_matrix_distributed(
     def design_chunk(batch: list[list[float]]) -> list[list[float]]:
         if use_rust:
             matrix = _design_matrix_with_rust(spec, batch)
+            if matrix is None:
+                raise RuntimeError(
+                    "Rust design matrix became unavailable during replay."
+                )
             return cast("list[list[float]]", matrix.tolist())
+        if worker_model is None:
+            raise RuntimeError("Python design model is unavailable during replay.")
         X_processed, missing_mask = worker_model._prepare_prediction_data(
             np.asarray(batch, dtype=float)
         )
@@ -518,7 +539,9 @@ def predict_cpu_cluster(
     if resolved_workers <= 1 or len(indices) == 1:
         ordered_results: list[float] = []
         for start, end in indices:
-            ordered_results.extend(_predict_cpu_cluster_chunk(spec_json, rows[start:end]))
+            ordered_results.extend(
+                _predict_cpu_cluster_chunk(spec_json, rows[start:end])
+            )
         return np.asarray(ordered_results[: len(rows)], dtype=float)
 
     with ProcessPoolExecutor(max_workers=resolved_workers) as executor:
@@ -539,7 +562,8 @@ def predict_cpu_cluster(
             )
         else:
             ordered_pairs = [
-                (start, end, future.result()) for future, (start, end) in futures.items()
+                (start, end, future.result())
+                for future, (start, end) in futures.items()
             ]
     ordered_results: list[float] = []
     for _, _, chunk_values in ordered_pairs:
@@ -590,7 +614,8 @@ def design_matrix_cpu_cluster(
             )
         else:
             ordered_pairs = [
-                (start, end, future.result()) for future, (start, end) in futures.items()
+                (start, end, future.result())
+                for future, (start, end) in futures.items()
             ]
     ordered_results: list[list[float]] = []
     for _, _, chunk_values in ordered_pairs:

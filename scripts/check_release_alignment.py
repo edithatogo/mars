@@ -45,8 +45,8 @@ def check_canonical_release_metadata() -> list[str]:
     expected = {
         "Python": ("mars-earth", "1.0.4"),
         "Rust": ("mars-earth", "0.1.0"),
-        "R": ("marsruntime", "0.0.0"),
-        "Julia": ("MarsRuntime", "0.1.0"),
+        "R": ("marsearth", "0.0.0"),
+        "Julia": ("MarsEarth", "0.1.0"),
         "C#": ("mars-earth", "0.0.0"),
         "Go": ("github.com/edithatogo/mars/bindings/go", "0.1.0"),
         "TypeScript": ("mars-earth", "0.0.0"),
@@ -103,8 +103,8 @@ def check_release_inventory() -> list[str]:
         "| Rust | `mars-earth` |",
         "| C# | `mars-earth` |",
         "| TypeScript | `mars-earth` |",
-        "| R | `marsruntime` |",
-        "| Julia | `MarsRuntime` |",
+        "| R | `marsearth` |",
+        "| Julia | `MarsEarth` |",
         "| crates.io `mars-earth` |",
         "| npm `mars-earth` |",
         "| NuGet `mars-earth` |",
@@ -121,8 +121,8 @@ def check_package_paths() -> list[str]:
     text = (ROOT / "docs/package_release_paths.md").read_text()
     expected = [
         "Package name: `mars-earth`.",
-        "Package name: `marsruntime`.",
-        "Package name: `MarsRuntime`.",
+        "Package name: `marsearth`.",
+        "Package name: `MarsEarth`.",
     ]
 
     errors = [
