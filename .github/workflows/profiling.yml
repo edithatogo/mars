@@ -37,7 +37,17 @@ jobs:
 
       - name: Run py-spy on demo
         run: |
-          uv run py-spy record -o flame_graph.svg -- python -m pymars.demos.basic_regression_demo
+          set +e
+          uv run py-spy record -o flame_graph.svg -- python -m pymars.demos.basic_regression_demo 2>&1 | tee py-spy.log
+          py_spy_status=${PIPESTATUS[0]}
+          set -e
+          if [[ ! -s flame_graph.svg ]]; then
+            echo "py-spy did not produce a flame graph" >&2
+            exit "${py_spy_status:-1}"
+          fi
+          if [[ "$py_spy_status" -ne 0 ]] && ! grep -q "No child process" py-spy.log; then
+            exit "$py_spy_status"
+          fi
 
       - name: Upload profiling results
         if: always()
@@ -46,4 +56,5 @@ jobs:
           name: profiling-results
           path: |
             flame_graph.svg
+            py-spy.log
           retention-days: 30
