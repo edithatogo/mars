@@ -1,0 +1,7 @@
+Phase 1 assurance harness
+
+Implemented discoverable fast, full, security, release-rehearsal, and preview profiles; deterministic seed propagation; dry-run and executed JSON receipts; fail-fast and keep-going behavior; Make targets; and contract tests.
+
+Red evidence: 3 tests failed because tools/assurance.py did not exist.
+Green evidence: uv run --no-project --with pytest pytest tests/test_assurance_harness.py -q => 3 passed.
+Quality evidence: uvx ruff check tools/assurance.py tests/test_assurance_harness.py => passed.
