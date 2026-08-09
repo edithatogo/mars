@@ -127,8 +127,12 @@ mod tests {
             load_model_spec_canonical_json(&spec_json).expect("loading should succeed");
         let loaded: ModelSpec =
             serde_json::from_str(&canonical_json).expect("canonical spec should parse");
+        let canonical: Value =
+            serde_json::from_str(&canonical_json).expect("canonical spec should be JSON");
 
         assert_eq!(loaded, expected);
+        assert_eq!(canonical["model_type"], "Earth");
+        assert!(canonical["metrics"].is_object());
     }
 
     #[test]
