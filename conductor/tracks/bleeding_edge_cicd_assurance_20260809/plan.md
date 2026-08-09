@@ -2,10 +2,10 @@
 
 ## Phase 0: Baseline, Isolation, and Control Architecture
 
-- [ ] Task: Establish the implementation baseline
-  - [ ] Preserve and inventory existing staged and unstaged changes.
-  - [ ] Create a dedicated feature branch without losing prior scoped changes.
-  - [ ] Record the base commit, workflows, hosted settings, dependency PRs, required checks, durations, failures, coverage, security, and release evidence.
+- [x] Task: Establish the implementation baseline (7a342f2)
+  - [x] Preserve and inventory existing staged and unstaged changes.
+  - [x] Create a dedicated feature branch without losing prior scoped changes.
+  - [x] Record the base commit, workflows, hosted settings, dependency PRs, required checks, durations, failures, coverage, security, and release evidence.
 - [ ] Task: Define the assurance control model
   - [ ] Classify controls as required PR gates, scheduled checks, release gates, or preview canaries.
   - [ ] Map each control to its command, workflow, trigger, evidence, failure policy, and remediation.
