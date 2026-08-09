@@ -23,6 +23,14 @@ from ._basis import (
 from ._categorical import CategoricalImputer
 from ._record import EarthRecord
 
+
+def _finite_or_none(value: Any) -> float | None:
+    """Return finite metric values and map non-finite sentinels to JSON null."""
+    if value is None:
+        return None
+    numeric = float(value)
+    return numeric if np.isfinite(numeric) else None
+
 MODEL_SPEC_VERSION = "1.0"
 _MODEL_SPEC_VERSION_RE = re.compile(r"^(?P<major>\d+)\.(?P<minor>\d+)$")
 _MODEL_SPEC_SUPPORTED_MAJOR_VERSION = 1
@@ -328,9 +336,9 @@ def model_to_spec(model: Any) -> dict[str, Any]:
         "basis_terms": [basis_function_to_spec(bf).to_dict() for bf in model.basis_],
         "coefficients": np.asarray(model.coef_, dtype=float).tolist(),
         "metrics": {
-            "rss": model.rss_,
-            "mse": model.mse_,
-            "gcv": model.gcv_,
+            "rss": _finite_or_none(model.rss_),
+            "mse": _finite_or_none(model.mse_),
+            "gcv": _finite_or_none(model.gcv_),
         },
         "categorical_imputer": categorical_imputer_to_spec(
             getattr(model, "categorical_imputer_", None)
