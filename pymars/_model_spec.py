@@ -31,6 +31,7 @@ def _finite_or_none(value: Any) -> float | None:
     numeric = float(value)
     return numeric if np.isfinite(numeric) else None
 
+
 MODEL_SPEC_VERSION = "1.0"
 _MODEL_SPEC_VERSION_RE = re.compile(r"^(?P<major>\d+)\.(?P<minor>\d+)$")
 _MODEL_SPEC_SUPPORTED_MAJOR_VERSION = 1
