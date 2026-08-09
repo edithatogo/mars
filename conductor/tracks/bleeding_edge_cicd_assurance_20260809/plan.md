@@ -17,7 +17,7 @@
   - [x] Test Renovate monorepo manager coverage and reject non-portable local package dependencies.
 - [x] Task: Conductor - Automated Review and Checkpoint 'Phase 0: Baseline, Isolation, and Control Architecture' (Protocol in workflow.md) (a47e3ea)
 
-## Phase 1: Canonical Local Harness and Context
+## Phase 1: Canonical Local Harness and Context [checkpoint: 2ae4ebb]
 
 - [x] Task: Specify the one-command assurance harness (00f21c1)
   - [x] Define fast, full, security, release-rehearsal, and preview profiles.
@@ -29,7 +29,7 @@
   - [x] Add locked quality, test, security, build, docs, and evidence commands.
   - [x] Produce JUnit, coverage, SARIF, benchmark, and machine-readable receipts.
   - [x] Add usage and troubleshooting documentation.
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 1: Canonical Local Harness and Context' (Protocol in workflow.md)
+- [x] Task: Conductor - Automated Review and Checkpoint 'Phase 1: Canonical Local Harness and Context' (Protocol in workflow.md) (2ae4ebb)
 
 ## Phase 2: Workflow Supply-Chain Hardening
 
