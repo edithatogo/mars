@@ -21,7 +21,7 @@ repos:
       - id: end-of-file-fixer
       - id: check-yaml
         args: [--allow-multiple-documents]
-        exclude: ^mkdocs\.yml$
+        exclude: ^(mkdocs\.yml|packaging/conda-forge/recipe/meta\.yaml)$
       - id: check-toml
       - id: check-merge-conflict
       - id: detect-private-key
