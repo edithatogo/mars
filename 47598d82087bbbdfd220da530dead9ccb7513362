@@ -1,0 +1,3 @@
+Task: Define the assurance control model
+
+Added a versioned JSON Schema and initial control manifest that classify pull-request, scheduled, release, and preview controls. The model fixes human approvals and team dependencies at zero/false and requires explicit triggers, implementations, evidence, failure policy, and lifecycle state.
