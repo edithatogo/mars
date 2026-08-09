@@ -15,7 +15,7 @@
   - [x] Test action pinning, permissions, timeouts, concurrency, retention, merge-group coverage, and control declarations.
   - [x] Test required Codecov configuration, OIDC upload, XML generation, and blocking upload failures.
   - [x] Test Renovate monorepo manager coverage and reject non-portable local package dependencies.
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 0: Baseline, Isolation, and Control Architecture' (Protocol in workflow.md)
+- [~] Task: Conductor - Automated Review and Checkpoint 'Phase 0: Baseline, Isolation, and Control Architecture' (Protocol in workflow.md)
 
 ## Phase 1: Canonical Local Harness and Context
 
