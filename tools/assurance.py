@@ -54,10 +54,44 @@ PROFILES: dict[str, tuple[Command, ...]] = {
         Command("go", ("go", "test", "./...")),
         Command("typescript", ("npm", "test", "--prefix", "bindings/typescript")),
         Command("docs", ("pnpm", "--dir", "docs/astro-site", "build")),
+        Command(
+            "benchmark",
+            (
+                "uv",
+                "run",
+                "pytest",
+                "tests/test_benchmark.py",
+                "--benchmark-only",
+                "--benchmark-json=build/assurance/benchmark.json",
+            ),
+        ),
     ),
     "security": (
-        Command("bandit", ("uv", "run", "bandit", "-r", "pymars", "-q")),
-        Command("pip-audit", ("uv", "run", "pip-audit")),
+        Command(
+            "bandit",
+            (
+                "uv",
+                "run",
+                "bandit",
+                "-r",
+                "pymars",
+                "-q",
+                "-f",
+                "sarif",
+                "-o",
+                "build/assurance/bandit.sarif",
+            ),
+        ),
+        Command(
+            "pip-audit",
+            (
+                "uv",
+                "run",
+                "pip-audit",
+                "--format=json",
+                "--output=build/assurance/pip-audit.json",
+            ),
+        ),
         Command(
             "cargo-deny",
             ("cargo", "deny", "--manifest-path", "rust-runtime/Cargo.toml", "check"),

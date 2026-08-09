@@ -36,6 +36,8 @@ def test_profiles_are_discoverable_as_json() -> None:
         "security",
     }
     assert all(payload[name]["commands"] for name in payload)
+    assert "benchmark" in payload["full"]["commands"]
+    assert {"bandit", "pip-audit"} <= set(payload["security"]["commands"])
 
 
 def test_dry_run_writes_a_deterministic_receipt(tmp_path: Path) -> None:
