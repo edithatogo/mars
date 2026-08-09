@@ -31,6 +31,12 @@
 
 ## Phase 2: Workflow Supply-Chain Hardening
 
+- [ ] Task: Move every governed dependency surface to the latest stable release
+  - [ ] Inventory Python/uv, Rust/Cargo, Node/pnpm, Go, Julia, R, NuGet, devcontainer, Git submodule, and GitHub Actions dependencies against current registries.
+  - [ ] Upgrade direct requirements, runtime and toolchain floors, build backends, lockfiles, and action majors without retaining obsolete compatibility pins.
+  - [ ] Resolve breaking API, packaging, compiler, and workflow changes introduced by the upgrades rather than suppressing the updates.
+  - [ ] Validate every ecosystem independently, then run cross-language conformance, packaging, documentation, security, and release-rehearsal checks.
+  - [ ] Reconcile the Renovate Dependency Dashboard, monorepo managers, config migration, digest pinning, and remaining update feedback until no actionable update is outstanding.
 - [ ] Task: Write failing workflow-security tests
   - [ ] Validate YAML, mutable references, interpolation, permissions, events, timeouts, concurrency, and retention.
 - [ ] Task: Pin and govern workflow dependencies
