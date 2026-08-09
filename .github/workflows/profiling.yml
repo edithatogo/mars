@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'pymars/**/*.py'
+      - '.github/workflows/profiling.yml'
   workflow_dispatch:
 
 concurrency:
