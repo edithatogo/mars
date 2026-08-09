@@ -1,0 +1,1 @@
+Added benchmark JSON, Bandit SARIF, and pip-audit JSON evidence outputs to governed assurance profiles. Contract tests and Ruff passed.
