@@ -85,6 +85,7 @@ fn pymars_runtime(_py: Python<'_>, module: &Bound<'_, PyModule>) -> PyResult<()>
     module.add_function(wrap_pyfunction!(export_model_json, module)?)?;
     module.add_function(wrap_pyfunction!(fit_model_json, module)?)?;
     module.add("_IS_COMPILED", true)?;
+    module.add("_SUPPORTS_TRAINING_PARITY", false)?;
     module.add("_SUPPORTS_CATEGORICAL_TRAINING", false)?;
     module.add("_SUPPORTS_MISSINGNESS_TRAINING", false)?;
     Ok(())

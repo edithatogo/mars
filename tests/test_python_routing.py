@@ -46,6 +46,22 @@ def test_python_fallback_available() -> None:
     assert model.predict(X).shape == (3,)
 
 
+def test_python_fallback_used_until_rust_training_reaches_parity(monkeypatch) -> None:
+    """A compiled backend must not change established Python fit semantics."""
+
+    class IncompleteRustBackend:
+        _SUPPORTS_TRAINING_PARITY = False
+
+        def fit_model_json(self, request_json: str) -> str:
+            raise AssertionError(f"Rust training must not be called: {request_json}")
+
+    monkeypatch.setattr(runtime, "_rust_backend", IncompleteRustBackend())
+    X = np.array([[0.0], [1.0], [2.0]])
+    model = Earth(max_terms=5).fit(X, np.array([1.0, 3.0, 5.0]))
+
+    np.testing.assert_allclose(model.predict(X), [1.0, 3.0, 5.0])
+
+
 def test_rust_training_bridge_can_fit_without_environment_gate(monkeypatch) -> None:
     """Rust training routing should work without a private environment gate."""
     fixture_path = Path("tests/fixtures/training_full_fit_baseline_v1.json")
