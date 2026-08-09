@@ -1,4 +1,4 @@
-.PHONY: help install test test-unit test-integration test-e2e lint type-check format clean docs-build docs-serve benchmark bench-rust cargo-deny cargo-nextest profile dist release check
+.PHONY: help install test test-unit test-integration test-e2e lint type-check format clean docs-build docs-serve benchmark bench-rust cargo-deny cargo-nextest profile dist release check assurance-fast assurance-full assurance-security assurance-release assurance-preview
 
 help: ## Show this help message
 	@echo "Available commands:"
@@ -36,6 +36,21 @@ format: ## Format code with ruff
 	uv run ruff format pymars tests
 
 check: lint type-check test ## Run all quality checks
+
+assurance-fast: ## Run the required fast assurance profile
+	uv run python tools/assurance.py run fast
+
+assurance-full: ## Run the full local assurance profile
+	uv run python tools/assurance.py run full
+
+assurance-security: ## Run the security assurance profile
+	uv run python tools/assurance.py run security
+
+assurance-release: ## Run the release-rehearsal assurance profile
+	uv run python tools/assurance.py run release-rehearsal
+
+assurance-preview: ## Run non-blocking preview canaries
+	uv run python tools/assurance.py run preview
 
 clean: ## Clean build artifacts and caches
 	rm -rf build dist *.egg-info .mypy_cache .pytest_cache .ruff_cache
