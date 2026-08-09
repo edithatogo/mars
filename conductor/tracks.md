@@ -185,5 +185,5 @@ The remaining-track dependency gates are summarized in
 
 ---
 
-- [ ] **Track: Modernize CI/CD with bleeding-edge solo-maintainer assurance**
+- [~] **Track: Modernize CI/CD with bleeding-edge solo-maintainer assurance**
   *Link: [./tracks/bleeding_edge_cicd_assurance_20260809/index.md](./tracks/bleeding_edge_cicd_assurance_20260809/index.md)*
