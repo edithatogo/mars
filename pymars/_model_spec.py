@@ -121,8 +121,8 @@ class BasisTermSpec:
             "knot_val": self.knot_val,
             "is_right_hinge": self.is_right_hinge,
             "category": self.category,
-            "gcv_score": self.gcv_score,
-            "rss_score": self.rss_score,
+            "gcv_score": self.gcv_score if np.isfinite(self.gcv_score) else None,
+            "rss_score": self.rss_score if np.isfinite(self.rss_score) else None,
             "parent1": self.parent1.to_dict() if self.parent1 is not None else None,
             "parent2": self.parent2.to_dict() if self.parent2 is not None else None,
         }
@@ -401,7 +401,7 @@ def spec_to_model(payload: dict[str, Any], earth_cls: type[Any]) -> Any:
 
 def spec_to_json(payload: dict[str, Any]) -> str:
     """Serialize a model spec dictionary to JSON."""
-    return json.dumps(payload, indent=2, sort_keys=True)
+    return json.dumps(payload, indent=2, sort_keys=True, allow_nan=False)
 
 
 def spec_from_json(payload: str) -> dict[str, Any]:

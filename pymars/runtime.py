@@ -221,7 +221,7 @@ def runtime_threads(thread_count: int | None):
 
 def _should_use_rust_backend() -> bool:
     """Return whether runtime helpers should route through the active backend."""
-    return _rust_backend is not None and getattr(_rust_backend, "_IS_COMPILED", False)
+    return _rust_backend is not None and getattr(_rust_backend, "_IS_COMPILED", True)
 
 
 def _rust_backend_supports(method_name: str) -> bool:
@@ -300,6 +300,10 @@ def fit_model(
 ) -> Earth | None:
     """Fit an Earth model through the Rust training bridge when available."""
     if not (_should_use_rust_backend() and _rust_backend_supports("fit_model_json")):
+        return None
+    if model.categorical_features and not getattr(
+        _rust_backend, "_SUPPORTS_CATEGORICAL_TRAINING", True
+    ):
         return None
     rows = _coerce_rows_for_rust(X)
     y_values = cast("list[float]", np.asarray(y, dtype=float).reshape(-1).tolist())
