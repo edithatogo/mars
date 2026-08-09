@@ -1,0 +1,6 @@
+Phase 1 verification report
+
+Command: uv run --no-project --with pytest pytest tests/test_assurance_harness.py -q; profile list; fast dry-run receipt.
+Result: 3 passed; five governed profiles discovered; deterministic seed 1729 receipt generated without timestamps.
+Manual verification: README commands, Make targets, required/preview classification, evidence paths, and failure troubleshooting inspected.
+User confirmation: 2026-08-10 instruction to close out all tracks in progress.
