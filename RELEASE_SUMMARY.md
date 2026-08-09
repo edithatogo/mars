@@ -42,7 +42,7 @@ pymars is now a fully-featured, production-ready implementation of the Multivari
 ### ✅ Production Readiness
 - Semantic versioning with automated release management
 - Comprehensive security scanning with Bandit and Safety
-- Dependency security checking with automated updates via Dependabot
+- Dependency security checking with automated updates via Renovate
 - Code quality enforcement with Ruff, MyPy, and pre-commit hooks
 - Professional project structure with issue templates, labels, and CODEOWNERS
 

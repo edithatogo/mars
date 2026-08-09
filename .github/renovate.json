@@ -3,6 +3,7 @@
   "extends": [
     "config:recommended",
     ":dependencyDashboard",
+    ":configMigration",
     ":semanticCommits",
     ":automergePatch",
     ":automergeRequireAllStatusChecks",
@@ -18,8 +19,7 @@
       "matchUpdateTypes": ["minor", "patch"],
       "matchCurrentVersion": "!/^0/",
       "automerge": true,
-      "automergeType": "pr",
-      "requiredStatusChecks": ["ci", "code-quality", "security"]
+      "automergeType": "pr"
     },
     {
       "matchUpdateTypes": ["major"],
@@ -28,7 +28,7 @@
     },
     {
       "groupName": "pytest ecosystem",
-      "matchPackagePrefixes": ["pytest", "pytest-"]
+      "matchPackageNames": ["pytest", "pytest-**"]
     },
     {
       "groupName": "ruff ecosystem",
@@ -53,6 +53,7 @@
     "schedule": ["before 3am on Monday"]
   },
   "rangeStrategy": "bump",
+  "platformAutomerge": false,
   "semanticCommits": "enabled",
   "semanticCommitType": "chore",
   "semanticCommitScope": "deps",
