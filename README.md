@@ -118,6 +118,32 @@ pytest
 
 ```
 
+### Assurance profiles
+
+The canonical local CI/CD entry point is `tools/assurance.py`. Discover the
+available profiles and their commands without changing the environment:
+
+```bash
+uv run python tools/assurance.py list
+uv run python tools/assurance.py run fast --dry-run
+```
+
+Use `make assurance-fast` for required pull-request parity and
+`make assurance-full` before delivery. The `security` and
+`release-rehearsal` profiles have matching Make targets. `preview` contains
+non-blocking toolchain canaries and is not evidence that required checks pass.
+
+Every executed profile writes `build/assurance/receipt.json`, while test and
+coverage commands write adjacent JUnit and XML coverage artifacts. Runs use a
+fixed seed of `1729` by default; pass `--seed NUMBER` to reproduce another
+recorded run. `--keep-going` records all command outcomes after a failure.
+Use `--receipt PATH` when concurrent jobs need isolated receipts.
+
+If a profile stops early, inspect the receipt's first failed command and run
+that argv directly. Missing ecosystem tools are reported as harness failures;
+install the relevant documented toolchain rather than treating a partial run
+as passing evidence.
+
 ## Usage
 
 ### Quick demos
