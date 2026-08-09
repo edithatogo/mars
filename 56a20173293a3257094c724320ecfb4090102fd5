@@ -1,0 +1,3 @@
+Task: Write failing policy tests for the baseline gaps
+
+Added TDD coverage and a deterministic validator for immutable action pins, job timeouts, merge-group triggers, Codecov configuration/OIDC/XML/blocking behavior, Renovate manager coverage, assurance controls, and non-portable local dependencies. Red phase failed on the missing module; green phase passed 4 tests. Repository baseline intentionally reports 152 violations for later phases.
