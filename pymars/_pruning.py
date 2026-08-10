@@ -146,7 +146,7 @@ class PruningPasser:
         """
         del X_fit_original
         if not basis_subset:
-            empty_matrix = cast("np.ndarray", np.empty((len(y_fit), 0)))
+            empty_matrix = cast("np.ndarray", np.empty((self.n_samples, 0)))
             rss_empty, coeffs_empty, n_valid_rows_for_empty = (
                 self._calculate_rss_and_coeffs(
                     empty_matrix,
