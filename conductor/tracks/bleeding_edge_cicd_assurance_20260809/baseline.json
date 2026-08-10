@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-08-10T18:08:00+10:00",
+  "repository": {
+    "name": "edithatogo/mars",
+    "visibility": "public",
+    "default_branch": "main",
+    "delivery_branch": "chore/cicd-assurance-baseline",
+    "baseline_parent_commit": "cc49f6d6ba48f1fc1b50b7eb6a2ea7679ee93b86"
+  },
+  "local": {
+    "workflow_files": 21,
+    "action_references": 161,
+    "conductor_subrepo_commit": "99ba10e1a11130fc159f681b7ba8803489239cbf",
+    "primary_checkout": {
+      "ahead": 1,
+      "behind": 9,
+      "untracked": [".agents/", "docs/astro-site/.astro/"]
+    }
+  },
+  "hosted": {
+    "actions_enabled": true,
+    "allowed_actions": "all",
+    "sha_pinning_required": false,
+    "default_workflow_permissions": "write",
+    "can_approve_pull_request_reviews": true,
+    "main_protected": false,
+    "ruleset_count": 0,
+    "dependabot_alerts_enabled": true,
+    "dependabot_security_updates_enabled": true,
+    "private_vulnerability_reporting_enabled": true,
+    "renovate_dashboard_issue": 167,
+    "renovate_open_prs": [],
+    "dependabot_open_prs": []
+  },
+  "admission_snapshot": {
+    "pull_request": 179,
+    "check_contexts": {"success": 36, "skipped": 1, "required": 0},
+    "post_merge_commit": "cc49f6d6ba48f1fc1b50b7eb6a2ea7679ee93b86",
+    "post_merge_workflows": {"success": 9, "other": 0},
+    "durations_seconds": {
+      "ci": 337,
+      "code_quality": 238,
+      "security": 210,
+      "bindings_ci": 171,
+      "performance_benchmarks": 113
+    },
+    "python_matrix": ["3.10", "3.11", "3.12"],
+    "operating_systems": ["ubuntu", "macos", "windows"],
+    "codecov_upload": "completed_success_on_ubuntu_python_3.12",
+    "recent_failed_run_ids": [31367834694, 31365846740, 31364683852, 31364683565],
+    "latest_release": {"tag": "v1.0.4", "published_at": "2026-04-17T14:19:21Z"}
+  },
+  "evidence_policy": {
+    "accepted_passing_states": ["completed_success"],
+    "non_passing_states": ["queued", "in_progress", "skipped", "cancelled", "failure"],
+    "lifecycle_states": ["configured", "enabled", "executed", "passing", "deferred", "blocked"]
+  }
+}
