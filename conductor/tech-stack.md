@@ -1,7 +1,8 @@
 # Technology Stack: mars
 
 ## Core Language
-- **Python 3.9+** - Current public package and scikit-learn compatibility layer
+- **Python 3.12-3.14** - Rolling formal support window covering the current stable Python release and its two immediate predecessors; update the bounded `>=3.12,<3.15` contract when a new stable Python release is adopted
+- **Node.js 24** - Stable documentation and TypeScript toolchain, bounded to `<25`; newer Node releases run as non-blocking preview canaries until promoted
 - **Rust 2021** - Shared computational core direction and current portable runtime prototype
 
 ## Dependencies

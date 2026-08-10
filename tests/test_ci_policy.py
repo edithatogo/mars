@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from tools.validate_ci_policy import PolicyViolation, validate_repository
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def _write(path: Path, content: str) -> None:
@@ -84,6 +87,7 @@ jobs:
 
 
 def test_minimal_hardened_repository_passes(tmp_path: Path) -> None:
+    """Accept a repository satisfying the minimum deterministic policy."""
     _minimal_repository(tmp_path)
     assert validate_repository(tmp_path) == []
 
@@ -91,6 +95,7 @@ def test_minimal_hardened_repository_passes(tmp_path: Path) -> None:
 def test_mutable_actions_missing_timeout_and_merge_group_are_rejected(
     tmp_path: Path,
 ) -> None:
+    """Reject mutable actions and missing workflow execution controls."""
     _minimal_repository(tmp_path)
     workflow = tmp_path / ".github" / "workflows" / "ci.yml"
     workflow.write_text(
@@ -108,6 +113,7 @@ def test_mutable_actions_missing_timeout_and_merge_group_are_rejected(
 
 
 def test_codecov_must_be_blocking_oidc_and_generate_xml(tmp_path: Path) -> None:
+    """Require blocking OIDC Codecov uploads backed by XML coverage."""
     _minimal_repository(tmp_path)
     workflow = tmp_path / ".github" / "workflows" / "ci.yml"
     workflow.write_text(
@@ -128,6 +134,7 @@ def test_codecov_must_be_blocking_oidc_and_generate_xml(tmp_path: Path) -> None:
 def test_local_file_dependency_and_incomplete_monorepo_managers_are_rejected(
     tmp_path: Path,
 ) -> None:
+    """Reject local dependencies and incomplete Renovate manager coverage."""
     _minimal_repository(tmp_path)
     package = tmp_path / "docs" / "astro-site" / "package.json"
     package.write_text(

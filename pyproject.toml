@@ -10,11 +10,11 @@ maintainers = [
     {name = "Dylan A Mordaunt", email = "dylan@mordaunt.dev"}
 ]
 license = {text = "Apache-2.0"}
-requires-python = ">=3.10"
+requires-python = ">=3.12,<3.15"
 dependencies = [
-    "numpy>=1.20.0",
-    "scikit-learn>=1.0.0",
-    "matplotlib>=3.4.0",
+    "numpy>=2.5.2",
+    "scikit-learn>=1.9.0",
+    "matplotlib>=3.11.1",
 ]
 keywords = [
     "mars",
@@ -31,9 +31,9 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
@@ -46,54 +46,54 @@ Changelog = "https://github.com/edithatogo/mars/blob/main/CHANGELOG.md"
 "Bug Tracker" = "https://github.com/edithatogo/mars/issues"
 
 [project.optional-dependencies]
-pandas = ["pandas>=1.3.0"]
-cli = ["pandas>=1.3.0", "click>=8.0.0", "rich>=12.0.0"]
-profiling = ["scalene>=1.5.0", "py-spy>=0.3.0"]
+pandas = ["pandas>=3.0.5"]
+cli = ["pandas>=3.0.5", "click>=8.4.2", "rich>=14.3.4"]
+profiling = ["scalene>=2.3.0", "py-spy>=0.4.2"]
 dev = [
     # Package management
-    "uv>=0.11.15",
+    "uv>=0.12.3",
     # Testing
-    "pytest>=7.0.0",
-    "pytest-cov>=4.0.0",
-    "pytest-xdist>=3.0.0",
-    "pytest-benchmark>=4.0.0",
-    "pytest-sugar>=0.9.0",
-    "hypothesis>=6.90.0",
-    "mutmut>=2.4.0",
-    "nbmake>=1.4.0",
-    "diff-cover>=8.0.0",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "pytest-xdist>=3.8.0",
+    "pytest-benchmark>=5.2.3",
+    "pytest-sugar>=1.1.1",
+    "hypothesis>=6.165.2",
+    "mutmut>=3.7.0",
+    "nbmake>=1.5.5",
+    "diff-cover>=10.5.0",
     # Linting & formatting
-    "ruff>=0.4.0",
-    "ty>=0.0.30",
-    "pre-commit>=3.6.0",
+    "ruff>=0.16.2",
+    "ty>=0.0.69",
+    "pre-commit>=4.6.1",
     # Security
-    "bandit>=1.7.10",
-    "pip-audit>=2.9.0",
-    "msgpack>=1.2.0",
-    "click>=8.3.3",
+    "bandit>=1.9.4",
+    "pip-audit>=2.10.1",
+    "msgpack>=1.2.1",
+    "click>=8.4.2",
     "gitpython>=3.1.58",
-    "idna>=3.15",
+    "idna>=3.18",
     "pillow>=12.3.0",
-    "pymdown-extensions>=10.21.3",
-    "tornado>=6.5.7",
+    "pymdown-extensions>=11.0.1",
+    "tornado>=6.5.8",
     "urllib3>=2.7.0",
     # Documentation
-    "mkdocs>=1.5.0",
-    "mkdocs-material>=9.5.0",
-    "mkdocstrings[python]>=0.24.0",
-    "mike>=2.0.0",
+    "mkdocs>=1.6.1",
+    "mkdocs-material>=9.7.7",
+    "mkdocstrings[python]>=1.0.6",
+    "mike>=2.2.0",
     # Release
-    "python-semantic-release>=9.0.0",
+    "python-semantic-release>=10.6.1",
     # Other
-    "pandas>=1.3.0",
-    "tox>=4.11.0",
+    "pandas>=3.0.5",
+    "tox>=4.58.0",
 ]
 
 [project.scripts]
 mars = "pymars.cli:main"
 
 [build-system]
-requires = ["maturin>=1.8.0"]
+requires = ["maturin>=1.14.1"]
 build-backend = "maturin"
 
 [tool.maturin]
@@ -113,7 +113,7 @@ version = {attr = "pymars.__version__"}
 # ============================================================
 [tool.ruff]
 line-length = 88
-target-version = "py39"
+target-version = "py312"
 src = ["pymars", "tests"]
 
 [tool.ruff.lint]
@@ -229,7 +229,7 @@ line-ending = "auto"
 # ty configuration (strict mode)
 # ============================================================
 [tool.ty.environment]
-python-version = "3.9"
+python-version = "3.12"
 root = ["."]
 
 # ============================================================

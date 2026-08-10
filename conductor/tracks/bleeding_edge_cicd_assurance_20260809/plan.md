@@ -33,7 +33,7 @@
 
 ## Phase 2: Workflow Supply-Chain Hardening
 
-- [ ] Task: Move every governed dependency surface to the latest stable release
+- [~] Task: Move every governed dependency surface to the latest stable release
   - [ ] Inventory Python/uv, Rust/Cargo, Node/pnpm, Go, Julia, R, NuGet, devcontainer, Git submodule, and GitHub Actions dependencies against current registries.
   - [ ] Upgrade direct requirements, runtime and toolchain floors, build backends, lockfiles, and action majors without retaining obsolete compatibility pins.
   - [ ] Resolve breaking API, packaging, compiler, and workflow changes introduced by the upgrades rather than suppressing the updates.

@@ -14,7 +14,7 @@ class MarsEarth(PythonPackage):
         sha256="0755aa79c879e06bb83d5e2811435c20e4f81623e1ddd8451b528cd8fe6d7972",
     )
 
-    depends_on("python@3.9:", type=("build", "run"))
+    depends_on("python@3.12:3.14", type=("build", "run"))
     depends_on("py-numpy", type=("build", "run"))
     depends_on("py-scipy", type=("build", "run"))
     depends_on("py-scikit-learn", type=("build", "run"))

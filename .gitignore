@@ -123,6 +123,7 @@ bindings/julia/Manifest.toml
 
 # Node package outputs
 **/node_modules/
+**/.astro/
 **/*.tgz
 
 # R package build outputs

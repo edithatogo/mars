@@ -132,6 +132,12 @@ reviewable tests before it can affect a required gate.
 
 ## Non-Functional Requirements
 
+- Formally support a rolling three-version Python window consisting of the
+  current stable release and its two immediate predecessors (3.12-3.14 for
+  this track), with bounded package metadata and matching CI coverage.
+- Use Node.js 24 for stable documentation and TypeScript gates, bound the
+  package contract below Node 25, and exercise newer Node releases only as
+  non-blocking preview canaries until compatibility is demonstrated.
 - Preserve public APIs and package behavior.
 - Prefer deterministic, locked, non-interactive commands.
 - Keep required pull-request feedback fast through path-aware and tiered checks.

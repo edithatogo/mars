@@ -8,7 +8,6 @@ import re
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
-
 SHA_PIN = re.compile(r"uses:\s+([^\s#]+)@([^\s#]+)")
 FULL_SHA = re.compile(r"^[0-9a-f]{40}$")
 LOCAL_SPECIFIER = re.compile(r"^(?:file:|link:|/|[A-Za-z]:[\\/])")
@@ -146,7 +145,6 @@ def _renovate_violations(root: Path) -> list[PolicyViolation]:
 
 def validate_repository(root: Path) -> list[PolicyViolation]:
     """Return all deterministic policy violations below *root*."""
-
     resolved = root.resolve()
     controls = resolved / ".github" / "assurance-controls.json"
     violations: list[PolicyViolation] = []
@@ -166,7 +164,6 @@ def validate_repository(root: Path) -> list[PolicyViolation]:
 
 def main() -> int:
     """Run policy validation and return non-zero when violations exist."""
-
     parser = argparse.ArgumentParser()
     parser.add_argument("root", nargs="?", default=".")
     parser.add_argument("--json", action="store_true", dest="as_json")

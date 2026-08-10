@@ -20,13 +20,13 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ['3.10', '3.11', '3.12']
+        python-version: ['3.12', '3.13', '3.14']
         exclude:
           # Reduce matrix size: only test all Python versions on Ubuntu
           - os: macos-latest
-            python-version: '3.10'
+            python-version: '3.12'
           - os: windows-latest
-            python-version: '3.10'
+            python-version: '3.12'
 
     steps:
       - uses: actions/checkout@v6
@@ -48,7 +48,7 @@ jobs:
           uv run pytest tests/ -q --tb=short -x --cov-fail-under=90
 
       - name: Upload coverage to Codecov
-        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.14'
         uses: codecov/codecov-action@v5
         with:
           files: ./coverage.xml
