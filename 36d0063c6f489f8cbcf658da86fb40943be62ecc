@@ -1,0 +1,1 @@
+Conductor task: Establish the implementation baseline. Evidence refreshed from authenticated GitHub API and verified post-merge runs on 2026-08-10 AEST. Validation: JSON parse, git diff --check, hosted workflows for cc49f6d all successful.
