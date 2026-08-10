@@ -153,13 +153,6 @@ class ForwardPasser:
             B_matrix[:, idx] = bf.transform(X_processed, missing_mask)
         return cast("np.ndarray", B_matrix)
 
-    def _get_effective_n_samples(self) -> float:
-        return (
-            self.effective_n_samples
-            if self.effective_n_samples > 0
-            else float(self.n_samples)
-        )
-
     def run(
         self,
         X_fit_processed: np.ndarray,
@@ -181,12 +174,14 @@ class ForwardPasser:
         self.y_train = self.y_train.ravel()
 
         self.n_samples, self.n_features = self.X_train.shape
-        self.effective_n_samples = (
+        effective_n_samples = (
             float(np.sum(self.sample_weight))
             if self.sample_weight is not None
             else float(self.n_samples)
         )
-        effective_n_samples = self._get_effective_n_samples()
+        self.effective_n_samples = (
+            effective_n_samples if effective_n_samples > 0 else float(self.n_samples)
+        )
 
         intercept_bf = ConstantBasisFunction()
         self.current_basis_functions = [intercept_bf]
@@ -220,7 +215,7 @@ class ForwardPasser:
         max_terms_for_loop = self.model.max_terms
         if max_terms_for_loop is None:
             max_terms_for_loop = min(
-                max(1, int(np.floor(effective_n_samples)) - 1),
+                max(1, int(np.floor(self.effective_n_samples)) - 1),
                 max(21, 2 * self.n_features + 1),
             )
 
@@ -256,7 +251,7 @@ class ForwardPasser:
                 self.current_basis_functions
             )
 
-            num_valid_rows_for_gcv_calc = effective_n_samples  # Default
+            num_valid_rows_for_gcv_calc = self.effective_n_samples  # Default
             if self._best_new_B_matrix is not None:
                 best_cand_valid_rows_mask = ~np.any(
                     np.isnan(self._best_new_B_matrix), axis=1
@@ -351,11 +346,11 @@ class ForwardPasser:
                 num_terms_intercept,
                 num_hinge_terms_intercept,
                 self.model.penalty,
-                self._get_effective_n_samples(),
+                self.effective_n_samples,
             )
             gcv_intercept = calculate_gcv(
                 rss_intercept_only,
-                self._get_effective_n_samples(),
+                self.effective_n_samples,
                 effective_params_intercept,
             )
             return gcv_intercept, cast("np.ndarray", np.array([intercept]))
@@ -436,7 +431,7 @@ class ForwardPasser:
             if positive_weight_mask is not None:
                 p_parent_active &= positive_weight_mask
             count_parent_nonzero_for_minspan = (
-                self._get_effective_n_samples()
+                self.effective_n_samples
                 if self.sample_weight is not None
                 else float(self.n_samples)
             )
@@ -638,7 +633,7 @@ class ForwardPasser:
         max_terms_for_loop = self.model.max_terms
         if max_terms_for_loop is None:
             max_terms_for_loop = min(
-                max(1, int(np.floor(self._get_effective_n_samples())) - 1),
+                max(1, int(np.floor(self.effective_n_samples)) - 1),
                 max(21, 2 * self.n_features + 1),
             )
 
@@ -658,7 +653,7 @@ class ForwardPasser:
             if B_candidate.shape[1] == 0:
                 continue
             # Use n_samples (from processed X) for this check, num_valid_rows from _calc_rss_... will handle actual fit data size
-            if B_candidate.shape[1] >= self._get_effective_n_samples():
+            if B_candidate.shape[1] >= self.effective_n_samples:
                 continue
 
             drop_nans = True

@@ -122,6 +122,24 @@ def test_initial_model_setup_in_run(simple_data):
     assert len(bfs) == 1
     assert isinstance(bfs[0], ConstantBasisFunction)
     assert np.isclose(coeffs[0], np.mean(y))
+    assert passer.effective_n_samples == float(X.shape[0])
+
+
+def test_run_caches_weighted_effective_sample_count(simple_data):
+    """Cache the effective sample count once from the supplied weights."""
+    X, y = simple_data
+    sample_weight = np.array([1.0, 1.0, 2.0, 3.0, 5.0])
+    passer = ForwardPasser(MockEarth(max_degree=1, max_terms=1))
+
+    passer.run(
+        X_fit_processed=X,
+        y_fit=y,
+        missing_mask=np.zeros_like(X, dtype=bool),
+        X_fit_original=X,
+        sample_weight=sample_weight,
+    )
+
+    assert passer.effective_n_samples == float(np.sum(sample_weight))
 
 
 def test_build_basis_matrix(simple_data):
