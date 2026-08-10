@@ -1,6 +1,6 @@
 # Implementation Plan: GitHub Notification Hygiene and External-Human Signalling
 
-## Phase 1: Evidence, contracts, and architecture
+## Phase 1: Evidence, contracts, and architecture [checkpoint: 87538a1]
 
 - [x] Task: Inventory standards and current automation (4a7bf8f)
   - [x] Inspect relevant `edithatogo` standards and templates read-only.
@@ -17,9 +17,9 @@
     Scheduler.
   - [x] Document rejection of repository-hosted personal-token automation.
   - [x] Record dependency ordering and explicit track state/lock conventions.
-- [~] Task: Automated Phase Verification & Checkpoint
-  - [ ] Run documentation, schema, policy, link, and security checks.
-  - [ ] Run `conductor-review`, automatically remediate findings, rerun gates,
+- [x] Task: Automated Phase Verification & Checkpoint (87538a1)
+  - [x] Run documentation, schema, policy, link, and security checks.
+  - [x] Run `conductor-review`, automatically remediate findings, rerun gates,
     and record the checkpoint according to `conductor/workflow.md`.
 - [x] Task: Review fix: normalize notification policy test imports (4cba7db)
 
