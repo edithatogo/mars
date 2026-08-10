@@ -18,8 +18,7 @@
       "matchUpdateTypes": ["minor", "patch"],
       "matchCurrentVersion": "!/^0/",
       "automerge": true,
-      "automergeType": "pr",
-      "requiredStatusChecks": ["ci", "code-quality", "security"]
+      "automergeType": "pr"
     },
     {
       "matchUpdateTypes": ["major"],
@@ -28,7 +27,10 @@
     },
     {
       "groupName": "pytest ecosystem",
-      "matchPackagePrefixes": ["pytest", "pytest-"]
+      "matchPackageNames": [
+        "pytest{/,}**",
+        "pytest-{/,}**"
+      ]
     },
     {
       "groupName": "ruff ecosystem",
