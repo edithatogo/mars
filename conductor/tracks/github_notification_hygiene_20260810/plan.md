@@ -2,7 +2,7 @@
 
 ## Phase 1: Evidence, contracts, and architecture
 
-- [ ] Task: Inventory standards and current automation
+- [~] Task: Inventory standards and current automation
   - [ ] Inspect relevant `edithatogo` standards and templates read-only.
   - [ ] Inspect Mars automation, security policies, and scripting conventions.
   - [ ] Pin current GitHub notification contracts, permissions, pagination, and
