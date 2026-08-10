@@ -1,0 +1,5 @@
+Hosted CI feedback fix: align Go consumers with module floor.
+
+Updated setup-go inputs and the clean consumer fixture from Go 1.22 to 1.26.5 across binding CI, binding publication, and release rehearsal. Added deterministic CI policy validation that derives the governed version from root go.mod and rejects stale workflow or embedded module declarations.
+
+Evidence: reproduced PR #175 Go failure from job 93370664569; policy test failed before implementation; tests/test_ci_policy.py passed 5/5 after implementation; Ruff 0.16.2 passed; git diff check passed.
