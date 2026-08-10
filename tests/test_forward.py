@@ -823,7 +823,7 @@ def test_run_adds_linear_interaction_term():
             break
         if (
             bf.degree() == 2
-            and isinstance(bf, (LinearBasisFunction, HingeBasisFunction))
+            and isinstance(bf, LinearBasisFunction | HingeBasisFunction)
             and bf.parent1
             and not bf.parent1.is_constant()
         ):

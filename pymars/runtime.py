@@ -729,7 +729,7 @@ def _spec_is_rust_runtime_compatible(spec: dict[str, Any]) -> bool:
             return False
         if kind == "categorical":
             category = term.get("category")
-            if not isinstance(category, (int, float, bool)):
+            if not isinstance(category, int | float | bool):
                 return False
 
     return True

@@ -61,7 +61,7 @@ def test_earth_fitting_property(draw):
 
     # Score should be a float
     score = model.score(X, y)
-    assert isinstance(score, (int, float, np.floating))
+    assert isinstance(score, int | float | np.floating)
     assert np.isfinite(score)
 
 

@@ -145,7 +145,7 @@ def test_earth_score_performance(benchmark):
         return model.score(X_train, y_train)
 
     score = benchmark(score_model)
-    assert isinstance(score, (int, float))
+    assert isinstance(score, int | float)
 
 
 @pytest.mark.parametrize("n_features", [2, 5, 10])
