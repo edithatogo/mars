@@ -7,6 +7,7 @@
 - [Notification Contract](./contract.md)
 - [Machine-Readable Contracts](./contracts/)
 - [Architecture](./architecture.md)
+- [Phase 1 Review](./phase-1-review.md)
 
 ## GitHub governance
 
