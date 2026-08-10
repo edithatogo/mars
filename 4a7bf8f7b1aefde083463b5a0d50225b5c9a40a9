@@ -1,0 +1,4 @@
+Task: Inventory standards and current automation
+Summary: Recorded current GitHub notification API constraints, relevant edithatogo repository standards/templates, Mars automation context, and the third-party write boundary.
+Files: conductor/tracks/github_notification_hygiene_20260810/evidence.md; conductor/tracks/github_notification_hygiene_20260810/index.md
+Why: Actor-aware fail-open filtering requires pinned primary evidence before contract or runtime implementation.
