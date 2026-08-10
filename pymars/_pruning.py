@@ -285,12 +285,13 @@ class PruningPasser:
                 tuple[float, float, np.ndarray | None, int]
             ] = []
 
-            for i in range(len(active_bfs_for_loop)):
+            active_bfs_len = len(active_bfs_for_loop)
+            for i in range(active_bfs_len):
                 bf_to_test_removal = active_bfs_for_loop[i]
 
                 if (
                     isinstance(bf_to_test_removal, ConstantBasisFunction)
-                    and len(active_bfs_for_loop) == min_allowable_terms
+                    and active_bfs_len == min_allowable_terms
                 ):
                     gcv_for_removal_candidates.append(
                         (float(np.inf), float(np.inf), None, i)

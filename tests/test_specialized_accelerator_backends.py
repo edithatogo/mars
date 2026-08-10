@@ -37,7 +37,9 @@ def test_specialized_backend_factories_report_expected_targets(monkeypatch) -> N
 
 def test_specialized_backends_fall_back_when_modules_missing(monkeypatch) -> None:
     """Specialized backends should report unavailable when marker modules are absent."""
-    monkeypatch.setattr(specialized_backends.importlib.util, "find_spec", lambda _module_name: None)
+    monkeypatch.setattr(
+        specialized_backends.importlib.util, "find_spec", lambda _module_name: None
+    )
 
     assert make_tpu_backend().is_available() is False
     assert make_fpga_backend().is_available() is False

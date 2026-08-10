@@ -1,0 +1,1 @@
+💡 **What:** Caching the length of `active_bfs_for_loop` outside of the inner for-loop in `PruningPasser.run`.
