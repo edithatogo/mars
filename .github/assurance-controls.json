@@ -1,0 +1,96 @@
+{
+  "$schema": "./assurance-controls.schema.json",
+  "schemaVersion": 1,
+  "soloMaintainer": {
+    "requiredHumanApprovals": 0,
+    "requiredTeams": false,
+    "requiredCodeOwners": false
+  },
+  "lifecycleStates": ["configured", "enabled", "executed", "passing", "deferred", "blocked"],
+  "controls": [
+    {
+      "id": "workflow-policy",
+      "title": "Workflow syntax and security policy",
+      "tier": "pull-request",
+      "trigger": ["pull_request", "merge_group"],
+      "commands": ["actionlint", "zizmor", "python tools/validate_ci_policy.py"],
+      "workflows": ["Code Quality", "Security"],
+      "evidence": ["JUnit report", "SARIF report", "CI job summary"],
+      "failurePolicy": "block-merge",
+      "remediation": "Fix policy or workflow findings and rerun the failed check.",
+      "state": "configured"
+    },
+    {
+      "id": "python-quality",
+      "title": "Python quality, compatibility, and coverage",
+      "tier": "pull-request",
+      "trigger": ["pull_request", "merge_group"],
+      "commands": ["uv lock --check", "ruff check .", "ty check", "pytest"],
+      "workflows": ["CI", "Code Quality"],
+      "evidence": ["coverage.xml", "JUnit report", "CI job summary"],
+      "failurePolicy": "block-merge",
+      "remediation": "Reproduce with the locked Python environment, correct the defect, and rerun the affected matrix.",
+      "state": "configured"
+    },
+    {
+      "id": "rust-quality",
+      "title": "Rust quality, compatibility, and dependency policy",
+      "tier": "pull-request",
+      "trigger": ["pull_request", "merge_group"],
+      "commands": ["cargo fmt --check", "cargo clippy", "cargo nextest run", "cargo deny check"],
+      "workflows": ["Bindings CI", "Code Quality", "Security"],
+      "evidence": ["nextest report", "cargo-deny log", "CI job summary"],
+      "failurePolicy": "block-merge",
+      "remediation": "Reproduce with the pinned Rust toolchain, resolve the finding, and rerun all Rust gates.",
+      "state": "configured"
+    },
+    {
+      "id": "binding-conformance",
+      "title": "Cross-language binding conformance",
+      "tier": "pull-request",
+      "trigger": ["pull_request", "merge_group"],
+      "commands": ["pytest tests/test_binding_conformance.py"],
+      "workflows": ["Bindings CI"],
+      "evidence": ["binding test artifacts", "CI job summary"],
+      "failurePolicy": "block-merge",
+      "remediation": "Add a deterministic cross-language reproducer, align the binding, and rerun conformance.",
+      "state": "configured"
+    },
+    {
+      "id": "deep-assurance",
+      "title": "Mutation, fuzzing, sanitizer, compatibility, and performance assurance",
+      "tier": "scheduled",
+      "trigger": ["schedule", "workflow_dispatch"],
+      "commands": ["mutation tests", "fuzz tests", "Miri", "sanitizers", "benchmarks"],
+      "workflows": ["Deep Assurance", "Performance Benchmarks"],
+      "evidence": ["scheduled workflow receipts", "retained reports"],
+      "failurePolicy": "surface",
+      "remediation": "Triage the retained reproducer, open a bounded issue or fix PR, and promote only deterministic failures to gates.",
+      "state": "configured"
+    },
+    {
+      "id": "release-integrity",
+      "title": "Trusted publishing, SBOM, provenance, and verification",
+      "tier": "release",
+      "trigger": ["release", "workflow_dispatch"],
+      "commands": ["OIDC publishing", "SBOM generation", "artifact attestations", "attestation verification"],
+      "workflows": ["Release"],
+      "evidence": ["artifact digests", "SBOM", "attestation bundle", "registry receipt"],
+      "failurePolicy": "block-release",
+      "remediation": "Stop publication, repair provenance or packaging, rebuild from the tagged commit, and reverify artifacts.",
+      "state": "configured"
+    },
+    {
+      "id": "emerging-canaries",
+      "title": "Emerging runner, runtime, toolchain, and agentic canaries",
+      "tier": "preview",
+      "trigger": ["schedule", "workflow_dispatch"],
+      "commands": ["ARM64", "Ubuntu 26.04", "free-threaded Python", "Rust nightly", "guarded agentic diagnostics"],
+      "workflows": ["Emerging Canaries"],
+      "evidence": ["canary workflow receipts", "promotion decision record"],
+      "failurePolicy": "observe",
+      "remediation": "Record the result, require a deterministic reproducer, and explicitly decide whether to defer or promote it.",
+      "state": "configured"
+    }
+  ]
+}
