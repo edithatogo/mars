@@ -4,6 +4,8 @@
 - [Implementation Plan](./plan.md)
 - [Metadata](./metadata.json)
 - [Evidence Baseline](./evidence.md)
+- [Notification Contract](./contract.md)
+- [Machine-Readable Contracts](./contracts/)
 
 ## GitHub governance
 
