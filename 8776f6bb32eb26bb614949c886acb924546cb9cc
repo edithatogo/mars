@@ -1,0 +1,1 @@
+Conductor task: Write failing policy tests for the baseline gaps. Covers action SHA pinning, permissions, timeouts, concurrency, artifact retention, merge_group, and assurance control declarations; also protects Codecov and Renovate policy. Validation: 6 focused tests passed; Ruff check and format passed; repository validator exited 1 with expected baseline findings.
