@@ -187,3 +187,8 @@ The remaining-track dependency gates are summarized in
 
 - [~] **Track: Modernize CI/CD with bleeding-edge solo-maintainer assurance**
   *Link: [./tracks/bleeding_edge_cicd_assurance_20260809/index.md](./tracks/bleeding_edge_cicd_assurance_20260809/index.md)*
+
+---
+
+- [ ] **Track: Automate GitHub notification hygiene while preserving external-human signalling**
+  *Link: [./tracks/github_notification_hygiene_20260810/index.md](./tracks/github_notification_hygiene_20260810/index.md)*
