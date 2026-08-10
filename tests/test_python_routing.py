@@ -433,3 +433,31 @@ def test_earth_predict_uses_rust_backend_when_available(monkeypatch) -> None:
 
     assert np.allclose(predicted, y)
     assert len(calls) == 1
+
+
+def test_predict_with_rust_error_path(monkeypatch) -> None:
+    """Test that _predict_with_rust returns None on coercion errors."""
+    spec = {"dummy": "spec"}
+
+    # Mock dependencies to pass initial checks
+    monkeypatch.setattr(runtime, "_spec_is_rust_runtime_compatible", lambda _spec: True)
+    monkeypatch.setattr(runtime, "_should_use_rust_backend", lambda: True)
+    monkeypatch.setattr(runtime, "_rust_backend_supports", lambda _method: True)
+
+    # Mock _coerce_rows_for_rust to raise ValueError
+    def mock_coerce(*args, **kwargs):
+        raise ValueError("Simulated ValueError during coercion")
+
+    monkeypatch.setattr(runtime, "_coerce_rows_for_rust", mock_coerce)
+
+    # Should catch the ValueError and return None
+    assert runtime._predict_with_rust(spec, [[1, 2]]) is None
+
+    # Mock _coerce_rows_for_rust to raise TypeError
+    def mock_coerce_type_error(*args, **kwargs):
+        raise TypeError("Simulated TypeError during coercion")
+
+    monkeypatch.setattr(runtime, "_coerce_rows_for_rust", mock_coerce_type_error)
+
+    # Should catch the TypeError and return None
+    assert runtime._predict_with_rust(spec, [[1, 2]]) is None
