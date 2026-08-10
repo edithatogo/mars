@@ -29,4 +29,3 @@ as TPU, FPGA, and ASIC where the shared H3 contract can be honored.
 - GPU-family backends.
 - Distributed execution.
 - Unbounded vendor-specific optimizations.
-
