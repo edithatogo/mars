@@ -11,8 +11,8 @@
   - [x] Map each control to its command, workflow, trigger, evidence, failure policy, and remediation.
   - [x] Define solo-maintainer rules with automated checks and zero required reviewers.
   - [x] Define configured, enabled, executed, passing, deferred, and blocked states.
-- [ ] Task: Write failing policy tests for the baseline gaps
-  - [ ] Test action pinning, permissions, timeouts, concurrency, retention, merge-group coverage, and control declarations.
+- [x] Task: Write failing policy tests for the baseline gaps (8776f6b)
+  - [x] Test action pinning, permissions, timeouts, concurrency, retention, merge-group coverage, and control declarations.
 - [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 0: Baseline, Isolation, and Control Architecture' (Protocol in workflow.md)
 
 ## Phase 1: Canonical Local Harness and Context
