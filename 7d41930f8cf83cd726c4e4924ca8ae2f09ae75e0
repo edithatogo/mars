@@ -1,0 +1,1 @@
+Formatted the CI policy validator and tests with Ruff 0.16.2 after hosted pre-commit identified formatter drift. Evidence: Ruff check passed; Ruff format check passed for 71 files; focused policy and assurance tests passed 8/8.
