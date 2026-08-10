@@ -12,11 +12,11 @@
   - [x] Define typed input, classification, decision, and audit schemas.
   - [x] Define actor classes, reason classes, precedence, and stable rule IDs.
   - [x] Define fail-open, privacy, approved-host, and retention invariants.
-- [~] Task: Record architecture before implementation
-  - [ ] Document Python 3.12-3.14, GitHub CLI transport, and Windows Task
+- [x] Task: Record architecture before implementation (3259d8e)
+  - [x] Document Python 3.12-3.14, GitHub CLI transport, and Windows Task
     Scheduler.
-  - [ ] Document rejection of repository-hosted personal-token automation.
-  - [ ] Record dependency ordering and explicit track state/lock conventions.
+  - [x] Document rejection of repository-hosted personal-token automation.
+  - [x] Record dependency ordering and explicit track state/lock conventions.
 - [ ] Task: Automated Phase Verification & Checkpoint
   - [ ] Run documentation, schema, policy, link, and security checks.
   - [ ] Run `conductor-review`, automatically remediate findings, rerun gates,
