@@ -109,7 +109,11 @@ def test_mutable_actions_missing_timeout_and_merge_group_are_rejected(
         encoding="utf-8",
     )
     codes = {violation.code for violation in validate_repository(tmp_path)}
-    assert {"action-not-sha-pinned", "job-timeout-missing", "merge-group-missing"} <= codes
+    assert {
+        "action-not-sha-pinned",
+        "job-timeout-missing",
+        "merge-group-missing",
+    } <= codes
 
 
 def test_codecov_must_be_blocking_oidc_and_generate_xml(tmp_path: Path) -> None:
@@ -119,8 +123,13 @@ def test_codecov_must_be_blocking_oidc_and_generate_xml(tmp_path: Path) -> None:
     workflow.write_text(
         workflow.read_text(encoding="utf-8")
         .replace(" --cov-report=xml:coverage.xml", "")
-        .replace("          fail_ci_if_error: true\n", "          fail_ci_if_error: false\n")
-        .replace("          use_oidc: true\n", "          token: ${{ secrets.CODECOV_TOKEN }}\n"),
+        .replace(
+            "          fail_ci_if_error: true\n", "          fail_ci_if_error: false\n"
+        )
+        .replace(
+            "          use_oidc: true\n",
+            "          token: ${{ secrets.CODECOV_TOKEN }}\n",
+        ),
         encoding="utf-8",
     )
     codes = {violation.code for violation in validate_repository(tmp_path)}
@@ -146,11 +155,14 @@ def test_local_file_dependency_and_incomplete_monorepo_managers_are_rejected(
     config["enabledManagers"] = ["npm"]
     renovate.write_text(json.dumps(config), encoding="utf-8")
     violations = validate_repository(tmp_path)
-    assert PolicyViolation(
-        code="nonportable-local-dependency",
-        path="docs/astro-site/package.json",
-        message="Dependency local-package uses non-portable specifier file:/Users/example/pkg",
-    ) in violations
+    assert (
+        PolicyViolation(
+            code="nonportable-local-dependency",
+            path="docs/astro-site/package.json",
+            message="Dependency local-package uses non-portable specifier file:/Users/example/pkg",
+        )
+        in violations
+    )
     assert "renovate-manager-coverage" in {item.code for item in violations}
 
 
