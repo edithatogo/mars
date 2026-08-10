@@ -5,6 +5,7 @@ from __future__ import annotations
 import sys
 
 import numpy as np
+import pytest
 
 from pymars import (
     CLUSTER_CHUNK_SIZE_ENV_VAR,
@@ -25,6 +26,7 @@ from pymars import (
     predict_cluster,
     select_cluster_backend,
 )
+from pymars.cluster import _worker_result_list
 
 
 def test_cluster_backend_defaults_to_cpu_cluster(monkeypatch) -> None:
@@ -264,3 +266,21 @@ def test_command_backed_multi_node_design_matrix_matches_cpu_replay() -> None:
     expected = runtime.design_matrix(spec, probe)
 
     assert np.allclose(actual, expected)
+
+
+def test_worker_result_list_returns_valid_result() -> None:
+    """Valid worker results should pass through unchanged."""
+    result = [1, 2, 3]
+
+    assert _worker_result_list({"result": result}) is result
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [{}, {"result": None}, {"result": "not a list"}],
+    ids=["missing", "none", "wrong-type"],
+)
+def test_worker_result_list_rejects_invalid_result(payload: dict[str, object]) -> None:
+    """Missing and non-list worker results should raise a typed error."""
+    with pytest.raises(TypeError, match=r"Worker output must contain a list result\."):
+        _worker_result_list(payload)
