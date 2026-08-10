@@ -8,6 +8,7 @@ import os
 import sys
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from contextlib import contextmanager
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Callable, cast
 
@@ -22,6 +23,15 @@ from ._model_spec import (
 )
 from ._util import calculate_gcv, gcv_penalty_cost_effective_parameters
 from .earth import Earth
+
+_WORKER_MODEL_CACHE_SIZE = 8
+
+
+@lru_cache(maxsize=_WORKER_MODEL_CACHE_SIZE)
+def _get_cached_worker_model(spec_json: str) -> Earth:
+    """Load each recent model spec once per worker process."""
+    return load_model(spec_from_json(spec_json))
+
 
 logger = logging.getLogger(__name__)
 
@@ -162,7 +172,7 @@ def _process_cluster_map(
 
 def _predict_cpu_cluster_chunk(spec_json: str, batch: list[list[float]]) -> list[float]:
     """Predict a batch in a process worker using the portable Python model."""
-    model = load_model(spec_from_json(spec_json))
+    model = _get_cached_worker_model(spec_json)
     return cast("list[float]", model.predict(np.asarray(batch)).tolist())
 
 
@@ -170,7 +180,7 @@ def _design_matrix_cpu_cluster_chunk(
     spec_json: str, batch: list[list[float]]
 ) -> list[list[float]]:
     """Build a design matrix batch in a process worker using the portable model."""
-    model = load_model(spec_from_json(spec_json))
+    model = _get_cached_worker_model(spec_json)
     X_processed, missing_mask = model._prepare_prediction_data(
         np.asarray(batch, dtype=float)
     )
