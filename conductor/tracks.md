@@ -190,5 +190,5 @@ The remaining-track dependency gates are summarized in
 
 ---
 
-- [ ] **Track: Automate GitHub notification hygiene while preserving external-human signalling**
+- [~] **Track: Automate GitHub notification hygiene while preserving external-human signalling**
   *Link: [./tracks/github_notification_hygiene_20260810/index.md](./tracks/github_notification_hygiene_20260810/index.md)*

@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/edithatogo/mars/contracts/notification-hygiene/decision-1.0.0.schema.json",
+  "title": "GitHub notification classification decision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "notification_id",
+    "actor_class",
+    "confidence",
+    "action",
+    "rule_id",
+    "evidence"
+  ],
+  "$defs": {
+    "actor_class": {
+      "enum": [
+        "external_human",
+        "self",
+        "bot",
+        "app",
+        "workflow",
+        "release_automation",
+        "unknown"
+      ]
+    }
+  },
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "notification_id": {"type": "string", "minLength": 1},
+    "actor_class": {"$ref": "#/$defs/actor_class"},
+    "confidence": {"enum": ["positive", "unknown"]},
+    "action": {"enum": ["preserve_unread", "mark_read"]},
+    "rule_id": {"type": "string", "pattern": "^NH-[0-9]{3}$"},
+    "evidence": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "minItems": 1,
+      "uniqueItems": true
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "actor_class": {"enum": ["external_human", "unknown"]}
+        },
+        "required": ["actor_class"]
+      },
+      "then": {
+        "properties": {"action": {"const": "preserve_unread"}}
+      }
+    },
+    {
+      "if": {
+        "properties": {"confidence": {"const": "unknown"}},
+        "required": ["confidence"]
+      },
+      "then": {
+        "properties": {"action": {"const": "preserve_unread"}}
+      }
+    }
+  ]
+}

@@ -3,6 +3,11 @@
 - [Specification](./spec.md)
 - [Implementation Plan](./plan.md)
 - [Metadata](./metadata.json)
+- [Evidence Baseline](./evidence.md)
+- [Notification Contract](./contract.md)
+- [Machine-Readable Contracts](./contracts/)
+- [Architecture](./architecture.md)
+- [Phase 1 Review](./phase-1-review.md)
 
 ## GitHub governance
 

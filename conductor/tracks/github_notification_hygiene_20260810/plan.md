@@ -1,26 +1,27 @@
 # Implementation Plan: GitHub Notification Hygiene and External-Human Signalling
 
-## Phase 1: Evidence, contracts, and architecture
+## Phase 1: Evidence, contracts, and architecture [checkpoint: 87538a1]
 
-- [ ] Task: Inventory standards and current automation
-  - [ ] Inspect relevant `edithatogo` standards and templates read-only.
-  - [ ] Inspect Mars automation, security policies, and scripting conventions.
-  - [ ] Pin current GitHub notification contracts, permissions, pagination, and
+- [x] Task: Inventory standards and current automation (4a7bf8f)
+  - [x] Inspect relevant `edithatogo` standards and templates read-only.
+  - [x] Inspect Mars automation, security policies, and scripting conventions.
+  - [x] Pin current GitHub notification contracts, permissions, pagination, and
     rate-limit behavior from primary documentation.
-  - [ ] Confirm no third-party repository writes are required.
-- [ ] Task: Define versioned notification and decision contracts
-  - [ ] Define typed input, classification, decision, and audit schemas.
-  - [ ] Define actor classes, reason classes, precedence, and stable rule IDs.
-  - [ ] Define fail-open, privacy, approved-host, and retention invariants.
-- [ ] Task: Record architecture before implementation
-  - [ ] Document Python 3.12-3.14, GitHub CLI transport, and Windows Task
+  - [x] Confirm no third-party repository writes are required.
+- [x] Task: Define versioned notification and decision contracts (5096606)
+  - [x] Define typed input, classification, decision, and audit schemas.
+  - [x] Define actor classes, reason classes, precedence, and stable rule IDs.
+  - [x] Define fail-open, privacy, approved-host, and retention invariants.
+- [x] Task: Record architecture before implementation (3259d8e)
+  - [x] Document Python 3.12-3.14, GitHub CLI transport, and Windows Task
     Scheduler.
-  - [ ] Document rejection of repository-hosted personal-token automation.
-  - [ ] Record dependency ordering and explicit track state/lock conventions.
-- [ ] Task: Automated Phase Verification & Checkpoint
-  - [ ] Run documentation, schema, policy, link, and security checks.
-  - [ ] Run `conductor-review`, automatically remediate findings, rerun gates,
+  - [x] Document rejection of repository-hosted personal-token automation.
+  - [x] Record dependency ordering and explicit track state/lock conventions.
+- [x] Task: Automated Phase Verification & Checkpoint (87538a1)
+  - [x] Run documentation, schema, policy, link, and security checks.
+  - [x] Run `conductor-review`, automatically remediate findings, rerun gates,
     and record the checkpoint according to `conductor/workflow.md`.
+- [x] Task: Review fix: normalize notification policy test imports (4cba7db)
 
 ## Phase 2: Test harness and deterministic fixtures
 
