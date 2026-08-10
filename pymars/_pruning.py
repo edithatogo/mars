@@ -306,9 +306,9 @@ class PruningPasser:
                     )
                     continue
 
-                temp_basis_subset = [
-                    bf for j, bf in enumerate(active_bfs_for_loop) if j != i
-                ]
+                temp_basis_subset = (
+                    active_bfs_for_loop[:i] + active_bfs_for_loop[i + 1 :]
+                )
 
                 if not temp_basis_subset and min_allowable_terms > 0:
                     gcv_for_removal_candidates.append(
