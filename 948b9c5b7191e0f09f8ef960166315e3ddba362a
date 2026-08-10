@@ -1,0 +1,1 @@
+Phase 0 review fix: raise validator coverage above the 90% repository gate and scope concurrency and artifact-retention parsing to their actual YAML blocks. Validation: 8 tests passed; 90.74% validator coverage; Ruff check and format passed.
