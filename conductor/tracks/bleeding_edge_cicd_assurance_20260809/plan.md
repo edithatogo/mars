@@ -20,9 +20,9 @@
 
 ## Phase 1: Canonical Local Harness and Context
 
-- [ ] Task: Specify the one-command assurance harness
-  - [ ] Define fast, full, security, release-rehearsal, and preview profiles.
-  - [ ] Define deterministic environments, seeds, budgets, outputs, and platform behavior.
+- [x] Task: Specify the one-command assurance harness (4ed3b05)
+  - [x] Define fast, full, security, release-rehearsal, and preview profiles.
+  - [x] Define deterministic environments, seeds, budgets, outputs, and platform behavior.
 - [ ] Task: Write failing harness contract tests
   - [ ] Test discovery, non-interactive execution, exit codes, receipts, partial failures, hosted parity, suite classification, deterministic seeds, and replay metadata.
 - [ ] Task: Implement the canonical harness
