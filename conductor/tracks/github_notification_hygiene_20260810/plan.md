@@ -21,6 +21,7 @@
   - [ ] Run documentation, schema, policy, link, and security checks.
   - [ ] Run `conductor-review`, automatically remediate findings, rerun gates,
     and record the checkpoint according to `conductor/workflow.md`.
+- [x] Task: Review fix: normalize notification policy test imports (4cba7db)
 
 ## Phase 2: Test harness and deterministic fixtures
 
