@@ -60,6 +60,18 @@
   initiatives, roadmaps, milestones, labels, comments, search, and raw GraphQL
   operations once authenticated
 
+## Local Notification Automation
+
+- **Python 3.12-3.14** - Supported runtime range for the local notification
+  hygiene utility; this does not silently change the wider package runtime
+  contract
+- **GitHub CLI** - Credential-manager-backed API transport; notification code
+  must not extract or persist its token
+- **Windows Task Scheduler** - User-scoped five-minute wake-up, lifecycle, and
+  health harness with no elevation or repository-held secret
+- **JSON Schema 2020-12** - Versioned notification, decision, and metadata-only
+  audit contracts
+
 ## Documentation
 - **Starlight (Astro)** — Static site generation for documentation (ACTIVE; replaced mkdocs Material 2026-05-13)
 - **@astrojs/sitemap** — Sitemap generation for SEO

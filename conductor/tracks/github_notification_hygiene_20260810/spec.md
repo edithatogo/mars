@@ -99,8 +99,9 @@ is uncertain.
   explicit state and locks, dependency-aware track ordering, bounded autonomous
   loops, and automated review/remediation.
 - Do not pin production governance to divergent or unmerged upstream branches.
-- Deliver one track per small pull request and merge only after every required
-  hosted check is green.
+- Deliver one implementation phase per small pull request, splitting phases
+  further when needed, and merge only after every required hosted check is
+  green. No pull request may exceed one track.
 - Preserve the dirty primary checkout and remove only clean, merged disposable
   worktrees and branches.
 - Require no second-human approval or fictional reviewer.

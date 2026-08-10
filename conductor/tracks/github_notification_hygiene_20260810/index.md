@@ -6,6 +6,7 @@
 - [Evidence Baseline](./evidence.md)
 - [Notification Contract](./contract.md)
 - [Machine-Readable Contracts](./contracts/)
+- [Architecture](./architecture.md)
 
 ## GitHub governance
 

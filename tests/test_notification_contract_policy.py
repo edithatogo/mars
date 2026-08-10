@@ -70,3 +70,23 @@ def test_contract_document_pins_safety_invariants() -> None:
     )
     for invariant in required:
         assert invariant in text
+
+
+def test_architecture_and_tech_stack_record_execution_boundaries() -> None:
+    """Require architecture decisions before runtime implementation."""
+    architecture = (TRACK / "architecture.md").read_text(encoding="utf-8")
+    tech_stack = (ROOT / "conductor" / "tech-stack.md").read_text(encoding="utf-8")
+    for requirement in (
+        "Python 3.12-3.14",
+        "GitHub CLI",
+        "Windows Task Scheduler",
+        "No repository-hosted personal token",
+        "one implementation phase per pull request",
+        "isolated worktree",
+        "bounded autonomous",
+    ):
+        assert requirement in architecture
+    assert "Local Notification Automation" in tech_stack
+    assert "Python 3.12-3.14" in tech_stack
+    assert "GitHub CLI" in tech_stack
+    assert "Windows Task Scheduler" in tech_stack
