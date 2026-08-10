@@ -1,0 +1,1 @@
+Conductor task: Define the assurance control model. Seven controls map tier, trigger, commands, workflows, evidence, failure policy, remediation, and lifecycle state under solo-maintainer rules. Validation: Draft 2020-12 schema and instance validation; git diff --check.
