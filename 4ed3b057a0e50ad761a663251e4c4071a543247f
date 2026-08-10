@@ -1,0 +1,1 @@
+Conductor task: Specify the one-command assurance harness. Defines the canonical CLI, five profiles, deterministic environment and seeds, time/resource budgets, cross-platform behavior, exit semantics, atomic receipts, evidence outputs, hosted parity, and preview promotion rules.
