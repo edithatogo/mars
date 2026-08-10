@@ -1,0 +1,5 @@
+Ruff 0.16.2 compatibility migration from hosted Code Quality feedback.
+
+Converted four isinstance tuple declarations to Python 3.12 union-type syntax across runtime and tests. No behavior or accepted types changed.
+
+Evidence: reproduced four UP038 findings from PR #175 job 93375598608; Ruff passed across pymars, tests, and tools; focused property and policy tests passed 9/9; diff check passed.
