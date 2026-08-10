@@ -517,6 +517,7 @@ pub fn model_spec_from_terms(
         },
         basis_terms: basis_terms.to_vec(),
         coefficients: coefficients.to_vec(),
+        metadata: serde_json::Map::new(),
     }
 }
 

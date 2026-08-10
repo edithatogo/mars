@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/edithatogo/mars/contracts/notification-hygiene/audit-1.0.0.schema.json",
+  "title": "Metadata-only notification decision receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "timestamp",
+    "repository",
+    "notification_id",
+    "reason",
+    "actor_class",
+    "rule_id",
+    "action",
+    "mode"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "timestamp": {"type": "string", "format": "date-time"},
+    "repository": {"type": "string", "minLength": 1},
+    "notification_id": {"type": "string", "minLength": 1},
+    "reason": {"type": "string", "minLength": 1},
+    "actor_class": {
+      "enum": [
+        "external_human",
+        "self",
+        "bot",
+        "app",
+        "workflow",
+        "release_automation",
+        "unknown"
+      ]
+    },
+    "rule_id": {"type": "string", "pattern": "^NH-[0-9]{3}$"},
+    "action": {"enum": ["preserve_unread", "mark_read", "would_mark_read"]},
+    "mode": {"enum": ["dry_run", "enforce"]},
+    "error_code": {"type": ["string", "null"]}
+  }
+}

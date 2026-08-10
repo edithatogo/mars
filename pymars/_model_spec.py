@@ -23,6 +23,15 @@ from ._basis import (
 from ._categorical import CategoricalImputer
 from ._record import EarthRecord
 
+
+def _finite_or_none(value: Any) -> float | None:
+    """Return finite metric values and map non-finite sentinels to JSON null."""
+    if value is None:
+        return None
+    numeric = float(value)
+    return numeric if np.isfinite(numeric) else None
+
+
 MODEL_SPEC_VERSION = "1.0"
 _MODEL_SPEC_VERSION_RE = re.compile(r"^(?P<major>\d+)\.(?P<minor>\d+)$")
 _MODEL_SPEC_SUPPORTED_MAJOR_VERSION = 1
@@ -121,8 +130,8 @@ class BasisTermSpec:
             "knot_val": self.knot_val,
             "is_right_hinge": self.is_right_hinge,
             "category": self.category,
-            "gcv_score": self.gcv_score,
-            "rss_score": self.rss_score,
+            "gcv_score": self.gcv_score if np.isfinite(self.gcv_score) else None,
+            "rss_score": self.rss_score if np.isfinite(self.rss_score) else None,
             "parent1": self.parent1.to_dict() if self.parent1 is not None else None,
             "parent2": self.parent2.to_dict() if self.parent2 is not None else None,
         }
@@ -328,9 +337,9 @@ def model_to_spec(model: Any) -> dict[str, Any]:
         "basis_terms": [basis_function_to_spec(bf).to_dict() for bf in model.basis_],
         "coefficients": np.asarray(model.coef_, dtype=float).tolist(),
         "metrics": {
-            "rss": model.rss_,
-            "mse": model.mse_,
-            "gcv": model.gcv_,
+            "rss": _finite_or_none(model.rss_),
+            "mse": _finite_or_none(model.mse_),
+            "gcv": _finite_or_none(model.gcv_),
         },
         "categorical_imputer": categorical_imputer_to_spec(
             getattr(model, "categorical_imputer_", None)
@@ -401,7 +410,7 @@ def spec_to_model(payload: dict[str, Any], earth_cls: type[Any]) -> Any:
 
 def spec_to_json(payload: dict[str, Any]) -> str:
     """Serialize a model spec dictionary to JSON."""
-    return json.dumps(payload, indent=2, sort_keys=True)
+    return json.dumps(payload, indent=2, sort_keys=True, allow_nan=False)
 
 
 def spec_from_json(payload: str) -> dict[str, Any]:

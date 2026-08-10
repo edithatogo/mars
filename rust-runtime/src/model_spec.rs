@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
+use serde_json::{Map, Value};
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 pub struct FeatureSchema {
@@ -29,4 +29,6 @@ pub struct ModelSpec {
     pub feature_schema: FeatureSchema,
     pub basis_terms: Vec<BasisTermSpec>,
     pub coefficients: Vec<f64>,
+    #[serde(flatten)]
+    pub metadata: Map<String, Value>,
 }

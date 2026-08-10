@@ -86,53 +86,42 @@ All tasks follow a strict lifecycle:
     -   Execute the announced command.
     -   If tests fail, you **must** inform the user and begin debugging. You may attempt to propose a fix a **maximum of two times**. If the tests still fail after your second proposed fix, you **must stop**, report the persistent failure, and ask the user for guidance.
 
-4.  **Propose a Detailed, Actionable Manual Verification Plan:**
-    -   **CRITICAL:** To generate the plan, first analyze `product.md`, `product-guidelines.md`, and `plan.md` to determine the user-facing goals of the completed phase.
-    -   You **must** generate a step-by-step plan that walks the user through the verification process, including any necessary commands and specific, expected outcomes.
-    -   The plan you present to the user **must** follow this format:
+4.  **Run Automated Conductor Review and Remediation:**
+    -   Invoke `conductor-review` for the completed phase. Do not require manual verification, a second reviewer, or user confirmation.
+    -   Review the phase against `product.md`, `product-guidelines.md`, `tech-stack.md`, every code style guide, the track specification, and the implementation plan.
+    -   Automatically apply actionable findings, record them as review-fix tasks, and rerun the affected quality, security, coverage, and test gates.
+    -   Continue remediation until all in-scope blockers are resolved. Never suppress, bypass, or relabel a failing gate as passing.
+    -   If a blocker requires credentials, external authorization, publication rights, or unavailable infrastructure, record it explicitly as blocked and do not complete the phase or archive the track.
 
-        **For a Frontend Change:**
-        ```
-        The automated tests have passed. For manual verification, please follow these steps:
-
-        **Manual Verification Steps:**
-        1.  **Start the development server with the command:** `npm run dev`
-        2.  **Open your browser to:** `http://localhost:3000`
-        3.  **Confirm that you see:** The new user profile page, with the user's name and email displayed correctly.
-        ```
-
-        **For a Backend Change:**
-        ```
-        The automated tests have passed. For manual verification, please follow these steps:
-
-        **Manual Verification Steps:**
-        1.  **Ensure the server is running.**
-        2.  **Execute the following command in your terminal:** `curl -X POST http://localhost:8080/api/v1/users -d '{"name": "test"}'`
-        3.  **Confirm that you receive:** A JSON response with a status of `201 Created`.
-        ```
-
-5.  **Await Explicit User Feedback:**
-    -   After presenting the detailed plan, ask the user for confirmation: "**Does this meet your expectations? Please confirm with yes or provide feedback on what needs to be changed.**"
-    -   **PAUSE** and await the user's response. Do not proceed without an explicit yes or confirmation.
-
-6.  **Create Checkpoint Commit:**
+5.  **Create Checkpoint Commit:**
     -   Stage all changes. If no changes occurred in this step, proceed with an empty commit.
     -   Perform the commit with a clear and concise message (e.g., `conductor(checkpoint): Checkpoint end of Phase X`).
 
-7.  **Attach Auditable Verification Report using Git Notes:**
-    -   **Step 7.1: Draft Note Content:** Create a detailed verification report including the automated test command, the manual verification steps, and the user's confirmation.
-    -   **Step 7.2: Attach Note:** Use the `git notes` command and the full commit hash from the previous step to attach the full report to the checkpoint commit.
+6.  **Attach Auditable Verification Report using Git Notes:**
+    -   **Step 6.1: Draft Note Content:** Create a detailed verification report including review scope, findings, fixes, automated commands, coverage, hosted checks, and any unresolved blockers.
+    -   **Step 6.2: Attach Note:** Use the `git notes` command and the full commit hash from the previous step to attach the full report to the checkpoint commit.
 
-8.  **Get and Record Phase Checkpoint SHA:**
-    -   **Step 8.1: Get Commit Hash:** Obtain the hash of the *just-created checkpoint commit* (`git log -1 --format="%H"`).
-    -   **Step 8.2: Update Plan:** Read `plan.md`, find the heading for the completed phase, and append the first 7 characters of the commit hash in the format `[checkpoint: <sha>]`.
-    -   **Step 8.3: Write Plan:** Write the updated content back to `plan.md`.
+7.  **Get and Record Phase Checkpoint SHA:**
+    -   **Step 7.1: Get Commit Hash:** Obtain the hash of the *just-created checkpoint commit* (`git log -1 --format="%H"`).
+    -   **Step 7.2: Update Plan:** Read `plan.md`, find the heading for the completed phase, and append the first 7 characters of the commit hash in the format `[checkpoint: <sha>]`.
+    -   **Step 7.3: Write Plan:** Write the updated content back to `plan.md`.
 
-9. **Commit Plan Update:**
+8. **Commit Plan Update:**
     - **Action:** Stage the modified `plan.md` file.
     - **Action:** Commit this change with a descriptive message following the format `conductor(plan): Mark phase '<PHASE NAME>' as complete`.
 
-10.  **Announce Completion:** Inform the user that the phase is complete and the checkpoint has been created, with the detailed verification report attached as a git note.
+9.  **Announce Completion:** Inform the user that the phase is complete and the checkpoint has been created, with the detailed verification report attached as a git note.
+
+### Automated Review and Track Closure
+
+When the final phase is otherwise complete:
+
+1. Invoke `conductor-review` over the entire track and automatically apply all actionable fixes.
+2. Resolve every in-scope blocker and require all local and hosted gates to finish successfully; queued, skipped unexpectedly, cancelled, timed-out, or failed evidence is not green.
+3. Mark the track complete only when its specification, plan, repository state, hosted state, and evidence agree. External blockers remain explicit and prevent archival when they are acceptance requirements.
+4. Deliver closure through a green pull request and verify post-merge workflows.
+5. Archive the completed track under `conductor/archive/<track_id>/`, update its registry link to the archived path, and preserve its plan, specification, metadata, checkpoint SHAs, and review evidence.
+6. Remove only clean, fully merged disposable branches and worktrees. Preserve unrelated or ambiguous local work.
 
 ### Quality Gates
 

@@ -39,7 +39,7 @@ jobs:
         run: |
           mkdir -p release-artifacts
           set -o pipefail
-          cargo deny check --config deny.toml 2>&1 | tee release-artifacts/cargo-deny.log
+          cargo deny --config deny.toml check 2>&1 | tee release-artifacts/cargo-deny.log
 
       - name: Upload cargo deny logs
         if: always()

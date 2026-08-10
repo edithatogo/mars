@@ -65,6 +65,7 @@ jobs:
           uv run mkdocs build --strict | tee "$CI_LOG_DIR/mkdocs.log"
 
       - name: Run Vale prose lint
+        if: github.event_name == 'pull_request'
         uses: errata-ai/vale-action@v2.1.1
         with:
           version: 3.14.1

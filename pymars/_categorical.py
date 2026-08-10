@@ -45,15 +45,39 @@ class CategoricalImputer:
         for idx, le in self.encoders.items():
             col = X_arr[:, idx]
             new_col = []
-            for val in col:
-                if self._is_missing(val):
-                    val = self.most_frequent_[idx]
-                try:
-                    enc = le.transform([val])[0]
-                except ValueError:
-                    enc = le.transform([self.most_frequent_[idx]])[0]
-                new_col.append(float(enc))
-            X_arr[:, idx] = np.array(new_col, dtype=float)
+
+            try:
+                # Fast path that avoids changing original arrays if not needed
+                missing_mask = np.array([self._is_missing(v) for v in col], dtype=bool)
+                known_classes = set(le.classes_)
+                unseen_mask = np.array(
+                    [v not in known_classes for v in col], dtype=bool
+                )
+
+                if missing_mask.any() or unseen_mask.any():
+                    col_to_transform = [
+                        self.most_frequent_[idx]
+                        if missing_mask[i] or unseen_mask[i]
+                        else v
+                        for i, v in enumerate(col)
+                    ]
+                else:
+                    col_to_transform = col.tolist()
+
+                enc_col = le.transform(col_to_transform)
+                X_arr[:, idx] = np.array(enc_col, dtype=float)
+            except Exception:
+                # Fallback to exactly original element-by-element loop
+                for val in col:
+                    if self._is_missing(val):
+                        val = self.most_frequent_[idx]
+                    try:
+                        enc = le.transform([val])[0]
+                    except ValueError:
+                        enc = le.transform([self.most_frequent_[idx]])[0]
+                    new_col.append(float(enc))
+                X_arr[:, idx] = np.array(new_col, dtype=float)
+
         return cast("np.ndarray", np.asarray(X_arr, dtype=float))
 
     def fit_transform(self, X: Any, categorical_features: list[int]) -> np.ndarray:

@@ -15,6 +15,16 @@ except Exception:  # pragma: no cover - optional compiled extension
     _native = None
 
 _IS_COMPILED = _native is not None
+_SUPPORTS_CATEGORICAL_TRAINING = (
+    getattr(_native, "_SUPPORTS_CATEGORICAL_TRAINING", False)
+    if _native is not None
+    else False
+)
+_SUPPORTS_MISSINGNESS_TRAINING = (
+    getattr(_native, "_SUPPORTS_MISSINGNESS_TRAINING", False)
+    if _native is not None
+    else False
+)
 
 
 def _require_native() -> object:

@@ -319,6 +319,11 @@ jobs:
           name: mars-runtime-cli
           path: .ci-artifacts
 
+      - uses: actions/download-artifact@v4
+        with:
+          name: mars-runtime-native
+          path: .ci-artifacts/native
+
       - run: chmod +x "$MARS_RUNTIME_BIN"
 
       - uses: actions/setup-dotnet@v4

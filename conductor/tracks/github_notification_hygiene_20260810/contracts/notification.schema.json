@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/edithatogo/mars/contracts/notification-hygiene/notification-1.0.0.schema.json",
+  "title": "GitHub notification classification input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "notification_id",
+    "repository",
+    "reason",
+    "subject_type",
+    "subject_api_url",
+    "unread",
+    "updated_at"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "notification_id": {"type": "string", "minLength": 1},
+    "repository": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+    },
+    "reason": {"type": "string", "minLength": 1},
+    "subject_type": {"type": "string", "minLength": 1},
+    "subject_api_url": {
+      "type": ["string", "null"],
+      "format": "uri"
+    },
+    "latest_comment_api_url": {
+      "type": ["string", "null"],
+      "format": "uri"
+    },
+    "unread": {"type": "boolean"},
+    "updated_at": {"type": "string", "format": "date-time"},
+    "actor_login": {"type": ["string", "null"]},
+    "actor_type": {"type": ["string", "null"]}
+  }
+}

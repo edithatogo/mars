@@ -3,6 +3,7 @@
   "extends": [
     "config:recommended",
     ":dependencyDashboard",
+    ":configMigration",
     ":semanticCommits",
     ":automergePatch",
     ":automergeRequireAllStatusChecks",
@@ -13,13 +14,22 @@
   ],
   "schedule": ["before 3am on Monday"],
   "timezone": "UTC",
+  "enabledManagers": [
+    "cargo",
+    "devcontainer",
+    "git-submodules",
+    "github-actions",
+    "gomod",
+    "npm",
+    "nuget",
+    "pep621"
+  ],
   "packageRules": [
     {
       "matchUpdateTypes": ["minor", "patch"],
       "matchCurrentVersion": "!/^0/",
       "automerge": true,
-      "automergeType": "pr",
-      "requiredStatusChecks": ["ci", "code-quality", "security"]
+      "automergeType": "pr"
     },
     {
       "matchUpdateTypes": ["major"],
@@ -28,7 +38,10 @@
     },
     {
       "groupName": "pytest ecosystem",
-      "matchPackagePrefixes": ["pytest", "pytest-"]
+      "matchPackageNames": [
+        "pytest{/,}**",
+        "pytest-{/,}**"
+      ]
     },
     {
       "groupName": "ruff ecosystem",
@@ -53,11 +66,11 @@
     "schedule": ["before 3am on Monday"]
   },
   "rangeStrategy": "bump",
+  "platformAutomerge": false,
   "semanticCommits": "enabled",
   "semanticCommitType": "chore",
   "semanticCommitScope": "deps",
   "commitMessagePrefix": "chore(deps): ",
   "prBodyTemplate": "{{{header}}}{{{table}}}{{{notes}}}{{{changelog}}}{{{controls}}}",
-  "labels": ["dependencies"],
-  "reviewers": ["@edithatogo"]
+  "labels": ["dependencies"]
 }

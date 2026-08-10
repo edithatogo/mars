@@ -46,8 +46,8 @@ jobs:
       - name: Run Bandit security scan
         run: uv run bandit -ll -r pymars -f json -o bandit-report.json
 
-      - name: Run Safety check
-        run: uv run safety check --output json > safety-report.json
+      - name: Run pip-audit
+        run: uv run pip-audit --format=json --output=pip-audit-report.json
 
       - name: Install cargo-audit
         run: cargo install cargo-audit --locked
@@ -63,5 +63,5 @@ jobs:
           name: security-reports
           path: |
             bandit-report.json
-            safety-report.json
+            pip-audit-report.json
           retention-days: 30
