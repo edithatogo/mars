@@ -182,3 +182,8 @@ The remaining-track dependency gates are summarized in
 
 - [x] **Track: Keep external submission and registration status synchronized in repo docs**
   *Link: [./tracks/submission_registration_sync_20260511/](./tracks/submission_registration_sync_20260511/)*
+
+---
+
+- [~] **Track: Modernize CI/CD with bleeding-edge solo-maintainer assurance**
+  *Link: [./tracks/bleeding_edge_cicd_assurance_20260809/index.md](./tracks/bleeding_edge_cicd_assurance_20260809/index.md)*
