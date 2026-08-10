@@ -70,7 +70,8 @@ class ForwardPasser:
         *,
         drop_nan_rows: bool = True,
     ) -> tuple[float, np.ndarray | None, float]:
-        if B_matrix is None or B_matrix.shape[1] == 0:
+        is_empty_b_matrix = B_matrix is None or B_matrix.shape[1] == 0
+        if is_empty_b_matrix:
             if sample_weight is None:
                 mean_y = float(np.mean(y))
                 rss: float = float(np.sum((y - mean_y) ** 2))
@@ -81,7 +82,7 @@ class ForwardPasser:
                 num_valid_rows = float(np.sum(sample_weight))
             coeffs_for_mean = (
                 cast("np.ndarray", np.array([mean_y], dtype=float))
-                if (B_matrix is not None and B_matrix.shape[1] == 0)
+                if (B_matrix is not None)
                 else None
             )
             return rss, coeffs_for_mean, num_valid_rows
@@ -424,7 +425,7 @@ class ForwardPasser:
             except (ValueError, FloatingPointError):
                 endspan_abs = 1
 
-        count_parent_nonzero_for_minspan = 0  # Initialize for minspan calculation
+        count_parent_nonzero_for_minspan = 0.0  # Initialize for minspan calculation
         p_parent_active: np.ndarray
         if parent_bf.is_constant():
             p_parent_active = np.ones(self.n_samples, dtype=bool)
