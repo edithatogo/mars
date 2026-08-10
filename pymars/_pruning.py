@@ -137,7 +137,6 @@ class PruningPasser:
         missing_mask: np.ndarray,
         X_fit_original: np.ndarray,
         basis_subset: list[BasisFunction],
-        num_hinge_terms_in_subset: int | None = None,
     ) -> tuple[float | None, float | None, np.ndarray | None]:
         """
         Computes GCV, RSS, and coefficients for a given subset of basis functions.
@@ -197,10 +196,9 @@ class PruningPasser:
         if num_model_terms == 0:
             return float(np.inf), float(rss), None
 
-        if num_hinge_terms_in_subset is None:
-            num_hinge_terms_in_subset = sum(
-                type(bf) is HingeBasisFunction for bf in basis_subset
-            )
+        num_hinge_terms_in_subset = sum(
+            isinstance(bf, HingeBasisFunction) for bf in basis_subset
+        )
 
         effective_params = gcv_penalty_cost_effective_parameters(
             num_model_terms,
@@ -240,17 +238,12 @@ class PruningPasser:
 
         current_pruning_sequence_bfs = list(initial_basis_functions)
 
-        current_num_hinges = sum(
-            type(bf) is HingeBasisFunction for bf in current_pruning_sequence_bfs
-        )
-
         initial_gcv, initial_rss, initial_coeffs_refit = self._compute_gcv_for_subset(
             self.X_train,
             self.y_train,
             self.missing_mask,
             self.X_fit_original,
             current_pruning_sequence_bfs,
-            current_num_hinges,
         )
 
         if initial_coeffs_refit is None:
@@ -314,14 +307,12 @@ class PruningPasser:
                     )
                     continue
 
-                is_hinge_removed = type(bf_to_test_removal) is HingeBasisFunction
                 gcv, rss, coeffs = self._compute_gcv_for_subset(
                     self.X_train,
                     self.y_train,
                     self.missing_mask,
                     self.X_fit_original,
                     temp_basis_subset,
-                    current_num_hinges - (1 if is_hinge_removed else 0),
                 )
                 gcv_for_removal_candidates.append(
                     (
@@ -343,10 +334,6 @@ class PruningPasser:
             if coeffs_after_removal is None:
                 break
 
-            if type(active_bfs_for_loop[idx_removed]) is HingeBasisFunction:
-                current_num_hinges -= 1
-            if type(active_bfs_for_loop[idx_removed]) is HingeBasisFunction:
-                current_num_hinges -= 1
             active_bfs_for_loop.pop(idx_removed)
 
             if gcv_after_removal < self.best_gcv_so_far:
