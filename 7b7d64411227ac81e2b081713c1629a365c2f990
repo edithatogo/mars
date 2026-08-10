@@ -1,0 +1,5 @@
+Phase 2 dependency modernization evidence (intermediate task commit, rebased onto c25fea9)
+
+Updated governed Python, Rust, Node/pnpm, Go, NuGet, devcontainer, packaging, workflow runtime, and lockfile surfaces. Formal Python support is 3.12-3.14. Docs use Astro 7.2.0, Vite 8.2.1, pnpm 11.21.0, and direct cookie 2.0.1 for isolated prerender resolution. Renovate manager coverage and Conductor context are aligned.
+
+Evidence: uv lock check passed; Go tests passed; focused Ruff passed; 11 isolated policy, harness, and property tests passed; post-rebase policy/harness tests 7 passed; Astro frozen install, production prerender, Pagefind, and links passed. Native Rust/binding builds require hosted CI because the Windows host lacks the MSVC SDK. Hosted Renovate reconciliation remains open, so the Conductor task stays in progress.
