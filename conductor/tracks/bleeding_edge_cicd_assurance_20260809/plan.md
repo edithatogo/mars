@@ -16,7 +16,7 @@
 - [x] Task: Apply Phase 0 automated review fixes (948b9c5)
   - [x] Raise policy-validator coverage above the repository's 90% gate.
   - [x] Scope concurrency and artifact-retention checks to their YAML blocks.
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 0: Baseline, Isolation, and Control Architecture' (Protocol in workflow.md)
+- [~] Task: Conductor - Automated Review, Remediation, and Checkpoint 'Phase 0: Baseline, Isolation, and Control Architecture' (Protocol in workflow.md)
 
 ## Phase 1: Canonical Local Harness and Context
 
@@ -30,7 +30,7 @@
   - [ ] Add locked quality, test, security, build, docs, and evidence commands.
   - [ ] Produce JUnit, coverage, SARIF, benchmark, and machine-readable receipts.
   - [ ] Add usage and troubleshooting documentation.
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 1: Canonical Local Harness and Context' (Protocol in workflow.md)
+- [ ] Task: Conductor - Automated Review, Remediation, and Checkpoint 'Phase 1: Canonical Local Harness and Context' (Protocol in workflow.md)
 
 ## Phase 2: Workflow Supply-Chain Hardening
 
@@ -50,7 +50,7 @@
   - [ ] Add runner egress monitoring in audit mode.
 - [ ] Task: Add workflow policy gates
   - [ ] Run `zizmor`, `actionlint`, YAML validation, custom policy tests, dependency inventory, EOL checks, and SARIF upload.
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 2: Workflow Supply-Chain Hardening' (Protocol in workflow.md)
+- [ ] Task: Conductor - Automated Review, Remediation, and Checkpoint 'Phase 2: Workflow Supply-Chain Hardening' (Protocol in workflow.md)
 
 ## Phase 3: Fast Required Pull-Request Assurance
 
@@ -71,7 +71,7 @@
   - [ ] Build clean artifacts and run bounded end-to-end fit, serialization, replay, prediction, and cross-runtime equivalence journeys.
 - [ ] Task: Add cross-cutting security gates
   - [ ] Enable dependency review, ecosystem audits, CodeQL or SARIF analysis, and secret checks.
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 3: Fast Required Pull-Request Assurance' (Protocol in workflow.md)
+- [ ] Task: Conductor - Automated Review, Remediation, and Checkpoint 'Phase 3: Fast Required Pull-Request Assurance' (Protocol in workflow.md)
 
 ## Phase 4: Scheduled Deep Assurance
 
@@ -87,7 +87,7 @@
   - [ ] Record replay inputs and state digests, prove repeatability, and compare equivalent Python, Rust, R, Julia, Go, TypeScript, and C# outcomes where supported.
 - [ ] Task: Add performance and reproducibility assurance
   - [ ] Enforce runtime and memory budgets, comparable benchmarks, repeated-build digests, and deterministic outputs.
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 4: Scheduled Deep Assurance' (Protocol in workflow.md)
+- [ ] Task: Conductor - Automated Review, Remediation, and Checkpoint 'Phase 4: Scheduled Deep Assurance' (Protocol in workflow.md)
 
 ## Phase 5: Release and Supply-Chain Integrity
 
@@ -99,7 +99,7 @@
   - [ ] Generate per-artifact SBOMs, provenance and SBOM attestations, verification, checksums, source and workflow identities.
 - [ ] Task: Add release rehearsals and post-release tests
   - [ ] Build once, rehearse without registry mutation, install published packages, verify digests, and document rollback.
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 5: Release and Supply-Chain Integrity' (Protocol in workflow.md)
+- [ ] Task: Conductor - Automated Review, Remediation, and Checkpoint 'Phase 5: Release and Supply-Chain Integrity' (Protocol in workflow.md)
 
 ## Phase 6: Hosted GitHub Security and Merge Controls
 
@@ -113,7 +113,7 @@
   - [ ] Enable and verify CodeQL, secret scanning, push protection, dependency features, private reporting, SARIF, and dashboards.
 - [ ] Task: Complete the Renovate migration
   - [ ] Activate Renovate, verify validation and a real run, then retire Dependabot and reconcile its PRs.
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 6: Hosted GitHub Security and Merge Controls' (Protocol in workflow.md)
+- [ ] Task: Conductor - Automated Review, Remediation, and Checkpoint 'Phase 6: Hosted GitHub Security and Merge Controls' (Protocol in workflow.md)
 
 ## Phase 7: Preview Canaries and Emerging Capabilities
 
@@ -124,7 +124,7 @@
 - [ ] Task: Add guarded agentic experiments
   - [ ] Add Autonomous Agentic Testing for adversarial case generation, state-space exploration, failure triage, and test proposals in disposable sandboxes.
   - [ ] Grant agents no secrets, write authority to protected refs, merge authority, or required-check ownership; require minimized deterministic reproducers before promotion.
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 7: Preview Canaries and Emerging Capabilities' (Protocol in workflow.md)
+- [ ] Task: Conductor - Automated Review, Remediation, and Checkpoint 'Phase 7: Preview Canaries and Emerging Capabilities' (Protocol in workflow.md)
 
 ## Phase 8: Evidence, Documentation, and Observability
 
@@ -134,7 +134,7 @@
   - [ ] Record workflow identity, commit, environment, command, duration, outcome, reliability, flakiness, cost, and truth boundary.
 - [ ] Task: Update operator and contributor documentation
   - [ ] Document topology, trust boundaries, parity commands, remediation, release verification, rollback, and self-review.
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 8: Evidence, Documentation, and Observability' (Protocol in workflow.md)
+- [ ] Task: Conductor - Automated Review, Remediation, and Checkpoint 'Phase 8: Evidence, Documentation, and Observability' (Protocol in workflow.md)
 
 ## Phase 9: End-to-End Delivery and Closure
 
@@ -150,4 +150,7 @@
   - [ ] Merge only when green, verify post-merge workflows, synchronize main, remove the merged branch, and confirm a clean checkout and synchronized submodules.
 - [ ] Task: Synchronize Conductor and project documentation
   - [ ] Record final repository and hosted evidence, task and checkpoint commits, registry status, and explicit deferred or blocked items.
-- [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 9: End-to-End Delivery and Closure' (Protocol in workflow.md)
+- [ ] Task: Archive the completed track
+  - [ ] Archive only after the final automated review, all green local and hosted gates, merge reconciliation, and post-merge verification.
+  - [ ] Move the track to `conductor/archive/`, update the registry link, and preserve its complete evidence history.
+- [ ] Task: Conductor - Automated Review, Remediation, and Checkpoint 'Phase 9: End-to-End Delivery and Closure' (Protocol in workflow.md)
