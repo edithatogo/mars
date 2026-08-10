@@ -239,6 +239,38 @@ def test_pruning_run_some_pruning_expected(initial_model_for_pruning):
     assert best_gcv <= gcv_initial_pen3
 
 
+def test_pruning_run_passes_exact_incremental_hinge_counts(monkeypatch):
+    """Incremental hinge counts must match every candidate subset exactly."""
+    X = np.arange(12, dtype=float).reshape(6, 2)
+    y = np.arange(6, dtype=float)
+    missing = np.zeros_like(X, dtype=bool)
+    basis = [
+        ConstantBasisFunction(),
+        HingeBasisFunction(0, 1.0, True, "x0_right"),
+        HingeBasisFunction(1, 2.0, False, "x1_left"),
+    ]
+    observed: list[tuple[int | None, int]] = []
+
+    def fake_compute(
+        _X_fit_processed,
+        _y_fit,
+        _missing_mask,
+        _X_fit_original,
+        basis_subset,
+        num_hinge_terms_in_subset=None,
+    ):
+        actual = sum(isinstance(item, HingeBasisFunction) for item in basis_subset)
+        observed.append((num_hinge_terms_in_subset, actual))
+        return float(actual), 1.0, np.ones(len(basis_subset), dtype=float)
+
+    passer = PruningPasser(MockEarth(penalty=3.0))
+    monkeypatch.setattr(passer, "_compute_gcv_for_subset", fake_compute)
+    passer.run(X, y, missing, X, basis, np.ones(len(basis), dtype=float))
+
+    assert observed
+    assert all(provided == actual for provided, actual in observed)
+
+
 def test_pruning_run_empty_initial_set(simple_pruning_data):
     """An empty starting basis should stay empty after pruning."""
     X, y = simple_pruning_data
