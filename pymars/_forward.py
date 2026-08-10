@@ -228,6 +228,10 @@ class ForwardPasser:
         if self.current_coefficients is not None:
             logger.debug("Initial coeffs: %s", self.current_coefficients)
 
+        current_num_hinge_terms = sum(
+            isinstance(bf, HingeBasisFunction) for bf in self.current_basis_functions
+        )
+
         while True:
             self._find_best_candidate_addition()
 
@@ -266,12 +270,13 @@ class ForwardPasser:
                     num_valid_rows_for_gcv_calc = num_valid_rows_for_best_candidate
 
             # Determine num_hinge_terms for the candidate model
-            candidate_model_terms_list = self.current_basis_functions + (
-                [bf1_cand] if bf2_cand_or_None is None else [bf1_cand, bf2_cand_or_None]
+            num_hinge_terms_candidate = current_num_hinge_terms + isinstance(
+                bf1_cand, HingeBasisFunction
             )
-            num_hinge_terms_candidate = sum(
-                isinstance(bf, HingeBasisFunction) for bf in candidate_model_terms_list
-            )
+            if bf2_cand_or_None is not None:
+                num_hinge_terms_candidate += isinstance(
+                    bf2_cand_or_None, HingeBasisFunction
+                )
             assert self._best_new_B_matrix is not None
             num_total_terms_candidate = self._best_new_B_matrix.shape[
                 1
@@ -308,6 +313,7 @@ class ForwardPasser:
                 terms_added_this_iteration.append(bf2_cand_or_None)
 
             self.current_basis_functions.extend(terms_added_this_iteration)
+            current_num_hinge_terms = num_hinge_terms_candidate
             self.current_B_matrix = self._best_new_B_matrix
             self.current_coefficients = self._best_new_coeffs
             self.current_rss = self._min_candidate_rss
@@ -640,6 +646,9 @@ class ForwardPasser:
 
         remaining_capacity = max_terms_for_loop - len(self.current_basis_functions)
 
+        current_num_hinge = sum(
+            isinstance(bf, HingeBasisFunction) for bf in self.current_basis_functions
+        )
         for bf1, bf2_or_None in candidate_additions:
             required_terms = 1 + (1 if bf2_or_None is not None else 0)
             if required_terms > remaining_capacity:
@@ -677,9 +686,12 @@ class ForwardPasser:
                 continue
 
             num_terms_candidate = len(temp_basis_list)
-            num_hinge_candidate = sum(
-                isinstance(bf, HingeBasisFunction) for bf in temp_basis_list
+            num_hinge_candidate = current_num_hinge + isinstance(
+                bf1, HingeBasisFunction
             )
+            if bf2_or_None is not None:
+                num_hinge_candidate += isinstance(bf2_or_None, HingeBasisFunction)
+
             eff_params = gcv_penalty_cost_effective_parameters(
                 num_terms_candidate,
                 num_hinge_candidate,
