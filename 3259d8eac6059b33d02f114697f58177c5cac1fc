@@ -1,0 +1,5 @@
+Task: Record architecture before implementation
+Summary: Recorded Python 3.12-3.14, GitHub CLI, Windows Task Scheduler, local-only credential boundaries, component layering, phase-sized PRs, isolated worktrees, bounded autonomous loops, and rejected alternatives.
+Files: conductor/tech-stack.md; notification track architecture, index, spec; tests/test_notification_contract_policy.py.
+Why: Runtime and delivery boundaries must be explicit and test-enforced before implementation.
+Verification: uv run --no-project --with pytest pytest tests/test_notification_contract_policy.py -q (5 passed).
