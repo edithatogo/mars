@@ -8,7 +8,7 @@
   - [x] Pin current GitHub notification contracts, permissions, pagination, and
     rate-limit behavior from primary documentation.
   - [x] Confirm no third-party repository writes are required.
-- [ ] Task: Define versioned notification and decision contracts
+- [~] Task: Define versioned notification and decision contracts
   - [ ] Define typed input, classification, decision, and audit schemas.
   - [ ] Define actor classes, reason classes, precedence, and stable rule IDs.
   - [ ] Define fail-open, privacy, approved-host, and retention invariants.
