@@ -8,10 +8,10 @@
   - [x] Pin current GitHub notification contracts, permissions, pagination, and
     rate-limit behavior from primary documentation.
   - [x] Confirm no third-party repository writes are required.
-- [~] Task: Define versioned notification and decision contracts
-  - [ ] Define typed input, classification, decision, and audit schemas.
-  - [ ] Define actor classes, reason classes, precedence, and stable rule IDs.
-  - [ ] Define fail-open, privacy, approved-host, and retention invariants.
+- [x] Task: Define versioned notification and decision contracts (5096606)
+  - [x] Define typed input, classification, decision, and audit schemas.
+  - [x] Define actor classes, reason classes, precedence, and stable rule IDs.
+  - [x] Define fail-open, privacy, approved-host, and retention invariants.
 - [ ] Task: Record architecture before implementation
   - [ ] Document Python 3.12-3.14, GitHub CLI transport, and Windows Task
     Scheduler.
