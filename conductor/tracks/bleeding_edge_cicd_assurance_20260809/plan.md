@@ -13,6 +13,9 @@
   - [x] Define configured, enabled, executed, passing, deferred, and blocked states.
 - [x] Task: Write failing policy tests for the baseline gaps (8776f6b)
   - [x] Test action pinning, permissions, timeouts, concurrency, retention, merge-group coverage, and control declarations.
+- [x] Task: Apply Phase 0 automated review fixes (948b9c5)
+  - [x] Raise policy-validator coverage above the repository's 90% gate.
+  - [x] Scope concurrency and artifact-retention checks to their YAML blocks.
 - [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 0: Baseline, Isolation, and Control Architecture' (Protocol in workflow.md)
 
 ## Phase 1: Canonical Local Harness and Context

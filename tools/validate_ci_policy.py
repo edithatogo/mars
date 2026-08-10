@@ -46,6 +46,42 @@ def _relative(path: Path, root: Path) -> str:
     return path.relative_to(root).as_posix()
 
 
+def _top_level_value(text: str, key: str) -> str | None:
+    """Return one top-level YAML scalar or indented mapping as text."""
+    lines = text.splitlines()
+    prefix = f"{key}:"
+    for index, line in enumerate(lines):
+        if not line.startswith(prefix):
+            continue
+        inline = line.removeprefix(prefix).strip()
+        if inline:
+            return inline
+        body: list[str] = []
+        for candidate in lines[index + 1 :]:
+            if candidate and not candidate[0].isspace():
+                break
+            body.append(candidate)
+        return "\n".join(body)
+    return None
+
+
+def _upload_blocks(text: str) -> list[str]:
+    """Return the YAML step block for every upload-artifact invocation."""
+    matches = list(
+        re.finditer(
+            r"(?m)^(?P<indent>\s*)-\s+uses:\s+actions/upload-artifact@[^\s#]+.*$",
+            text,
+        )
+    )
+    blocks: list[str] = []
+    for match in matches:
+        indent = match.group("indent")
+        next_step = re.search(rf"(?m)^{re.escape(indent)}-\s+", text[match.end() :])
+        end = match.end() + next_step.start() if next_step else len(text)
+        blocks.append(text[match.start() : end])
+    return blocks
+
+
 def _workflow_violations(root: Path) -> list[PolicyViolation]:
     violations: list[PolicyViolation] = []
     workflow_dir = root / ".github" / "workflows"
@@ -61,12 +97,10 @@ def _workflow_violations(root: Path) -> list[PolicyViolation]:
                     "Workflow has no explicit top-level permissions declaration",
                 )
             )
-        concurrency = re.search(
-            r"(?ms)^concurrency:\s*\n(?P<body>(?:^[ \t]+.*\n?)*)",
-            text,
-        )
-        if concurrency is None or not re.search(
-            r"(?m)^\s+group:\s*\S+", concurrency.group("body")
+        concurrency = _top_level_value(text, "concurrency")
+        if concurrency is None or not (
+            (concurrency and not concurrency[0].isspace())
+            or re.search(r"(?m)^\s+group:\s*\S+", concurrency)
         ):
             violations.append(
                 PolicyViolation(
@@ -75,8 +109,9 @@ def _workflow_violations(root: Path) -> list[PolicyViolation]:
                     "Workflow has no explicit concurrency group",
                 )
             )
-        if "actions/upload-artifact@" in text and not re.search(
-            r"(?m)^\s+retention-days:\s*\d+\s*$", text
+        if any(
+            not re.search(r"(?m)^\s+retention-days:\s*\d+\s*$", block)
+            for block in _upload_blocks(text)
         ):
             violations.append(
                 PolicyViolation(
