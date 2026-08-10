@@ -1,6 +1,6 @@
 # Implementation Plan
 
-## Phase 0: Baseline, Isolation, and Control Architecture
+## Phase 0: Baseline, Isolation, and Control Architecture [checkpoint: 6df4033]
 
 - [x] Task: Establish the implementation baseline (36d0063)
   - [x] Preserve and inventory existing staged and unstaged changes.
@@ -16,7 +16,7 @@
 - [x] Task: Apply Phase 0 automated review fixes (948b9c5)
   - [x] Raise policy-validator coverage above the repository's 90% gate.
   - [x] Scope concurrency and artifact-retention checks to their YAML blocks.
-- [~] Task: Conductor - Automated Review, Remediation, and Checkpoint 'Phase 0: Baseline, Isolation, and Control Architecture' (Protocol in workflow.md)
+- [x] Task: Conductor - Automated Review, Remediation, and Checkpoint 'Phase 0: Baseline, Isolation, and Control Architecture' (6df4033)
 
 ## Phase 1: Canonical Local Harness and Context
 
