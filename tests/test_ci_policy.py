@@ -152,3 +152,25 @@ def test_local_file_dependency_and_incomplete_monorepo_managers_are_rejected(
         message="Dependency local-package uses non-portable specifier file:/Users/example/pkg",
     ) in violations
     assert "renovate-manager-coverage" in {item.code for item in violations}
+
+
+def test_go_workflow_versions_must_match_module_floor(tmp_path: Path) -> None:
+    """Reject setup-go and consumer fixtures below the governed module floor."""
+    _minimal_repository(tmp_path)
+    _write(tmp_path / "go.mod", "module example.com/root\n\ngo 1.26.5\n")
+    workflow = tmp_path / ".github" / "workflows" / "ci.yml"
+    workflow.write_text(
+        workflow.read_text(encoding="utf-8")
+        + """
+      - uses: actions/setup-go@0123456789012345678901234567890123456789 # v6
+        with:
+          go-version: "1.22"
+      - run: |
+          cat > go.mod <<EOF
+          go 1.22
+          EOF
+""",
+        encoding="utf-8",
+    )
+    codes = {violation.code for violation in validate_repository(tmp_path)}
+    assert "go-version-drift" in codes

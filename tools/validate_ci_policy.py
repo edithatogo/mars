@@ -143,6 +143,34 @@ def _renovate_violations(root: Path) -> list[PolicyViolation]:
     return violations
 
 
+def _go_version_violations(root: Path) -> list[PolicyViolation]:
+    module = root / "go.mod"
+    if not module.is_file():
+        return []
+    match = re.search(r"(?m)^go\s+([0-9]+(?:\.[0-9]+)+)\s*$", module.read_text(encoding="utf-8"))
+    if match is None:
+        return []
+    governed = match.group(1)
+    violations: list[PolicyViolation] = []
+    workflow_dir = root / ".github" / "workflows"
+    for path in sorted((*workflow_dir.glob("*.yml"), *workflow_dir.glob("*.yaml"))):
+        text = path.read_text(encoding="utf-8")
+        declared = {
+            *re.findall(r"go-version:\s*[\"']?([0-9]+(?:\.[0-9]+)+)", text),
+            *re.findall(r"(?m)^\s+go\s+([0-9]+(?:\.[0-9]+)+)\s*$", text),
+        }
+        stale = sorted(version for version in declared if version != governed)
+        if stale:
+            violations.append(
+                PolicyViolation(
+                    "go-version-drift",
+                    _relative(path, root),
+                    f"Go versions {', '.join(stale)} do not match go.mod floor {governed}",
+                )
+            )
+    return violations
+
+
 def validate_repository(root: Path) -> list[PolicyViolation]:
     """Return all deterministic policy violations below *root*."""
     resolved = root.resolve()
@@ -159,6 +187,7 @@ def validate_repository(root: Path) -> list[PolicyViolation]:
     violations.extend(_workflow_violations(resolved))
     violations.extend(_codecov_violations(resolved))
     violations.extend(_renovate_violations(resolved))
+    violations.extend(_go_version_violations(resolved))
     return sorted(set(violations))
 
 
