@@ -7,6 +7,7 @@ from typing import Any, cast
 
 import numpy as np
 from sklearn.base import BaseEstimator, RegressorMixin
+from sklearn.utils.validation import _check_sample_weight, check_X_y
 
 from ._basis import ConstantBasisFunction
 from ._model_spec import model_to_spec, spec_to_model
@@ -200,9 +201,6 @@ class Earth(BaseEstimator, RegressorMixin):
         self : Earth
             The fitted model.
         """
-        import numpy as np
-        from sklearn.utils.validation import _check_sample_weight, check_X_y
-
         from ._forward import ForwardPasser
         from ._pruning import PruningPasser
         from ._record import EarthRecord
@@ -415,8 +413,6 @@ class Earth(BaseEstimator, RegressorMixin):
 
     def _calculate_feature_importances(self, X_fit: Any) -> None:
         """Calculate feature importances for supported strategies."""
-        import numpy as np
-
         record = self.record_
 
         if record is None:
@@ -809,8 +805,6 @@ class Earth(BaseEstimator, RegressorMixin):
         if self.basis_ is None:
             logger.info("Model not yet fitted.")
             return "Model not yet fitted."
-
-        import numpy as np  # Local import
 
         if not self.fitted_:
             logger.info("Model not yet fitted.")
