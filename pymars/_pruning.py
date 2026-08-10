@@ -57,7 +57,8 @@ class PruningPasser:
         y_data is assumed finite.
         Returns (rss, coeffs, num_valid_rows). (np.inf, None, 0) on error/no valid rows.
         """
-        if B_matrix is None or B_matrix.shape[1] == 0:
+        num_cols = B_matrix.shape[1] if B_matrix is not None else 0
+        if B_matrix is None or num_cols == 0:
             if sample_weight is None:
                 mean_y = float(np.mean(y_data))
                 rss: float = float(np.sum((y_data - mean_y) ** 2))
@@ -68,7 +69,7 @@ class PruningPasser:
                 num_valid_rows = float(np.sum(sample_weight))
             coeffs_for_mean = (
                 cast("np.ndarray", np.array([mean_y]))
-                if (B_matrix is not None and B_matrix.shape[1] == 0)
+                if B_matrix is not None and num_cols == 0
                 else None
             )
             return rss, coeffs_for_mean, num_valid_rows
@@ -76,7 +77,7 @@ class PruningPasser:
         valid_rows_mask = ~np.any(np.isnan(B_matrix), axis=1)
         num_valid_rows = float(np.sum(valid_rows_mask))
 
-        if num_valid_rows == 0 or num_valid_rows < B_matrix.shape[1]:
+        if num_valid_rows == 0 or num_valid_rows < num_cols:
             return float(np.inf), None, 0
 
         B_complete = B_matrix[valid_rows_mask, :]
@@ -98,7 +99,7 @@ class PruningPasser:
                     B_complete, y_complete, rcond=None
                 )
 
-                if residuals_sum_sq.size == 0 or rank < B_complete.shape[1]:
+                if residuals_sum_sq.size == 0 or rank < num_cols:
                     y_pred_complete = B_complete @ coeffs
                     rss = float(np.sum((y_complete - y_pred_complete) ** 2))
                 else:
