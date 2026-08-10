@@ -197,6 +197,39 @@ def test_permissions_concurrency_and_artifact_retention_are_required(
     } <= codes
 
 
+def test_concurrency_and_retention_are_scoped_to_their_yaml_blocks(
+    tmp_path: Path,
+) -> None:
+    """Unrelated groups and retained uploads cannot mask incomplete controls."""
+    _minimal_repository(tmp_path)
+    workflow = tmp_path / ".github" / "workflows" / "ci.yml"
+    workflow.write_text(
+        workflow.read_text(encoding="utf-8")
+        .replace(
+            "concurrency:\n  group: ci-${{ github.ref }}\n  cancel-in-progress: true\n",
+            "concurrency:\n  cancel-in-progress: true\n",
+        )
+        .replace(
+            "    steps:\n",
+            "    strategy:\n"
+            "      group: unrelated-job-value\n"
+            "    steps:\n"
+            "      - uses: actions/upload-artifact@0123456789012345678901234567890123456789 # v4\n"
+            "        with:\n"
+            "          name: retained\n"
+            "          path: coverage.xml\n"
+            "          retention-days: 7\n"
+            "      - uses: actions/upload-artifact@abcdefabcdefabcdefabcdefabcdefabcdefabcd # v4\n"
+            "        with:\n"
+            "          name: unbounded\n"
+            "          path: coverage.xml\n",
+        ),
+        encoding="utf-8",
+    )
+    codes = {violation.code for violation in validate_repository(tmp_path)}
+    assert {"workflow-concurrency-missing", "artifact-retention-missing"} <= codes
+
+
 def test_control_declarations_require_lifecycle_and_evidence_contract(
     tmp_path: Path,
 ) -> None:
@@ -245,3 +278,45 @@ def test_local_file_dependency_and_incomplete_monorepo_managers_are_rejected(
         in violations
     )
     assert "renovate-manager-coverage" in {item.code for item in violations}
+
+
+def test_missing_and_malformed_policy_files_are_reported(tmp_path: Path) -> None:
+    """Missing, malformed, and empty policy inputs fail deterministically."""
+    _minimal_repository(tmp_path)
+    controls = tmp_path / ".github" / "assurance-controls.json"
+    controls.unlink()
+    renovate = tmp_path / ".github" / "renovate.json"
+    renovate.unlink()
+    for workflow in (tmp_path / ".github" / "workflows").iterdir():
+        workflow.unlink()
+    codes = {violation.code for violation in validate_repository(tmp_path)}
+    assert {
+        "assurance-controls-missing",
+        "codecov-upload-missing",
+        "renovate-config-missing",
+    } <= codes
+
+    controls.write_text("{", encoding="utf-8")
+    assert "assurance-controls-invalid" in {
+        item.code for item in validate_repository(tmp_path)
+    }
+    controls.write_text(
+        json.dumps(
+            {
+                "schemaVersion": 1,
+                "lifecycleStates": [
+                    "configured",
+                    "enabled",
+                    "executed",
+                    "passing",
+                    "deferred",
+                    "blocked",
+                ],
+                "controls": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+    assert "assurance-controls-empty" in {
+        item.code for item in validate_repository(tmp_path)
+    }
