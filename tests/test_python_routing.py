@@ -416,3 +416,32 @@ def test_earth_predict_uses_rust_backend_when_available(monkeypatch) -> None:
 
     assert np.allclose(predicted, y)
     assert len(calls) == 1
+
+
+def test_runtime_validate_falls_back_on_value_error(monkeypatch) -> None:
+    """Rust validation should fall back to Python on ValueError (e.g. malformed json)."""
+    spec = runtime.load_model_spec(MODEL_SPEC_V1_PATH)
+    calls: list[str] = []
+
+    class DummyRustBackend:
+        def validate_model_spec_json(self, _spec_json: str) -> None:
+            calls.append("rust_validate")
+            raise ValueError("Rust validation failed")
+
+    monkeypatch.setattr(runtime, "_rust_backend", DummyRustBackend())
+    monkeypatch.setattr(runtime, "_spec_is_rust_runtime_compatible", lambda _spec: True)
+    monkeypatch.setattr(runtime, "_should_use_rust_backend", lambda: True)
+    monkeypatch.setattr(runtime, "_rust_backend_supports", lambda _fn: True)
+
+    original_validate = runtime.validate_model_spec
+
+    def mock_validate_model_spec(s):
+        calls.append("python_validate")
+        original_validate(s)
+
+    monkeypatch.setattr(runtime, "validate_model_spec", mock_validate_model_spec)
+
+    validated = runtime.validate(spec)
+
+    assert validated == spec
+    assert calls == ["rust_validate", "python_validate"]
