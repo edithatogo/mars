@@ -5,14 +5,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-
 ROOT = Path(__file__).parents[1]
-TRACK = (
-    ROOT
-    / "conductor"
-    / "tracks"
-    / "github_notification_hygiene_20260810"
-)
+TRACK = ROOT / "conductor" / "tracks" / "github_notification_hygiene_20260810"
 CONTRACTS = TRACK / "contracts"
 
 
@@ -23,7 +17,11 @@ def _schema(name: str) -> dict[str, object]:
 
 def test_versioned_contract_bundle_is_complete() -> None:
     """Require input, decision, and audit schemas with closed objects."""
-    for name in ("notification.schema.json", "decision.schema.json", "audit.schema.json"):
+    for name in (
+        "notification.schema.json",
+        "decision.schema.json",
+        "audit.schema.json",
+    ):
         schema = _schema(name)
         assert schema["$schema"] == "https://json-schema.org/draft/2020-12/schema"
         assert schema["additionalProperties"] is False
