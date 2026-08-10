@@ -17,7 +17,7 @@
     Scheduler.
   - [x] Document rejection of repository-hosted personal-token automation.
   - [x] Record dependency ordering and explicit track state/lock conventions.
-- [ ] Task: Automated Phase Verification & Checkpoint
+- [~] Task: Automated Phase Verification & Checkpoint
   - [ ] Run documentation, schema, policy, link, and security checks.
   - [ ] Run `conductor-review`, automatically remediate findings, rerun gates,
     and record the checkpoint according to `conductor/workflow.md`.
