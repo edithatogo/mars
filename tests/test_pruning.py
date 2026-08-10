@@ -347,3 +347,34 @@ def test_pruning_run_intercept_protection(simple_pruning_data):
         basis_subset=[bf_intercept],
     )
     assert np.isclose(best_gcv, gcv_intercept_only)
+
+
+def test_pruning_run_protects_constant_subclasses(simple_pruning_data, monkeypatch):
+    """Treat ConstantBasisFunction subclasses as protected intercepts."""
+
+    class CustomConstantBasisFunction(ConstantBasisFunction):
+        pass
+
+    X, y = simple_pruning_data
+    intercept = CustomConstantBasisFunction()
+    passer = PruningPasser(MockEarth(penalty=3.0))
+
+    def fake_compute(*args, **kwargs):
+        basis_subset = args[4]
+        return (
+            float(len(basis_subset)),
+            0.0,
+            np.ones(len(basis_subset), dtype=float),
+        )
+
+    monkeypatch.setattr(passer, "_compute_gcv_for_subset", fake_compute)
+    pruned_bfs, _, _ = passer.run(
+        X,
+        y.ravel(),
+        np.zeros_like(X, dtype=bool),
+        X,
+        [intercept],
+        np.ones(1, dtype=float),
+    )
+
+    assert pruned_bfs == [intercept]

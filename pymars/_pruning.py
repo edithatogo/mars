@@ -276,11 +276,11 @@ class PruningPasser:
 
         active_bfs_for_loop = list(current_pruning_sequence_bfs)
 
-        min_allowable_terms = (
-            1
-            if any(isinstance(bf, ConstantBasisFunction) for bf in active_bfs_for_loop)
-            else 0
-        )
+        min_allowable_terms = 0
+        for bf in active_bfs_for_loop:
+            if isinstance(bf, ConstantBasisFunction):
+                min_allowable_terms = 1
+                break
         num_iterations = len(active_bfs_for_loop) - min_allowable_terms
 
         for _ in range(num_iterations):
