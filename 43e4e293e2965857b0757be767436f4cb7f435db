@@ -1,0 +1,1 @@
+Automated review policy: phase and track reviews require conductor-review, automatically apply actionable fixes, resolve in-scope blockers, require green local and hosted evidence, omit manual verification, and archive completed tracks with preserved history.
