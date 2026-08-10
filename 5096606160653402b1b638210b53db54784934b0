@@ -1,0 +1,5 @@
+Task: Define versioned notification and decision contracts
+Summary: Added versioned JSON Schemas for notification inputs, fail-open decisions, and metadata-only audit receipts; added human-readable invariants and policy tests.
+Files: conductor/tracks/github_notification_hygiene_20260810/contract.md; conductor/tracks/github_notification_hygiene_20260810/contracts/*.json; tests/test_notification_contract_policy.py; track index.
+Why: Machine-readable, test-enforced contracts separate safety policy from runtime implementation and preserve external-human notifications on ambiguity.
+Verification: uv run --no-project --with pytest pytest tests/test_notification_contract_policy.py -q (4 passed).
