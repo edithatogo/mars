@@ -6,11 +6,11 @@
   - [x] Preserve and inventory existing staged and unstaged changes.
   - [x] Create a dedicated feature branch without losing prior scoped changes.
   - [x] Record the base commit, workflows, hosted settings, dependency PRs, required checks, durations, failures, coverage, security, and release evidence.
-- [ ] Task: Define the assurance control model
-  - [ ] Classify controls as required PR gates, scheduled checks, release gates, or preview canaries.
-  - [ ] Map each control to its command, workflow, trigger, evidence, failure policy, and remediation.
-  - [ ] Define solo-maintainer rules with automated checks and zero required reviewers.
-  - [ ] Define configured, enabled, executed, passing, deferred, and blocked states.
+- [x] Task: Define the assurance control model (19e677f)
+  - [x] Classify controls as required PR gates, scheduled checks, release gates, or preview canaries.
+  - [x] Map each control to its command, workflow, trigger, evidence, failure policy, and remediation.
+  - [x] Define solo-maintainer rules with automated checks and zero required reviewers.
+  - [x] Define configured, enabled, executed, passing, deferred, and blocked states.
 - [ ] Task: Write failing policy tests for the baseline gaps
   - [ ] Test action pinning, permissions, timeouts, concurrency, retention, merge-group coverage, and control declarations.
 - [ ] Task: Conductor - Automated Review and Checkpoint 'Phase 0: Baseline, Isolation, and Control Architecture' (Protocol in workflow.md)
