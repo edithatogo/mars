@@ -284,19 +284,21 @@ class PruningPasser:
         num_iterations = len(active_bfs_for_loop) - min_allowable_terms
 
         for _ in range(num_iterations):
-            if len(active_bfs_for_loop) <= min_allowable_terms:
+            current_len = len(active_bfs_for_loop)
+
+            if current_len <= min_allowable_terms:
                 break
 
             gcv_for_removal_candidates: list[
                 tuple[float, float, np.ndarray | None, int]
             ] = []
 
-            for i in range(len(active_bfs_for_loop)):
+            for i in range(current_len):
                 bf_to_test_removal = active_bfs_for_loop[i]
 
                 if (
                     isinstance(bf_to_test_removal, ConstantBasisFunction)
-                    and len(active_bfs_for_loop) == min_allowable_terms
+                    and current_len == min_allowable_terms
                 ):
                     gcv_for_removal_candidates.append(
                         (float(np.inf), float(np.inf), None, i)
