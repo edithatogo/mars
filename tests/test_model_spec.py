@@ -17,6 +17,18 @@ FIXTURES_DIR = Path(__file__).parent / "fixtures"
 MODEL_SPEC_V1_PATH = FIXTURES_DIR / "model_spec_v1.json"
 
 
+@pytest.mark.parametrize("use_path_object", [False, True], ids=["string", "path"])
+def test_load_model_spec_rejects_missing_path(
+    tmp_path: Path, *, use_path_object: bool
+) -> None:
+    """Missing JSON artifacts should raise FileNotFoundError for both path forms."""
+    missing_path = tmp_path / "missing-model.json"
+    input_path: str | Path = missing_path if use_path_object else str(missing_path)
+
+    with pytest.raises(FileNotFoundError):
+        runtime.load_model_spec(input_path)
+
+
 def _write_pickle_marker(path: str) -> None:
     Path(path).write_text("executed")
 
