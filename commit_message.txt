@@ -1,0 +1,6 @@
+🧹 Extract duplicated is_available to BaseModuleBackend
+
+🎯 **What:** The duplicated `OptionalModuleBackend` and `SpecializedModuleBackend` fields and methods (`capabilities`, `is_available`) were extracted into a shared `BaseModuleBackend` in `pymars/accelerator.py`.
+💡 **Why:** This removes redundant implementations of `is_available` and `capabilities`, simplifying future changes and centralizing the module marker backend logic. It improves the maintainability and readability of the codebase.
+✅ **Verification:** Verified by running `pytest` (all tests passed except the unrelated baseline regression cases) and ensuring type correctness via `ruff`. Also verified that existing tests pass correctly including mocks to check `importlib`.
+✨ **Result:** A cleaner and DRY codebase with reduced duplication and shared base backend structure for all module-marker-based backends.
