@@ -518,8 +518,9 @@ class ForwardPasser:
 
     def _generate_candidates(self) -> list[tuple[BasisFunction, BasisFunction | None]]:
         candidate_additions: list[tuple[BasisFunction, BasisFunction | None]] = []
+        max_degree = self.model.max_degree
         for parent_bf in self.current_basis_functions:
-            if parent_bf.degree() + 1 > self.model.max_degree:
+            if parent_bf.degree() + 1 > max_degree:
                 continue
             parent_involved_vars = parent_bf.get_involved_variables()
             for var_idx in range(self.n_features):
