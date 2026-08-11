@@ -200,6 +200,15 @@ def test_validate_model_spec_rejects_empty_basis_term_kind():
         validate_model_spec(payload)
 
 
+def test_validate_model_spec_rejects_missing_basis_term_kind():
+    """A missing term kind should produce the public validation error."""
+    payload = runtime.load_model_spec(MODEL_SPEC_V1_PATH)
+    payload["basis_terms"][0].pop("kind")
+
+    with pytest.raises(ValueError, match="missing a valid 'kind' field"):
+        validate_model_spec(payload)
+
+
 def test_runtime_validate_accepts_path_and_json_string():
     """Check runtime.validate accepts both paths and JSON strings."""
     via_path = runtime.validate(MODEL_SPEC_V1_PATH)
