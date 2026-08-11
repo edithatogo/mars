@@ -53,11 +53,8 @@ def _parse_model_spec_version(spec_version: Any) -> tuple[int, int]:
     return int(match.group("major")), int(match.group("minor"))
 
 
-def validate_model_spec(payload: dict[str, Any]) -> dict[str, Any]:
-    """Validate a portable model spec payload."""
-    if not isinstance(payload, dict):
-        raise TypeError("Model spec payload must be a JSON object.")
-
+def _validate_spec_version(payload: dict[str, Any]) -> None:
+    """Validate the model specification version."""
     spec_version = payload.get("spec_version")
     major_version, _minor_version = _parse_model_spec_version(spec_version)
     if major_version != _MODEL_SPEC_SUPPORTED_MAJOR_VERSION:
@@ -67,6 +64,9 @@ def validate_model_spec(payload: dict[str, Any]) -> dict[str, Any]:
             f"'{_MODEL_SPEC_SUPPORTED_MAJOR_VERSION}.x' payload."
         )
 
+
+def _validate_required_fields(payload: dict[str, Any]) -> None:
+    """Validate required top-level fields and their container types."""
     required_fields = ("params", "feature_schema", "basis_terms", "coefficients")
     missing_fields = [field for field in required_fields if field not in payload]
     if missing_fields:
@@ -84,6 +84,9 @@ def validate_model_spec(payload: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(payload["coefficients"], list):
         raise TypeError("Model spec field 'coefficients' must be an array.")
 
+
+def _validate_feature_schema(payload: dict[str, Any]) -> None:
+    """Validate portable feature metadata."""
     feature_schema = payload["feature_schema"]
     n_features = feature_schema.get("n_features")
     if n_features is not None and (not isinstance(n_features, int) or n_features < 0):
@@ -91,17 +94,31 @@ def validate_model_spec(payload: dict[str, Any]) -> dict[str, Any]:
             "Model spec field 'feature_schema.n_features' must be a non-negative integer or null."
         )
 
+
+def _validate_basis_terms_and_coefficients(payload: dict[str, Any]) -> None:
+    """Validate the one-to-one basis-term and coefficient contract."""
     if len(payload["coefficients"]) != len(payload["basis_terms"]):
         raise ValueError("Model spec must contain one coefficient per basis term.")
 
     for idx, term in enumerate(payload["basis_terms"]):
         if not isinstance(term, dict):
             raise TypeError(f"Basis term at index {idx} must be an object.")
-        kind = cast("dict[str, Any]", term)["kind"]
+        kind = cast("dict[str, Any]", term).get("kind")
         if not isinstance(kind, str) or not kind:
             raise ValueError(
                 f"Basis term at index {idx} is missing a valid 'kind' field."
             )
+
+
+def validate_model_spec(payload: dict[str, Any]) -> dict[str, Any]:
+    """Validate a portable model spec payload."""
+    if not isinstance(payload, dict):
+        raise TypeError("Model spec payload must be a JSON object.")
+
+    _validate_spec_version(payload)
+    _validate_required_fields(payload)
+    _validate_feature_schema(payload)
+    _validate_basis_terms_and_coefficients(payload)
 
     return payload
 
