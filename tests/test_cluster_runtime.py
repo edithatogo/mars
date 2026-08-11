@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import json
+import subprocess
 import sys
 
 import numpy as np
 import pytest
 
+import pymars.cluster as cluster_module
 from pymars import (
     CLUSTER_CHUNK_SIZE_ENV_VAR,
     CLUSTER_MODE_ENV_VAR,
@@ -266,6 +269,29 @@ def test_command_backed_multi_node_design_matrix_matches_cpu_replay() -> None:
     expected = runtime.design_matrix(spec, probe)
 
     assert np.allclose(actual, expected)
+
+
+def test_worker_command_retries_invalid_json(monkeypatch, tmp_path) -> None:
+    """Retry invalid worker JSON and preserve the final decoding error."""
+    call_count = 0
+
+    def mock_run(*args, **kwargs):
+        nonlocal call_count
+        del kwargs
+        call_count += 1
+        return subprocess.CompletedProcess(
+            args=args[0], returncode=0, stdout="invalid json {"
+        )
+
+    monkeypatch.setattr(cluster_module.subprocess, "run", mock_run)
+
+    with pytest.raises(RuntimeError) as exc_info:
+        cluster_module._run_worker_command(
+            ["fake-command"], tmp_path / "payload.json", retries=2
+        )
+
+    assert call_count == 3
+    assert isinstance(exc_info.value.__cause__, json.JSONDecodeError)
 
 
 def test_worker_result_list_returns_valid_result() -> None:
