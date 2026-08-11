@@ -310,3 +310,11 @@ def test_worker_result_list_rejects_invalid_result(payload: dict[str, object]) -
     """Missing and non-list worker results should raise a typed error."""
     with pytest.raises(TypeError, match=r"Worker output must contain a list result\."):
         _worker_result_list(payload)
+
+
+def test_cluster_worker_port_rejects_non_integer(monkeypatch) -> None:
+    """Reject a non-integer worker port from the environment."""
+    monkeypatch.setenv("PYMARS_WORKER_PORT", "not-an-int")
+
+    with pytest.raises(ValueError, match=r"PYMARS_WORKER_PORT must be an integer\."):
+        cluster_module._parse_non_negative_int_env("PYMARS_WORKER_PORT")
