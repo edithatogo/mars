@@ -2,6 +2,7 @@
 
 import matplotlib
 import numpy as np
+import pytest
 
 matplotlib.use("Agg")
 
@@ -58,3 +59,33 @@ def test_earthcv_and_plotting():
     model.fit(X, y + 1)
     plot_basis_functions(model, X)
     plot_residuals(model, X, y + 1)
+
+
+def test_earthcv_rejects_single_fold() -> None:
+    """Cross-validation should reject fewer than two folds."""
+    rng = np.random.RandomState(0)
+    X = rng.rand(30, 2)
+    y = rng.rand(30)
+
+    with pytest.raises(ValueError):
+        EarthCV(cv=1).score(X, y)
+
+
+def test_earthcv_rejects_unknown_scoring_rule() -> None:
+    """Cross-validation should reject unknown scorer names."""
+    rng = np.random.RandomState(0)
+    X = rng.rand(30, 2)
+    y = rng.rand(30)
+
+    with pytest.raises(ValueError, match="unknown_scoring_rule"):
+        EarthCV(cv=3, scoring="unknown_scoring_rule").score(X, y)
+
+
+def test_earthcv_rejects_mismatched_sample_counts() -> None:
+    """Cross-validation should reject mismatched feature and target rows."""
+    rng = np.random.RandomState(0)
+    X = rng.rand(30, 2)
+    y = rng.rand(20)
+
+    with pytest.raises(ValueError, match="inconsistent numbers of samples"):
+        EarthCV(cv=3).score(X, y)
