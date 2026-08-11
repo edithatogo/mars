@@ -425,6 +425,14 @@ def test_plot_helpers_cover_both_paths():
     assert axes is not None
 
 
+def test_plot_basis_functions_rejects_unfitted_model():
+    """Reject a model that does not expose its learned basis."""
+    X = np.array([[1.0, 2.0], [3.0, 4.0]])
+
+    with pytest.raises(ValueError, match="Model is not fitted"):
+        plot.plot_basis_functions(SimpleNamespace(), X)
+
+
 def test_explain_helpers_cover_both_paths(monkeypatch):
     """Exercise explanation helpers with and without partial dependence."""
     model = FakeExplainModel()
