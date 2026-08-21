@@ -31,4 +31,3 @@ and each language binding, including notebooks that cover the major workflows.
 - Accelerator kernel implementation.
 - Distributed execution.
 - Packaging submission work.
-
