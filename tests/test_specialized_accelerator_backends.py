@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import pymars.specialized_accelerator_backends as specialized_backends
 from pymars.specialized_accelerator_backends import (
     SPECIALIZED_DEFERRED_TARGETS,
     make_asic_backend,
@@ -13,8 +12,10 @@ from pymars.specialized_accelerator_backends import (
 
 def test_specialized_backend_factories_report_expected_targets(monkeypatch) -> None:
     """Specialized backends should expose stable names and device kinds."""
+    import importlib.util
+
     monkeypatch.setattr(
-        specialized_backends.importlib.util,
+        importlib.util,
         "find_spec",
         lambda module_name: object() if module_name in {"jax", "amaranth"} else None,
     )
@@ -37,9 +38,9 @@ def test_specialized_backend_factories_report_expected_targets(monkeypatch) -> N
 
 def test_specialized_backends_fall_back_when_modules_missing(monkeypatch) -> None:
     """Specialized backends should report unavailable when marker modules are absent."""
-    monkeypatch.setattr(
-        specialized_backends.importlib.util, "find_spec", lambda _module_name: None
-    )
+    import importlib.util
+
+    monkeypatch.setattr(importlib.util, "find_spec", lambda _module_name: None)
 
     assert make_tpu_backend().is_available() is False
     assert make_fpga_backend().is_available() is False
