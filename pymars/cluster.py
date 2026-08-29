@@ -140,23 +140,24 @@ class DeferredMultiNodeBackend:
         """The multi-node backend is intentionally deferred."""
         return False
 
+    def _raise_deferred(self) -> Any:
+        raise NotImplementedError(
+            "Multi-node H4 execution is deferred; use the CPU cluster replay path."
+        )
+
     def predict(
         self, spec_or_path: dict[str, Any] | str, X: Any, config: ClusterConfig
     ):
         """Fail clearly when callers request the deferred multi-node path."""
         del spec_or_path, X, config
-        raise NotImplementedError(
-            "Multi-node H4 execution is deferred; use the CPU cluster replay path."
-        )
+        self._raise_deferred()
 
     def design_matrix(
         self, spec_or_path: dict[str, Any] | str, X: Any, config: ClusterConfig
     ):
         """Fail clearly when callers request the deferred multi-node path."""
         del spec_or_path, X, config
-        raise NotImplementedError(
-            "Multi-node H4 execution is deferred; use the CPU cluster replay path."
-        )
+        self._raise_deferred()
 
 
 @dataclass(frozen=True, slots=True)

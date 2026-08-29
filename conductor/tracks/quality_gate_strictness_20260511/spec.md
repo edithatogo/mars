@@ -28,4 +28,3 @@ security policy uniformly strict across CI and local automation.
 - New product features.
 - Accelerator kernels.
 - Documentation content beyond quality-policy alignment.
-
