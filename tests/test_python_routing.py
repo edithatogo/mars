@@ -433,3 +433,17 @@ def test_earth_predict_uses_rust_backend_when_available(monkeypatch) -> None:
 
     assert np.allclose(predicted, y)
     assert len(calls) == 1
+
+
+def test_runtime_design_matrix_coercion_error_returns_none(monkeypatch) -> None:
+    """_design_matrix_with_rust returns None if coercion fails."""
+    monkeypatch.setattr(runtime, "_spec_is_rust_runtime_compatible", lambda _spec: True)
+    monkeypatch.setattr(runtime, "_should_use_rust_backend", lambda: True)
+    monkeypatch.setattr(runtime, "_rust_backend_supports", lambda _op: True)
+
+    def mock_coerce(*args, **kwargs):
+        raise ValueError("mock coercion error")
+
+    monkeypatch.setattr(runtime, "_coerce_rows_for_rust", mock_coerce)
+
+    assert runtime._design_matrix_with_rust({}, None) is None
