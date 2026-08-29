@@ -2,35 +2,18 @@
 
 from __future__ import annotations
 
-import importlib.util
+import importlib
 from dataclasses import dataclass
 from typing import Any, cast
 
 import numpy as np
 
-from .accelerator import AcceleratorCapabilities
+from .accelerator import BaseModuleBackend
 
 
 @dataclass(frozen=True, slots=True)
-class OptionalModuleBackend:
+class OptionalModuleBackend(BaseModuleBackend):
     """Backend adapter that is available only when a marker module exists."""
-
-    name: str
-    marker_module: str
-    device_kind: str
-
-    def capabilities(self) -> AcceleratorCapabilities:
-        """Return the backend capability profile."""
-        return AcceleratorCapabilities(
-            backend_name=self.name,
-            device_kind=self.device_kind,
-            supports_prediction=True,
-            supports_design_matrix=True,
-        )
-
-    def is_available(self) -> bool:
-        """Return whether the backing module can be imported."""
-        return importlib.util.find_spec(self.marker_module) is not None
 
 
 def make_cuda_backend() -> ArrayModuleAcceleratorBackend:

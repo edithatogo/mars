@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib.util
 import os
 from dataclasses import dataclass
 from typing import Any, Protocol, runtime_checkable
@@ -23,6 +24,29 @@ class AcceleratorCapabilities:
     supports_training: bool = False
     supports_distributed: bool = False
     supports_batch_replay: bool = True
+
+
+
+@dataclass(frozen=True, slots=True)
+class BaseModuleBackend:
+    """Base backend adapter that is available only when a marker module exists."""
+
+    name: str
+    marker_module: str
+    device_kind: str
+
+    def capabilities(self) -> AcceleratorCapabilities:
+        """Return the backend capability profile."""
+        return AcceleratorCapabilities(
+            backend_name=self.name,
+            device_kind=self.device_kind,
+            supports_prediction=True,
+            supports_design_matrix=True,
+        )
+
+    def is_available(self) -> bool:
+        """Return whether the backing module can be imported."""
+        return importlib.util.find_spec(self.marker_module) is not None
 
 
 @runtime_checkable
