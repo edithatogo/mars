@@ -10,7 +10,7 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.41.7",
+    "@astrojs/starlight": "^0.41.11",
     "@astrojs/sitemap": "^3.7.3",
     "astro": "^7.0.9",
     "starlight-links-validator": "^0.25.2",
