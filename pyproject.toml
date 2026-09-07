@@ -47,7 +47,7 @@ Changelog = "https://github.com/edithatogo/mars/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 pandas = ["pandas>=1.3.0"]
-cli = ["pandas>=1.3.0", "click>=8.0.0", "rich>=12.0.0"]
+cli = ["pandas>=1.3.0", "click>=8.0.4", "rich>=12.0.0"]
 profiling = ["scalene>=1.5.0", "py-spy>=0.3.0"]
 dev = [
     # Package management
