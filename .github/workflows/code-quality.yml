@@ -28,8 +28,8 @@ jobs:
           enable-cache: true
           cache-dependency-glob: uv.lock
 
-      - name: Set up Python 3.12
-        run: uv python install 3.12
+      - name: Set up Python 3.15.1
+        run: uv python install 3.15.1
 
       - name: Install dependencies
         run: uv sync --extra dev

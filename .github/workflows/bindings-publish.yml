@@ -147,7 +147,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: astral-sh/setup-uv@v4
-      - run: uv python install 3.12
+      - run: uv python install 3.15.1
       - run: uv sync --extra dev
       - run: uv run pytest -q tests/test_model_spec.py tests/test_binding_conformance.py
       - name: Publish note

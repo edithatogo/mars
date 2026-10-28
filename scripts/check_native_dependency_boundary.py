@@ -1,28 +1,54 @@
 """Reject Python ABI dependencies in the normal and build graphs of a native core."""
+
 import argparse
 import json
-from pathlib import Path
+import shutil
 import subprocess
+from pathlib import Path
 
 
 def check(manifest: Path) -> list[str]:
-    result = subprocess.run(
-        ['cargo', 'tree', '--manifest-path', str(manifest), '--locked', '--offline',
-         '-e', 'normal,build', '--prefix', 'none'],
-        check=True, capture_output=True, text=True,
+    """Inspect Cargo metadata without compiling or executing package build scripts."""
+    cargo = shutil.which("cargo")
+    if cargo is None:
+        raise RuntimeError("cargo is required")
+    result = subprocess.run(  # noqa: S603 - fixed argv, no shell, metadata-only Cargo operation
+        [
+            cargo,
+            "tree",
+            "--manifest-path",
+            str(manifest),
+            "--locked",
+            "--offline",
+            "-e",
+            "normal,build",
+            "--prefix",
+            "none",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
     )
-    return [line for line in result.stdout.splitlines()
-            if line.startswith(('pyo3 ', 'pyo3-'))]
+    return [
+        line
+        for line in result.stdout.splitlines()
+        if line.startswith(("pyo3 ", "pyo3-"))
+    ]
 
 
 def main() -> int:
+    """Validate the selected manifest and report Python ABI dependencies."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--manifest', type=Path, default=Path(__file__).resolve().parents[1] / 'rust-runtime/Cargo.toml')
+    parser.add_argument(
+        "--manifest",
+        type=Path,
+        default=Path(__file__).resolve().parents[1] / "rust-runtime/Cargo.toml",
+    )
     args = parser.parse_args()
     dependencies = check(args.manifest)
-    print(json.dumps({'default_core_python_dependencies': dependencies}))
+    print(json.dumps({"default_core_python_dependencies": dependencies}))
     return int(bool(dependencies))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     raise SystemExit(main())
