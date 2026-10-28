@@ -1,7 +1,7 @@
 # Technology Stack: mars
 
 ## Core Language
-- **Python 3.9+** - Current public package and scikit-learn compatibility layer
+- **Python 3.15.1** - Current public package and scikit-learn compatibility layer
 - **Rust 2021** - Shared computational core direction and current portable runtime prototype
 
 ## Dependencies
@@ -79,3 +79,14 @@
 - **starlight-links-validator** — Internal link validation in CI
 - **starlight-versions** — Versioned docs support
 - **starlight-llms-txt** — LLM-friendly documentation export
+
+## Scientific alignment, 29 October 2026
+
+The default Rust library/CLI excludes PyO3. The explicit `python` feature owns
+the Python adapter and maturin enables it when building wheels. The adapter
+was validated using Python 3.15.1; whole-project Python manifest/CI migration remains a separate
+open task until installed-package and complete-suite evidence passes.
+
+The scientific alignment candidate now selects Python3.15.1 in package, CI and
+tooling defaults. Locked installation and targeted binding tests passed locally;
+full integration/platform acceptance remains pending.

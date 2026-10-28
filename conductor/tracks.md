@@ -192,3 +192,7 @@ The remaining-track dependency gates are summarized in
 
 - [~] **Track: Automate GitHub notification hygiene while preserving external-human signalling**
   *Link: [./tracks/github_notification_hygiene_20260810/index.md](./tracks/github_notification_hygiene_20260810/index.md)*
+
+---
+- [ ] **Scientific ecosystem alignment (mars)**
+  [Track](tracks/scientific_ecosystem_alignment_20261029/index.md) — linked delivery; native acceptance pending.

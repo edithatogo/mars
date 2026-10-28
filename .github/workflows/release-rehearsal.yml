@@ -115,7 +115,7 @@ jobs:
 
       - run: chmod +x "$MARS_RUNTIME_BIN"
 
-      - run: uv python install 3.12
+      - run: uv python install 3.15.1
 
       - run: uv sync --extra dev
 

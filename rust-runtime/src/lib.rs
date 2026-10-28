@@ -20,6 +20,7 @@
 pub mod errors;
 pub mod foreign;
 pub mod model_spec;
+#[cfg(feature = "python")]
 pub mod python;
 pub mod runtime;
 pub mod training;
