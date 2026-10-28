@@ -194,5 +194,6 @@ The remaining-track dependency gates are summarized in
   *Link: [./tracks/github_notification_hygiene_20260810/index.md](./tracks/github_notification_hygiene_20260810/index.md)*
 
 ---
-- [ ] **Scientific ecosystem alignment (mars)**
-  [Track](tracks/scientific_ecosystem_alignment_20261029/index.md) — implementation candidate is in [PR #235](https://github.com/edithatogo/mars/pull/235); integration and native acceptance remain open. [Issue #236](https://github.com/edithatogo/mars/issues/236).
+- [ ] **Track: Scientific ecosystem alignment (mars)**
+  *Link: [./tracks/scientific_ecosystem_alignment_20261029/index.md](./tracks/scientific_ecosystem_alignment_20261029/index.md)*
+  Implementation candidate is in [PR #235](https://github.com/edithatogo/mars/pull/235); integration and native acceptance remain open. [Issue #236](https://github.com/edithatogo/mars/issues/236).
