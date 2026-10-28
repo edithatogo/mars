@@ -79,3 +79,10 @@
 - **starlight-links-validator** — Internal link validation in CI
 - **starlight-versions** — Versioned docs support
 - **starlight-llms-txt** — LLM-friendly documentation export
+
+## Scientific alignment, 29 October 2026
+
+The default Rust library/CLI excludes PyO3. The explicit `python` feature owns
+the Python adapter and maturin enables it when building wheels. The adapter
+was validated using Python 3.15.1; whole-project Python manifest/CI migration remains a separate
+open task until installed-package and complete-suite evidence passes.

@@ -51,3 +51,14 @@ The fixture test discovers paired files in `../tests/fixtures`:
 - `runtime_portability_fixture_<name>.json`
 
 The Rust outputs must match the Python-produced fixture expectations.
+
+## Native dependency boundary
+
+Default Cargo builds contain no PyO3 dependency. Use `--features python` for
+the Python adapter; maturin selects it automatically through pyproject.toml.
+The Python adapter was validated using Python 3.15.1. Run the repository-local Python 3.15.1
+`scripts/check_native_dependency_boundary.py` after fetching locked Cargo inputs.
+
+The optional-binding split preserves the existing ABI floor. Python 3.15.1
+was used for local binding validation; the package-wide runtime/CI migration
+remains a separate acceptance item in the scientific ecosystem track.
