@@ -33,3 +33,12 @@ reported no known vulnerabilities. Fixed new-script Ruff findings and retained
 justified shell-free metadata subprocess calls. Hosted rerun remains required.
 The initial native/installed fixture receipts above remain scoped to their stated
 inputs; package migration is not declared complete by these focused checks.
+
+Temporary tooling exception: pytest9.2 breaks pytest-benchmark5.3 at node._nodeid.
+The locked candidate selects9.1.1. Owner: mars; revisit when the benchmark
+plugin supports the public nodeid API. The actual benchmark regression is run
+before this change is committed; broader CI remains required.
+
+Benchmark regression with pytest9.1.1: test_earth_fit_performance_small passed
+(5 rounds; total pytest time69.42s). This is compatibility evidence, not an
+accepted cross-machine performance baseline.
