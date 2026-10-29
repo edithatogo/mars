@@ -192,3 +192,8 @@ The remaining-track dependency gates are summarized in
 
 - [~] **Track: Automate GitHub notification hygiene while preserving external-human signalling**
   *Link: [./tracks/github_notification_hygiene_20260810/index.md](./tracks/github_notification_hygiene_20260810/index.md)*
+
+---
+- [ ] **Track: voiage alignment follow-ups (mars)**
+  *Link: [./tracks/voiage_alignment_followups_20261030/](./tracks/voiage_alignment_followups_20261030/)*
+  Planned; awaiting owner approval. [Issue #238](https://github.com/edithatogo/mars/issues/238).
