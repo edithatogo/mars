@@ -51,7 +51,7 @@ Starlight+polyglot, enabling:
 - `starlight-links-validator ^0.19.2`
 - `starlight-versions ^0.8.0`
 - `starlight-llms-txt ^1.0.0`
-- Node.js >= 22.12.0
+- Node.js >= 22.23.4 (runtime floor aligned with Astro 7.4.7 on 2026-11-15)
 - pnpm >= 10.32.1
 
 ## Validation

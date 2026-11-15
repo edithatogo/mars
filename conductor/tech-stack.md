@@ -73,6 +73,7 @@
   audit contracts
 
 ## Documentation
+- **Node.js 22.23.4** — Documentation CI pin; the docs package requires Node.js >=22.23.4 to satisfy Astro 7.4.7 (runtime floor aligned 2026-11-15).
 - **Starlight (Astro)** — Static site generation for documentation (ACTIVE; replaced mkdocs Material 2026-05-13)
 - **@astrojs/sitemap** — Sitemap generation for SEO
 - **starlight-polyglot** — Plugin generating API docs from Python source code (entryPoints: `pymars`)
