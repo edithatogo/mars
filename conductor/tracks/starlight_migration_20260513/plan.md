@@ -71,3 +71,12 @@
 - [ ] Verify `pnpm run build` succeeds
 - [ ] Verify GH Pages deployment works
 - [ ] Remove `mkdocs.yml` once migration is confirmed stable
+
+## Maintenance: Astro runtime floor (2026-11-15)
+
+- [x] Diagnose PR #217 documentation build failure: Node.js 22.12.0 is below Astro 7.4.7's declared minimum of 22.23.4.
+- [~] Align the documentation CI pin, package engine floor, and documented runtime requirement with Node.js 22.23.4; exact-head hosted verification is pending.
+- [ ] Verify the repaired PR's frozen pnpm installation, production build with internal-link validation, and Pages artifact upload; deployment remains skipped for pull requests.
+- [ ] Resolve the independent Python dependency-audit findings and require all applicable security, Python, Rust, binding, quality, and coverage checks before merge. The observed PR #217 audit reported 103 vulnerabilities in 10 packages and did not reach cargo-audit.
+
+Static configuration and locked engine-range checks validate only the Node-floor repair. A complete local documentation build and full repository gates were not run during this review; no existing migration checklist item is marked complete by this maintenance note.
