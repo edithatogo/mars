@@ -93,7 +93,7 @@ dev = [
 mars = "pymars.cli:main"
 
 [build-system]
-requires = ["maturin>=1.8.0"]
+requires = ["maturin>=1.8.7"]
 build-backend = "maturin"
 
 [tool.maturin]
