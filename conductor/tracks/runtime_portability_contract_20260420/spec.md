@@ -315,3 +315,12 @@ Downstream `1.x` implementers may rely on the following:
 - The minimum runtime contract is expressed in terms of stable inputs, outputs, and error semantics.
 - The package-boundary decision is documented with explicit tradeoffs.
 - The resulting contract is sufficient to guide prototype consumers in later tracks.
+
+## Serde adoption assessment — 18 November 2026 (existing portability track)
+
+The `rust-runtime/Cargo.toml` already includes `serde` derive, `serde_json` and PyO3, and `rust-runtime/src/model_spec.rs` consumes versioned ModelSpec artifacts. Serde is suitable for **typed ModelSpec interchange**; it does not replace the MARS algorithm, numerical state or the PyO3 ABI. A global Rust migration of the Python project is outside this scope.
+
+- [ ] Ensure the published Python→Rust ModelSpec fixture corpus covers stable schema versions, missing/unknown field compatibility, float/nonfinite handling, endianness-independent identifiers, pathological recursion/size, UTF-8 and detailed error codes.
+- [ ] Prove independent runtime numerical equivalence and deterministic replay across pinned Python and Rust versions. A self-produced Serde JSON roundtrip is not evidence of algorithmic parity or future version compatibility.
+- [ ] Replace any handwritten Rust JSON only when the same stable typed DTO covers it without loss; otherwise preserve explicit adapters. Do not add Serde to Python-only code or force Rust conversion.
+- [ ] Exact-head locked Cargo, ABI3 wheel and installed-client validation, source/model provenance, compatibility/semver review and regression timings are required before acceptance. This addendum is specification only.
