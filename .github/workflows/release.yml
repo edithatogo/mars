@@ -35,7 +35,48 @@ jobs:
         run: uv python install 3.12
 
       - name: Build package
-        run: uv build
+        run: uv build --config-setting build-args=--locked
+
+      - name: Inventory exact distributions and frozen runtime dependencies
+        run: bash scripts/generate_release_sbom.sh
+
+      - name: Generate resolved Rust SPDX inventory
+        uses: anchore/sbom-action@66cbf4bc1f1c0d2edc94016e65bc221b6bb0ad6c # v0.24.3
+        with:
+          path: .grype-rust-inputs
+          syft-version: v1.57.2
+          format: spdx-json
+          output-file: release-evidence/rust.sbom.spdx.json
+          upload-artifact: false
+          upload-release-assets: false
+
+      - name: Gate Python release dependencies with Grype
+        uses: edithatogo/repository-standards/.github/actions/grype-scan@06a7bd00074b402fe91b2e3ed7a8af806be945e7
+        with:
+          sbom: release-evidence/python.sbom.cdx.json
+          mode: enforce
+          artifact-name: grype-python-release
+          output-directory: .grype-python-evidence
+
+      - name: Gate resolved Rust dependencies with Grype
+        uses: edithatogo/repository-standards/.github/actions/grype-scan@06a7bd00074b402fe91b2e3ed7a8af806be945e7
+        with:
+          sbom: release-evidence/rust.sbom.spdx.json
+          mode: enforce
+          artifact-name: grype-rust-release
+          output-directory: .grype-rust-evidence
+
+      - name: Retain release inventory and subject binding
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: grype-release-inputs
+          path: release-evidence/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Verify scanned release inputs are unchanged
+        run: sha256sum --check release-evidence/subjects.sha256
 
       - name: Generate provenance attestation
         uses: actions/attest@v4
@@ -70,7 +111,11 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/*
+          files: |
+            dist/*
+            release-evidence/python.sbom.cdx.json
+            release-evidence/rust.sbom.spdx.json
+            release-evidence/subjects.sha256
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

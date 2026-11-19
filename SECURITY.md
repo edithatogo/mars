@@ -39,4 +39,7 @@ This project currently implements:
 - Safety for dependency vulnerability checking
 - GitHub-hosted workflow automation for CI and release validation
 
-Future hardening work may add SBOM generation, release signing, and provenance once those controls are implemented end-to-end.
+The [Grype dependency evidence contract](docs/grype-dependency-evidence.md)
+describes the initial Python, Cargo, npm and NuGet publication gates, retained
+SBOM monitoring and remaining inventory boundaries. Configured workflows need
+successful runs on their actual revision before acceptance can be claimed.

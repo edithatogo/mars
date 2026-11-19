@@ -1,0 +1,88 @@
+name: Grype dependency evidence
+
+on:
+  pull_request:
+    paths:
+      - pyproject.toml
+      - uv.lock
+      - rust-runtime/Cargo.toml
+      - rust-runtime/Cargo.lock
+      - scripts/generate_release_sbom.sh
+      - .github/workflows/grype.yml
+      - .github/workflows/release.yml
+      - .github/workflows/bindings-publish.yml
+  workflow_dispatch:
+  schedule:
+    - cron: '47 5 * * 1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: grype-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  candidate:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990
+        with:
+          version: '0.13.6'
+          enable-cache: false
+      - run: uv python install 3.12
+      - name: Build locked candidate
+        run: uv build --config-setting build-args=--locked
+      - name: Inventory candidate runtime
+        run: bash scripts/generate_release_sbom.sh
+      - name: Generate resolved Rust SPDX inventory
+        uses: anchore/sbom-action@66cbf4bc1f1c0d2edc94016e65bc221b6bb0ad6c
+        with:
+          path: .grype-rust-inputs
+          syft-version: v1.57.2
+          format: spdx-json
+          output-file: release-evidence/rust.sbom.spdx.json
+          upload-artifact: false
+          upload-release-assets: false
+      - name: Report Python dependency vulnerabilities
+        uses: edithatogo/repository-standards/.github/actions/grype-scan@06a7bd00074b402fe91b2e3ed7a8af806be945e7
+        with:
+          sbom: release-evidence/python.sbom.cdx.json
+          mode: advisory
+          artifact-name: grype-python-candidate
+          output-directory: .grype-python-evidence
+      - name: Report Rust dependency vulnerabilities
+        uses: edithatogo/repository-standards/.github/actions/grype-scan@06a7bd00074b402fe91b2e3ed7a8af806be945e7
+        with:
+          sbom: release-evidence/rust.sbom.spdx.json
+          mode: advisory
+          artifact-name: grype-rust-candidate
+          output-directory: .grype-rust-evidence
+      - name: Retain candidate subject binding
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: grype-candidate-inputs
+          path: release-evidence/
+          if-no-files-found: error
+          retention-days: 14
+
+  released-sbom:
+    if: github.event_name == 'schedule'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - asset: python.sbom.cdx.json
+            name: python
+          - asset: rust.sbom.spdx.json
+            name: rust
+    uses: edithatogo/repository-standards/.github/workflows/grype-release-rescan.yml@32ff270618098ffa8f8162f58efabfdfe93de799
+    with:
+      sbom-asset: ${{ matrix.asset }}
+      artifact-name: grype-released-${{ matrix.name }}

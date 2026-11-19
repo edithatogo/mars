@@ -36,11 +36,36 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@stable
-      - run: cargo package
+      - run: cargo package --locked
         working-directory: rust-runtime
+      - name: Inventory the packaged Rust dependency lock
+        uses: edithatogo/repository-standards/.github/actions/cargo-lock-sbom@bc76f1fbe0fa87a1371eadc06b08f54b48c623f7
+        with:
+          lockfile: rust-runtime/Cargo.lock
+          output: .grype-inputs/rust.sbom.cdx.json
+          name: mars-rust-runtime
+      - name: Bind the Rust package and lock
+        run: sha256sum rust-runtime/Cargo.lock rust-runtime/target/package/*.crate > .grype-inputs/subjects.sha256
+      - name: Gate Rust registry dependencies
+        uses: edithatogo/repository-standards/.github/actions/grype-scan@06a7bd00074b402fe91b2e3ed7a8af806be945e7
+        with:
+          sbom: .grype-inputs/rust.sbom.cdx.json
+          mode: enforce
+          artifact-name: grype-rust-binding
+          output-directory: .grype-evidence
+      - name: Retain Rust package binding
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: grype-rust-binding-inputs
+          path: .grype-inputs/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
+      - run: sha256sum --check .grype-inputs/subjects.sha256
       - name: Publish to crates.io
         if: inputs.dry_run == false
-        run: cargo publish --token "$CARGO_REGISTRY_TOKEN"
+        run: cargo publish --locked --token "$CARGO_REGISTRY_TOKEN"
         working-directory: rust-runtime
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
@@ -57,13 +82,50 @@ jobs:
           registry-url: "https://registry.npmjs.org"
       - run: npm test
         working-directory: bindings/typescript
-      - run: npm pack --dry-run
+      - name: Package the exact npm candidate
+        run: |
+          npm pack --json > pack.json
+          test "$(jq length pack.json)" = 1
+          mkdir -p ../../.grype-npm-package ../../.grype-inputs
+          archive="$(jq -er '.[0].filename' pack.json)"
+          tar -xzf "$archive" -C ../../.grype-npm-package
+          sha256sum "$archive" > ../../.grype-inputs/npm-subject.sha256
+          cp pack.json ../../.grype-inputs/
+        working-directory: bindings/typescript
+      - name: Inventory the packaged npm contents
+        uses: anchore/sbom-action@66cbf4bc1f1c0d2edc94016e65bc221b6bb0ad6c
+        env:
+          SYFT_SELECT_CATALOGERS: '+javascript-package-cataloger'
+        with:
+          path: .grype-npm-package
+          syft-version: v1.57.2
+          format: spdx-json
+          output-file: .grype-inputs/npm.sbom.spdx.json
+          upload-artifact: false
+          upload-release-assets: false
+      - name: Gate npm package dependencies
+        uses: edithatogo/repository-standards/.github/actions/grype-scan@06a7bd00074b402fe91b2e3ed7a8af806be945e7
+        with:
+          sbom: .grype-inputs/npm.sbom.spdx.json
+          mode: enforce
+          artifact-name: grype-npm-binding
+          output-directory: .grype-evidence
+      - name: Retain npm package binding
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: grype-npm-binding-inputs
+          path: .grype-inputs/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
+      - run: sha256sum --check ../../.grype-inputs/npm-subject.sha256
         working-directory: bindings/typescript
       - name: Publish to npm
         if: inputs.dry_run == false
         # The first npm publish must use an automation token. Granular tokens
         # still trigger EOTP here until npm trusted publishing is configured.
-        run: npm publish --access public
+        run: npm publish "$(jq -er '.[0].filename' pack.json)" --access public
         working-directory: bindings/typescript
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -87,6 +149,38 @@ jobs:
           MARS_RUNTIME_BIN: ${{ github.workspace }}/rust-runtime/target/debug/mars-runtime-cli
       - run: dotnet pack --configuration Release
         working-directory: bindings/csharp
+      - name: Bind the NuGet candidate
+        run: |
+          mkdir -p .grype-inputs
+          sha256sum bindings/csharp/bin/Release/*.nupkg > .grype-inputs/subjects.sha256
+      - name: Inventory built .NET assemblies and runtime metadata
+        uses: anchore/sbom-action@66cbf4bc1f1c0d2edc94016e65bc221b6bb0ad6c
+        env:
+          SYFT_DOTNET_EXCLUDE_PROJECT_REFERENCES: 'false'
+        with:
+          path: bindings/csharp/bin/Release
+          syft-version: v1.57.2
+          format: spdx-json
+          output-file: .grype-inputs/nuget.sbom.spdx.json
+          upload-artifact: false
+          upload-release-assets: false
+      - name: Gate NuGet package dependencies
+        uses: edithatogo/repository-standards/.github/actions/grype-scan@06a7bd00074b402fe91b2e3ed7a8af806be945e7
+        with:
+          sbom: .grype-inputs/nuget.sbom.spdx.json
+          mode: enforce
+          artifact-name: grype-nuget-binding
+          output-directory: .grype-evidence
+      - name: Retain NuGet package binding
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: grype-nuget-binding-inputs
+          path: .grype-inputs/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
+      - run: sha256sum --check .grype-inputs/subjects.sha256
       - name: NuGet login (OIDC -> temporary API key)
         id: login
         uses: NuGet/login@v1
