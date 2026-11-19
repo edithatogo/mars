@@ -1,6 +1,6 @@
-# Grype dependency evidence
+# Dependency vulnerability evidence
 
-Grype supplements the existing audit, test and release gates. The shared action
+The dependency scanner supplements the existing audit, test and release gates. The shared action
 is pinned to an immutable commit, refreshes its vulnerability database and
 retains scanner, database, inventory, source and policy evidence. Pull-request
 findings are advisory; candidate publication uses the Critical threshold.
@@ -8,7 +8,7 @@ Missing inventories and operational errors fail either mode.
 
 ## Python distribution
 
-The release workflow builds the wheel and sdist with Cargo's locked resolution.
+The release workflow builds the wheel and source distribution with locked `cargo` resolution.
 `scripts/generate_release_sbom.sh` installs the hash-locked Python runtime graph
 with the `cli` and `pandas` extras into a fresh Python 3.12 environment, then
 installs the exact candidate wheel without resolving again. A validated
@@ -23,7 +23,7 @@ assets, so JSON evidence is not accidentally sent to PyPI.
 
 ## Binding publication
 
-The manual Rust route packages with `--locked`, scans its Cargo graph and
+The manual Rust route packages with `--locked`, scans its Rust dependency graph and
 checks the package/lock hashes before locked publication. The TypeScript route
 builds one npm tarball, inventories its extracted contents, checks its hash and
 publishes that same tarball. The current npm package declares no runtime
