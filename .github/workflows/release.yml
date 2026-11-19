@@ -51,7 +51,7 @@ jobs:
           upload-release-assets: false
 
       - name: Gate Python release dependencies with Grype
-        uses: edithatogo/repository-standards/.github/actions/grype-scan@bc76f1fbe0fa87a1371eadc06b08f54b48c623f7
+        uses: edithatogo/repository-standards/.github/actions/grype-scan@06a7bd00074b402fe91b2e3ed7a8af806be945e7
         with:
           sbom: release-evidence/python.sbom.cdx.json
           mode: enforce
@@ -59,7 +59,7 @@ jobs:
           output-directory: .grype-python-evidence
 
       - name: Gate resolved Rust dependencies with Grype
-        uses: edithatogo/repository-standards/.github/actions/grype-scan@bc76f1fbe0fa87a1371eadc06b08f54b48c623f7
+        uses: edithatogo/repository-standards/.github/actions/grype-scan@06a7bd00074b402fe91b2e3ed7a8af806be945e7
         with:
           sbom: release-evidence/rust.sbom.spdx.json
           mode: enforce

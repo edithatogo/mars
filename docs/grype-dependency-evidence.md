@@ -42,8 +42,8 @@ The weekly workflow independently scans the two retained SBOM assets from the
 latest published non-prerelease release, binding each asset ID and
 GitHub-provided SHA-256. Missing assets fail explicitly until a qualified release
 has supplied them. Candidate checks cannot stand in for released-asset monitoring.
-Release input receipts and scan outputs are retained for 30 days; pull-request
-input receipts for 14 days. Always-retained partial evidence distinguishes
+Caller-owned release input receipts are retained for 30 days and pull-request
+input receipts for 14 days; the shared scanner retains its outputs for 90 days. Always-retained partial evidence distinguishes
 scanner failures from completed policy results.
 
 Local workflow lint and scoped shell checks do not establish native build,

@@ -47,7 +47,7 @@ jobs:
       - name: Bind the Rust package and lock
         run: sha256sum rust-runtime/Cargo.lock rust-runtime/target/package/*.crate > .grype-inputs/subjects.sha256
       - name: Gate Rust registry dependencies
-        uses: edithatogo/repository-standards/.github/actions/grype-scan@bc76f1fbe0fa87a1371eadc06b08f54b48c623f7
+        uses: edithatogo/repository-standards/.github/actions/grype-scan@06a7bd00074b402fe91b2e3ed7a8af806be945e7
         with:
           sbom: .grype-inputs/rust.sbom.cdx.json
           mode: enforce
@@ -104,7 +104,7 @@ jobs:
           upload-artifact: false
           upload-release-assets: false
       - name: Gate npm package dependencies
-        uses: edithatogo/repository-standards/.github/actions/grype-scan@bc76f1fbe0fa87a1371eadc06b08f54b48c623f7
+        uses: edithatogo/repository-standards/.github/actions/grype-scan@06a7bd00074b402fe91b2e3ed7a8af806be945e7
         with:
           sbom: .grype-inputs/npm.sbom.spdx.json
           mode: enforce
@@ -165,7 +165,7 @@ jobs:
           upload-artifact: false
           upload-release-assets: false
       - name: Gate NuGet package dependencies
-        uses: edithatogo/repository-standards/.github/actions/grype-scan@bc76f1fbe0fa87a1371eadc06b08f54b48c623f7
+        uses: edithatogo/repository-standards/.github/actions/grype-scan@06a7bd00074b402fe91b2e3ed7a8af806be945e7
         with:
           sbom: .grype-inputs/nuget.sbom.spdx.json
           mode: enforce
